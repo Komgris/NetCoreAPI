@@ -5,8 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Contexts\" />
-    <Folder Include="Generic\" />
     <Folder Include="Interfaces\" />
   </ItemGroup>
 
