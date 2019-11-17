@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CIM.DAL\CIM.DAL.csproj" />
     <ProjectReference Include="..\CIM.Domain\CIM.Domain.csproj" />
   </ItemGroup>
 
