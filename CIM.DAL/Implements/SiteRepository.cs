@@ -1,4 +1,4 @@
-﻿using CIM.Domain.Interfaces;
+﻿using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using System;
 using System.Collections.Generic;

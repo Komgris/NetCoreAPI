@@ -1,4 +1,4 @@
-﻿using CIM.Domain.Interface.Generic;
+﻿using CIM.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -25,37 +25,25 @@ namespace CIM.DAL.Implements
 
         public virtual IQueryable<T> All()
         {
-            //  _entities.Configuration.AutoDetectChangesEnabled = false;
             var result = _dbset;
-
-            //  _entities.Configuration.AutoDetectChangesEnabled = true;
             return result;
         }
 
-        public async Task<List<T>> WhereAsync(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        public async Task<List<T>> WhereAsync(Expression<Func<T, bool>> predicate)
         {
             List<T> query = await _dbset.Where(predicate).ToListAsync();
             return query;
         }
 
-        public IQueryable<T> Where(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        public IQueryable<T> Where(Expression<Func<T, bool>> predicate)
         {
-            //   _entities.Configuration.AutoDetectChangesEnabled = false;
             IQueryable<T> query = _dbset.Where(predicate);
-            // IQueryable<T> query = _dbset.AsNoTracking().Where(predicate);
-
-            //  _entities.Configuration.AutoDetectChangesEnabled = true;
             return query;
         }
 
-        public virtual T Add(T entity)
+        public virtual void Add(T entity)
         {
-            return _dbset.Add(entity).Entity;
-        }
-
-        public virtual T Delete(T entity)
-        {
-            return _dbset.Remove(entity).Entity;
+            _dbset.Add(entity);
         }
 
         public virtual void Edit(T entity)
@@ -63,14 +51,14 @@ namespace CIM.DAL.Implements
             _entities.Entry(entity).State = EntityState.Modified;
         }
 
+        public virtual void Delete(T entity)
+        {
+            _dbset.Remove(entity);
+        }
+
         public bool Any(Expression<Func<T, bool>> predicate)
         {
             return _dbset.Any(predicate);
-        }
-
-        Task<List<T>> IRepository<T>.WhereAsync(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
         }
     }
 }
