@@ -48,6 +48,7 @@ namespace CIM.DAL.Implements
 
         public virtual void Edit(T entity)
         {
+            _dbset.Attach(entity);
             _entities.Entry(entity).State = EntityState.Modified;
         }
 
