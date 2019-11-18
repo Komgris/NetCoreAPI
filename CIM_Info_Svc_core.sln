@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.Domain", "CIM.Domain\CI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.Model", "CIM.Model\CIM.Model.csproj", "{A1F09593-DDF8-4C09-8B48-945706AABAC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.API.IntegrationTests", "CIM.API.IntegrationTests\CIM.API.IntegrationTests.csproj", "{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A1F09593-DDF8-4C09-8B48-945706AABAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1F09593-DDF8-4C09-8B48-945706AABAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1F09593-DDF8-4C09-8B48-945706AABAC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
