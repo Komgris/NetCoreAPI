@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.BusinessLogic;
+using CIM.DAL.Implements;
 using CIM.Domain.Models;
+using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
@@ -12,18 +15,20 @@ namespace CIM.API.Controllers
 
     public class SiteController : ControllerBase
     {
-        public SiteController()
-        {
+        private ISiteService _siteService;
 
+        public SiteController(ISiteService siteService)
+        {
+            _siteService = siteService;
         }
         [HttpGet]
-        public int[] Get()
+        public List<SiteModel> Get()
         {
-            using(var ctx = new cim_dbContext())
-            {
-                var output = ctx.Sites.Select(x => x.Id).ToArray();
-                return output;
-            }
+
+
+            var output = _siteService.List();
+            return output;
+
         }
     }
 }
