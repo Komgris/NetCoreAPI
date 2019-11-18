@@ -21,6 +21,7 @@ namespace CIM.API.Controllers
         {
             _siteService = siteService;
         }
+
         [HttpGet]
         public List<SiteModel> Get()
         {

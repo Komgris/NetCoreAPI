@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.BusinessLogic;
+using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
@@ -35,8 +37,13 @@ namespace CIM.API
               options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
+
             services.AddTransient<ISiteRepository, SiteRepository>();
             services.AddTransient<ISiteService, SiteService>();
+
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
