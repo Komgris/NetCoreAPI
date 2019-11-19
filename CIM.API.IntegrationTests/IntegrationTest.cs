@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CIM.Domain.Models;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 
 namespace CIM.API.IntegrationTests
 {
@@ -16,6 +20,8 @@ namespace CIM.API.IntegrationTests
     public class IntegrationTest
     {
         protected readonly HttpClient TestClient;
+        protected cim_dbContext DbContext;
+        protected IServiceScopeFactory ServiceScopeFactory;
 
         protected IntegrationTest()
         {
@@ -55,6 +61,7 @@ namespace CIM.API.IntegrationTests
                         // Ensure the database is created.
                         db.Database.EnsureCreated();
 
+
                         //try
                         //{
                         //    // Seed the database with test data.
@@ -70,6 +77,16 @@ namespace CIM.API.IntegrationTests
                 });
             });
             TestClient = appFactory.CreateClient();
+            ServiceScopeFactory = appFactory.Services.GetService<IServiceScopeFactory>();
         }
+
+        protected HttpContent GetHttpContentForPost<T>(T model)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(model));
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+
     }
 }
