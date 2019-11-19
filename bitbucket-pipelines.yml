@@ -13,6 +13,8 @@ pipelines:
         script: # Modify the comma`nds below to build your repository.
           - export PROJECT_NAME=CIM.API
           - export TEST_NAME=CIM.API.IntegrationTests
+          - export BLTEST_NAME=CIM.BusinessLogicTests
           - dotnet restore
           - dotnet build $PROJECT_NAME
           - dotnet test $TEST_NAME
+          - dotnet test $BLTEST_NAME
