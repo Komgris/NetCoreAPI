@@ -23,6 +23,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<SiteLocals> SiteLocals { get; set; }
         public virtual DbSet<Sites> Sites { get; set; }
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
+        public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -195,6 +196,32 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Sites_Users_Users");
             });
 
+            modelBuilder.Entity<UserProfiles>(entity =>
+            {
+                entity.ToTable("User_Profiles");
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Image).HasColumnType("image");
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserProfiles)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_Profiles_Users");
+            });
+
             modelBuilder.Entity<Users>(entity =>
             {
                 entity.Property(e => e.Id).HasMaxLength(128);
@@ -207,15 +234,17 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Email).HasMaxLength(500);
 
-                entity.Property(e => e.HashedPassword).HasMaxLength(500);
-
-                entity.Property(e => e.Salt).HasMaxLength(500);
+                entity.Property(e => e.HashedPassword)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.UserName).HasMaxLength(50);
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

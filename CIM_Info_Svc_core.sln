@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.DAL", "CIM.DAL\CIM.DAL.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.Domain", "CIM.Domain\CIM.Domain.csproj", "{95EF29D4-EB31-403A-8CD7-21FAC309FDB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.Model", "CIM.Model\CIM.Model.csproj", "{A1F09593-DDF8-4C09-8B48-945706AABAC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.Model", "CIM.Model\CIM.Model.csproj", "{A1F09593-DDF8-4C09-8B48-945706AABAC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.API.IntegrationTests", "CIM.API.IntegrationTests\CIM.API.IntegrationTests.csproj", "{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.API.IntegrationTests", "CIM.API.IntegrationTests\CIM.API.IntegrationTests.csproj", "{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.BusinessLogicTests", "CIM.BusinessLogicTests\CIM.BusinessLogicTests.csproj", "{B22C05B7-E6CA-45E5-8AC7-C22641DCD976}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{CC38A1AE-CA6D-4879-B484-9822DADDE459}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,9 +49,17 @@ Global
 		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B22C05B7-E6CA-45E5-8AC7-C22641DCD976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B22C05B7-E6CA-45E5-8AC7-C22641DCD976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B22C05B7-E6CA-45E5-8AC7-C22641DCD976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B22C05B7-E6CA-45E5-8AC7-C22641DCD976}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{313DD6B2-32D8-4BCA-8A66-23B0FB4E142B} = {CC38A1AE-CA6D-4879-B484-9822DADDE459}
+		{B22C05B7-E6CA-45E5-8AC7-C22641DCD976} = {CC38A1AE-CA6D-4879-B484-9822DADDE459}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EF202AC-B071-4614-98E1-B780ECA4232F}
