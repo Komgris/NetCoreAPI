@@ -24,7 +24,10 @@ namespace CIM.API.IntegrationTests
             {
                 Email = "test@email.com",
                 UserName = "user1",
-                Password = "super-secret"
+                Password = "super-secret",
+                FirstName = "Hans",
+                LastName = "Meier",
+                Image = null,
             };
             var content = new StringContent(JsonConvert.SerializeObject(registerUserModel));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -35,7 +38,7 @@ namespace CIM.API.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
             authResult.UserId.Should().NotBeNullOrEmpty();
-            authResult.Name.Should().NotBeNullOrEmpty();
+            authResult.FullName.Should().Be(registerUserModel.FirstName + " " + registerUserModel.LastName);
 
         }
 

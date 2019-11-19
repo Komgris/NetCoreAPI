@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public Users()
         {
             SitesUsers = new HashSet<SitesUsers>();
+            UserProfiles = new HashSet<UserProfiles>();
         }
 
         public string Id { get; set; }
@@ -23,5 +24,6 @@ namespace CIM.Domain.Models
         public bool IsSuspend { get; set; }
 
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
+        public virtual ICollection<UserProfiles> UserProfiles { get; set; }
     }
 }

@@ -33,6 +33,12 @@ namespace CIM.BusinessLogic.Services
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
             };
+            dbModel.UserProfiles.Add(new UserProfiles
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Image = model.Image,
+            });
             _userRepository.Add(dbModel);
             _unitOfWork.Commit();
         }
@@ -54,15 +60,23 @@ namespace CIM.BusinessLogic.Services
         }
 
         public AuthModel Auth(string username, string password)
-        {
+        {   
             AuthModel result = null;
             var dbModel = _userRepository.Where(x=>x.UserName == username)
+                .Select(
+                    x=> new
+                    {
+                        FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
+                        Id = x.Id,
+                        HashedPassword = x.HashedPassword,
+                    }
+                )
                 .First();
             if (IsPasswordValid(dbModel.HashedPassword, password))
             {
                 result = new AuthModel
                 {
-                    Name = "NameFromProfile",
+                    FullName = dbModel.FullName,
                     UserId = dbModel.Id,
                 };
             }
