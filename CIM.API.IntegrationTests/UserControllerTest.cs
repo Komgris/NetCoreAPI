@@ -28,6 +28,7 @@ namespace CIM.API.IntegrationTests
                 Password = "super-secret",
                 FirstName = "Hans",
                 LastName = "Meier",
+                LanguageId = "en",
                 Image = null,
 
             };
@@ -44,7 +45,7 @@ namespace CIM.API.IntegrationTests
             var app3 = new App { IsActive = false, Name = "App3" };
             var app4 = new App { IsActive = true, Name = "App4" };
             var token = string.Empty;
-            var admin = new Users { Id = Guid.NewGuid().ToString(), CreatedAt = DateTime.Now, CreatedBy = "Tester", HashedPassword = "", UserName = "TestUser", UserGroupId = testGroup.Id };
+            var admin = new Users { Id = Guid.NewGuid().ToString(), CreatedAt = DateTime.Now, CreatedBy = "Tester", HashedPassword = "", UserName = "TestUser", UserGroupId = testGroup.Id, DefaultLanguageId = "en" };
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
@@ -60,7 +61,7 @@ namespace CIM.API.IntegrationTests
                 testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app3.Id, UserGroupId = testGroup.Id });
 
                 context.SaveChanges();
-                registerUserModel.UserGroup_Id = testGroup.Id;
+                registerUserModel.UserGroupId = testGroup.Id;
 
                 var userAppToken = new UserAppTokens
                 {
@@ -77,10 +78,11 @@ namespace CIM.API.IntegrationTests
             // Act
             var content = GetHttpContentForPost(registerUserModel, token);
             var response = await TestClient.PostAsync("User", content);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
             var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
             authResult.UserId.Should().NotBeNullOrEmpty();
             authResult.IsSuccess.Should().BeTrue();

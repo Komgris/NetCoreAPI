@@ -5,10 +5,10 @@ using System.Text;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IUserService
+    public interface IUserService :  IBaseService
     {
         void Register(RegisterUserModel model);
         AuthModel Auth(string username, string password);
-        bool ValidateToken(string token);
+        CurrentUserModel GetCurrentUserModel(string token);
     }
 }

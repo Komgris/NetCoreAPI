@@ -314,6 +314,14 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.DefaultLanguageId)
+                    .IsRequired()
+                    .HasColumnName("DefaultLanguage_Id")
+                    .HasMaxLength(2)
+                    .IsUnicode(false)
+                    .IsFixedLength()
+                    .HasDefaultValueSql("('en')");
+
                 entity.Property(e => e.Email).HasMaxLength(500);
 
                 entity.Property(e => e.HashedPassword)

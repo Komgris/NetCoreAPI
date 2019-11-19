@@ -30,13 +30,14 @@ namespace CIM.BusinessLogic.Services
             var dbModel = new Users
             {
                 CreatedAt = DateTime.Now,
-                CreatedBy = CurrentUserId,
+                CreatedBy = CurrentUser.UserId,
                 IsActive = true,
                 Id = Guid.NewGuid().ToString(),
                 UserName = model.UserName,
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
-                UserGroupId = model.UserGroup_Id,
+                UserGroupId = model.UserGroupId,
+                DefaultLanguageId = model.LanguageId
             };
             dbModel.UserProfiles.Add(new UserProfiles
             {
@@ -74,7 +75,7 @@ namespace CIM.BusinessLogic.Services
                         FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
-                        Group = x.UserGroup.UserGroupLocal.Where(x=>x.LanguageId == CurrentLanguage)
+                        Group = x.UserGroup.UserGroupLocal.Where(local=>local.LanguageId ==  x.DefaultLanguageId)
                         .Select(x=>x.Name).FirstOrDefault(),
                         Apps = x.UserGroup.UserGroupsApps.Where(x=>x.App.IsActive)
                         .Select(app => new AppModel
@@ -118,16 +119,24 @@ namespace CIM.BusinessLogic.Services
             return isValid;
         }
 
-        public bool ValidateToken(string token)
+        public CurrentUserModel GetCurrentUserModel(string token)
         {
             var decryptedData = _cipherService.Decrypt(token);
             var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
             var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
-                .Select(x => x.UserAppTokens).FirstOrDefault();
+                .Select(x => new {
+                    Token = x.UserAppTokens.Token,
+                    DefaultLanguageId = x.DefaultLanguageId,
+                }).FirstOrDefault();
             var dbData = _cipherService.Decrypt(user.Token);
             var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
-
-            return user != null && tokenData.UserId == userAppToken.UserId;
+            var currentUserModel = new CurrentUserModel
+            {
+                IsValid = user != null && tokenData.UserId == userAppToken.UserId,
+                UserId = tokenData.UserId,
+                LanguageId = user.DefaultLanguageId
+            };
+            return currentUserModel;
         }
     }
 }

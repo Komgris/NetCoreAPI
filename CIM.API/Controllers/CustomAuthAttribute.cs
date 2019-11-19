@@ -1,4 +1,5 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -26,9 +27,16 @@ namespace CIM.API.Controllers
             var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
             if (!string.IsNullOrEmpty(token.ToString()))
             {
-                var isTokenValid = userService.ValidateToken(token);
-
-                await this.next.Invoke(context);
+                var currentUserModel = userService.GetCurrentUserModel(token);
+                context.Items.Add(Constans.CURRENT_USER, currentUserModel);
+                if (currentUserModel.IsValid)
+                {
+                    await this.next.Invoke(context);
+                }
+                else
+                {
+                    context.Response.StatusCode = 401;
+                }
             }
             else
             {

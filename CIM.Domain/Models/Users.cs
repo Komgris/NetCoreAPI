@@ -23,6 +23,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
         public bool IsSuspend { get; set; }
         public int UserGroupId { get; set; }
+        public string DefaultLanguageId { get; set; }
 
         public virtual UserGroups UserGroup { get; set; }
         public virtual UserAppTokens UserAppTokens { get; set; }
