@@ -30,10 +30,12 @@ namespace CIM.API.IntegrationTests
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await TestClient.PostAsync("User", content);
             var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
-
+            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
+            authResult.UserId.Should().NotBeNullOrEmpty();
+            authResult.Name.Should().NotBeNullOrEmpty();
 
         }
 
