@@ -61,7 +61,7 @@ namespace CIM.BusinessLogic.Services
 
         public AuthModel Auth(string username, string password)
         {   
-            AuthModel result = null;
+            AuthModel result = new AuthModel();
             var dbModel = _userRepository.Where(x=>x.UserName == username)
                 .Select(
                     x=> new
@@ -71,14 +71,13 @@ namespace CIM.BusinessLogic.Services
                         HashedPassword = x.HashedPassword,
                     }
                 )
-                .First();
-            if (IsPasswordValid(dbModel.HashedPassword, password))
+                .FirstOrDefault();
+
+            if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
-                result = new AuthModel
-                {
-                    FullName = dbModel.FullName,
-                    UserId = dbModel.Id,
-                };
+                result.FullName = dbModel.FullName;
+                result.UserId = dbModel.Id;
+                result.IsSuccess = true;
             }
             return result;
         }

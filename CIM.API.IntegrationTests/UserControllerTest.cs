@@ -15,7 +15,7 @@ namespace CIM.API.IntegrationTests
     public class UserControllerTest : IntegrationTest
     {
         [Fact]
-        public async Task Register_Test()
+        public async Task RegisterAndAuth_Test()
         {
             // Arrange
 
@@ -38,7 +38,19 @@ namespace CIM.API.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
             authResult.UserId.Should().NotBeNullOrEmpty();
+            authResult.IsSuccess.Should().BeTrue();
             authResult.FullName.Should().Be(registerUserModel.FirstName + " " + registerUserModel.LastName);
+
+        }
+
+        [Fact]
+        public async Task Auth_WhenLoginWithWrongUser_Test()
+        {
+            var authResp = await TestClient.GetAsync($"User?username=unknow&password=unknow");
+            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
+            authResult.UserId.Should().BeNull();
+            authResult.IsSuccess.Should().BeFalse();
+            authResult.FullName.Should().BeNull();
 
         }
 
