@@ -9,6 +9,8 @@ using Xunit;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using CIM.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CIM.API.IntegrationTests
 {
@@ -18,8 +20,6 @@ namespace CIM.API.IntegrationTests
         public async Task RegisterAndAuth_Test()
         {
             // Arrange
-
-            // Act
             var registerUserModel = new RegisterUserModel
             {
                 Email = "test@email.com",
@@ -28,9 +28,26 @@ namespace CIM.API.IntegrationTests
                 FirstName = "Hans",
                 LastName = "Meier",
                 Image = null,
+
             };
-            var content = new StringContent(JsonConvert.SerializeObject(registerUserModel));
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var testGroup = new UserGroups
+                {
+                    IsActive = true,
+                    UserGroupLocal = new List<UserGroupLocal> {
+                                new  UserGroupLocal { LanguageId = "en", Name = "TestGroup", }
+                            }
+                };
+                context.UserGroups.Add(testGroup);
+                context.SaveChanges();
+                registerUserModel.UserGroup_Id = testGroup.Id;
+            }
+
+            // Act
+            var content = GetHttpContentForPost(registerUserModel);
             var response = await TestClient.PostAsync("User", content);
             var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
             var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
@@ -51,7 +68,6 @@ namespace CIM.API.IntegrationTests
             authResult.UserId.Should().BeNull();
             authResult.IsSuccess.Should().BeFalse();
             authResult.FullName.Should().BeNull();
-
         }
 
     }

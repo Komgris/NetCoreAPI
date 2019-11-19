@@ -32,6 +32,7 @@ namespace CIM.BusinessLogic.Services
                 UserName = model.UserName,
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
+                UserGroupId = model.UserGroup_Id,
             };
             dbModel.UserProfiles.Add(new UserProfiles
             {
