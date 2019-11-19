@@ -4,6 +4,7 @@ using CIM.Domain.Models;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CIM.BusinessLogic.Services
@@ -42,6 +43,27 @@ namespace CIM.BusinessLogic.Services
         public string HashPassword(RegisterUserModel model, string salt)
         {
             return "hashpassword";
+        }
+
+        public AuthModel Auth(string username, string password)
+        {
+            AuthModel result = null;
+            var dbModel = _userRepository.Where(x=>x.UserName == username)
+                .First();
+            if (IsPasswordValid(dbModel.HashedPassword, dbModel.Salt, password))
+            {
+                result = new AuthModel
+                {
+                    Name = "NameFromProfile",
+                    UserId = dbModel.Id,
+                };
+            }
+            return result;
+        }
+
+        private bool IsPasswordValid(string hashedPassword, string salt, string password)
+        {
+            return true;
         }
     }
 }

@@ -20,17 +20,21 @@ namespace CIM.API.IntegrationTests
             // Arrange
 
             // Act
-            var dataAsString = JsonConvert.SerializeObject(new RegisterUserModel { 
+            var registerUserModel = new RegisterUserModel
+            {
                 Email = "test@email.com",
                 UserName = "user1",
                 Password = "super-secret"
-            });
-            var content = new StringContent(dataAsString);
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(registerUserModel));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await TestClient.PostAsync("User", content);
+            var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            authResp.StatusCode.Should().Be(HttpStatusCode.OK);
+
         }
 
     }

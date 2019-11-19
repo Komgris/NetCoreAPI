@@ -33,9 +33,24 @@ namespace CIM.API.Controllers
             }
             catch (Exception e)
             {
-                return e;
+                throw e;
             }
 
         }
+
+        [HttpGet]
+        public AuthModel Auth(string username, string password)
+        {
+            try
+            {
+                var result = _service.Auth(username, password);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
     }
 }
