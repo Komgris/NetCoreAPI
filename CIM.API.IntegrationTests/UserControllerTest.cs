@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
+using CIM.BusinessLogic.Interfaces;
 
 namespace CIM.API.IntegrationTests
 {
@@ -42,12 +43,13 @@ namespace CIM.API.IntegrationTests
             var app2 = new App { IsActive = true, Name = "App2" };
             var app3 = new App { IsActive = false, Name = "App3" };
             var app4 = new App { IsActive = true, Name = "App4" };
-
+            var token = string.Empty;
+            var admin = new Users { Id = Guid.NewGuid().ToString(), CreatedAt = DateTime.Now, CreatedBy = "Tester", HashedPassword = "", UserName = "TestUser", UserGroupId = testGroup.Id };
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
                 context.UserGroups.Add(testGroup);
-
+                context.Users.Add(admin);
                 context.App.Add(app1);
                 context.App.Add(app2);
                 context.App.Add(app3);
@@ -59,10 +61,21 @@ namespace CIM.API.IntegrationTests
 
                 context.SaveChanges();
                 registerUserModel.UserGroup_Id = testGroup.Id;
+
+                var userAppToken = new UserAppTokens
+                {
+                    UserId = admin.Id,
+                    ExpiredAt = DateTime.Now,
+                };
+                var dataString = JsonConvert.SerializeObject(userAppToken);
+                userAppToken.Token = scope.ServiceProvider.GetService<ICipherService>().Encrypt(dataString);
+                context.UserAppTokens.Add(userAppToken);
+                context.SaveChanges();
+                token = userAppToken.Token;
             }
 
             // Act
-            var content = GetHttpContentForPost(registerUserModel);
+            var content = GetHttpContentForPost(registerUserModel, token);
             var response = await TestClient.PostAsync("User", content);
             var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
             var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));

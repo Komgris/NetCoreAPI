@@ -80,10 +80,11 @@ namespace CIM.API.IntegrationTests
             ServiceScopeFactory = appFactory.Services.GetService<IServiceScopeFactory>();
         }
 
-        protected HttpContent GetHttpContentForPost<T>(T model)
+        protected HttpContent GetHttpContentForPost<T>(T model, string token)
         {
             var content = new StringContent(JsonConvert.SerializeObject(model));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            content.Headers.Add("token", token);
             return content;
         }
 

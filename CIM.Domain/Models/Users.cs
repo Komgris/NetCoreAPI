@@ -25,6 +25,7 @@ namespace CIM.Domain.Models
         public int UserGroupId { get; set; }
 
         public virtual UserGroups UserGroup { get; set; }
+        public virtual UserAppTokens UserAppTokens { get; set; }
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
         public virtual ICollection<UserProfiles> UserProfiles { get; set; }
     }

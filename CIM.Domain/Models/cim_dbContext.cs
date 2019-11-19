@@ -24,6 +24,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<SiteLocals> SiteLocals { get; set; }
         public virtual DbSet<Sites> Sites { get; set; }
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
+        public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
         public virtual DbSet<UserGroupLocal> UserGroupLocal { get; set; }
         public virtual DbSet<UserGroups> UserGroups { get; set; }
         public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
@@ -209,6 +210,28 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Sites_Users_Users");
+            });
+
+            modelBuilder.Entity<UserAppTokens>(entity =>
+            {
+                entity.HasKey(e => e.UserId)
+                    .HasName("PK_UserAppTokens_1");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserAppTokens)
+                    .HasForeignKey<UserAppTokens>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserAppTokens_Users");
             });
 
             modelBuilder.Entity<UserGroupLocal>(entity =>

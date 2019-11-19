@@ -9,5 +9,6 @@ namespace CIM.BusinessLogic.Interfaces
     {
         void Register(RegisterUserModel model);
         AuthModel Auth(string username, string password);
+        bool ValidateToken(string token);
     }
 }

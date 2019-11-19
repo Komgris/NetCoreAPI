@@ -2,6 +2,7 @@
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -10,14 +11,17 @@ namespace CIM.BusinessLogic.Services
 {
     public class UserService : BaseService, IUserService
     {
+        private ICipherService _cipherService;
         private IUserRepository _userRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public UserService(
+            ICipherService cipherService,
             IUserRepository userRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
+            _cipherService = cipherService;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
@@ -112,6 +116,18 @@ namespace CIM.BusinessLogic.Services
                     isValid = false;
 
             return isValid;
+        }
+
+        public bool ValidateToken(string token)
+        {
+            var decryptedData = _cipherService.Decrypt(token);
+            var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
+            var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
+                .Select(x => x.UserAppTokens).FirstOrDefault();
+            var dbData = _cipherService.Decrypt(user.Token);
+            var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
+
+            return user != null && tokenData.UserId == userAppToken.UserId;
         }
     }
 }

@@ -8,6 +8,7 @@ using Moq;
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using FluentAssertions;
+using CIM.BusinessLogic.Interfaces;
 
 namespace CIM.BusinessLogic.Services.Tests
 {
@@ -16,9 +17,10 @@ namespace CIM.BusinessLogic.Services.Tests
         [Fact]
         public void HashPasswordTest()
         {
+            var cipherService = new Mock<ICipherService>().Object;
             var userRep = new Mock<IUserRepository>().Object;
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
-            var service = new UserService(userRep, unitOfWork);
+            var service = new UserService(cipherService, userRep, unitOfWork);
             var registerUserModel = new RegisterUserModel
             {
                 Password = "password"
