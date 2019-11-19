@@ -29,7 +29,6 @@ namespace CIM.Domain.Models
         public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-        public virtual DbSet<UsersUserGroups> UsersUserGroups { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -302,34 +301,17 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
+                entity.Property(e => e.UserGroupId).HasColumnName("UserGroup_Id");
+
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<UsersUserGroups>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.UserGroupId });
-
-                entity.ToTable("Users_UserGroups");
-
-                entity.Property(e => e.UserId)
-                    .HasColumnName("User_Id")
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.UserGroupId).HasColumnName("UserGroup_Id");
 
                 entity.HasOne(d => d.UserGroup)
-                    .WithMany(p => p.UsersUserGroups)
+                    .WithMany(p => p.Users)
                     .HasForeignKey(d => d.UserGroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Users_UserGroups_UserGroups");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UsersUserGroups)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Users_UserGroups_Users");
+                    .HasConstraintName("FK_Users_UserGroups");
             });
 
             OnModelCreatingPartial(modelBuilder);

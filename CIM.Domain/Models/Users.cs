@@ -9,7 +9,6 @@ namespace CIM.Domain.Models
         {
             SitesUsers = new HashSet<SitesUsers>();
             UserProfiles = new HashSet<UserProfiles>();
-            UsersUserGroups = new HashSet<UsersUserGroups>();
         }
 
         public string Id { get; set; }
@@ -23,9 +22,10 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public bool IsSuspend { get; set; }
+        public int UserGroupId { get; set; }
 
+        public virtual UserGroups UserGroup { get; set; }
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
         public virtual ICollection<UserProfiles> UserProfiles { get; set; }
-        public virtual ICollection<UsersUserGroups> UsersUserGroups { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace CIM.Domain.Models
         {
             UserGroupLocal = new HashSet<UserGroupLocal>();
             UserGroupsApps = new HashSet<UserGroupsApps>();
-            UsersUserGroups = new HashSet<UsersUserGroups>();
+            Users = new HashSet<Users>();
         }
 
         public int Id { get; set; }
@@ -18,6 +18,6 @@ namespace CIM.Domain.Models
 
         public virtual ICollection<UserGroupLocal> UserGroupLocal { get; set; }
         public virtual ICollection<UserGroupsApps> UserGroupsApps { get; set; }
-        public virtual ICollection<UsersUserGroups> UsersUserGroups { get; set; }
+        public virtual ICollection<Users> Users { get; set; }
     }
 }
