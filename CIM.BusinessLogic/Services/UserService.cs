@@ -3,9 +3,7 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CIM.BusinessLogic.Services
 {

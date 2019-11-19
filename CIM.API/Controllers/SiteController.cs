@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.BusinessLogic;
+using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Implements;
 using CIM.Domain.Models;
 using CIM.Model;
