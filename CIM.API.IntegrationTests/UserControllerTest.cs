@@ -40,6 +40,8 @@ namespace CIM.API.IntegrationTests
 
             var app1 = new App { IsActive = true, Name = "App1" };
             var app2 = new App { IsActive = true, Name = "App2" };
+            var app3 = new App { IsActive = false, Name = "App3" };
+            var app4 = new App { IsActive = true, Name = "App4" };
 
             using (var scope = ServiceScopeFactory.CreateScope())
             {
@@ -48,9 +50,12 @@ namespace CIM.API.IntegrationTests
 
                 context.App.Add(app1);
                 context.App.Add(app2);
+                context.App.Add(app3);
+                context.App.Add(app4);
 
                 testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app1.Id, UserGroupId = testGroup.Id });
                 testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app2.Id, UserGroupId = testGroup.Id });
+                testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app3.Id, UserGroupId = testGroup.Id });
 
                 context.SaveChanges();
                 registerUserModel.UserGroup_Id = testGroup.Id;
