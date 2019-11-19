@@ -9,6 +9,7 @@ namespace CIM.Domain.Models
         {
             SitesUsers = new HashSet<SitesUsers>();
             UserProfiles = new HashSet<UserProfiles>();
+            UsersUserGroups = new HashSet<UsersUserGroups>();
         }
 
         public string Id { get; set; }
@@ -25,5 +26,6 @@ namespace CIM.Domain.Models
 
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
         public virtual ICollection<UserProfiles> UserProfiles { get; set; }
+        public virtual ICollection<UsersUserGroups> UsersUserGroups { get; set; }
     }
 }
