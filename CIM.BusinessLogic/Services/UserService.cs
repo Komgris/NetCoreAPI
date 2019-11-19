@@ -70,6 +70,14 @@ namespace CIM.BusinessLogic.Services
                         FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
+                        Group = x.UserGroup.UserGroupLocal.Where(x=>x.LanguageId == CurrentLanguage)
+                        .Select(x=>x.Name).FirstOrDefault(),
+                        Apps = x.UserGroup.UserGroupsApps.Where(x=>x.App.IsActive)
+                        .Select(app => new AppModel
+                        {
+                            Name = app.App.Name,
+                            Url = app.App.Url
+                        })
                     }
                 )
                 .FirstOrDefault();
@@ -79,6 +87,9 @@ namespace CIM.BusinessLogic.Services
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
+                result.Group = dbModel.Group;
+                result.Apps = dbModel.Apps.ToList();
+                
             }
             return result;
         }

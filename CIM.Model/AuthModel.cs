@@ -11,5 +11,7 @@ namespace CIM.Model
 
         public string FullName { get; set; }
         public bool IsSuccess { get; set; }
+        public string Group { get; set; }
+        public List<AppModel> Apps { get; set; }
     }
 }

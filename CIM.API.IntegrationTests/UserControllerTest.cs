@@ -30,18 +30,28 @@ namespace CIM.API.IntegrationTests
                 Image = null,
 
             };
+            var testGroup = new UserGroups
+            {
+                IsActive = true,
+                UserGroupLocal = new List<UserGroupLocal> {
+                                new  UserGroupLocal { LanguageId = "en", Name = "TestGroup", }
+                            }
+            };
+
+            var app1 = new App { IsActive = true, Name = "App1" };
+            var app2 = new App { IsActive = true, Name = "App2" };
 
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                var testGroup = new UserGroups
-                {
-                    IsActive = true,
-                    UserGroupLocal = new List<UserGroupLocal> {
-                                new  UserGroupLocal { LanguageId = "en", Name = "TestGroup", }
-                            }
-                };
                 context.UserGroups.Add(testGroup);
+
+                context.App.Add(app1);
+                context.App.Add(app2);
+
+                testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app1.Id, UserGroupId = testGroup.Id });
+                testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app2.Id, UserGroupId = testGroup.Id });
+
                 context.SaveChanges();
                 registerUserModel.UserGroup_Id = testGroup.Id;
             }
@@ -56,6 +66,10 @@ namespace CIM.API.IntegrationTests
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
             authResult.UserId.Should().NotBeNullOrEmpty();
             authResult.IsSuccess.Should().BeTrue();
+            authResult.Group.Should().Be("TestGroup");
+            authResult.Apps.Count.Should().Be(2);
+            authResult.Apps[0].Name.Should().Be(app1.Name);
+            authResult.Apps[1].Name.Should().Be(app2.Name);
             authResult.FullName.Should().Be(registerUserModel.FirstName + " " + registerUserModel.LastName);
 
         }
