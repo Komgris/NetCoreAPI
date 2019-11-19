@@ -207,15 +207,17 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Email).HasMaxLength(500);
 
-                entity.Property(e => e.HashedPassword).HasMaxLength(500);
-
-                entity.Property(e => e.Salt).HasMaxLength(500);
+                entity.Property(e => e.HashedPassword)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.UserName).HasMaxLength(50);
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);
