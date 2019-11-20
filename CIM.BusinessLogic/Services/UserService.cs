@@ -11,16 +11,19 @@ namespace CIM.BusinessLogic.Services
 {
     public class UserService : BaseService, IUserService
     {
+        private IUserAppTokenRepository _userAppTokenRepository;
         private ICipherService _cipherService;
         private IUserRepository _userRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public UserService(
+            IUserAppTokenRepository userAppTokenRepository,
             ICipherService cipherService,
             IUserRepository userRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
+            _userAppTokenRepository = userAppTokenRepository;
             _cipherService = cipherService;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
@@ -89,14 +92,38 @@ namespace CIM.BusinessLogic.Services
 
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
+
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
+                result.Token = CreateToken(dbModel.Id);
                 result.Group = dbModel.Group;
                 result.Apps = dbModel.Apps.ToList();
                 
             }
             return result;
+        }
+
+        public string CreateToken(string userId)
+        {
+
+            var existingToken = _userAppTokenRepository.Where(x => x.UserId == userId).ToList();
+            foreach(var item in existingToken)
+            {
+                _userAppTokenRepository.Delete(item);
+            }
+
+            var userAppToken = new UserAppTokens
+            {
+                UserId = userId,
+                ExpiredAt = DateTime.Now.AddYears(1),
+            };
+            var dataString = JsonConvert.SerializeObject(userAppToken);
+            userAppToken.Token = _cipherService.Encrypt(dataString);
+
+            _userAppTokenRepository.Add(userAppToken);
+            _unitOfWork.Commit();
+            return userAppToken.Token;
         }
 
         public bool IsPasswordValid(string savedPasswordHash, string password)

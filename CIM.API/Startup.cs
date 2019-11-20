@@ -39,14 +39,13 @@ namespace CIM.API
 
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
-            services.AddTransient<ICipherService, CipherService>();
-
             services.AddTransient<ISiteRepository, SiteRepository>();
-            services.AddTransient<ISiteService, SiteService>();
-
+            services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IUserService, UserService>();
 
+            services.AddTransient<ICipherService, CipherService>();
+            services.AddTransient<ISiteService, SiteService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

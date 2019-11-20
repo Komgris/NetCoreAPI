@@ -45,12 +45,11 @@ namespace CIM.API.IntegrationTests
             var app3 = new App { IsActive = false, Name = "App3" };
             var app4 = new App { IsActive = true, Name = "App4" };
             var token = string.Empty;
-            var admin = new Users { Id = Guid.NewGuid().ToString(), CreatedAt = DateTime.Now, CreatedBy = "Tester", HashedPassword = "", UserName = "TestUser", UserGroupId = testGroup.Id, DefaultLanguageId = "en" };
+
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
                 context.UserGroups.Add(testGroup);
-                context.Users.Add(admin);
                 context.App.Add(app1);
                 context.App.Add(app2);
                 context.App.Add(app3);
@@ -63,16 +62,7 @@ namespace CIM.API.IntegrationTests
                 context.SaveChanges();
                 registerUserModel.UserGroupId = testGroup.Id;
 
-                var userAppToken = new UserAppTokens
-                {
-                    UserId = admin.Id,
-                    ExpiredAt = DateTime.Now,
-                };
-                var dataString = JsonConvert.SerializeObject(userAppToken);
-                userAppToken.Token = scope.ServiceProvider.GetService<ICipherService>().Encrypt(dataString);
-                context.UserAppTokens.Add(userAppToken);
-                context.SaveChanges();
-                token = userAppToken.Token;
+                token = AdminToken;
             }
 
             // Act
@@ -87,6 +77,7 @@ namespace CIM.API.IntegrationTests
             authResult.UserId.Should().NotBeNullOrEmpty();
             authResult.IsSuccess.Should().BeTrue();
             authResult.Group.Should().Be("TestGroup");
+            authResult.Token.Should().NotBeNullOrEmpty();
             authResult.Apps.Count.Should().Be(2);
             authResult.Apps[0].Name.Should().Be(app1.Name);
             authResult.Apps[1].Name.Should().Be(app2.Name);
@@ -104,5 +95,25 @@ namespace CIM.API.IntegrationTests
             authResult.FullName.Should().BeNull();
         }
 
+        [Fact]
+        public async Task Auth_LoginAsAdmin_Test()
+        {
+            var authResp = await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
+            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
+            authResult.UserId.Should().NotBeNullOrEmpty();
+            authResult.IsSuccess.Should().BeTrue();
+            authResult.Token.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task Auth_LoginAsAdminWithExitingToken_Test()
+        {
+            await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
+            var authResp = await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
+            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
+            authResult.UserId.Should().NotBeNullOrEmpty();
+            authResult.IsSuccess.Should().BeTrue();
+            authResult.Token.Should().NotBeNullOrEmpty();
+        }
     }
 }

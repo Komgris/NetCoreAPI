@@ -10,5 +10,6 @@ namespace CIM.BusinessLogic.Interfaces
         void Register(RegisterUserModel model);
         AuthModel Auth(string username, string password);
         CurrentUserModel GetCurrentUserModel(string token);
+        string HashPassword(RegisterUserModel model);
     }
 }
