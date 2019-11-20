@@ -82,7 +82,6 @@ namespace CIM.API.IntegrationTests
             authResult.Apps[0].Name.Should().Be(app1.Name);
             authResult.Apps[1].Name.Should().Be(app2.Name);
             authResult.FullName.Should().Be(registerUserModel.FirstName + " " + registerUserModel.LastName);
-
         }
 
         [Fact]

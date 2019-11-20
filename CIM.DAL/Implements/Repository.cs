@@ -29,9 +29,9 @@ namespace CIM.DAL.Implements
             return result;
         }
 
-        public async Task<List<T>> WhereAsync(Expression<Func<T, bool>> predicate)
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            List<T> query = await _dbset.Where(predicate).ToListAsync();
+            T query = await _dbset.FirstOrDefaultAsync(predicate);
             return query;
         }
 
@@ -40,6 +40,12 @@ namespace CIM.DAL.Implements
             IQueryable<T> query = _dbset.Where(predicate);
             return query;
         }
+        public async Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate)
+        {
+            IList<T> query = await _dbset.Where(predicate).ToListAsync();
+            return query;
+        }
+
 
         public virtual void Add(T entity)
         {
@@ -61,5 +67,6 @@ namespace CIM.DAL.Implements
         {
             return _dbset.Any(predicate);
         }
+
     }
 }

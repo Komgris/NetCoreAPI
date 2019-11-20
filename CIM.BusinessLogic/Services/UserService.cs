@@ -2,10 +2,12 @@
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -68,13 +70,14 @@ namespace CIM.BusinessLogic.Services
             return savedPasswordHash;
         }
 
-        public AuthModel Auth(string username, string password)
+        public async Task<AuthModel> Auth(string username, string password)
         {   
             AuthModel result = new AuthModel();
-            var dbModel = _userRepository.Where(x=>x.UserName == username)
+            var dbModel = await _userRepository.Where(x => x.UserName == username)
                 .Select(
                     x=> new
                     {
+                        UserName = x.UserName,
                         FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
@@ -88,7 +91,7 @@ namespace CIM.BusinessLogic.Services
                         })
                     }
                 )
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(x => x.UserName == username);
 
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {

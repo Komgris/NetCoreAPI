@@ -44,11 +44,11 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public AuthModel Auth(string username, string password)
+        public async Task<AuthModel> Auth(string username, string password)
         {
             try
             {
-                var result = _service.Auth(username, password);
+                var result = await _service.Auth(username, password);
                 return result;
             }
             catch (Exception e)
