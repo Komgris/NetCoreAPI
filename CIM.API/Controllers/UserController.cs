@@ -26,7 +26,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [MiddlewareFilter(typeof(MyCustomAuthenticationMiddlewarePipeline))]
-        public object Register(RegisterUserModel model)
+        public async Task<object> Register(RegisterUserModel model)
         {
             try
             {

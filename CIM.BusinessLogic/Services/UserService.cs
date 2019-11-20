@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public void Register(RegisterUserModel model)
+        public async void Register(RegisterUserModel model)
         {
             var dbModel = new Users
             {
@@ -51,7 +51,7 @@ namespace CIM.BusinessLogic.Services
                 Image = model.Image,
             });
             _userRepository.Add(dbModel);
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
         }
 
         public string HashPassword(RegisterUserModel model)
@@ -99,7 +99,7 @@ namespace CIM.BusinessLogic.Services
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
-                result.Token = CreateToken(dbModel.Id);
+                result.Token = await CreateToken(dbModel.Id);
                 result.Group = dbModel.Group;
                 result.Apps = dbModel.Apps.ToList();
                 
@@ -107,7 +107,7 @@ namespace CIM.BusinessLogic.Services
             return result;
         }
 
-        public string CreateToken(string userId)
+        public async Task<string> CreateToken(string userId)
         {
 
             var existingToken = _userAppTokenRepository.Where(x => x.UserId == userId).ToList();
@@ -125,7 +125,7 @@ namespace CIM.BusinessLogic.Services
             userAppToken.Token = _cipherService.Encrypt(dataString);
 
             _userAppTokenRepository.Add(userAppToken);
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
             return userAppToken.Token;
         }
 
