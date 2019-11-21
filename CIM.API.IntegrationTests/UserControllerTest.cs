@@ -35,9 +35,7 @@ namespace CIM.API.IntegrationTests
             var testGroup = new UserGroups
             {
                 IsActive = true,
-                UserGroupLocal = new List<UserGroupLocal> {
-                    new  UserGroupLocal { LanguageId = "en", Name = "TestGroup", }
-                }
+                Name = "TestGroup"
             };
 
             var app1 = new App { IsActive = true, Name = "App1" };

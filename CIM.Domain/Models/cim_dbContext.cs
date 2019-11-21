@@ -25,7 +25,6 @@ namespace CIM.Domain.Models
         public virtual DbSet<Sites> Sites { get; set; }
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
         public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
-        public virtual DbSet<UserGroupLocal> UserGroupLocal { get; set; }
         public virtual DbSet<UserGroups> UserGroups { get; set; }
         public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
@@ -234,25 +233,11 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_UserAppTokens_Users");
             });
 
-            modelBuilder.Entity<UserGroupLocal>(entity =>
+            modelBuilder.Entity<UserGroups>(entity =>
             {
-                entity.ToTable("UserGroup_Local");
-
-                entity.Property(e => e.LanguageId)
-                    .IsRequired()
-                    .HasColumnName("Language_Id")
-                    .HasMaxLength(2)
-                    .IsFixedLength();
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.HasOne(d => d.FkeyNavigation)
-                    .WithMany(p => p.UserGroupLocal)
-                    .HasForeignKey(d => d.Fkey)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroup_Local_UserGroups");
             });
 
             modelBuilder.Entity<UserGroupsApps>(entity =>

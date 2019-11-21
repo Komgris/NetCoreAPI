@@ -68,9 +68,7 @@ namespace CIM.API.IntegrationTests
                         var adminGroup = new UserGroups
                         {
                             IsActive = true,
-                            UserGroupLocal = new List<UserGroupLocal> {
-                                new  UserGroupLocal { LanguageId = "en", Name = "Admin", }
-                            }
+                            Name = "Admin"
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
                         userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };

@@ -81,8 +81,7 @@ namespace CIM.BusinessLogic.Services
                         FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
-                        Group = x.UserGroup.UserGroupLocal.Where(local=>local.LanguageId ==  x.DefaultLanguageId)
-                        .Select(x=>x.Name).FirstOrDefault(),
+                        Group = x.UserGroup.Name,
                         Apps = x.UserGroup.UserGroupsApps.Where(x=>x.App.IsActive)
                         .Select(app => new AppModel
                         {

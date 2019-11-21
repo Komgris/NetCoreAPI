@@ -7,16 +7,15 @@ namespace CIM.Domain.Models
     {
         public UserGroups()
         {
-            UserGroupLocal = new HashSet<UserGroupLocal>();
             UserGroupsApps = new HashSet<UserGroupsApps>();
             Users = new HashSet<Users>();
         }
 
         public int Id { get; set; }
+        public string Name { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
 
-        public virtual ICollection<UserGroupLocal> UserGroupLocal { get; set; }
         public virtual ICollection<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual ICollection<Users> Users { get; set; }
     }
