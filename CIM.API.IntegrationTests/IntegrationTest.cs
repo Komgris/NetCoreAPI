@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
+using System.Threading.Tasks;
 
 namespace CIM.API.IntegrationTests
 {
@@ -113,6 +114,15 @@ namespace CIM.API.IntegrationTests
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             content.Headers.Add("token", token);
             return content;
+        }
+
+        protected async Task<T> SendSecuredAsync<T>(string uri, HttpMethod method)
+        {
+            var request = new HttpRequestMessage(method,uri);
+            request.Headers.Add("token", AdminToken);
+            var response = await TestClient.SendAsync(request);
+            var result = JsonConvert.DeserializeObject<T>((await response.Content.ReadAsStringAsync()));
+            return result;
         }
     }
 }

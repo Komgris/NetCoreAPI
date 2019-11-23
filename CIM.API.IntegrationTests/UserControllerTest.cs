@@ -7,6 +7,7 @@ using Xunit;
 using Newtonsoft.Json;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace CIM.API.IntegrationTests
 {
@@ -81,10 +82,12 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task List_Test()
         {
-            var response = await TestClient.GetAsync($"User");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/User");
+            request.Headers.Add("token", AdminToken);
+            var response = await TestClient.SendAsync(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
             var result = JsonConvert.DeserializeObject<List<UserModel>>((await response.Content.ReadAsStringAsync()));
+            result.Count.Should().Be(0);
         }
     }
 }
