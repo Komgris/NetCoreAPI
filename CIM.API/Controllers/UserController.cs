@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using CIM.BusinessLogic;
 using CIM.BusinessLogic.Interfaces;
-using CIM.DAL.Implements;
-using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
 
     public class UserController : ControllerBase
     {
@@ -25,15 +21,17 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        [MiddlewareFilter(typeof(MyCustomAuthenticationMiddlewarePipeline))]
-        public async Task<object> Register(RegisterUserModel model)
+        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
+        public async Task<object> Register(UserModel model)
         {
             try
             {
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                _service.Register(model);
+                await Task.Run( () => {
+                    _service.Register(model);
+                    });
                 return new object();
             }
             catch (Exception e)
@@ -43,13 +41,14 @@ namespace CIM.API.Controllers
 
         }
 
+
         [HttpGet]
-        public async Task<AuthModel> Auth(string username, string password)
+        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
+        public async Task<List<UserModel>> List()
         {
             try
             {
-                var result = await _service.Auth(username, password);
-                return result;
+                return new List<UserModel>();
             }
             catch (Exception e)
             {

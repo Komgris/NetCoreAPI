@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async void Register(RegisterUserModel model)
+        public async void Register(UserModel model)
         {
             var dbModel = new Users
             {
@@ -54,7 +54,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public string HashPassword(RegisterUserModel model)
+        public string HashPassword(UserModel model)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);

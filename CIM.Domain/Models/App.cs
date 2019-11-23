@@ -7,6 +7,7 @@ namespace CIM.Domain.Models
     {
         public App()
         {
+            AppFeatures = new HashSet<AppFeatures>();
             UserGroupsApps = new HashSet<UserGroupsApps>();
         }
 
@@ -16,6 +17,7 @@ namespace CIM.Domain.Models
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
 
+        public virtual ICollection<AppFeatures> AppFeatures { get; set; }
         public virtual ICollection<UserGroupsApps> UserGroupsApps { get; set; }
     }
 }

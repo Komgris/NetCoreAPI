@@ -24,7 +24,7 @@ namespace CIM.API.IntegrationTests
         protected readonly HttpClient TestClient;
         protected cim_dbContext DbContext;
         protected IServiceScopeFactory ServiceScopeFactory;
-        public RegisterUserModel Admin { get; set; }
+        public UserModel Admin { get; set; }
         public string AdminToken { get; set; }
 
         protected IntegrationTest()
@@ -74,7 +74,7 @@ namespace CIM.API.IntegrationTests
                         userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
                         db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
-                        var registerUserModel = new RegisterUserModel
+                        var registerUserModel = new UserModel
                         {
                             Email = "test@email.com",
                             UserName = "admin",
@@ -87,7 +87,8 @@ namespace CIM.API.IntegrationTests
                         };
                         userService.Register(registerUserModel);
                         Admin = registerUserModel;
-                        AdminToken = db.Users.Where(x => x.UserName == Admin.UserName).Select(x => x.UserAppTokens.Token).FirstOrDefault();
+                        Admin.Id = db.Users.Where(x => x.UserName == Admin.UserName).Select(x => x.Id).FirstOrDefault();
+                        AdminToken = userService.CreateToken(Admin.Id).Result;
                         //try
                         //{
                         //    // Seed the database with test data.

@@ -1,17 +1,12 @@
 ﻿using CIM.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Net;
 using Xunit;
-using System.Net.Http;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
-using CIM.BusinessLogic.Interfaces;
 
 namespace CIM.API.IntegrationTests
 {
@@ -21,7 +16,7 @@ namespace CIM.API.IntegrationTests
         public async Task RegisterAndAuth_Test()
         {
             // Arrange
-            var registerUserModel = new RegisterUserModel
+            var registerUserModel = new UserModel
             {
                 Email = "test@email.com",
                 UserName = "user1",
@@ -65,10 +60,10 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var content = GetHttpContentForPost(registerUserModel, token);
-            var response = await TestClient.PostAsync("User", content);
+            var response = await TestClient.PostAsync("api/User", content);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var authResp = await TestClient.GetAsync($"User?username={registerUserModel.UserName}&password={registerUserModel.Password}");
+            var authResp = await TestClient.GetAsync($"api/Auth?username={registerUserModel.UserName}&password={registerUserModel.Password}");
             var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
             // Assert
             authResp.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -82,35 +77,14 @@ namespace CIM.API.IntegrationTests
             authResult.FullName.Should().Be(registerUserModel.FirstName + " " + registerUserModel.LastName);
         }
 
-        [Fact]
-        public async Task Auth_WhenLoginWithWrongUser_Test()
-        {
-            var authResp = await TestClient.GetAsync($"User?username=unknow&password=unknow");
-            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
-            authResult.UserId.Should().BeNull();
-            authResult.IsSuccess.Should().BeFalse();
-            authResult.FullName.Should().BeNull();
-        }
 
         [Fact]
-        public async Task Auth_LoginAsAdmin_Test()
+        public async Task List_Test()
         {
-            var authResp = await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
-            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
-            authResult.UserId.Should().NotBeNullOrEmpty();
-            authResult.IsSuccess.Should().BeTrue();
-            authResult.Token.Should().NotBeNullOrEmpty();
-        }
+            var response = await TestClient.GetAsync($"User");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        [Fact]
-        public async Task Auth_LoginAsAdminWithExitingToken_Test()
-        {
-            await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
-            var authResp = await TestClient.GetAsync($"User?username={Admin.UserName}&password={Admin.Password}");
-            var authResult = JsonConvert.DeserializeObject<AuthModel>((await authResp.Content.ReadAsStringAsync()));
-            authResult.UserId.Should().NotBeNullOrEmpty();
-            authResult.IsSuccess.Should().BeTrue();
-            authResult.Token.Should().NotBeNullOrEmpty();
+            var result = JsonConvert.DeserializeObject<List<UserModel>>((await response.Content.ReadAsStringAsync()));
         }
     }
 }
