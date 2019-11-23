@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async void Register(UserModel model)
+        public async void Create(UserModel model)
         {
             var dbModel = new Users
             {
@@ -166,6 +166,14 @@ namespace CIM.BusinessLogic.Services
                 LanguageId = user.DefaultLanguageId
             };
             return currentUserModel;
+        }
+
+        public Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
+        {
+            return Task.Run( () =>
+           {
+               return new PagingModel<UserModel>();
+           });
         }
     }
 }

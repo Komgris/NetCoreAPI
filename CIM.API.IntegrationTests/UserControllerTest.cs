@@ -86,8 +86,8 @@ namespace CIM.API.IntegrationTests
             request.Headers.Add("token", AdminToken);
             var response = await TestClient.SendAsync(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<List<UserModel>>((await response.Content.ReadAsStringAsync()));
-            result.Count.Should().Be(0);
+            var result = JsonConvert.DeserializeObject<PagingModel<UserModel>>((await response.Content.ReadAsStringAsync()));
+            result.Data.Count.Should().Be(0);
         }
     }
 }
