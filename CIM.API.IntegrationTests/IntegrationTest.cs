@@ -78,7 +78,7 @@ namespace CIM.API.IntegrationTests
                         var registerUserModel = new UserModel
                         {
                             Email = "test@email.com",
-                            UserName = "admin",
+                            UserName = "admin" + RandomString(),
                             Password = "super-secret",
                             FirstName = "Hans",
                             LastName = "Meier",
@@ -86,7 +86,7 @@ namespace CIM.API.IntegrationTests
                             Image = null,
                             UserGroupId = adminGroup.Id,
                         };
-                        userService.Register(registerUserModel);
+                        userService.Create(registerUserModel);
                         Admin = registerUserModel;
                         Admin.Id = db.Users.Where(x => x.UserName == Admin.UserName).Select(x => x.Id).FirstOrDefault();
                         AdminToken = userService.CreateToken(Admin.Id).Result;
@@ -123,6 +123,20 @@ namespace CIM.API.IntegrationTests
             var response = await TestClient.SendAsync(request);
             var result = JsonConvert.DeserializeObject<T>((await response.Content.ReadAsStringAsync()));
             return result;
+        }
+
+        public string RandomString()
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[8];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            return new String(stringChars);
         }
     }
 }
