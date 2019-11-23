@@ -22,7 +22,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
-        public async Task<object> Register(UserModel model)
+        public async Task<object> Create(UserModel model)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = currentUser;
 
                 await Task.Run( () => {
-                    _service.Register(model);
+                    _service.Create(model);
                     });
                 return new object();
             }
@@ -44,11 +44,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
-        public async Task<List<UserModel>> List()
+        public async Task<PagingModel<UserModel>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             try
             {
-                return new List<UserModel>();
+                var result = await _service.List(keyword, page, howmany);
+                return result;
             }
             catch (Exception e)
             {
