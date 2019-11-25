@@ -9,6 +9,7 @@ using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -39,9 +40,11 @@ namespace CIM.API
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
             services.AddTransient<ISiteRepository, SiteRepository>();
-            services.AddTransient<ISiteService, SiteService>();
-
+            services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+
+            services.AddTransient<ICipherService, CipherService>();
+            services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
 
             services.AddControllers();

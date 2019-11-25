@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
@@ -26,6 +27,20 @@ namespace CIM.DAL.Implements
             try
             {
                 int result = _dbContext.SaveChanges();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> CommitAsync()
+        {
+
+            try
+            {
+                int result = await _dbContext.SaveChangesAsync();
                 return result;
             }
             catch (Exception ex)

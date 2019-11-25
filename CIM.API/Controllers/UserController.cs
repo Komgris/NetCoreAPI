@@ -21,13 +21,18 @@ namespace CIM.API.Controllers
         public UserController(IUserService service)
         {
             _service = service;
+            
         }
 
         [HttpPost]
-        public object Register(RegisterUserModel model)
+        [MiddlewareFilter(typeof(MyCustomAuthenticationMiddlewarePipeline))]
+        public async Task<object> Register(RegisterUserModel model)
         {
             try
             {
+                var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _service.CurrentUser = currentUser;
+
                 _service.Register(model);
                 return new object();
             }
@@ -39,11 +44,11 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public AuthModel Auth(string username, string password)
+        public async Task<AuthModel> Auth(string username, string password)
         {
             try
             {
-                var result = _service.Auth(username, password);
+                var result = await _service.Auth(username, password);
                 return result;
             }
             catch (Exception e)

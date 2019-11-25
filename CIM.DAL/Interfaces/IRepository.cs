@@ -10,6 +10,8 @@ namespace CIM.DAL.Interfaces
     {
         IQueryable<T> All();
         IQueryable<T> Where(Expression<Func<T, bool>> predicate);
+        Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
         bool Any(Expression<Func<T, bool>> predicate);
         void Add(T entity);
         void Edit(T entity);

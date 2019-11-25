@@ -15,6 +15,7 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<App> App { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
@@ -23,6 +24,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<SiteLocals> SiteLocals { get; set; }
         public virtual DbSet<Sites> Sites { get; set; }
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
+        public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
+        public virtual DbSet<UserGroups> UserGroups { get; set; }
+        public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
@@ -37,6 +41,17 @@ namespace CIM.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<App>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
             modelBuilder.Entity<AreaLocals>(entity =>
             {
                 entity.ToTable("Area_Locals");
@@ -196,6 +211,58 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Sites_Users_Users");
             });
 
+            modelBuilder.Entity<UserAppTokens>(entity =>
+            {
+                entity.HasKey(e => e.UserId)
+                    .HasName("PK_UserAppTokens_1");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserAppTokens)
+                    .HasForeignKey<UserAppTokens>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserAppTokens_Users");
+            });
+
+            modelBuilder.Entity<UserGroups>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<UserGroupsApps>(entity =>
+            {
+                entity.HasKey(e => new { e.AppId, e.UserGroupId });
+
+                entity.ToTable("UserGroups_Apps");
+
+                entity.Property(e => e.AppId).HasColumnName("App_Id");
+
+                entity.Property(e => e.UserGroupId).HasColumnName("UserGroup_Id");
+
+                entity.HasOne(d => d.App)
+                    .WithMany(p => p.UserGroupsApps)
+                    .HasForeignKey(d => d.AppId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserGroups_Apps_App");
+
+                entity.HasOne(d => d.UserGroup)
+                    .WithMany(p => p.UserGroupsApps)
+                    .HasForeignKey(d => d.UserGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserGroups_Apps_UserGroups");
+            });
+
             modelBuilder.Entity<UserProfiles>(entity =>
             {
                 entity.ToTable("User_Profiles");
@@ -232,6 +299,14 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.DefaultLanguageId)
+                    .IsRequired()
+                    .HasColumnName("DefaultLanguage_Id")
+                    .HasMaxLength(2)
+                    .IsUnicode(false)
+                    .IsFixedLength()
+                    .HasDefaultValueSql("('en')");
+
                 entity.Property(e => e.Email).HasMaxLength(500);
 
                 entity.Property(e => e.HashedPassword)
@@ -242,9 +317,17 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
+                entity.Property(e => e.UserGroupId).HasColumnName("UserGroup_Id");
+
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.UserGroup)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.UserGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Users_UserGroups");
             });
 
             OnModelCreatingPartial(modelBuilder);
