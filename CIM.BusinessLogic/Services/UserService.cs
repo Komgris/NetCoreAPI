@@ -2,37 +2,47 @@
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
     public class UserService : BaseService, IUserService
     {
+        private IUserAppTokenRepository _userAppTokenRepository;
+        private ICipherService _cipherService;
         private IUserRepository _userRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public UserService(
+            IUserAppTokenRepository userAppTokenRepository,
+            ICipherService cipherService,
             IUserRepository userRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
+            _userAppTokenRepository = userAppTokenRepository;
+            _cipherService = cipherService;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public void Register(RegisterUserModel model)
+        public async void Register(RegisterUserModel model)
         {
             var dbModel = new Users
             {
                 CreatedAt = DateTime.Now,
-                CreatedBy = CurrentUserId,
+                CreatedBy = CurrentUser.UserId,
                 IsActive = true,
                 Id = Guid.NewGuid().ToString(),
                 UserName = model.UserName,
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
-                UserGroupId = model.UserGroup_Id,
+                UserGroupId = model.UserGroupId,
+                DefaultLanguageId = model.LanguageId
             };
             dbModel.UserProfiles.Add(new UserProfiles
             {
@@ -41,7 +51,7 @@ namespace CIM.BusinessLogic.Services
                 Image = model.Image,
             });
             _userRepository.Add(dbModel);
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
         }
 
         public string HashPassword(RegisterUserModel model)
@@ -60,18 +70,18 @@ namespace CIM.BusinessLogic.Services
             return savedPasswordHash;
         }
 
-        public AuthModel Auth(string username, string password)
+        public async Task<AuthModel> Auth(string username, string password)
         {   
             AuthModel result = new AuthModel();
-            var dbModel = _userRepository.Where(x=>x.UserName == username)
+            var dbModel = await _userRepository.Where(x => x.UserName == username)
                 .Select(
                     x=> new
                     {
+                        UserName = x.UserName,
                         FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
-                        Group = x.UserGroup.UserGroupLocal.Where(x=>x.LanguageId == CurrentLanguage)
-                        .Select(x=>x.Name).FirstOrDefault(),
+                        Group = x.UserGroup.Name,
                         Apps = x.UserGroup.UserGroupsApps.Where(x=>x.App.IsActive)
                         .Select(app => new AppModel
                         {
@@ -80,18 +90,42 @@ namespace CIM.BusinessLogic.Services
                         })
                     }
                 )
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(x => x.UserName == username);
 
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
+
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
+                result.Token = await CreateToken(dbModel.Id);
                 result.Group = dbModel.Group;
                 result.Apps = dbModel.Apps.ToList();
                 
             }
             return result;
+        }
+
+        public async Task<string> CreateToken(string userId)
+        {
+
+            var existingToken = _userAppTokenRepository.Where(x => x.UserId == userId).ToList();
+            foreach(var item in existingToken)
+            {
+                _userAppTokenRepository.Delete(item);
+            }
+
+            var userAppToken = new UserAppTokens
+            {
+                UserId = userId,
+                ExpiredAt = DateTime.Now.AddYears(1),
+            };
+            var dataString = JsonConvert.SerializeObject(userAppToken);
+            userAppToken.Token = _cipherService.Encrypt(dataString);
+
+            _userAppTokenRepository.Add(userAppToken);
+            await _unitOfWork.CommitAsync();
+            return userAppToken.Token;
         }
 
         public bool IsPasswordValid(string savedPasswordHash, string password)
@@ -112,6 +146,26 @@ namespace CIM.BusinessLogic.Services
                     isValid = false;
 
             return isValid;
+        }
+
+        public CurrentUserModel GetCurrentUserModel(string token)
+        {
+            var decryptedData = _cipherService.Decrypt(token);
+            var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
+            var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
+                .Select(x => new {
+                    Token = x.UserAppTokens.Token,
+                    DefaultLanguageId = x.DefaultLanguageId,
+                }).FirstOrDefault();
+            var dbData = _cipherService.Decrypt(user.Token);
+            var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
+            var currentUserModel = new CurrentUserModel
+            {
+                IsValid = user != null && tokenData.UserId == userAppToken.UserId,
+                UserId = tokenData.UserId,
+                LanguageId = user.DefaultLanguageId
+            };
+            return currentUserModel;
         }
     }
 }
