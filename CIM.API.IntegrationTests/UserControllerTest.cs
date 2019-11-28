@@ -87,7 +87,7 @@ namespace CIM.API.IntegrationTests
             var response = await TestClient.SendAsync(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = JsonConvert.DeserializeObject<PagingModel<UserModel>>((await response.Content.ReadAsStringAsync()));
-            result.Data.Count.Should().Be(0);
+            result.Data.Count.Should().Be(1);
         }
     }
 }

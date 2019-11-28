@@ -168,12 +168,10 @@ namespace CIM.BusinessLogic.Services
             return currentUserModel;
         }
 
-        public Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
         {
-            return Task.Run( () =>
-           {
-               return new PagingModel<UserModel>();
-           });
+            var output = await _userRepository.List(keyword, page, howmany);
+            return output;
         }
     }
 }

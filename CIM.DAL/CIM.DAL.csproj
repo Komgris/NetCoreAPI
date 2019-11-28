@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CIM.Domain\CIM.Domain.csproj" />
+    <ProjectReference Include="..\CIM.Model\CIM.Model.csproj" />
   </ItemGroup>
 
 </Project>
