@@ -42,7 +42,9 @@ namespace CIM.API
             services.AddTransient<ISiteRepository, SiteRepository>();
             services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
 
+            services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
