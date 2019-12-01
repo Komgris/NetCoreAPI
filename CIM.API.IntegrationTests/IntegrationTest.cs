@@ -9,6 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CIM.Domain.Models;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using CIM.BusinessLogic.Interfaces;
+using CIM.Model;
 
 namespace CIM.API.IntegrationTests
 {
@@ -16,6 +22,10 @@ namespace CIM.API.IntegrationTests
     public class IntegrationTest
     {
         protected readonly HttpClient TestClient;
+        protected cim_dbContext DbContext;
+        protected IServiceScopeFactory ServiceScopeFactory;
+        public RegisterUserModel Admin { get; set; }
+        public string AdminToken { get; set; }
 
         protected IntegrationTest()
         {
@@ -55,6 +65,29 @@ namespace CIM.API.IntegrationTests
                         // Ensure the database is created.
                         db.Database.EnsureCreated();
 
+                        var adminGroup = new UserGroups
+                        {
+                            IsActive = true,
+                            Name = "Admin"
+                        };
+                        var userService = scopedServices.GetRequiredService<IUserService>();
+                        userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
+                        db.UserGroups.Add(adminGroup);
+                        db.SaveChanges();
+                        var registerUserModel = new RegisterUserModel
+                        {
+                            Email = "test@email.com",
+                            UserName = "admin",
+                            Password = "super-secret",
+                            FirstName = "Hans",
+                            LastName = "Meier",
+                            LanguageId = "en",
+                            Image = null,
+                            UserGroupId = adminGroup.Id,
+                        };
+                        userService.Register(registerUserModel);
+                        Admin = registerUserModel;
+                        AdminToken = db.Users.Where(x => x.UserName == Admin.UserName).Select(x => x.UserAppTokens.Token).FirstOrDefault();
                         //try
                         //{
                         //    // Seed the database with test data.
@@ -70,6 +103,15 @@ namespace CIM.API.IntegrationTests
                 });
             });
             TestClient = appFactory.CreateClient();
+            ServiceScopeFactory = appFactory.Services.GetService<IServiceScopeFactory>();
+        }
+
+        protected HttpContent GetHttpContentForPost<T>(T model, string token)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(model));
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            content.Headers.Add("token", token);
+            return content;
         }
     }
 }

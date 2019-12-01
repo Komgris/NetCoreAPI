@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using System.Linq;
+using CIM.BusinessLogic.Interfaces;
 
-namespace CIM.BusinessLogic
+namespace CIM.BusinessLogic.Services
 {
     public class SiteService : ISiteService
     {

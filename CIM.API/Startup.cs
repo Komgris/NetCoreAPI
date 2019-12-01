@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.BusinessLogic;
+using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -35,8 +38,15 @@ namespace CIM.API
               options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
+
             services.AddTransient<ISiteRepository, SiteRepository>();
+            services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+
+            services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
+            services.AddTransient<IUserService, UserService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

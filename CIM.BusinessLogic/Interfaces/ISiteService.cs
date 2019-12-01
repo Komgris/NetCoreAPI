@@ -1,9 +1,7 @@
 ﻿using CIM.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CIM.BusinessLogic
+namespace CIM.BusinessLogic.Interfaces
 {
     public interface ISiteService
     {
