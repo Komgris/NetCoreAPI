@@ -16,6 +16,7 @@ namespace CIM.Domain.Models
         }
 
         public virtual DbSet<App> App { get; set; }
+        public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
@@ -26,6 +27,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
         public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
         public virtual DbSet<UserGroups> UserGroups { get; set; }
+        public virtual DbSet<UserGroupsAppFeatures> UserGroupsAppFeatures { get; set; }
         public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
@@ -50,6 +52,27 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Url)
                     .IsRequired()
                     .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<AppFeatures>(entity =>
+            {
+                entity.HasKey(e => e.FeatureId);
+
+                entity.ToTable("App_Features");
+
+                entity.Property(e => e.FeatureId).HasColumnName("Feature_Id");
+
+                entity.Property(e => e.AppId).HasColumnName("App_Id");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.App)
+                    .WithMany(p => p.AppFeatures)
+                    .HasForeignKey(d => d.AppId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_App_Features_App");
             });
 
             modelBuilder.Entity<AreaLocals>(entity =>
@@ -240,11 +263,28 @@ namespace CIM.Domain.Models
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<UserGroupsAppFeatures>(entity =>
+            {
+                entity.HasKey(e => new { e.FeatureId, e.AppUserGroupId });
+
+                entity.ToTable("UserGroups_AppFeatures");
+
+                entity.Property(e => e.FeatureId).HasColumnName("Feature_Id");
+
+                entity.Property(e => e.AppUserGroupId).HasColumnName("AppUserGroup_Id");
+
+                entity.HasOne(d => d.Feature)
+                    .WithMany(p => p.UserGroupsAppFeatures)
+                    .HasForeignKey(d => d.FeatureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserGroups_AppFeatures_App_Features");
+            });
+
             modelBuilder.Entity<UserGroupsApps>(entity =>
             {
-                entity.HasKey(e => new { e.AppId, e.UserGroupId });
-
                 entity.ToTable("UserGroups_Apps");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.AppId).HasColumnName("App_Id");
 
@@ -261,6 +301,12 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.UserGroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserGroups_Apps_UserGroups");
+
+                entity.HasOne(d => d.UserGroupsAppFeatures)
+                    .WithMany(p => p.UserGroupsApps)
+                    .HasForeignKey(d => new { d.Id, d.UserGroupId })
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserGroups_Apps_UserGroups_AppFeatures");
             });
 
             modelBuilder.Entity<UserProfiles>(entity =>

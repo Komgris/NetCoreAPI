@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
 
     public class SiteController : ControllerBase
     {

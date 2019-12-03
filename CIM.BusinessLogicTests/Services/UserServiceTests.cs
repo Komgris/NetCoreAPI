@@ -26,7 +26,7 @@ namespace CIM.BusinessLogic.Services.Tests
                 cipherService, 
                 userRep, 
                 unitOfWork);
-            var registerUserModel = new RegisterUserModel
+            var registerUserModel = new UserModel
             {
                 Password = "password"
             };

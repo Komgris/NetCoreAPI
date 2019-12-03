@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async void Register(RegisterUserModel model)
+        public async void Create(UserModel model)
         {
             var dbModel = new Users
             {
@@ -54,7 +54,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public string HashPassword(RegisterUserModel model)
+        public string HashPassword(UserModel model)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
@@ -166,6 +166,12 @@ namespace CIM.BusinessLogic.Services
                 LanguageId = user.DefaultLanguageId
             };
             return currentUserModel;
+        }
+
+        public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
+        {
+            var output = await _userRepository.List(keyword, page, howmany);
+            return output;
         }
     }
 }
