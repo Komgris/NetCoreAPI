@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace CIM.API.Controllers
 {
-    public class MyCustomAuthenticationMiddleware
+    public class CustomAuthenticationMiddleware
     {
         private readonly RequestDelegate next;
 
-        public MyCustomAuthenticationMiddleware(
+        public CustomAuthenticationMiddleware(
             //IUserService userService,
             RequestDelegate next)
         {
@@ -45,15 +45,15 @@ namespace CIM.API.Controllers
         }
     }
 
-    public static class MyCustomAuthenticationMiddlewareExtensions
+    public static class CustomAuthenticationMiddlewareExtensions
     {
         public static IApplicationBuilder UseMyCustomAuthentication(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<MyCustomAuthenticationMiddleware>();
+            return builder.UseMiddleware<CustomAuthenticationMiddleware>();
         }
     }
 
-    public class MyCustomAuthenticationMiddlewarePipeline
+    public class CustomAuthenticationMiddlewarePipeline
     {
         public void Configure(IApplicationBuilder app)
         {

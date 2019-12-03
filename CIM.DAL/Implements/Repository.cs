@@ -1,4 +1,5 @@
 ﻿using CIM.DAL.Interfaces;
+using CIM.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -13,10 +14,10 @@ namespace CIM.DAL.Implements
     public abstract class Repository<T> : IRepository<T>
          where T : class
     {
-        protected DbContext _entities;
+        protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
 
-        public Repository(DbContext context)
+        public Repository(cim_dbContext context)
         {
 
             _entities = context;
