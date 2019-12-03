@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using FluentAssertions;
 using Moq;
 using CIM.DAL.Interfaces;
 using CIM.Model;
-using FluentAssertions;
 using CIM.BusinessLogic.Interfaces;
 
 namespace CIM.BusinessLogic.Services.Tests
