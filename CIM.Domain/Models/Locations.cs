@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class Sites
+    public partial class Locations
     {
-        public Sites()
+        public Locations()
         {
-            Areas = new HashSet<Areas>();
-            CompaniesSites = new HashSet<CompaniesSites>();
-            SitesUsers = new HashSet<SitesUsers>();
+            InverseParent = new HashSet<Locations>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public int? ParentId { get; set; }
+        public string Type { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -21,8 +21,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<Areas> Areas { get; set; }
-        public virtual ICollection<CompaniesSites> CompaniesSites { get; set; }
-        public virtual ICollection<SitesUsers> SitesUsers { get; set; }
+        public virtual Locations Parent { get; set; }
+        public virtual ICollection<Locations> InverseParent { get; set; }
     }
 }
