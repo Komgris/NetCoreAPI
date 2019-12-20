@@ -10,5 +10,6 @@ namespace CIM.BusinessLogic.Interfaces
         int Plus(int A, int B);
         List<ProductionPlanModel> List();
         List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan);
+        List<ProductionPlanModel> ReadImport();
     }
 }

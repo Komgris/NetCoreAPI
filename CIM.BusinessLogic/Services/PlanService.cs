@@ -5,6 +5,10 @@ using CIM.Model;
 using System.Linq;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Domain.Models;
+using System.Text;
+using System.IO;
+using OfficeOpenXml;
+using System.Data;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -41,6 +45,31 @@ namespace CIM.BusinessLogic.Services
                 plan.IsDuplicate = dbPlan.Any(x => x.PlanId == plan.PlanId);
             }
             return import;
+        }
+        public List<ProductionPlanModel> ReadImport()
+        {
+            FileInfo excel = new FileInfo(@"D:\PSEC\dole\Doc\test.xlsx");
+            using (var package = new ExcelPackage(excel))
+            {
+                var workbook = package.Workbook;
+                var worksheet = workbook.Worksheets.First();
+                List<ProductionPlanModel> intList = ConvertImportToList(worksheet);
+                return intList;
+            }
+        }
+        public List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet)
+        {
+            int totalRows = oSheet.Dimension.End.Row;
+            int totalCols = oSheet.Dimension.End.Column;
+            List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();         
+            for (int i = 2; i <= totalRows; i++)
+            {
+                        ProductionPlanModel data = new ProductionPlanModel();
+                        data.PlanId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
+                        listImport.Add(data);
+            }
+            
+            return listImport;
         }
     }
 }

@@ -6,13 +6,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
+using System.Web.Http.Cors;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace CIM.API.Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class ProductionPlanController : ControllerBase
     {
+
         private IPlanService _planService;
 
         public ProductionPlanController(
@@ -21,12 +25,25 @@ namespace CIM.API.Controllers
         {
             _planService = planService;
         }
-        [HttpPost]
-        public List<ProductionPlanModel> Compare(List<ProductionPlanModel> import)
+        [HttpGet]
+        public string Compare()
         {
-            var existing = _planService.List();
-            var output = _planService.Compare(import, existing);
-            return output;
+            var json = "test";      
+            return json;
         }
+        //public string Compare()
+        //{
+        //    var json = "";
+        //    var file = Request.Form.Files[0];
+        //    if (file.Length > 0)
+        //    {
+        //        var fromExcel = _planService.ReadImport();
+        //        var fromDb = _planService.List();
+        //        var result = _planService.Compare(fromExcel, fromDb);
+        //        json = JsonSerializer.Serialize(result);
+        //    }
+        //    return json;
+        //}
+
     }
 }

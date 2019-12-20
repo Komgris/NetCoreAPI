@@ -10,6 +10,7 @@ using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
 using System.Linq;
 using CIM.Domain.Models;
+using System.Text.Json;
 
 namespace CIM.BusinessLogicTests.Services
 {
@@ -24,7 +25,15 @@ namespace CIM.BusinessLogicTests.Services
             var result = planService.Plus(1, 1);
             result.Should().Be(2);
         }
-
+        [Fact]
+        public void ListTest()
+        {
+            var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var planRepository = new Mock<IPlanRepository>().Object;
+            var planService = new PlanService(unitOfWork, planRepository);
+            var result = planService.List();
+            result.Should().NotBeNull();
+        }
         [Fact]
         public void ComparePlan()
         {
@@ -34,13 +43,8 @@ namespace CIM.BusinessLogicTests.Services
             {
                 new ProductionPlan{ Id = 1, PlantId = "1" },
                 new ProductionPlan{ Id = 2, PlantId = "2" },
-                new ProductionPlan{ Id = 3, PlantId = "3" },
-                new ProductionPlan{ Id = 4, PlantId = "4" },
-            };
-            var planMoq = new List<ProductionPlanModel>()
-            {
-                new ProductionPlanModel{ Id = 1 , PlanId = "1"},
-                new ProductionPlanModel{ Id = 2 , PlanId = "2"},
+                new ProductionPlan{ Id = 3, PlantId = "13" },
+                new ProductionPlan{ Id = 4, PlantId = "14" },
             };
 
             planRepository.Setup(x => x.All())
@@ -50,8 +54,19 @@ namespace CIM.BusinessLogicTests.Services
             var dbPlan = planService.List();
             dbPlan.Any(x => string.IsNullOrEmpty( x.PlanId)).Should().Be(false);
             dbPlan.Should().NotBeNull();
-            var result = planService.Compare(planMoq, dbPlan);
+            var list = planService.ReadImport();
+            var result = planService.Compare(list, dbPlan);
+            //var json = JsonSerializer.Serialize(result);
             result.Count(x => x.IsDuplicate == true).Should().Be(2);
+        }
+        [Fact]
+        public void ImportTest()
+        {
+            var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var planRepository = new Mock<IPlanRepository>().Object;
+            var planService = new PlanService(unitOfWork, planRepository);
+            var result = planService.ReadImport();
+            result.Should().NotBeNull();
         }
     }
 }

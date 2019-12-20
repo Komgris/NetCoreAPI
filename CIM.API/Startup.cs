@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace CIM.API
 {
@@ -26,7 +27,7 @@ namespace CIM.API
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+                      Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -35,7 +36,7 @@ namespace CIM.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<cim_dbContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
+            options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
@@ -50,12 +51,16 @@ namespace CIM.API
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CIM Data Service API", Version = "v1" });
             });
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +83,7 @@ namespace CIM.API
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
+            app.UseCors(options => options.AllowAnyOrigin());
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
