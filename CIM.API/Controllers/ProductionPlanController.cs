@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
-using System.Web.Http.Cors;
+using Microsoft.AspNetCore.Cors;
 using System.Net.Http;
 using System.Text.Json;
 
 namespace CIM.API.Controllers
 {   
-    [EnableCors(origins:"http://localhost",headers:"*",methods:"*",exposedHeaders:"X-My-Header")]
+    [EnableCors("_myAllowSpecificOrigins")]
     
     [ApiController]
     public class ProductionPlanController : ControllerBase
@@ -47,12 +47,13 @@ namespace CIM.API.Controllers
             //    return null;
             //}    
         }
+        [EnableCors("_myAllowSpecificOrigins")]
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row,int pages)
         {
 
-            return "";
+            return JsonSerializer.Serialize("pass"); ;
         }
 
 }
