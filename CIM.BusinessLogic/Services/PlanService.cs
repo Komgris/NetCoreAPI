@@ -46,9 +46,9 @@ namespace CIM.BusinessLogic.Services
             }
             return import;
         }
-        public List<ProductionPlanModel> ReadImport()
+        public List<ProductionPlanModel> ReadImport(string path)
         {
-            FileInfo excel = new FileInfo(@"D:\PSEC\dole\Doc\test.xlsx");
+            FileInfo excel = new FileInfo(path);
             using (var package = new ExcelPackage(excel))
             {
                 var workbook = package.Workbook;

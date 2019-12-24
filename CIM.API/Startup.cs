@@ -29,7 +29,7 @@ namespace CIM.API
         {
                       Configuration = configuration;
         }
-
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -56,11 +56,7 @@ namespace CIM.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CIM Data Service API", Version = "v1" });
             });
-            services.AddCors(c =>
-            {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
-            });
-
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +79,6 @@ namespace CIM.API
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-            app.UseCors(options => options.AllowAnyOrigin());
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
@@ -91,6 +86,7 @@ namespace CIM.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
             });
+           
 
         }
     }

@@ -37,6 +37,7 @@ namespace CIM.BusinessLogicTests.Services
         [Fact]
         public void ComparePlan()
         {
+            string path = @"D:\PSEC\Dole\Doc\test.xlsx";
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var planRepository = new Mock<IPlanRepository>();
             var dbPlanMoq = new List<ProductionPlan>()
@@ -54,18 +55,19 @@ namespace CIM.BusinessLogicTests.Services
             var dbPlan = planService.List();
             dbPlan.Any(x => string.IsNullOrEmpty( x.PlanId)).Should().Be(false);
             dbPlan.Should().NotBeNull();
-            var list = planService.ReadImport();
+            var list = planService.ReadImport(path);
             var result = planService.Compare(list, dbPlan);
-            //var json = JsonSerializer.Serialize(result);
+            var json = JsonSerializer.Serialize(result);
             result.Count(x => x.IsDuplicate == true).Should().Be(2);
         }
         [Fact]
         public void ImportTest()
         {
+            string path = @"D:\PSEC\Dole\Doc\test.xlsx";
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var planRepository = new Mock<IPlanRepository>().Object;
             var planService = new PlanService(unitOfWork, planRepository);
-            var result = planService.ReadImport();
+            var result = planService.ReadImport(path);
             result.Should().NotBeNull();
         }
     }
