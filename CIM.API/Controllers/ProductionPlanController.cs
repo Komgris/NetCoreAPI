@@ -9,6 +9,8 @@ using CIM.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using System.Net.Http;
 using System.Text.Json;
+using System.IO;
+using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
 {   
@@ -25,7 +27,7 @@ namespace CIM.API.Controllers
             _planService = planService;
         }
         [Route("api/[controller]/Compare")]
-        [HttpGet]
+        [HttpPost]
         //public string Compare()
         //{
         //    var json = "test";      
@@ -33,28 +35,46 @@ namespace CIM.API.Controllers
         //}
         public string Compare()
         {
-            string path = @"D:\PSEC\Dole\Doc\test.xlsx";
-            //var file = Request.Form.Files[0];
-            //if (file.Length > 0)
-            //{
-                var fromExcel = _planService.ReadImport(path);
-                var fromDb = _planService.List();
-                var result = _planService.Compare(fromExcel, fromDb);
-               return  JsonSerializer.Serialize(result);
-            //}
-            //else
-            //{
-            //    return null;
-            //}    
+            try
+            {
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("ProductionPlan");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                if (file.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    var dbPath = Path.Combine(folderName, fileName);
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+
+                     var fromExcel = _planService.ReadImport(fullPath);
+                     var fromDb = _planService.Get();
+                     var result = _planService.Compare(fromExcel, fromDb);
+                    return  JsonSerializer.Serialize(result);
+                    //return "";
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }  
         }
         [EnableCors("_myAllowSpecificOrigins")]
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row,int pages)
         {
-
-            return JsonSerializer.Serialize("pass"); ;
+            var fromDb = _planService.Paging(pages,row);
+            return JsonSerializer.Serialize(fromDb); ;
         }
 
-}
+    }
 }

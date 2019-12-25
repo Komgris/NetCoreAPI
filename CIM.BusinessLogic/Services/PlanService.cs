@@ -9,6 +9,7 @@ using System.Text;
 using System.IO;
 using OfficeOpenXml;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -26,15 +27,19 @@ namespace CIM.BusinessLogic.Services
         {
             return A + B;
         }
-
-        public List<ProductionPlanModel> List()
+        public List<ProductionPlanModel> Get()
         {
+            var result = _planRepository.Get();
+            return result;
+        }
+        public Task<PagingModel<ProductionPlanModel>> Paging(int page,int howmany)
+        {
+            var result =  _planRepository.Paging(page, howmany);
 
-            var result = _planRepository.All().Select(x => new ProductionPlanModel {
-                Id = x.Id,
-                PlanId = x.PlantId,
-            }).ToList();
-
+            //var result = _planRepository.All().Select(x => new ProductionPlanModel {
+            //    Id = x.Id,
+            //    PlanId = x.PlantId,
+            //}).ToList();
             return result;
         }
 
