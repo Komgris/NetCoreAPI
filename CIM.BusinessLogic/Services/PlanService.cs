@@ -47,7 +47,17 @@ namespace CIM.BusinessLogic.Services
         {
             foreach (var plan in import)
             {
-                plan.IsDuplicate = dbPlan.Any(x => x.PlanId == plan.PlanId);
+                if (dbPlan.Any(x => x.PlanId == plan.PlanId))
+                {
+                    plan.Status = "Inprocess";
+                }
+                else
+                {
+                    plan.Status = "New";
+                }
+
+                //plan.Status = dbPlan.(x => x.PlanId == plan.PlanId);
+                //plan.Status  =
             }
             return import;
         }
