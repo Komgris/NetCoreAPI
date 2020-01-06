@@ -42,7 +42,11 @@ namespace CIM.BusinessLogic.Services
             //}).ToList();
             return result;
         }
-
+        public bool Insert(List<ProductionPlanModel> import)
+        {
+            var result = _planRepository.InsertProduction(import);
+            return true;
+        }
         public List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan)
         {
             foreach (var plan in import)

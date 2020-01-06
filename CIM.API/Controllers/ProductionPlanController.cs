@@ -28,11 +28,6 @@ namespace CIM.API.Controllers
         }
         [Route("api/[controller]/Compare")]
         [HttpPost]
-        //public string Compare()
-        //{
-        //    var json = "test";      
-        //    return json;
-        //}
         public string Compare()
         {
             try
@@ -67,13 +62,19 @@ namespace CIM.API.Controllers
                 return "";
             }  
         }
-        [EnableCors("_myAllowSpecificOrigins")]
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row,int pages)
         {
             var fromDb = _planService.Paging(pages,row);
-            return JsonSerializer.Serialize(fromDb); ;
+            return JsonSerializer.Serialize(fromDb);
+        }
+        [Route("api/[controller]/Insert")]
+        [HttpPost]
+        public bool Insert([FromBody]List<ProductionPlanModel> import)
+        {
+            //var IsSuccess = _planService
+            return true;
         }
 
     }

@@ -27,6 +27,7 @@ namespace CIM.DAL.Implements
             var data = await paging
                 .Select(x => new ProductionPlanModel
                 {
+                    Id = x.Id,
                     PlanId = x.PlantId
                 }).ToListAsync();
             return new PagingModel<ProductionPlanModel>
@@ -42,9 +43,25 @@ namespace CIM.DAL.Implements
                 .Select(x => new ProductionPlanModel
                 {
                     
-                    PlanId = x.PlantId
+                    PlanId = x.PlantId,
+                    Id = x.Id
+                    
                 }).ToList();
             return data;
+        }
+        public bool InsertProduction(List<ProductionPlanModel> import)
+        {
+            foreach (var plan in import)
+            {
+                using (var db = new cim_dbContext())
+                {                 
+                    var insert = new ProductionPlan();
+                    insert.PlantId = plan.PlanId;
+                    db.ProductionPlan.Add(insert);
+                    db.SaveChanges();
+                }
+            }
+            return true;
         }
     }
 
