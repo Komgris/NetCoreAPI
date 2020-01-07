@@ -70,5 +70,21 @@ namespace CIM.BusinessLogicTests.Services
             //var result = planService.ReadImport(path);
             //result.Should().NotBeNull();
         }
+        [Fact]
+        public void Insert()
+        {
+            var dbPlanMoq = new List<ProductionPlanModel>()
+            {
+                new ProductionPlanModel{ PlanId = "51" },
+                new ProductionPlanModel{ PlanId = "52" },
+                new ProductionPlanModel{ PlanId = "53" },
+                new ProductionPlanModel{ PlanId = "54" },
+            };
+            var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var planRepository = new Mock<IPlanRepository>().Object;
+            var planService = new PlanService(unitOfWork, planRepository);
+            var result = planService.Insert(dbPlanMoq);
+            result.Should().BeTrue();
+        }
     }
 }

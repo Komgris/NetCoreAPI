@@ -9,5 +9,6 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Status { get; set; }
         public string PlanId { get; set; }
+        public string PlantId { get; set; }
     }
 }

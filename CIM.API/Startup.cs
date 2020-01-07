@@ -60,8 +60,12 @@ namespace CIM.API
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
-                                builder => builder.AllowAnyOrigin()
-                                );
+                                builder =>
+                                {
+                                    builder.AllowAnyOrigin()
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                                });
             });
 
         }

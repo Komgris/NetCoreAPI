@@ -73,8 +73,16 @@ namespace CIM.API.Controllers
         [HttpPost]
         public bool Insert([FromBody]List<ProductionPlanModel> import)
         {
-            //var IsSuccess = _planService
-            return true;
+            try
+            {
+                var IsSuccess = _planService.Insert(import);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
 
     }

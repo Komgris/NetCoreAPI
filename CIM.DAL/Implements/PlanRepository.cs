@@ -63,6 +63,11 @@ namespace CIM.DAL.Implements
             }
             return true;
         }
+        public bool DeleteProduction(string id)
+        {
+
+            return true;
+        }
     }
 
 }
