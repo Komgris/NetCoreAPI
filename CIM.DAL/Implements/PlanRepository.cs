@@ -49,24 +49,39 @@ namespace CIM.DAL.Implements
                 }).ToList();
             return data;
         }
-        public bool InsertProduction(List<ProductionPlanModel> import)
+        public void InsertProduction(List<ProductionPlanModel> import)
         {
             foreach (var plan in import)
-            {
-                using (var db = new cim_dbContext())
-                {                 
+            {                
                     var insert = new ProductionPlan();
                     insert.PlantId = plan.PlanId;
-                    db.ProductionPlan.Add(insert);
-                    db.SaveChanges();
-                }
+                    _entities.ProductionPlan.Add(insert);
+                    _entities.SaveChanges();
             }
-            return true;
+           
         }
-        public bool DeleteProduction(string id)
+        public void DeleteProduction(string id)
         {
-
-            return true;
+        
+                var delete = _entities.ProductionPlan.Where(x => x.PlantId == id).FirstOrDefault();
+                if (delete != null)
+                {
+                    _entities.ProductionPlan.Remove(delete);
+                }
+                _entities.SaveChanges();
+            
+        }
+        public void UpdateProduction(List<ProductionPlanModel> list)
+        {
+            foreach (var plan in list)
+            {
+                var update = _entities.ProductionPlan.Where(x => x.PlantId == plan.PlanId).FirstOrDefault();
+                if(update != null)
+                {
+                    update.PlanStart = DateTime.Now;
+                }
+                _entities.SaveChanges();
+            }
         }
     }
 

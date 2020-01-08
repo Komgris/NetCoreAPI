@@ -75,14 +75,41 @@ namespace CIM.API.Controllers
         {
             try
             {
-                var IsSuccess = _planService.Insert(import);
+                _planService.Insert(import);
                 return true;
             }
             catch
             {
                 return false;
             }
-
+        }
+        [Route("api/[controller]/Update")]
+        [HttpPost]
+        public bool Update([FromBody]List<ProductionPlanModel> list)
+        {
+            try
+            {
+                _planService.Update(list);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        [Route("api/[controller]/Delete/{id}")]
+        [HttpDelete]
+        public bool Delete(string id)
+        {
+            try
+            {
+                _planService.Delete(id);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }

@@ -10,7 +10,9 @@ namespace CIM.DAL.Interfaces
     public interface IPlanRepository : IRepository<ProductionPlan> {
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
         List<ProductionPlanModel> Get();
-        bool InsertProduction(List<ProductionPlanModel> import);
+        void InsertProduction(List<ProductionPlanModel> import);
+        void DeleteProduction(string id);
+        void UpdateProduction(List<ProductionPlanModel> list);
     }
     
        

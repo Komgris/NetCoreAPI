@@ -14,6 +14,8 @@ namespace CIM.BusinessLogic.Interfaces
         List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan);
         List<ProductionPlanModel> ReadImport(string path);
         List<ProductionPlanModel> Get();
-        bool Insert(List<ProductionPlanModel> import); 
+        void Insert(List<ProductionPlanModel> import);
+        void Delete(string id);
+        void Update(List<ProductionPlanModel> list);
     }
 }
