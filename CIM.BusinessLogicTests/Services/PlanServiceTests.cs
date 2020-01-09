@@ -75,10 +75,10 @@ namespace CIM.BusinessLogicTests.Services
         {
             var dbPlanMoq = new List<ProductionPlanModel>()
             {
-                new ProductionPlanModel{ PlanId = "51" },
-                new ProductionPlanModel{ PlanId = "52" },
-                new ProductionPlanModel{ PlanId = "53" },
-                new ProductionPlanModel{ PlanId = "54" },
+                new ProductionPlanModel{ PlantId = "51" },
+                new ProductionPlanModel{ PlantId = "52" },
+                new ProductionPlanModel{ PlantId = "53" },
+                new ProductionPlanModel{ PlantId = "54" },
             };
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var planRepository = new Mock<IPlanRepository>().Object;

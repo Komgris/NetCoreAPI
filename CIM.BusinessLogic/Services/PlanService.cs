@@ -35,7 +35,6 @@ namespace CIM.BusinessLogic.Services
         public Task<PagingModel<ProductionPlanModel>> Paging(int page,int howmany)
         {
             var result =  _planRepository.Paging(page, howmany);
-
             //var result = _planRepository.All().Select(x => new ProductionPlanModel {
             //    Id = x.Id,
             //    PlanId = x.PlantId,
@@ -44,8 +43,22 @@ namespace CIM.BusinessLogic.Services
         }
         public void Insert(List<ProductionPlanModel> import)
         {
-             _planRepository.InsertProduction(import);
-            
+            List<ProductionPlanModel> fromDb = _planRepository.Get();
+            List<ProductionPlanModel> newPlan = new List<ProductionPlanModel>();
+            List<ProductionPlanModel> existsPlan = new List<ProductionPlanModel>();
+            foreach (var plan in import)
+            {
+                if (fromDb.Any(x => x.PlantId == plan.PlantId))
+                {                    
+                    existsPlan.Add(plan);
+                }
+                else
+                {
+                    newPlan.Add(plan);
+                }
+            }
+            _planRepository.InsertProduction(newPlan);
+            _planRepository.UpdateProduction(existsPlan);           
         }
         public void Delete(string id)
         {
@@ -59,7 +72,7 @@ namespace CIM.BusinessLogic.Services
         {
             foreach (var plan in import)
             {
-                if (dbPlan.Any(x => x.PlanId == plan.PlanId))
+                if (dbPlan.Any(x => x.PlantId == plan.PlantId))
                 {
                     plan.Status = "Inprocess";
                 }
@@ -88,14 +101,16 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             int totalCols = oSheet.Dimension.End.Column;
-            List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();         
+            List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
             for (int i = 2; i <= totalRows; i++)
             {
                         ProductionPlanModel data = new ProductionPlanModel();
-                        data.PlanId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
+                        data.PlantId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
+                        data.ProductId = (oSheet.Cells[i, 2].Value ?? string.Empty).ToString();
+                        data.Target = Convert.ToInt32(oSheet.Cells[i, 3].Value ?? string.Empty);
+                        data.Unit = Convert.ToInt32(oSheet.Cells[i, 4].Value ?? string.Empty);
                         listImport.Add(data);
-            }
-            
+            }            
             return listImport;
         }
     }
