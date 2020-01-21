@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic;
 using CIM.BusinessLogic.Interfaces;
 using CIM.BusinessLogic.Services;
@@ -59,6 +60,7 @@ namespace CIM.API
             });
 
             services.AddControllers();
+            services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CIM Data Service API", Version = "v1" });
@@ -84,6 +86,7 @@ namespace CIM.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChartHub>("/chart");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
