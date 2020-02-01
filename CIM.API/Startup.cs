@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace CIM.API
 {
@@ -28,16 +29,16 @@ namespace CIM.API
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+                      Configuration = configuration;
         }
-
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<cim_dbContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
+            options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
@@ -45,26 +46,30 @@ namespace CIM.API
             services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
+            services.AddTransient<IPlanRepository, PlanRepository>();
 
+            services.AddTransient<IPlanService, PlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder => builder
-                .WithOrigins("http://localhost:4200")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
-            });
 
             services.AddControllers();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CIM Data Service API", Version = "v1" });
+            });
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                                builder =>
+                                {
+                                    builder.AllowAnyOrigin()
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                                });
             });
 
             services.InstallServicesInAssembly(Configuration);
@@ -82,6 +87,7 @@ namespace CIM.API
 
             app.UseRouting();
 
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
@@ -100,6 +106,7 @@ namespace CIM.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
             });
+           
 
         }
     }

@@ -22,7 +22,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
-        public virtual DbSet<SiteLocals> SiteLocals { get; set; }
+        public virtual DbSet<Locations> Locations { get; set; }
+        public virtual DbSet<ProductionDetails> ProductionDetails { get; set; }
+        public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
         public virtual DbSet<Sites> Sites { get; set; }
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
         public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
@@ -37,7 +39,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\sqlexpress;initial catalog=cim_db;persist security info=True;user id=cim;password=4dev@pse;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=tcp:dole-cim.database.windows.net,1433;initial catalog=cim_db;persist security info=True;user id=cim;password=4dev@psec;MultipleActiveResultSets=True;");
             }
         }
 
@@ -176,25 +178,90 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Company_Locals_Companies");
             });
 
-            modelBuilder.Entity<SiteLocals>(entity =>
+            modelBuilder.Entity<Locations>(entity =>
             {
-                entity.ToTable("Site_Locals");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.FId).HasColumnName("F_Id");
-
-                entity.Property(e => e.LanguageId)
+                entity.Property(e => e.CreatedBy)
                     .IsRequired()
-                    .HasColumnName("Language_Id")
-                    .HasMaxLength(2)
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ParentId).HasColumnName("Parent_Id");
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Locations_Locations");
+            });
+
+            modelBuilder.Entity<ProductionDetails>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("Production_Details");
+
+                entity.Property(e => e.ProductDescription).HasMaxLength(50);
+
+                entity.Property(e => e.ProductFamily)
+                    .HasMaxLength(10)
                     .IsFixedLength();
 
-                entity.Property(e => e.Name).HasMaxLength(500);
+                entity.Property(e => e.ProductGroup)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
-                entity.HasOne(d => d.F)
-                    .WithMany(p => p.SiteLocals)
-                    .HasForeignKey(d => d.FId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Site_Locals_Sites1");
+                entity.Property(e => e.ProductId)
+                    .HasColumnName("Product_Id")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.ProductType)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Speed)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+            });
+
+            modelBuilder.Entity<ProductionPlan>(entity =>
+            {
+                entity.HasKey(e => e.PlantId);
+
+                entity.ToTable("Production_Plan");
+
+                entity.Property(e => e.PlantId)
+                    .HasColumnName("Plant_Id")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.ActualFinish).HasColumnType("datetime");
+
+                entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.LastUpdate).HasColumnType("datetime");
+
+                entity.Property(e => e.PlanFinish).HasColumnType("datetime");
+
+                entity.Property(e => e.PlanStart).HasColumnType("datetime");
+
+                entity.Property(e => e.ProductId)
+                    .HasColumnName("Product_Id")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Status).HasMaxLength(10);
             });
 
             modelBuilder.Entity<Sites>(entity =>
@@ -204,6 +271,10 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
                     .HasMaxLength(128);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
