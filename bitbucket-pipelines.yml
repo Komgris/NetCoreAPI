@@ -8,13 +8,18 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.0
 pipelines:
   default:
     - step:
+        deployment: Test
         caches:
           - dotnetcore
-        script: # Modify the comma`nds below to build your repository.
-          - export PROJECT_NAME=CIM.API
-          - export TEST_NAME=CIM.API.IntegrationTests
-          - export BLTEST_NAME=CIM.BusinessLogicTests
-          - dotnet restore
-          - dotnet build $PROJECT_NAME
-          - dotnet test $TEST_NAME
-          - dotnet test $BLTEST_NAME
+        script:
+          - pipe: atlassian/ftp-deploy:0.3.0
+            variables:
+              USER: 'psec_ftp'
+              PASSWORD: '4dev@psec'
+              SERVER: '103.70.6.198'
+              REMOTE_PATH: '/dev'
+              # LOCAL_PATH: '<string>' # Optional
+              # DEBUG: '<boolean>' # Optional
+              # EXTRA_ARGS: '<string>' # Optional.
+              # DELETE_FLAG: '<boolean>' # Optional.
+
