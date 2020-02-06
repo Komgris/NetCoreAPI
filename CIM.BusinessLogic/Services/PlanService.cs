@@ -35,10 +35,6 @@ namespace CIM.BusinessLogic.Services
         public Task<PagingModel<ProductionPlanModel>> Paging(int page,int howmany)
         {
             var result =  _planRepository.Paging(page, howmany);
-            //var result = _planRepository.All().Select(x => new ProductionPlanModel {
-            //    Id = x.Id,
-            //    PlanId = x.PlantId,
-            //}).ToList();
             return result;
         }
         public void Insert(List<ProductionPlanModel> import)
