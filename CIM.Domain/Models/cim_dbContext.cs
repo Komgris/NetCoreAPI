@@ -33,6 +33,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<UserGroupsApps> UserGroupsApps { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Material> Material { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
