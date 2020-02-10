@@ -10,11 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class MaterialController : ControllerBase
     {
         private IMaterialService _materialService;
-
+        public MaterialController(
+            IMaterialService materialService
+            )
+        {
+            _materialService = materialService;
+        }
         [HttpGet]
         [Route("api/[controller]/List")]
         public List<MaterialModel> List()
