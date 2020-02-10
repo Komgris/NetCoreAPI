@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
     public interface IMaterialRepository
     {
         Task<PagingModel<MaterialModel>> Paging(int page, int howmany);
-        List<MaterialModel> Get();
+        List<MaterialModel> List();
         void Insert(MaterialModel model);
         void Update(MaterialModel model);
     }

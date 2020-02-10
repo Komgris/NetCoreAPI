@@ -16,7 +16,7 @@ namespace CIM.DAL.Implements
         {
         }
 
-        public List<MaterialModel> Get()
+        public List<MaterialModel> List()
         {
             var query = _entities.Material;
             var data = query.Where(x => x.IsActive && x.IsDelete == false)

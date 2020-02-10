@@ -18,9 +18,9 @@ namespace CIM.BusinessLogic.Services
         {
             _materialRepository = materialRepository;
         }
-        public List<MaterialModel> Get()
+        public List<MaterialModel> List()
         {
-            var result = _materialRepository.Get();
+            var result = _materialRepository.List();
             return result;
         }
 

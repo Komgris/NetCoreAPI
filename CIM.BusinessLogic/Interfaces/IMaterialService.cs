@@ -9,7 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IMaterialService
     {
         Task<PagingModel<MaterialModel>> Paging(int page, int howmany);
-        List<MaterialModel> Get();
+        List<MaterialModel> List();
         void Insert(MaterialModel model);
         void Update(MaterialModel model);
     }

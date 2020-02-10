@@ -47,12 +47,14 @@ namespace CIM.API
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
             services.AddTransient<IPlanRepository, PlanRepository>();
+            services.AddTransient<IMaterialRepository, MaterialRepository>();
 
             services.AddTransient<IPlanService, PlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMaterialService, MaterialService>();
 
             services.AddControllers();
             services.AddSignalR();
