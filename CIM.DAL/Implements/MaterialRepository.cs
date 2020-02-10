@@ -44,6 +44,8 @@ namespace CIM.DAL.Implements
             insert.MaterialGroup = model.MaterialGroup;
             insert.UOM = model.UOM;
             insert.BHTPerUnit = model.BHTPerUnit;
+            insert.IsActive = model.IsActive;
+            insert.IsDelete = false;
             insert.CreatedBy = model.CreatedBy;
             insert.UpdatedBy = model.UpdatedBy;
             _entities.Material.Add(insert);
@@ -68,7 +70,9 @@ namespace CIM.DAL.Implements
                 ICSGroup = x.ICSGroup,
                 MaterialGroup = x.MaterialGroup,
                 UOM = x.UOM,
-                BHTPerUnit = x.BHTPerUnit
+                BHTPerUnit = x.BHTPerUnit,
+                CreatedBy = x.CreatedBy,
+                UpdatedBy = x.UpdatedBy
             }).ToListAsync();
             return new PagingModel<MaterialModel>
             {
@@ -89,6 +93,8 @@ namespace CIM.DAL.Implements
                 update.MaterialGroup = model.MaterialGroup;
                 update.UOM = model.UOM;
                 update.BHTPerUnit = model.BHTPerUnit;
+                update.IsActive = model.IsActive;
+                update.IsDelete = false;
                 update.UpdatedBy = model.UpdatedBy;
                 _entities.SaveChanges();
             }

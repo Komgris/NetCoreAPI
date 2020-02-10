@@ -35,7 +35,7 @@ namespace CIM.API.Controllers
                 _materialService.Insert(model);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace CIM.API.Controllers
                 _materialService.Update(model);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
