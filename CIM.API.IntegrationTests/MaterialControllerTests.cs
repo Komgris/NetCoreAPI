@@ -15,12 +15,23 @@ namespace CIM.API.IntegrationTests
     public class MaterialControllerTests : IntegrationTest
     {
         [Fact]
-        public async Task Get_Test()
+        public async Task List_Test()
         {
             // Arrange
 
             // Act
             var response = await TestClient.GetAsync("/api/Material/List");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+        [Fact]
+        public async Task Get_Test()
+        {
+            // Arrange
+
+            // Act
+            var response = await TestClient.GetAsync("/api/Material/Get/10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -12,5 +12,6 @@ namespace CIM.BusinessLogic.Interfaces
         List<MaterialModel> List();
         void Insert(MaterialModel model);
         void Update(MaterialModel model);
+        MaterialModel Get(int id);
     }
 }

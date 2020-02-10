@@ -39,5 +39,11 @@ namespace CIM.BusinessLogic.Services
         {
             _materialRepository.Update(model);
         }
+
+        public MaterialModel Get(int id)
+        {
+            var result = _materialRepository.Get(id);
+            return result;
+        }
     }
 }

@@ -99,5 +99,28 @@ namespace CIM.DAL.Implements
                 _entities.SaveChanges();
             }
         }
+
+        public MaterialModel Get(int id)
+        {
+            var query = _entities.Material;
+            var data = query.Where(x => /*x.IsActive && x.IsDelete == false &&*/ x.Id == id).First();
+            MaterialModel model = new MaterialModel() {
+                Id = data.Id,
+                Code = data.Code,
+                Description = data.Description,
+                ProductCategory = data.ProductCategory,
+                ICSGroup = data.ICSGroup,
+                MaterialGroup = data.MaterialGroup,
+                UOM = data.UOM,
+                BHTPerUnit = data.BHTPerUnit,
+                IsActive = data.IsActive,
+                IsDelete = data.IsDelete,
+                CreatedAt = data.CreatedAt,
+                CreatedBy = data.CreatedBy,
+                UpdatedAt = data.UpdatedAt,
+                UpdatedBy = data.UpdatedBy
+            };
+            return model;
+        }
     }
 }

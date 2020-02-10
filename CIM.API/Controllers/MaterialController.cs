@@ -58,10 +58,17 @@ namespace CIM.API.Controllers
             }
         }
         [HttpGet]
-        [Route("api/[controller]/Get/{row}/{pages}")]
-        public string Get(int row, int pages)
+        [Route("api/[controller]/ListByPaging/{row}/{pages}")]
+        public string ListByPaging(int row, int pages)
         {
             var fromDb = _materialService.Paging(pages, row);
+            return JsonSerializer.Serialize(fromDb);
+        }
+        [HttpGet]
+        [Route("api/[controller]/Get/{id}")]
+        public string Get(int id)
+        {
+            var fromDb = _materialService.Get(id);
             return JsonSerializer.Serialize(fromDb);
         }
     }
