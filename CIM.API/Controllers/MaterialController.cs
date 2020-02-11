@@ -12,64 +12,80 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MaterialController : ControllerBase
     {
-        private IMaterialService _materialService;
-        public MaterialController(
-            IMaterialService materialService
-            )
+        private IMaterialService _service;
+        public MaterialController(IMaterialService service)
         {
-            _materialService = materialService;
+            _service = service;
         }
-        [HttpGet]
-        [Route("api/[controller]/List")]
-        public List<MaterialModel> List()
-        {
-            var output = _materialService.List();
-            return output;
-        }
+
         [HttpPost]
-        [Route("api/[controller]/Insert")]
-        public bool Insert([FromBody]MaterialModel model)
+        [Route("api/[controller]/Create")]
+        public async Task<object> Create([FromBody]MaterialModel model)
         {
             try
             {
-                _materialService.Insert(model);
-                return true;
+                var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _service.CurrentUser = currentUser;
+
+                await Task.Run(() => {
+                    _service.Create(model);
+                });
+                return new object();
             }
-            catch(Exception ex)
+            catch (Exception e)
             {
-                return false;
+                throw e;
             }
         }
 
-        //same http method like insert, can't this do
-        //Add a route like this         [Route("api/[controller]/Compare")]
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public bool Update([FromBody]MaterialModel model)
+        public async Task<object> Update([FromBody]MaterialModel model)
         {
             try
             {
-                _materialService.Update(model);
-                return true;
+                var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _service.CurrentUser = currentUser;
+
+                await Task.Run(() => {
+                    _service.Update(model);
+                });
+                return new object();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return false;
+                throw e;
             }
         }
+
         [HttpGet]
-        [Route("api/[controller]/ListByPaging/{row}/{pages}")]
-        public string ListByPaging(int row, int pages)
+        [Route("api/[controller]/List")]
+        public async Task<PagingModel<MaterialModel>> List(int page = 1, int howmany = 10)
         {
-            var fromDb = _materialService.Paging(pages, row);
-            return JsonSerializer.Serialize(fromDb);
+            try
+            {
+                var result = await _service.List(page, howmany);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
+
         [HttpGet]
-        [Route("api/[controller]/Get/{id}")]
-        public string Get(int id)
+        [Route("api/[controller]/Get")]
+        public async Task<MaterialModel> Get(int id)
         {
-            var fromDb = _materialService.Get(id);
-            return JsonSerializer.Serialize(fromDb);
+            try
+            {
+                var result = await _service.Get(id);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

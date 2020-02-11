@@ -14,52 +14,16 @@ namespace CIM.DAL.Implements
     {
         public MaterialRepository(cim_dbContext context) : base(context)
         {
-        }
+        }        
 
-        public List<MaterialModel> List()
+        public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
         {
-            var query = _entities.Material;
-            var data = query.Where(x => x.IsActive && x.IsDelete == false)
-                .Select(x => new MaterialModel
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Description = x.Description,
-                    ProductCategory = x.ProductCategory,
-                    ICSGroup = x.ICSGroup,
-                    MaterialGroup = x.MaterialGroup,
-                    UOM = x.UOM,
-                    BHTPerUnit = x.BHTPerUnit
-                }).ToList();
-            return data;
-        }
-
-        public void Insert(MaterialModel model)
-        {
-            var insert = new Material();
-            insert.Code = model.Code;
-            insert.Description = model.Description;
-            insert.ProductCategory = model.ProductCategory;
-            insert.ICSGroup = model.ICSGroup;
-            insert.MaterialGroup = model.MaterialGroup;
-            insert.UOM = model.UOM;
-            insert.BHTPerUnit = model.BHTPerUnit;
-            insert.IsActive = model.IsActive;
-            insert.IsDelete = false;
-            insert.CreatedBy = model.CreatedBy;
-            insert.UpdatedBy = model.UpdatedBy;
-            _entities.Material.Add(insert);
-            _entities.SaveChanges();
-        }
-
-        public async Task<PagingModel<MaterialModel>> Paging(int page, int howmany)
-        {
-            var query = _entities.Material;
+            var query = _entities.Material.Where(x => x.IsActive && x.IsDelete == false);
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.Where(x => x.IsActive && x.IsDelete == false).OrderBy(s => s.Id).Skip(skipRec).Take(takeRec);
+            var paging = query.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec);
 
             var data = await paging.Select(x => new MaterialModel
             {
@@ -81,46 +45,27 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public void Update(MaterialModel model)
+        public async Task<MaterialModel> Get(int id)
         {
-            var update = _entities.Material.Where(x => x.Id == model.Id).FirstOrDefault();
-            if (update != null)
-            {
-                update.Code = model.Code;
-                update.Description = model.Description;
-                update.ProductCategory = model.ProductCategory;
-                update.ICSGroup = model.ICSGroup;
-                update.MaterialGroup = model.MaterialGroup;
-                update.UOM = model.UOM;
-                update.BHTPerUnit = model.BHTPerUnit;
-                update.IsActive = model.IsActive;
-                update.IsDelete = false;
-                update.UpdatedBy = model.UpdatedBy;
-                _entities.SaveChanges();
-            }
-        }
-
-        public MaterialModel Get(int id)
-        {
-            var query = _entities.Material;
-            var data = query.Where(x => /*x.IsActive && x.IsDelete == false &&*/ x.Id == id).First();
-            MaterialModel model = new MaterialModel() {
-                Id = data.Id,
-                Code = data.Code,
-                Description = data.Description,
-                ProductCategory = data.ProductCategory,
-                ICSGroup = data.ICSGroup,
-                MaterialGroup = data.MaterialGroup,
-                UOM = data.UOM,
-                BHTPerUnit = data.BHTPerUnit,
-                IsActive = data.IsActive,
-                IsDelete = data.IsDelete,
-                CreatedAt = data.CreatedAt,
-                CreatedBy = data.CreatedBy,
-                UpdatedAt = data.UpdatedAt,
-                UpdatedBy = data.UpdatedBy
-            };
-            return model;
+            var dbModel = await _entities.Material.Where(x => x.Id == id)
+                .Select(x => new MaterialModel()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Description = x.Description,
+                    ProductCategory = x.ProductCategory,
+                    ICSGroup = x.ICSGroup,
+                    MaterialGroup = x.MaterialGroup,
+                    UOM = x.UOM,
+                    BHTPerUnit = x.BHTPerUnit,
+                    IsActive = x.IsActive,
+                    IsDelete = x.IsDelete,
+                    CreatedAt = x.CreatedAt,
+                    CreatedBy = x.CreatedBy,
+                    UpdatedAt = x.UpdatedAt,
+                    UpdatedBy = x.UpdatedBy
+                }).SingleOrDefaultAsync();
+            return dbModel;
         }
     }
 }

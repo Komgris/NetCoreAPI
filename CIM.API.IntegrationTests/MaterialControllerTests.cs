@@ -20,7 +20,7 @@ namespace CIM.API.IntegrationTests
             // Arrange
 
             // Act
-            var response = await TestClient.GetAsync("/api/Material/List");
+            var response = await TestClient.GetAsync("/api/Material/List?page=1&howmany=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -31,13 +31,13 @@ namespace CIM.API.IntegrationTests
             // Arrange
 
             // Act
-            var response = await TestClient.GetAsync("/api/Material/Get/10");
+            var response = await TestClient.GetAsync("/api/Material/Get?id=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
         [Fact]
-        public async Task Insert_Test()
+        public async Task Create_Test()
         {
             // Arrange
             var model = new MaterialModel()
@@ -52,7 +52,7 @@ namespace CIM.API.IntegrationTests
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             // Act
-            var response = await TestClient.PostAsync("/api/Material/Insert", byteContent);
+            var response = await TestClient.PostAsync("/api/Material/Create", byteContent);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -73,7 +73,7 @@ namespace CIM.API.IntegrationTests
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             // Act
-            Insert_Test();
+            Create_Test();
             var response = await TestClient.PostAsync("/api/Material/Update", byteContent);
 
             // Assert
