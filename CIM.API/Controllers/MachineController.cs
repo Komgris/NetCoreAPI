@@ -34,23 +34,5 @@ namespace CIM.API.Controllers
             return Ok(new { Message = "Request Machine Completed" });
         }
 
-        //public async Task< List<MachineCacheModel>> GetMachineData()
-        //{
-        //    var machineList = (await _responseCacheService.GetAsync(machineListKey)).Split(',');
-        //    var mashineStatusData = new List<MachineCacheModel>();
-        //    foreach (var item in machineList)
-        //    {
-        //        var mcKey = $"cache:{prefix}:{item}";
-        //        var data = await _responseCacheService.GetAsync(mcKey);
-        //        mashineStatusData.Add(new MachineCacheModel
-        //        {
-        //            MachineId = item,
-        //            Data = data
-        //        });
-        //    }
-        //    return mashineStatusData;
-
-        //}
-
     }
 }
