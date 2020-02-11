@@ -44,10 +44,10 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
-        public List<ProductModel> Get()
+        public async Task<List<ProductModel>> Get()
         {
             var query = _entities.Product;
-            var data = query
+            var data = await query
                 .Select(x => new ProductModel
                 {
                     Id = x.Id,
@@ -62,40 +62,8 @@ namespace CIM.DAL.Implements
                     PmWeight = x.PmWeight,
                     WeightUom = x.WeightUom,
 
-                }).ToList();
+                }).ToListAsync();
             return data;
-        }
-        public void InsertProduct(List<ProductModel> import)
-        {
-            foreach (var plan in import)
-            {
-                var insert = new Product();
-                insert.Id = plan.Id;
-                insert.Code = plan.Code;
-                insert.Description = plan.Description;
-                insert.BriteItemUpcItem = plan.BriteItemUpcItem;
-                insert.ProductFamilyId = plan.ProductFamilyId;
-                insert.ProductGroupId = plan.ProductGroupId;
-                insert.ProductTypeId = plan.ProductTypeId;
-                insert.PackingMedium = plan.PackingMedium;
-                insert.IgWeight = plan.IgWeight;
-                insert.PmWeight = plan.PmWeight;
-                insert.PmWeight = plan.PmWeight;
-
-                _entities.Product.Add(insert);
-                _entities.SaveChanges();
-            }
-        }
-        public void DeleteProduct(string id)
-        {
-
-            var delete = _entities.Product.Where(x => x.Id == int.Parse(id)).FirstOrDefault();
-            if (delete != null)
-            {
-                _entities.Product.Remove(delete);
-            }
-            _entities.SaveChanges();
-
         }
     }
 }
