@@ -9,7 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
     interface IProductService
     {
         Task<PagingModel<ProductModel>> Paging(int page, int howmany);
-        void Edit(List<ProductModel> model);
+        void BulkEdit(List<ProductModel> model);
         void Delete(int Id);
         void Create(List<ProductModel> model);
     }
