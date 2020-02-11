@@ -12,20 +12,17 @@ namespace CIM.BusinessLogic.Services
 {
     public class ProductService: BaseService, IProductService
     {
-        private IUserAppTokenRepository _userAppTokenRepository;
-        private ICipherService _cipherService;
+
         private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public ProductService(
-            IUserAppTokenRepository userAppTokenRepository,
-            ICipherService cipherService,
+
             IProductRepository productRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
-            _userAppTokenRepository = userAppTokenRepository;
-            _cipherService = cipherService;
+
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
         }
