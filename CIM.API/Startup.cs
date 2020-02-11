@@ -52,6 +52,7 @@ namespace CIM.API
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMachineService, MachineService>();
 
             services.AddControllers();
             services.AddSignalR();

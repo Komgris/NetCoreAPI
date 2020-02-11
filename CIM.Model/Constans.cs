@@ -7,5 +7,11 @@ namespace CIM.Model
     public class Constans
     {
         public const string CURRENT_USER = "CurrentUser";
+
+        public class RedisKey {
+            public const string MACHINE = "machine:";
+            public const string MACHINE_LIST = "machine-list:";
+
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using CIM.API.Cache;
+using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;

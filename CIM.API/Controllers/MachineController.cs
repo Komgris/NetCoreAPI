@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CIM.API.Cache;
 using CIM.API.HubConfig;
+using CIM.BusinessLogic.Interfaces;
 using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
