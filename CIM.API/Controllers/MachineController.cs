@@ -20,17 +20,21 @@ namespace CIM.API.Controllers
     {
         private IHubContext<MachineHub> _hub;
         private IResponseCacheService _responseCacheService;
+        private IMachineService _machineService;
 
         public MachineController(IHubContext<MachineHub> hub,
-            IResponseCacheService responseCacheService)
+            IResponseCacheService responseCacheService,
+            IMachineService machineService
+            )
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
+            _machineService = machineService;
         }
 
         public IActionResult Get()
         {
-            var timerManager = new TimerService(() =>  _hub.Clients.All.SendAsync("transfermachinedata", DataService.GetData()));
+            var timerManager = new TimerService(() =>  _hub.Clients.All.SendAsync("transfermachinedata", _machineService.ListCached()));
 
             return Ok(new { Message = "Request Machine Completed" });
         }
