@@ -13,24 +13,19 @@ namespace CIM.BusinessLogic.Services
 {
     public class ProductService: BaseService, IProductService
     {
-
         private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
-
         public ProductService(
-
             IProductRepository productRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
-
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
         }
 
         public Task<PagingModel<ProductModel>> Paging(int page, int howmany)
         {
-
             var result = _productRepository.Paging(page, howmany);
             return result;
         }
@@ -43,7 +38,6 @@ namespace CIM.BusinessLogic.Services
                 {
                     var db_model = MapperHelper.AsModel(plan, existingItem);
                     _productRepository.Edit(db_model);
-                    await _unitOfWork.CommitAsync();
                 }
             }
             await _unitOfWork.CommitAsync();           
@@ -59,9 +53,9 @@ namespace CIM.BusinessLogic.Services
             foreach (var plan in model)
             {
                 var db_model = MapperHelper.AsModel(plan, new Product());
-                _productRepository.Add(db_model);
-                await _unitOfWork.CommitAsync();
-            }           
+                _productRepository.Add(db_model);               
+            }
+            await _unitOfWork.CommitAsync();
         }
     }
 }

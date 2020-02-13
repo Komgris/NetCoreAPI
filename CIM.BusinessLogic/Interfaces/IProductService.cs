@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    interface IProductService
+    public interface IProductService
     {
         Task<PagingModel<ProductModel>> Paging(int page, int howmany);
         void BulkEdit(List<ProductModel> model);
