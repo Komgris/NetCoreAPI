@@ -29,6 +29,7 @@ namespace CIM.BusinessLogic.Services
             var result = _productRepository.Paging(page, howmany);
             return result;
         }
+
         public async void BulkEdit(List<ProductModel> model)
         {
             foreach(var plan in model)
@@ -42,12 +43,14 @@ namespace CIM.BusinessLogic.Services
             }
             await _unitOfWork.CommitAsync();           
         }
+
         public async void Delete(int Id)
         {
             var existingItem = _productRepository.Where(x => x.Id == Id).ToList().FirstOrDefault();
             _productRepository.Delete(existingItem);
             await _unitOfWork.CommitAsync();
         }
+
         public async void Create(List<ProductModel> model)
         {
             foreach (var plan in model)

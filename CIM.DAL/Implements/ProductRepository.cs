@@ -16,6 +16,7 @@ namespace CIM.DAL.Implements
         {
 
         }
+
         public async Task<PagingModel<ProductModel>>Paging(int page,int howmany)
         {
             var query = _entities.Product;
@@ -44,6 +45,7 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
+
         public async Task<List<ProductModel>> Get()
         {
             var query = _entities.Product;
