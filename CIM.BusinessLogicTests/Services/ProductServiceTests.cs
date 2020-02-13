@@ -6,19 +6,28 @@ using FluentAssertions;
 using Moq;
 using CIM.DAL.Interfaces;
 using CIM.BusinessLogic.Services;
+using CIM.Model;
 
 namespace CIM.BusinessLogicTests.Services
 {
     public class ProductServiceTests
     {
         [Fact]
-        public void PageTest()
+        public void createTest()
         {
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var productRepository = new Mock<IProductRepository>().Object;
-            var productService = new ProductService(unitOfWork, productRepository);
-            var result = productService.Paging(1, 5);
-            result.Should().NotBeNull();
+            var service = new ProductService(productRepository,unitOfWork);
+
+            List<ProductModel> pomodel = new List<ProductModel>()
+            {
+                new ProductModel(){ Code="1111", Description="Bill"},
+                new ProductModel(){ Code="2222", Description="Steve"},
+                new ProductModel(){ Code="3333", Description="Ram"},
+                new ProductModel(){ Code="4444", Description="Moin"}
+            };
+
+            service.Create(pomodel);
         }
     }
 }

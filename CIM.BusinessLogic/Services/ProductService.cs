@@ -1,4 +1,5 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
@@ -40,23 +41,9 @@ namespace CIM.BusinessLogic.Services
                 var existingItem = _productRepository.Where(x => x.Id == plan.Id).FirstOrDefault();
                 if(existingItem != null)
                 {
-                    var dbModel = new Product
-                    {
-                        Code = plan.Code,
-                        Description = plan.Code,
-                        BriteItemUpcItem = plan.BriteItemUpcItem,
-                        ProductFamilyId = plan.ProductFamilyId,
-                        ProductGroupId = plan.ProductGroupId,
-                        ProductTypeId = plan.ProductTypeId,
-                        PackingMedium = plan.PackingMedium,
-                        IgWeight = plan.IgWeight,
-                        PmWeight = plan.PmWeight,
-                        WeightUom = plan.WeightUom,
-                        IsActive = true,
-                        IsDelete = false,
-                        UpdatedAt = DateTime.Now,
-                    };
-                    _productRepository.Edit(dbModel);
+                    var db_model = MapperHelper.AsModel(plan, existingItem);
+                    _productRepository.Edit(db_model);
+                    await _unitOfWork.CommitAsync();
                 }
             }
             await _unitOfWork.CommitAsync();           
@@ -71,26 +58,10 @@ namespace CIM.BusinessLogic.Services
         {
             foreach (var plan in model)
             {
-                var dbModel = new Product
-                {
-                    Code = plan.Code,
-                    Description = plan.Code,
-                    BriteItemUpcItem = plan.BriteItemUpcItem,
-                    ProductFamilyId = plan.ProductFamilyId,
-                    ProductGroupId = plan.ProductGroupId,
-                    ProductTypeId = plan.ProductTypeId,
-                    PackingMedium = plan.PackingMedium,
-                    IgWeight = plan.IgWeight,
-                    PmWeight = plan.PmWeight,
-                    WeightUom = plan.WeightUom,
-                    IsActive = true,
-                    IsDelete = false,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,                   
-                };
-                _productRepository.Add(dbModel); 
-            }
-            await _unitOfWork.CommitAsync();
+                var db_model = MapperHelper.AsModel(plan, new Product());
+                _productRepository.Add(db_model);
+                await _unitOfWork.CommitAsync();
+            }           
         }
     }
 }

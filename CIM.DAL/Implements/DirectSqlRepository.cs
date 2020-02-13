@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 
         public void ExecuteNonQuery(string sql, object[] parameters)
         {
-            string connectionString = "Server=tcp:dole-cim.database.windows.net,1433;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
+            string connectionString = "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -29,7 +29,7 @@ namespace CIM.DAL.Implements
         public string ExecuteReader(string sql, object[] parameters)
         {
             var output = string.Empty;
-            string connectionString = "Server=tcp:dole-cim.database.windows.net,1433;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
+            string connectionString = "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 //SqlDataReader
