@@ -34,7 +34,7 @@ namespace CIM.BusinessLogic.Services
         {
             foreach(var plan in model)
             {
-                var existingItem = _productRepository.Where(x => x.Id == plan.Id).FirstOrDefault();
+                var existingItem = _productRepository.Where(x => x.Code == plan.Code).FirstOrDefault();
                 if(existingItem != null)
                 {
                     var db_model = MapperHelper.AsModel(plan, existingItem);
@@ -44,9 +44,9 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();           
         }
 
-        public async void Delete(int Id)
+        public async void Delete(string code)
         {
-            var existingItem = _productRepository.Where(x => x.Id == Id).ToList().FirstOrDefault();
+            var existingItem = _productRepository.Where(x => x.Code == code).ToList().FirstOrDefault();
             _productRepository.Delete(existingItem);
             await _unitOfWork.CommitAsync();
         }
@@ -58,7 +58,7 @@ namespace CIM.BusinessLogic.Services
                 var db_model = MapperHelper.AsModel(plan, new Product());
                 _productRepository.Add(db_model);               
             }
-            await _unitOfWork.CommitAsync();
+             await _unitOfWork.CommitAsync();
         }
     }
 }

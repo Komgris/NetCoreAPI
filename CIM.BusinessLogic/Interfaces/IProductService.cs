@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IProductService
+    public interface IProductService : IBaseService
     {
         Task<PagingModel<ProductModel>> Paging(int page, int howmany);
 
         void BulkEdit(List<ProductModel> model);
 
-        void Delete(int Id);
+        void Delete(string id);
 
         void Create(List<ProductModel> model);
     }

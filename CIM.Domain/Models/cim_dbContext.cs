@@ -26,6 +26,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
+        public virtual DbSet<LossLevel4> LossLevel4 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
@@ -226,7 +227,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel1>(entity =>
             {
-                entity.ToTable("Loss Level 1");
+                entity.ToTable("Loss_Level_1");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -249,7 +250,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel2>(entity =>
             {
-                entity.ToTable("Loss Level 2");
+                entity.ToTable("Loss_Level_2");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -272,7 +273,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel3>(entity =>
             {
-                entity.ToTable("Loss Level 3");
+                entity.ToTable("Loss_Level_3");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -302,6 +303,29 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Loss_MachineType");
             });
 
+            modelBuilder.Entity<LossLevel4>(entity =>
+            {
+                entity.ToTable("Loss_Level_4");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
+
+                entity.Property(e => e.SymtomId).HasMaxLength(10);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<Machine>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -318,8 +342,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PlcAddress)
-                    .HasColumnName("PLC Address")
+                entity.Property(e => e.Plcaddress)
+                    .HasColumnName("PLCAddress")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Status)
@@ -398,8 +422,8 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.Property(e => e.BhtUnit)
-                    .HasColumnName("BHT/Unit")
+                entity.Property(e => e.BhtperUnit)
+                    .HasColumnName("BHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.Code).HasMaxLength(50);
@@ -414,17 +438,13 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description).HasMaxLength(250);
 
-                entity.Property(e => e.IcsGroup)
-                    .HasColumnName("ICS Group")
+                entity.Property(e => e.Icsgroup)
+                    .HasColumnName("ICSGroup")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.MaterialGroup)
-                    .HasColumnName("Material Group")
-                    .HasMaxLength(50);
+                entity.Property(e => e.MaterialGroup).HasMaxLength(50);
 
-                entity.Property(e => e.ProductCategory)
-                    .HasColumnName("Product Category")
-                    .HasMaxLength(50);
+                entity.Property(e => e.ProductCategory).HasMaxLength(50);
 
                 entity.Property(e => e.Uom)
                     .HasColumnName("UOM")
@@ -439,8 +459,8 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.BriteItemUpcItem)
-                    .HasColumnName("Brite Item/UPC Item")
+                entity.Property(e => e.BriteItemPerUpcitem)
+                    .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Code).HasMaxLength(50);
@@ -457,20 +477,16 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.IgWeight)
-                    .HasColumnName("IG Weight")
+                entity.Property(e => e.Igweight)
+                    .HasColumnName("IGWeight")
                     .HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.NetWeight)
-                    .HasColumnName("Net Weight")
-                    .HasColumnType("decimal(18, 0)");
+                entity.Property(e => e.NetWeight).HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.PackingMedium)
-                    .HasColumnName("Packing Medium")
-                    .HasMaxLength(50);
+                entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
-                entity.Property(e => e.PmWeight)
-                    .HasColumnName("PM Weight")
+                entity.Property(e => e.Pmweight)
+                    .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.ProductFamilyId).HasColumnName("ProductFamily_Id");
@@ -485,8 +501,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.WeightUom)
-                    .HasColumnName("Weight/UOM")
+                entity.Property(e => e.WeightPerUom)
+                    .HasColumnName("WeightPerUOM")
                     .HasColumnType("decimal(18, 0)");
 
                 entity.HasOne(d => d.ProductFamily)
@@ -626,6 +642,8 @@ namespace CIM.Domain.Models
                     .HasColumnName("Product_Id")
                     .HasMaxLength(20);
 
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+
                 entity.Property(e => e.Status).HasMaxLength(10);
             });
 
@@ -730,8 +748,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PlcAddress)
-                    .HasColumnName("PLC Address")
+                entity.Property(e => e.Plcaddress)
+                    .HasColumnName("PLCAddress")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Position).HasMaxLength(50);

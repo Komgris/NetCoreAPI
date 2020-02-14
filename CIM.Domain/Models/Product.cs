@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CIM.Domain.Models
 {
     public partial class Product
     {
+        [Key]
         public int Id { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }
-        public string BriteItemUpcItem { get; set; }
+        public string BriteItemPerUpcitem { get; set; }
         public int ProductFamilyId { get; set; }
         public int ProductGroupId { get; set; }
         public int ProductTypeId { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
-        public decimal? IgWeight { get; set; }
-        public decimal? PmWeight { get; set; }
-        public decimal? WeightUom { get; set; }
+        public decimal? Igweight { get; set; }
+        public decimal? Pmweight { get; set; }
+        public decimal? WeightPerUom { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

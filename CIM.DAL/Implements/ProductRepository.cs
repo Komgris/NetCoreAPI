@@ -30,14 +30,14 @@ namespace CIM.DAL.Implements
                     Id = x.Id,
                     Code = x.Code,
                     Description = x.Description,
-                    BriteItemUpcItem = x.BriteItemUpcItem,
+                    BriteItemPerUpcitem = x.BriteItemPerUpcitem,
                     ProductFamilyId = x.ProductFamilyId,
                     ProductGroupId = x.ProductGroupId,
                     ProductTypeId = x.ProductTypeId,
                     PackingMedium = x.PackingMedium,
-                    IgWeight = x.IgWeight,
-                    PmWeight = x.PmWeight,
-                    WeightUom = x.WeightUom,
+                    Igweight = x.Igweight,
+                    Pmweight = x.Pmweight,
+                    WeightPerUom = x.WeightPerUom,
                 }).ToListAsync();
             return new PagingModel<ProductModel>
             {
@@ -52,17 +52,16 @@ namespace CIM.DAL.Implements
             var data = await query
                 .Select(x => new ProductModel
                 {
-                    Id = x.Id,
                     Code = x.Code,
                     Description = x.Description,
-                    BriteItemUpcItem = x.BriteItemUpcItem,
+                    BriteItemPerUpcitem = x.BriteItemPerUpcitem,
                     ProductFamilyId = x.ProductFamilyId,
                     ProductGroupId = x.ProductGroupId,
                     ProductTypeId = x.ProductTypeId,
                     PackingMedium = x.PackingMedium,
-                    IgWeight = x.IgWeight,
-                    PmWeight = x.PmWeight,
-                    WeightUom = x.WeightUom,
+                    Igweight = x.Igweight,
+                    Pmweight = x.Pmweight,
+                    WeightPerUom = x.WeightPerUom,
 
                 }).ToListAsync();
             return data;
