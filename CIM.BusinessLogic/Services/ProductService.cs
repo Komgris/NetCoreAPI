@@ -51,7 +51,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async void Create(List<ProductModel> model)
+        public async Task Create(List<ProductModel> model)
         {
             foreach (var plan in model)
             {
