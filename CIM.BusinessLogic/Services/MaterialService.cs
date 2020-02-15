@@ -24,7 +24,7 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async void Create(MaterialModel model)
+        public async Task Create(MaterialModel model)
         {
             var dbModel = new Material
             {
@@ -46,7 +46,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async void Update(MaterialModel model)
+        public async Task Update(MaterialModel model)
         {
             var dbModel = _materialRepository.Where(x => x.Id == model.Id).First();
             if (dbModel != null)

@@ -27,9 +27,7 @@ namespace CIM.API.Controllers
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                await Task.Run(() => {
-                    _service.Create(model);
-                });
+                await _service.Create(model);
                 return new object();
             }
             catch (Exception e)
@@ -47,9 +45,7 @@ namespace CIM.API.Controllers
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                await Task.Run(() => {
-                    _service.Update(model);
-                });
+                await _service.Update(model);
                 return new object();
             }
             catch (Exception e)
