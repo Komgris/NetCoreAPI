@@ -1,4 +1,5 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
@@ -26,7 +27,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Create(MaterialModel model)
         {
-            var dbModel = new Material
+            /*var dbModel = new Material
             {
                 Code = model.Code,
                 Description = model.Description,
@@ -41,7 +42,8 @@ namespace CIM.BusinessLogic.Services
                 CreatedAt = DateTime.Now,
                 UpdatedBy = CurrentUser.UserId,
                 UpdatedAt = DateTime.Now
-            };
+            };*/
+            var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
         }
@@ -49,32 +51,32 @@ namespace CIM.BusinessLogic.Services
         public async Task Update(MaterialModel model)
         {
             var dbModel = _materialRepository.Where(x => x.Id == model.Id).First();
-            if (dbModel != null)
-            {
-                dbModel.Code = model.Code;
-                dbModel.Description = model.Description;
-                dbModel.ProductCategory = model.ProductCategory;
-                dbModel.ICSGroup = model.ICSGroup;
-                dbModel.MaterialGroup = model.MaterialGroup;
-                dbModel.UOM = model.UOM;
-                dbModel.BHTPerUnit = model.BHTPerUnit;
-                dbModel.IsActive = model.IsActive;
-                dbModel.IsDelete = false;
-                dbModel.UpdatedBy = CurrentUser.UserId;
-                dbModel.UpdatedAt = DateTime.Now;
-                _materialRepository.Edit(dbModel);
-                await _unitOfWork.CommitAsync();
-            }
+            dbModel = MapperHelper.AsModel(model, dbModel);
+            dbModel.IsDelete = false;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.UpdatedAt = DateTime.Now;
+            _materialRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
         }
         public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
         {
-            var result = await _materialRepository.List(page, howmany);
-            return result;
+            var dbModel = await _materialRepository.List(page, howmany);
+            var output = new List<MaterialModel>();
+            foreach (var item in dbModel)
+            {
+                output.Add(MapperHelper.AsModel(item, new MaterialModel()));
+            }
+
+            return new PagingModel<MaterialModel>
+            {
+                HowMany = howmany,
+                Data = output
+            };
         }
         public async Task<MaterialModel> Get(int id)
         {
             var dbModel = await _materialRepository.Get(id);
-            return dbModel;
+            return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
     }
 }

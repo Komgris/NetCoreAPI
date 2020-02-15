@@ -16,16 +16,16 @@ namespace CIM.DAL.Implements
         {
         }        
 
-        public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
+        public async Task<List<Material>> List(int page, int howmany)
         {
             var query = _entities.Material.Where(x => x.IsActive && x.IsDelete == false);
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec);
-
-            var data = await paging.Select(x => new MaterialModel
+            var dbModel = await query.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToListAsync();
+            return dbModel;
+            /*var data = await paging.Select(x => new MaterialModel
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -37,18 +37,13 @@ namespace CIM.DAL.Implements
                 BHTPerUnit = x.BHTPerUnit,
                 CreatedBy = x.CreatedBy,
                 UpdatedBy = x.UpdatedBy
-            }).ToListAsync();
-            return new PagingModel<MaterialModel>
-            {
-                HowMany = row,
-                Data = data
-            };
+            }).ToListAsync();*/
         }
 
-        public async Task<MaterialModel> Get(int id)
+        public async Task<Material> Get(int id)
         {
-            var dbModel = await _entities.Material.Where(x => x.Id == id)
-                .Select(x => new MaterialModel()
+            var dbModel = await _entities.Material.Where(x => x.Id == id).FirstOrDefaultAsync(); 
+            /*(x => new MaterialModel()
                 {
                     Id = x.Id,
                     Code = x.Code,
@@ -64,7 +59,7 @@ namespace CIM.DAL.Implements
                     CreatedBy = x.CreatedBy,
                     UpdatedAt = x.UpdatedAt,
                     UpdatedBy = x.UpdatedBy
-                }).SingleOrDefaultAsync();
+                }).SingleOrDefaultAsync();*/
             return dbModel;
         }
     }
