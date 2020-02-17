@@ -15,5 +15,7 @@ namespace CIM.BusinessLogic.Interfaces
         void Delete(string id);
 
         Task Create(List<ProductModel> model);
+
+        List<ProductModel> List(string code);
     }
 }

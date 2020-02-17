@@ -29,14 +29,11 @@ namespace CIM.API.Controllers
         // POST api/<controller>
         [Route("api/[controller]/Insert")]
         [HttpPost]
-        public async Task<object> insert([FromBody]List<ProductModel> data)
+        public async Task<object> Insert([FromBody]List<ProductModel> data)
         {
             try
             {
-                await Task.Run(() =>
-                {
-                    _productService.Create(data);
-                });
+                await _productService.Create(data);
                 return new object();
             }
             catch (Exception e)

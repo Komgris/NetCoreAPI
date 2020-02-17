@@ -29,6 +29,14 @@ namespace CIM.BusinessLogic.Services
             var result = _productRepository.Paging(page, howmany);
             return result;
         }
+        public List<ProductModel> List(string code)
+        {
+            var output = _productRepository.All().Where(x => x.Code == code).Select(x => new ProductModel
+            {
+                Code = x.Code
+            }).ToList();
+            return output;
+        }
 
         public async void BulkEdit(List<ProductModel> model)
         {
