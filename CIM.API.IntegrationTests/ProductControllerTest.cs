@@ -35,8 +35,17 @@ namespace CIM.API.IntegrationTests
             var byteContent = new ByteArrayContent(buffer);
 
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            // Count products in database
+
             var response = await TestClient.PostAsync("/api/Product/Insert", byteContent);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Count products after upload
+            // assert product after upload =  product before upload + uploaded product list
+
+            // find product test A, B and C
+
+            // Compare product property A
 
             var outputDb1 = service.List("testA");
             var outputDb2 = service.List("testB");
