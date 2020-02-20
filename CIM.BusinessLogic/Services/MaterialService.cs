@@ -50,7 +50,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(MaterialModel model)
         {
-            var dbModel = _materialRepository.Where(x => x.Id == model.Id).First();
+            var dbModel = _materialRepository.Where(x => x.Id == model.Id && x.IsActive && x.IsDelete == false).First();
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.IsDelete = false;
             dbModel.UpdatedBy = CurrentUser.UserId;
@@ -60,7 +60,9 @@ namespace CIM.BusinessLogic.Services
         }
         public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
         {
+            int total = _materialRepository.Where(x => x.IsActive && x.IsDelete == false).Count();
             var dbModel = await _materialRepository.List(page, howmany);
+
             var output = new List<MaterialModel>();
             foreach (var item in dbModel)
             {
@@ -69,7 +71,7 @@ namespace CIM.BusinessLogic.Services
 
             return new PagingModel<MaterialModel>
             {
-                HowMany = howmany,
+                HowMany = total,
                 Data = output
             };
         }

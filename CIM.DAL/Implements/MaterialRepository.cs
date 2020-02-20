@@ -18,12 +18,11 @@ namespace CIM.DAL.Implements
 
         public async Task<List<Material>> List(int page, int howmany)
         {
-            var query = _entities.Material.Where(x => x.IsActive && x.IsDelete == false);
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
-            int row = query.Count();
 
-            var dbModel = await query.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToListAsync();
+            var dbModel = await _entities.Material.Where(x => x.IsActive && x.IsDelete == false)
+                .OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToListAsync();
             return dbModel;
             /*var data = await paging.Select(x => new MaterialModel
             {
@@ -42,7 +41,7 @@ namespace CIM.DAL.Implements
 
         public async Task<Material> Get(int id)
         {
-            var dbModel = await _entities.Material.Where(x => x.Id == id).FirstOrDefaultAsync(); 
+            var dbModel = await _entities.Material.Where(x => x.Id == id && x.IsActive && x.IsDelete == false).FirstOrDefaultAsync(); 
             /*(x => new MaterialModel()
                 {
                     Id = x.Id,
