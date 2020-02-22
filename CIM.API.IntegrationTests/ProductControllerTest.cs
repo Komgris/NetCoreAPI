@@ -110,15 +110,6 @@ namespace CIM.API.IntegrationTests
 
             var selected = afterDelete.Where(x => x.Id == afterInsert[0].Id);
             selected.Should().BeNullOrEmpty();
-
-            //foreach (var model in dbProductMoq)
-            //{
-            //    var selected = afterInsert.First(x => x.Code == model.Code);
-            //    selected.Code.Should().Be(model.Code);
-            //    selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
-            //    selected.ProductGroupId.Should().Be(model.ProductGroupId);
-            //    selected.ProductTypeId.Should().Be(model.ProductTypeId);
-            //}
         }
     }
 }
