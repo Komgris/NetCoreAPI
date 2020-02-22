@@ -25,15 +25,13 @@ namespace CIM.API.Controllers
         {
             _productService = productService;
         }
-       
-        // POST api/<controller>
-        [Route("api/[controller]/Insert")]
+        [Route("api/[controller]/Edit")]
         [HttpPost]
-        public async Task<object> Insert([FromBody]List<ProductModel> data)
+        public async Task<object> Edit([FromBody]List<ProductModel> data)
         {
             try
             {
-                await _productService.Create(data);
+                await _productService.BulkEdit(data);
                 return new object();
             }
             catch (Exception e)
@@ -41,6 +39,29 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
+        // POST api/<controller>
+        [Route("api/[controller]/Insert")]
+        [HttpPost]
+        public async Task<List<ProductModel>> Insert([FromBody]List<ProductModel> data)
+        {
+            try
+            {
+                return await _productService.Create(data);                
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        [Route("api/[controller]/Delete/{id}")]
+        [HttpGet]
+        public async Task<object> Delete(int id)
+        {
+            await _productService.Delete(id);
+            return new object();
+        }
+
+
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row, int pages)
@@ -48,6 +69,13 @@ namespace CIM.API.Controllers
             var fromDb = _productService.Paging(pages, row);
             return JsonSerializer.Serialize(fromDb);
         }
-
+        [Route("api/[controller]/GetNoPaging")]
+        [HttpGet]
+        public string GetNoPaging()
+        {
+            var fromDb = _productService.Get();
+            return JsonSerializer.Serialize(fromDb);
+        }
+          
     }
 }

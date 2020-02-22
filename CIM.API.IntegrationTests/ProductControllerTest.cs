@@ -15,6 +15,7 @@ using Moq;
 using CIM.BusinessLogic.Services;
 using System.Linq;
 using CIM.Domain.Models;
+using CIM.API.IntegrationTests.Helper;
 
 namespace CIM.API.IntegrationTests
 {
@@ -23,71 +24,101 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task InsertProduct_Test()
         {
-            var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
-            var productRepository = new Mock<IProductRepository>().Object;
-            var service = new ProductService(productRepository, unitOfWork);
+            // Arrange   
+            var dbProductMoq = TestHelper.GetProductList();
+            var beforeInsert = await Get();
+            var countBeforeInsert = beforeInsert.Count();
+         
+            await Insert_Get(dbProductMoq);
 
-            var dbProductMoq = new List<Product>()
+            var afterInsert = await Get();
+            var countAfterInsert = afterInsert.Count();
+
+            var totalList = countAfterInsert - countBeforeInsert;
+            totalList.Should().Be(dbProductMoq.Count());
+
+            foreach (var model in dbProductMoq)
             {
-                new Product{ Code="testA",ProductFamilyId=1,ProductGroupId=1,ProductTypeId=3 },
-                new Product{ Code="testB",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=4 },
-                new Product{ Code="testC",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=3 },
-            };
-            var content = JsonConvert.SerializeObject(dbProductMoq);
+                var selected = afterInsert.First(x => x.Code == model.Code);
+                selected.Code.Should().Be(model.Code);
+                selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
+                selected.ProductGroupId.Should().Be(model.ProductGroupId);
+                selected.ProductTypeId.Should().Be(model.ProductTypeId);
+            }
+
+
+        }
+        public async Task<List<ProductModel>> Get()
+        {
+            var getResponse = await TestClient.GetAsync("/api/Product/GetNoPaging");
+            getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await getResponse.Content.ReadAsStringAsync()));
+            return responseModel;
+        }
+        public async Task<List<ProductModel>> Insert_Get(List<ProductModel> data)
+        {
+            var content = JsonConvert.SerializeObject(data);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
-
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var createResponse = await TestClient.PostAsync("/api/Product/Insert", byteContent);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await createResponse.Content.ReadAsStringAsync()));
+            return responseModel;
+        }
+        [Fact]
+        public async Task EditProduct_Test()
+        {
+            var dbProductMoq = TestHelper.GetProductList();
+            var afterInsert = await Insert_Get(dbProductMoq);
 
-            using (var scope = ServiceScopeFactory.CreateScope())
+            afterInsert[0].Code = "EditA";
+            afterInsert[1].Code = "EditB";
+            afterInsert[2].Code = "EditC";
+
+            var content = JsonConvert.SerializeObject(afterInsert);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var createResponse = await TestClient.PostAsync("/api/Product/Edit", byteContent);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var afterEdit = await Get();
+            foreach (var model in afterInsert)
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                context.Database.EnsureCreated();
+                var selected = afterEdit.First(x => x.Id == model.Id);
+                selected.Code.Should().Be(model.Code);
+                selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
+                selected.ProductGroupId.Should().Be(model.ProductGroupId);
+                selected.ProductTypeId.Should().Be(model.ProductTypeId);
+            }
+        }
+        [Fact]
+        public async Task DeleteProduct_Test()
+        {
+            var dbProductMoq = TestHelper.GetProductList();
+            List<ProductModel> MoqList = new List<ProductModel>();
+            MoqList.Add(dbProductMoq[0]);
 
-                // Count products in database
-                var beforeTest = context.Product;
-                var beforeCount = beforeTest.Count();
+            var afterInsert = await Insert_Get(MoqList);
+            
 
-                context.Product.Add(dbProductMoq[0]);
-                context.Product.Add(dbProductMoq[1]);
-                context.Product.Add(dbProductMoq[2]);
-                context.SaveChanges();
+            var deleteResponse = await TestClient.GetAsync("/api/Product/Delete/"+ afterInsert[0].Id);
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-                // Count products after upload
-                var afterTest = context.Product;
-                var afterCount = afterTest.Count();
+            var afterDelete = await Get();
 
-                int diffCount = afterCount - beforeCount;
+            var selected = afterDelete.Where(x => x.Id == afterInsert[0].Id);
+            selected.Should().BeNullOrEmpty();
 
-                int moqCount = dbProductMoq.Count();
-
-                // find product test A, B and C
-                var findProductA = afterTest.Where(x => x.Code == "testA").ToList().FirstOrDefault();
-                var findProductB = afterTest.Where(x => x.Code == "testB").ToList().FirstOrDefault();
-                var findProductC = afterTest.Where(x => x.Code == "testC").ToList().FirstOrDefault();
-
-                // Compare product property A
-                moqCount.Should().Be(diffCount);
-
-                findProductA.Should().NotBeNull();
-                findProductB.Should().NotBeNull();
-                findProductC.Should().NotBeNull();
-
-                findProductA.ProductFamilyId.Should().Be(dbProductMoq[0].ProductFamilyId);
-                findProductA.ProductGroupId.Should().Be(dbProductMoq[0].ProductGroupId);
-                findProductA.ProductTypeId.Should().Be(dbProductMoq[0].ProductTypeId);
-
-                findProductB.ProductFamilyId.Should().Be(dbProductMoq[1].ProductFamilyId);
-                findProductB.ProductGroupId.Should().Be(dbProductMoq[1].ProductGroupId);
-                findProductB.ProductTypeId.Should().Be(dbProductMoq[1].ProductTypeId);
-
-                findProductC.ProductFamilyId.Should().Be(dbProductMoq[2].ProductFamilyId);
-                findProductC.ProductGroupId.Should().Be(dbProductMoq[2].ProductGroupId);
-                findProductC.ProductTypeId.Should().Be(dbProductMoq[2].ProductTypeId);
-
-            }         
-            var response = await TestClient.PostAsync("/api/Product/Insert", byteContent);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);                  
+            //foreach (var model in dbProductMoq)
+            //{
+            //    var selected = afterInsert.First(x => x.Code == model.Code);
+            //    selected.Code.Should().Be(model.Code);
+            //    selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
+            //    selected.ProductGroupId.Should().Be(model.ProductGroupId);
+            //    selected.ProductTypeId.Should().Be(model.ProductTypeId);
+            //}
         }
     }
 }

@@ -29,20 +29,12 @@ namespace CIM.BusinessLogic.Services
             var result = _productRepository.Paging(page, howmany);
             return result;
         }
-        public List<ProductModel> List(string code)
-        {
-            var output = _productRepository.All().Where(x => x.Code == code).Select(x => new ProductModel
-            {
-                Code = x.Code
-            }).ToList();
-            return output;
-        }
 
-        public async void BulkEdit(List<ProductModel> model)
+        public async Task BulkEdit(List<ProductModel> model)
         {
             foreach(var plan in model)
             {
-                var existingItem = _productRepository.Where(x => x.Code == plan.Code).FirstOrDefault();
+                var existingItem = _productRepository.Where(x => x.Id == plan.Id).FirstOrDefault();
                 if(existingItem != null)
                 {
                     var db_model = MapperHelper.AsModel(plan, existingItem);
@@ -52,21 +44,35 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();           
         }
 
-        public async void Delete(string code)
+        public async Task Delete(int id)
         {
-            var existingItem = _productRepository.Where(x => x.Code == code).ToList().FirstOrDefault();
+            var existingItem = _productRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
             _productRepository.Delete(existingItem);
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task Create(List<ProductModel> model)
+        public async Task<List<ProductModel>> Create(List<ProductModel> model)
         {
+            List<ProductModel> db_list = new List<ProductModel>();
             foreach (var plan in model)
             {
-                var db_model = MapperHelper.AsModel(plan, new Product());
-                _productRepository.Add(db_model);               
+                var db_model = MapperHelper.AsModel(plan, new Product());              
+                _productRepository.Add(db_model);
+                db_list.Add(MapperHelper.AsModel(db_model, new ProductModel()));
             }
-             await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
+            return db_list;
+        }
+        public List<ProductModel> Get()
+        {
+            var db = _productRepository.All().ToList();
+            List<ProductModel> productDb = new List<ProductModel>();
+            foreach (var plan in db)
+            {
+                var db_model = MapperHelper.AsModel(plan, new ProductModel());
+                productDb.Add(db_model);
+            }
+            return productDb;
         }
     }
 }
