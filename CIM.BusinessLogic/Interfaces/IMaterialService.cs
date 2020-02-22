@@ -10,7 +10,7 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task<PagingModel<MaterialModel>> List(int page, int howmany);
         Task<MaterialModel> Create(MaterialModel model);
-        Task Update(MaterialModel model);
+        Task<MaterialModel> Update(MaterialModel model);
         Task<MaterialModel> Get(int id);
     }
 }

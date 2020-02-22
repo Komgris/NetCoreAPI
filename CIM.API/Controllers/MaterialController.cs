@@ -44,8 +44,7 @@ namespace CIM.API.Controllers
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                await _service.Update(model);
-                return new object();
+                return await _service.Update(model);
             }
             catch (Exception e)
             {
