@@ -20,15 +20,14 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<object> Create([FromBody]MaterialModel model)
+        public async Task<MaterialModel> Create([FromBody]MaterialModel model)
         {
             try
             {
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                await _service.Create(model);
-                return new object();
+               return await _service.Create(model);
             }
             catch (Exception e)
             {

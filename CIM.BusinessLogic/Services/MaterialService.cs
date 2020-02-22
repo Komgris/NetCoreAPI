@@ -25,32 +25,17 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Create(MaterialModel model)
+        public async Task<MaterialModel> Create(MaterialModel model)
         {
-            /*var dbModel = new Material
-            {
-                Code = model.Code,
-                Description = model.Description,
-                ProductCategory = model.ProductCategory,
-                ICSGroup = model.ICSGroup,
-                MaterialGroup = model.MaterialGroup,
-                UOM = model.UOM,
-                BHTPerUnit = model.BHTPerUnit,
-                IsActive = true,
-                IsDelete = false,
-                CreatedBy = CurrentUser.UserId,
-                CreatedAt = DateTime.Now,
-                UpdatedBy = CurrentUser.UserId,
-                UpdatedAt = DateTime.Now
-            };*/
             var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
+            return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
 
         public async Task Update(MaterialModel model)
         {
-            var dbModel = _materialRepository.Where(x => x.Id == model.Id && x.IsActive && x.IsDelete == false).First();
+            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.IsDelete = false;
             dbModel.UpdatedBy = CurrentUser.UserId;
@@ -60,8 +45,15 @@ namespace CIM.BusinessLogic.Services
         }
         public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
         {
-            int total = _materialRepository.Where(x => x.IsActive && x.IsDelete == false).Count();
-            var dbModel = await _materialRepository.List(page, howmany);
+            var products = await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false);
+            int total = products.Count();
+
+            int skipRec = (page - 1) * howmany;
+            int takeRec = howmany;
+            //to do optimize
+            var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false))
+                            .OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
+
 
             var output = new List<MaterialModel>();
             foreach (var item in dbModel)
@@ -77,8 +69,11 @@ namespace CIM.BusinessLogic.Services
         }
         public async Task<MaterialModel> Get(int id)
         {
-            var dbModel = await _materialRepository.Get(id);
+            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
             return MapperHelper.AsModel(dbModel, new MaterialModel());
+
+
+
         }
     }
 }

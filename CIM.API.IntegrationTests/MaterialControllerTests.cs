@@ -9,6 +9,8 @@ using Xunit;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using CIM.API.IntegrationTests.Helper;
+using System.Linq;
 
 namespace CIM.API.IntegrationTests
 {
@@ -18,105 +20,48 @@ namespace CIM.API.IntegrationTests
         public async Task Create_Test()
         {
             // Arrange
-            var model = new MaterialModel()
-            {
-                Code = "A0001",
-                Description = "Test description",
-                ProductCategory = "Ingredient",
-                ICSGroup = "Ingredient",
-                MaterialGroup = "WHITE GRAPE JUICE",
-                UOM = "KG",
-                BHTPerUnit = 999,
-                IsActive = true,
-                IsDelete = false,
-                CreatedAt = DateTime.Now,
-                CreatedBy = "api",
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = "api"
-            };
+            var code = "TestCreate001";
+            var model = await CreateDataTest(code);
+            var expectedCount = 1;
+
+            // Act
+            var listResponse = (await TestClient.GetAsync("/api/Material/List?page=1&howmany=10"));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Count(x=>x.Code== code).Should().Be(expectedCount);
+            var responseModel = listResponseModel.Data.First(x => x.Code == code);
+
+           TestHelper.CompareModel(responseModel, model);            
+        }
+        
+        public async Task<MaterialModel> CreateDataTest(string code)
+        {            
+            var model = TestHelper.GetMock(code);
+
             var content = JsonConvert.SerializeObject(model);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            // Act
-            var createResponse = await TestClient.PostAsync("/api/Material/Create", byteContent);
-            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponse = await TestClient.GetAsync("/api/Material/List?page=1&howmany=10");
-            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
+            
+            var response = await TestClient.PostAsync("/api/Material/Create", byteContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 
-            // Assert            
-            listResponseModel.HowMany.Should().Be(1);
-            var id = listResponseModel.Data[0].Id;
-            foreach (var m in listResponseModel.Data)
-            {
-                m.Code.Should().Be(model.Code);
-                m.Description.Should().Be(model.Description);
-                m.ProductCategory.Should().Be(model.ProductCategory);
-                m.ICSGroup.Should().Be(model.ICSGroup);
-                m.MaterialGroup.Should().Be(model.MaterialGroup);
-                m.UOM.Should().Be(model.UOM);
-                m.BHTPerUnit.Should().Be(model.BHTPerUnit);
-                m.IsActive.Should().Be(model.IsActive);
-                m.IsDelete.Should().Be(model.IsDelete);
-                m.CreatedAt.Should().Be(model.CreatedAt);
-                m.CreatedBy.Should().Be(model.CreatedBy);
-                m.UpdatedAt.Should().Be(model.UpdatedAt);
-                m.UpdatedBy.Should().Be(model.UpdatedBy);
-            }
+            return responseModel;// responseModel.Id;
         }
 
         [Fact]
         public async Task Get_Test()
         {
             // Arrange
-            var model = new MaterialModel()
-            {
-                Code = "A0001",
-                Description = "Test description",
-                ProductCategory = "Ingredient",
-                ICSGroup = "Ingredient",
-                MaterialGroup = "WHITE GRAPE JUICE",
-                UOM = "KG",
-                BHTPerUnit = 999,
-                IsActive = true,
-                IsDelete = false,
-                CreatedAt = DateTime.Now,
-                CreatedBy = "api",
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = "api"
-            };
-            var content = JsonConvert.SerializeObject(model);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var code = "TestCreate001";
+            var model = TestHelper.GetMock(code);
 
-            var createResponse = await TestClient.PostAsync("/api/Material/Create", byteContent);
-            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponse = await TestClient.GetAsync("/api/Material/List?page=1&howmany=10");
-            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
-
-            listResponseModel.HowMany.Should().Be(1);
-            var id = listResponseModel.Data[0].Id;
-            foreach (var m in listResponseModel.Data)
-            {
-                m.Code.Should().Be(model.Code);
-                m.Description.Should().Be(model.Description);
-                m.ProductCategory.Should().Be(model.ProductCategory);
-                m.ICSGroup.Should().Be(model.ICSGroup);
-                m.MaterialGroup.Should().Be(model.MaterialGroup);
-                m.UOM.Should().Be(model.UOM);
-                m.BHTPerUnit.Should().Be(model.BHTPerUnit);
-                m.IsActive.Should().Be(model.IsActive);
-                m.IsDelete.Should().Be(model.IsDelete);
-                m.CreatedAt.Should().Be(model.CreatedAt);
-                m.CreatedBy.Should().Be(model.CreatedBy);
-                m.UpdatedAt.Should().Be(model.UpdatedAt);
-                m.UpdatedBy.Should().Be(model.UpdatedBy);
-            }
             // Act
-            var response = await TestClient.GetAsync("/api/Material/Get?id=" + id);
+            var response = await TestClient.GetAsync("/api/Material/Get?id=" + 1);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 
@@ -140,22 +85,8 @@ namespace CIM.API.IntegrationTests
         public async Task Update_Test()
         {
             // Arrange
-            var model = new MaterialModel()
-            {
-                Code = "A0001",
-                Description = "Test description",
-                ProductCategory = "Ingredient",
-                ICSGroup = "Ingredient",
-                MaterialGroup = "WHITE GRAPE JUICE",
-                UOM = "KG",
-                BHTPerUnit = 999,
-                IsActive = true,
-                IsDelete = false,
-                CreatedAt = DateTime.Now,
-                CreatedBy = "api",
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = "api"
-            };
+            var model = TestHelper.GetMock();
+
             var content = JsonConvert.SerializeObject(model);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);

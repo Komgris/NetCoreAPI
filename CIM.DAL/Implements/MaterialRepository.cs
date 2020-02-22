@@ -16,50 +16,5 @@ namespace CIM.DAL.Implements
         {
         }        
 
-        public async Task<List<Material>> List(int page, int howmany)
-        {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = await _entities.Material.Where(x => x.IsActive && x.IsDelete == false)
-                .OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToListAsync();
-            return dbModel;
-            /*var data = await paging.Select(x => new MaterialModel
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Description = x.Description,
-                ProductCategory = x.ProductCategory,
-                ICSGroup = x.ICSGroup,
-                MaterialGroup = x.MaterialGroup,
-                UOM = x.UOM,
-                BHTPerUnit = x.BHTPerUnit,
-                CreatedBy = x.CreatedBy,
-                UpdatedBy = x.UpdatedBy
-            }).ToListAsync();*/
-        }
-
-        public async Task<Material> Get(int id)
-        {
-            var dbModel = await _entities.Material.Where(x => x.Id == id && x.IsActive && x.IsDelete == false).FirstOrDefaultAsync(); 
-            /*(x => new MaterialModel()
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Description = x.Description,
-                    ProductCategory = x.ProductCategory,
-                    ICSGroup = x.ICSGroup,
-                    MaterialGroup = x.MaterialGroup,
-                    UOM = x.UOM,
-                    BHTPerUnit = x.BHTPerUnit,
-                    IsActive = x.IsActive,
-                    IsDelete = x.IsDelete,
-                    CreatedAt = x.CreatedAt,
-                    CreatedBy = x.CreatedBy,
-                    UpdatedAt = x.UpdatedAt,
-                    UpdatedBy = x.UpdatedBy
-                }).SingleOrDefaultAsync();*/
-            return dbModel;
-        }
     }
 }

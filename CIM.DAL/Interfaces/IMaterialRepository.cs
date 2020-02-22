@@ -9,7 +9,5 @@ namespace CIM.DAL.Interfaces
 {
     public interface IMaterialRepository : IRepository<Material>
     {
-        Task<List<Material>> List(int page, int howmany);
-        Task<Material> Get(int id);
     }
 }
