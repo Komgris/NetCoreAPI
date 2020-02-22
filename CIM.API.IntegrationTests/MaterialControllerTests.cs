@@ -31,10 +31,10 @@ namespace CIM.API.IntegrationTests
             var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
 
             // Assert       
-            listResponseModel.Data.Count(x=>x.Code== code).Should().Be(expectedCount);
+            listResponseModel.Data.Count(x => x.Code == code).Should().Be(expectedCount);
             var responseModel = listResponseModel.Data.First(x => x.Code == code);
 
-           TestHelper.CompareModel(responseModel, model);            
+            TestHelper.CompareModel(responseModel, model);
         }
 
         [Fact]
@@ -78,6 +78,25 @@ namespace CIM.API.IntegrationTests
 
             // Assert
             TestHelper.CompareModel(responseModel, updateResponseModel);
+        }
+        [Fact]
+        public async Task List_Test()
+        {
+            // Arrange
+            var model1 = await CreateDataTest("TestList001");
+            var model2 = await CreateDataTest("TestList002");
+            var model3 = await CreateDataTest("TestList003");
+            var expectedCount = 2;
+
+            // Act
+            var listResponse = (await TestClient.GetAsync("/api/Material/List?page=1&howmany=" + expectedCount));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Count().Should().Be(expectedCount);
+            var responseModel = listResponseModel.Data.First(x => x.Code == code);
         }
         public async Task<MaterialModel> CreateDataTest(string code)
         {
