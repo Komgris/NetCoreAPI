@@ -44,8 +44,8 @@ namespace CIM.BusinessLogic.Services
             _materialRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
             return MapperHelper.AsModel(dbModel, new MaterialModel());
-
         }
+
         public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
         {
             var products = await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false);
@@ -57,12 +57,9 @@ namespace CIM.BusinessLogic.Services
             var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false))
                             .OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
 
-
             var output = new List<MaterialModel>();
             foreach (var item in dbModel)
-            {
                 output.Add(MapperHelper.AsModel(item, new MaterialModel()));
-            }
 
             return new PagingModel<MaterialModel>
             {
@@ -70,13 +67,12 @@ namespace CIM.BusinessLogic.Services
                 Data = output
             };
         }
+
         public async Task<MaterialModel> Get(int id)
         {
             var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
             return MapperHelper.AsModel(dbModel, new MaterialModel());
-
-
-
         }
+
     }
 }

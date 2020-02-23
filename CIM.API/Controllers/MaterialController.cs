@@ -37,7 +37,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<object> Update([FromBody]MaterialModel model)
+        public async Task<MaterialModel> Update([FromBody]MaterialModel model)
         {
             try
             {
@@ -58,8 +58,7 @@ namespace CIM.API.Controllers
         {
             try
             {
-                var result = await _service.List(page, howmany);
-                return result;
+                return await _service.List(page, howmany);
             }
             catch (Exception e)
             {
@@ -73,13 +72,13 @@ namespace CIM.API.Controllers
         {
             try
             {
-                var result = await _service.Get(id);
-                return result;
+                return await _service.Get(id);
             }
             catch (Exception e)
             {
                 throw e;
             }
         }
+
     }
 }

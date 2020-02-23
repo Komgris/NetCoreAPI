@@ -16,6 +16,7 @@ namespace CIM.API.IntegrationTests
 {
     public class MaterialControllerTests : IntegrationTest
     {
+        #region Test function
         [Fact]
         public async Task Create_Test()
         {
@@ -26,8 +27,8 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var listResponse = (await TestClient.GetAsync("/api/Material/List?page=1&howmany=10"));
-            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
 
             // Assert       
@@ -46,6 +47,7 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var response = await TestClient.GetAsync("/api/Material/Get?id=" + model.Id);
+
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 
@@ -62,25 +64,29 @@ namespace CIM.API.IntegrationTests
 
             model.Description = "Update Description";
 
-
             var updateContent = JsonConvert.SerializeObject(model);
             var updateBuffer = System.Text.Encoding.UTF8.GetBytes(updateContent);
             var updateByteContent = new ByteArrayContent(updateBuffer);
             updateByteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
             // Act
             var updateResponse = await TestClient.PostAsync("/api/Material/Update", updateByteContent);
+
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var updateResponseModel = JsonConvert.DeserializeObject<MaterialModel>((await updateResponse.Content.ReadAsStringAsync()));
 
+
             var response = await TestClient.GetAsync("/api/Material/Get?id=" + model.Id);
+
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 
             // Assert
             TestHelper.CompareModel(responseModel, updateResponseModel);
         }
+
         [Fact]
-        public async Task List_Test()
+        public async Task List_HowMany_Test()
         {
             // Arrange
             var model1 = await CreateDataTest("TestList001");
@@ -96,8 +102,10 @@ namespace CIM.API.IntegrationTests
 
             // Assert       
             listResponseModel.Data.Count().Should().Be(expectedCount);
-            var responseModel = listResponseModel.Data.First(x => x.Code == code);
         }
+        #endregion
+
+        #region Create data for use in test function
         public async Task<MaterialModel> CreateDataTest(string code)
         {
             var model = TestHelper.GetMock(code);
@@ -113,5 +121,7 @@ namespace CIM.API.IntegrationTests
 
             return responseModel;// responseModel.Id;
         }
+        #endregion
+
     }
 }
