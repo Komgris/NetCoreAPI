@@ -66,15 +66,15 @@ namespace CIM.API.Controllers
         [HttpGet]
         public string Get(int row, int pages)
         {
-            var fromDb = _productService.Paging(pages, row);
-            return JsonSerializer.Serialize(fromDb);
+            var result = _productService.Paging(pages, row);
+            return JsonSerializer.Serialize(result);
         }
         [Route("api/[controller]/GetNoPaging")]
         [HttpGet]
         public string GetNoPaging()
         {
-            var fromDb = _productService.Get();
-            return JsonSerializer.Serialize(fromDb);
+            var result = _productService.Get();
+            return JsonSerializer.Serialize(result);
         }
           
     }
