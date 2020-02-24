@@ -59,7 +59,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                return "";
+                throw ex;
             }  
         }
         [Route("api/[controller]/Get/{row}/{pages}")]
