@@ -45,9 +45,8 @@ namespace CIM.API.IntegrationTests
                 selected.ProductGroupId.Should().Be(model.ProductGroupId);
                 selected.ProductTypeId.Should().Be(model.ProductTypeId);
             }
-
-
         }
+
         public async Task<List<ProductModel>> Get()
         {
             var getResponse = await TestClient.GetAsync("/api/Product/GetNoPaging");
@@ -55,6 +54,7 @@ namespace CIM.API.IntegrationTests
             var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await getResponse.Content.ReadAsStringAsync()));
             return responseModel;
         }
+
         public async Task<List<ProductModel>> Insert_Get(List<ProductModel> data)
         {
             var content = JsonConvert.SerializeObject(data);
@@ -66,6 +66,7 @@ namespace CIM.API.IntegrationTests
             var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await createResponse.Content.ReadAsStringAsync()));
             return responseModel;
         }
+
         [Fact]
         public async Task EditProduct_Test()
         {
@@ -93,6 +94,7 @@ namespace CIM.API.IntegrationTests
                 selected.ProductTypeId.Should().Be(model.ProductTypeId);
             }
         }
+
         [Fact]
         public async Task DeleteProduct_Test()
         {
@@ -102,7 +104,6 @@ namespace CIM.API.IntegrationTests
 
             var afterInsert = await Insert_Get(MoqList);
             
-
             var deleteResponse = await TestClient.GetAsync("/api/Product/Delete/"+ afterInsert[0].Id);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 

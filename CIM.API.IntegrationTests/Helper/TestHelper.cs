@@ -18,15 +18,6 @@ namespace CIM.API.IntegrationTests.Helper
                 new ProductModel{ Code="testC",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=3 },
             };
         }
-        public static List<ProductModel> GetProductList2()
-        {
-            return new List<ProductModel>()
-            {
-                new ProductModel{ Code="testA",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=4 },
-                new ProductModel{ Code="testB",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=3 },
-                new ProductModel{ Code="testC",ProductFamilyId=1,ProductGroupId=1,ProductTypeId=4 },
-            };
-        }
     }
 
 }
