@@ -118,7 +118,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/load")]
         [HttpPost]
-        public ProcessReponseModel<ProductionPlanModel> Load(ProductionPlanModel model)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(ProductionPlanModel model)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -131,5 +131,23 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [Route("api/[controller]/{id}")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(int id)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                output.Data = new ProductionPlanModel();
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
     }
 }
