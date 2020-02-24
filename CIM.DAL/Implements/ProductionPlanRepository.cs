@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIM.DAL.Implements
 {
-    public class PlanRepository : Repository<ProductionPlan>, IPlanRepository
+    public class ProductionPlanRepository : Repository<ProductionPlan>, IProductionPlanRepository
     {
-        public PlanRepository(cim_dbContext context) : base(context)
+        public ProductionPlanRepository(cim_dbContext context) : base(context)
         {
         }
         public async Task<PagingModel<ProductionPlanModel>> Paging( int page, int howmany)
