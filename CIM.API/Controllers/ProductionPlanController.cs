@@ -15,7 +15,6 @@ using System.Net.Http.Headers;
 namespace CIM.API.Controllers
 {   
     [EnableCors("_myAllowSpecificOrigins")]
-    
     [ApiController]
     public class ProductionPlanController : ControllerBase
     {
@@ -26,6 +25,7 @@ namespace CIM.API.Controllers
         {
             _planService = planService;
         }
+
         [Route("api/[controller]/Compare")]
         [HttpPost]
         public string Compare()
@@ -62,6 +62,7 @@ namespace CIM.API.Controllers
                 throw ex;
             }  
         }
+
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row,int pages)
@@ -69,6 +70,7 @@ namespace CIM.API.Controllers
             var fromDb = _planService.Paging(pages,row);
             return JsonSerializer.Serialize(fromDb);
         }
+
         [Route("api/[controller]/Insert")]
         [HttpPost]
         public bool Insert([FromBody]List<ProductionPlanModel> import)
@@ -83,6 +85,7 @@ namespace CIM.API.Controllers
                 return false;
             }
         }
+
         [Route("api/[controller]/Update")]
         [HttpPost]
         public bool Update([FromBody]List<ProductionPlanModel> list)
@@ -97,6 +100,7 @@ namespace CIM.API.Controllers
                 return false;
             }
         }
+
         [Route("api/[controller]/Delete/{id}")]
         [HttpDelete]
         public bool Delete(string id)
@@ -112,5 +116,20 @@ namespace CIM.API.Controllers
             }
         }
 
+        [Route("api/[controller]/load")]
+        [HttpPost]
+        public ProcessReponseModel<ProductionPlanModel> Load(ProductionPlanModel model)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
     }
 }
