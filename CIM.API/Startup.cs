@@ -46,7 +46,7 @@ namespace CIM.API
             services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
-            services.AddTransient<IPlanRepository, PlanRepository>();
+            services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
 
             services.AddTransient<IPlanService, PlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
