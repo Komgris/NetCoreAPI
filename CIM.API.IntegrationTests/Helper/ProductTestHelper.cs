@@ -8,7 +8,7 @@ using System.Text;
 namespace CIM.API.IntegrationTests.Helper
 
 {
-    public static class TestHelper
+    public static class ProductTestHelper
     {
         public static List<ProductModel> GetProductList()
         {

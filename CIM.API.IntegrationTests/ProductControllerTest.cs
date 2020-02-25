@@ -25,7 +25,7 @@ namespace CIM.API.IntegrationTests
         public async Task InsertProduct_Test()
         {
             // Arrange   
-            var dbProductMoq = TestHelper.GetProductList();
+            var dbProductMoq = ProductTestHelper.GetProductList();
             var beforeInsert = await Get();
             var countBeforeInsert = beforeInsert.Count();
          
@@ -39,7 +39,7 @@ namespace CIM.API.IntegrationTests
 
             foreach (var expect in dbProductMoq)
             {
-                TestHelper.CompareModelProduct(afterInsert, expect);
+                ProductTestHelper.CompareModelProduct(afterInsert, expect);
             }
         }
 
@@ -66,7 +66,7 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task EditProduct_Test()
         {
-            var dbProductMoq = TestHelper.GetProductList();
+            var dbProductMoq = ProductTestHelper.GetProductList();
             var afterInsert = await Insert_Get(dbProductMoq);
 
             afterInsert[0].Code = "EditA";
@@ -83,13 +83,13 @@ namespace CIM.API.IntegrationTests
             var afterEdit = await Get();
             foreach (var expect in afterInsert)
             {
-                TestHelper.CompareModelProduct(afterEdit, expect);
+                ProductTestHelper.CompareModelProduct(afterEdit, expect);
             }
         }     
         [Fact]
         public async Task DeleteProduct_Test()
         {
-            var dbProductMoq = TestHelper.GetProductList();
+            var dbProductMoq = ProductTestHelper.GetProductList();
             List<ProductModel> moqList = new List<ProductModel>();
             moqList.Add(dbProductMoq[0]);
 
