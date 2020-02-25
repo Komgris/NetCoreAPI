@@ -37,13 +37,9 @@ namespace CIM.API.IntegrationTests
             var totalList = countAfterInsert - countBeforeInsert;
             totalList.Should().Be(dbProductMoq.Count());
 
-            foreach (var model in dbProductMoq)
+            foreach (var expect in dbProductMoq)
             {
-                var selected = afterInsert.First(x => x.Code == model.Code);
-                selected.Code.Should().Be(model.Code);
-                selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
-                selected.ProductGroupId.Should().Be(model.ProductGroupId);
-                selected.ProductTypeId.Should().Be(model.ProductTypeId);
+                TestHelper.CompareModelProduct(afterInsert, expect);
             }
         }
 
@@ -85,24 +81,19 @@ namespace CIM.API.IntegrationTests
             createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var afterEdit = await Get();
-            foreach (var model in afterInsert)
+            foreach (var expect in afterInsert)
             {
-                var selected = afterEdit.First(x => x.Id == model.Id);
-                selected.Code.Should().Be(model.Code);
-                selected.ProductFamilyId.Should().Be(model.ProductFamilyId);
-                selected.ProductGroupId.Should().Be(model.ProductGroupId);
-                selected.ProductTypeId.Should().Be(model.ProductTypeId);
+                TestHelper.CompareModelProduct(afterEdit, expect);
             }
-        }
-
+        }     
         [Fact]
         public async Task DeleteProduct_Test()
         {
             var dbProductMoq = TestHelper.GetProductList();
-            List<ProductModel> MoqList = new List<ProductModel>();
-            MoqList.Add(dbProductMoq[0]);
+            List<ProductModel> moqList = new List<ProductModel>();
+            moqList.Add(dbProductMoq[0]);
 
-            var afterInsert = await Insert_Get(MoqList);
+            var afterInsert = await Insert_Get(moqList);
             
             var deleteResponse = await TestClient.GetAsync("/api/Product/Delete/"+ afterInsert[0].Id);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
