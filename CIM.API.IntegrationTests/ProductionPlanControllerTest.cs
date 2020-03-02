@@ -17,9 +17,11 @@ namespace CIM.API.IntegrationTests
         public async Task Load_Test()
         {
             var productionPlan = new ProductionPlanModel();
+            var testRouteId = 123;
             var moqProductionPlan = new ProductionPlan
             {
                 PlantId = "1",
+                ProductId = 123
             };
             using (var scope = ServiceScopeFactory.CreateScope())
             {
@@ -27,20 +29,20 @@ namespace CIM.API.IntegrationTests
                 context.ProductionPlan.Add(moqProductionPlan);
                 context.SaveChanges();
             }
-            productionPlan.Id = moqProductionPlan.Id;
-
+            productionPlan.PlantId = moqProductionPlan.PlantId;
+            productionPlan.RouteId = testRouteId;
 
             // Act
             var content = GetHttpContentForPost(productionPlan, AdminToken);
             var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.Id}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.PlantId}");
             request.Headers.Add("token", AdminToken);
             var getResponse = await TestClient.SendAsync(request);
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getResult = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await getResponse.Content.ReadAsStringAsync()));
-            getResult.Data.Id.Should().Equals(productionPlan.Id);
+            getResult.Data.PlantId.Should().Equals(productionPlan.PlantId);
             getResult.Data.RouteId.Should().Equals(productionPlan.RouteId);
             getResult.Data.ProductId.Should().Equals(productionPlan.ProductId);
             getResult.Data.ActualFinish.Should().Equals(productionPlan.ActualFinish);

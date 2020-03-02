@@ -135,12 +135,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/{id}")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(int id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(string id)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = new ProductionPlanModel();
+                output.Data = await _planService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
