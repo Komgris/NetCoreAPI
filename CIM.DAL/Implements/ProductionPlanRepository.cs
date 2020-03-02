@@ -22,13 +22,12 @@ namespace CIM.DAL.Implements
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.OrderBy(s=>s.Id).Skip(skipRec).Take(takeRec);
+            var paging = query.OrderBy(s=>s.PlantId).Skip(skipRec).Take(takeRec);
 
             var data = await paging
                
                 .Select(x => new ProductionPlanModel
                 {
-                    Id = x.Id,
                     PlantId = x.PlantId,
                     ProductId = x.ProductId,
                     Target = x.Target,
@@ -50,7 +49,6 @@ namespace CIM.DAL.Implements
             var data =  query
                 .Select(x => new ProductionPlanModel
                 {
-                    Id = x.Id,
                     PlantId = x.PlantId,
                     ProductId = x.ProductId,
                     Target = x.Target,
@@ -78,7 +76,7 @@ namespace CIM.DAL.Implements
         public void DeleteProduction(string id)
         {
         
-                var delete = _entities.ProductionPlan.Where(x => x.Id == int.Parse(id)).FirstOrDefault();
+                var delete = _entities.ProductionPlan.Where(x => x.PlantId == id).FirstOrDefault();
                 if (delete != null)
                 {
                     _entities.ProductionPlan.Remove(delete);
