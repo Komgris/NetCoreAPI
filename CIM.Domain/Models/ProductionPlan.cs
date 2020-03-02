@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public int Id { get; set; }
         public string PlantId { get; set; }
-        public string ProductId { get; set; }
+        public int ProductId { get; set; }
         public int? RouteId { get; set; }
         public int? Target { get; set; }
         public int? Unit { get; set; }

@@ -102,7 +102,7 @@ namespace CIM.BusinessLogic.Services
             {
                         ProductionPlanModel data = new ProductionPlanModel();
                         data.PlantId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
-                        data.ProductId = (oSheet.Cells[i, 2].Value ?? string.Empty).ToString();
+                        data.ProductId = Convert.ToInt32(oSheet.Cells[i, 2].Value ?? string.Empty);
                         data.Target = Convert.ToInt32(oSheet.Cells[i, 3].Value ?? string.Empty);
                         data.Unit = Convert.ToInt32(oSheet.Cells[i, 4].Value ?? string.Empty);
                         listImport.Add(data);
