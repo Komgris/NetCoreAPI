@@ -16,7 +16,7 @@ namespace CIM.API.Controllers
 {
     [EnableCors("_myAllowSpecificOrigins")]
     [ApiController]
-    public class ProductionPlanController : ControllerBase
+    public class ProductionPlanController : BaseController
     {
         private IProductionPlanService _planService;
         public ProductionPlanController(
