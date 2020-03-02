@@ -16,12 +16,15 @@ namespace CIM.BusinessLogic.Services
     public class ProductionPlanService : IProductionPlanService
     {
         private readonly IProductionPlanRepository _planRepository;
+        private readonly IUnitOfWorkCIM _unitOfWork;
+
         public ProductionPlanService(
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository planRepository
             )
         {
             _planRepository = planRepository;
+            _unitOfWork = unitOfWork;
         }
         public int Plus(int A, int B)
         {
@@ -112,6 +115,18 @@ namespace CIM.BusinessLogic.Services
                 listImport.Add(data);
             }            
             return listImport;
+        }
+
+        public async Task Load(ProductionPlanModel model)
+        {
+            var now = DateTime.Now;
+            var dbModel = await _planRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
+            dbModel.RouteId = model.RouteId;
+            dbModel.PlanStart = now;
+            dbModel.ActualStart = now;
+            dbModel.LastUpdate = now;
+            _planRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

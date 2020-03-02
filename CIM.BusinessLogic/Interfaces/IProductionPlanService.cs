@@ -18,5 +18,6 @@ namespace CIM.BusinessLogic.Interfaces
         void Insert(List<ProductionPlanModel> import);
         void Delete(string id);
         void Update(List<ProductionPlanModel> list);
+        Task Load(ProductionPlanModel model);
     }
 }

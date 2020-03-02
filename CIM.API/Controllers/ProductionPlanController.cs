@@ -13,7 +13,7 @@ using System.IO;
 using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
-{   
+{
     [EnableCors("_myAllowSpecificOrigins")]
     [ApiController]
     public class ProductionPlanController : ControllerBase
@@ -46,10 +46,10 @@ namespace CIM.API.Controllers
                     }
 
 
-                     var fromExcel = _planService.ReadImport(fullPath);
-                     var fromDb = _planService.Get();
-                     var result = _planService.Compare(fromExcel, fromDb);
-                    return  JsonSerializer.Serialize(result);
+                    var fromExcel = _planService.ReadImport(fullPath);
+                    var fromDb = _planService.Get();
+                    var result = _planService.Compare(fromExcel, fromDb);
+                    return JsonSerializer.Serialize(result);
                     //return "";
                 }
                 else
@@ -60,14 +60,14 @@ namespace CIM.API.Controllers
             catch (Exception ex)
             {
                 throw ex;
-            }  
+            }
         }
 
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
-        public string Get(int row,int pages)
+        public string Get(int row, int pages)
         {
-            var fromDb = _planService.Paging(pages,row);
+            var fromDb = _planService.Paging(pages, row);
             return JsonSerializer.Serialize(fromDb);
         }
 
@@ -123,6 +123,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
+                await _planService.Load(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -148,6 +149,6 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
+        
     }
 }
