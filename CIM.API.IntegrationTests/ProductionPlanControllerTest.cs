@@ -17,13 +17,25 @@ namespace CIM.API.IntegrationTests
         public async Task Load_Test()
         {
             var productionPlan = new ProductionPlanModel();
+            var moqProductionPlan = new ProductionPlan
+            {
+                PlantId = "1",
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(moqProductionPlan);
+                context.SaveChanges();
+            }
+            productionPlan.Id = moqProductionPlan.Id;
+
 
             // Act
             var content = GetHttpContentForPost(productionPlan, AdminToken);
             var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.Id}");
             request.Headers.Add("token", AdminToken);
             var getResponse = await TestClient.SendAsync(request);
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
