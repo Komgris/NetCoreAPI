@@ -26,6 +26,7 @@ namespace CIM.API.Controllers
         {
             _planService = planService;
         }
+
         [Route("api/[controller]/Compare")]
         [HttpPost]
         public string Compare()
@@ -44,13 +45,10 @@ namespace CIM.API.Controllers
                     {
                         file.CopyTo(stream);
                     }
-
-
                      var fromExcel = _planService.ReadImport(fullPath);
                      var fromDb = _planService.Get();
                      var result = _planService.Compare(fromExcel, fromDb);
                     return  JsonSerializer.Serialize(result);
-                    //return "";
                 }
                 else
                 {
@@ -62,6 +60,7 @@ namespace CIM.API.Controllers
                 return "";
             }  
         }
+
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row,int pages)
@@ -69,13 +68,22 @@ namespace CIM.API.Controllers
             var fromDb = _planService.Paging(pages,row);
             return JsonSerializer.Serialize(fromDb);
         }
+
+        [Route("api/[controller]/GetNoPaging")]
+        [HttpGet]
+        public string GetNoPaging()
+        {
+            var result = _planService.Get();
+            return JsonSerializer.Serialize(result);
+        }
+
         [Route("api/[controller]/Insert")]
         [HttpPost]
-        public bool Insert([FromBody]List<ProductionPlanModel> import)
+        public async Task<bool> Insert([FromBody]List<ProductionPlanModel> import)
         {
             try
             {
-                _planService.Insert(import);
+                await  _planService.Insert(import);
                 return true;
             }
             catch
@@ -83,13 +91,14 @@ namespace CIM.API.Controllers
                 return false;
             }
         }
+
         [Route("api/[controller]/Update")]
         [HttpPost]
-        public bool Update([FromBody]List<ProductionPlanModel> list)
+        public async Task<bool> Update([FromBody]List<ProductionPlanModel> list)
         {
             try
             {
-                _planService.Update(list);
+                await _planService.Insert(list);
                 return true;
             }
             catch
@@ -97,13 +106,14 @@ namespace CIM.API.Controllers
                 return false;
             }
         }
+
         [Route("api/[controller]/Delete/{id}")]
         [HttpDelete]
-        public bool Delete(string id)
+        public async Task<bool> Delete(string id)
         {
             try
             {
-                _planService.Delete(id);
+                await _planService.Delete(id);
                 return true;
             }
             catch

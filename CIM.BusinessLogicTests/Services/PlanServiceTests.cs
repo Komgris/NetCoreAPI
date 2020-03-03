@@ -17,15 +17,6 @@ namespace CIM.BusinessLogicTests.Services
     public class PlanServiceTests
     {
         [Fact]
-        public void CalculateTest()
-        {
-            var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
-            var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var planService = new ProductionPlanService(unitOfWork,planRepository);
-            var result = planService.Plus(1, 1);
-            result.Should().Be(2);
-        }
-        [Fact]
         public void ListTest()
         {
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
@@ -42,10 +33,10 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>();
             var dbPlanMoq = new List<ProductionPlan>()
             {
-                new ProductionPlan{ Id = 1, PlantId = "1" },
-                new ProductionPlan{ Id = 2, PlantId = "2" },
-                new ProductionPlan{ Id = 3, PlantId = "13" },
-                new ProductionPlan{ Id = 4, PlantId = "14" },
+                new ProductionPlan{  PlantId = "1" },
+                new ProductionPlan{  PlantId = "2" },
+                new ProductionPlan{  PlantId = "13" },
+                new ProductionPlan{  PlantId = "14" },
             };
 
             planRepository.Setup(x => x.All())
