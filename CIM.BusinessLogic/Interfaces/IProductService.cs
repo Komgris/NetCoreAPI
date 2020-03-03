@@ -15,6 +15,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task Delete(int id);
 
         Task<List<ProductModel>> Create(List<ProductModel> model);
+
         List<ProductModel> Get();
     }
 }

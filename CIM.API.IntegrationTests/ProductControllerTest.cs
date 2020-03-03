@@ -85,7 +85,8 @@ namespace CIM.API.IntegrationTests
             {
                 ProductTestHelper.CompareModelProduct(afterEdit, expect);
             }
-        }     
+        }
+        
         [Fact]
         public async Task DeleteProduct_Test()
         {

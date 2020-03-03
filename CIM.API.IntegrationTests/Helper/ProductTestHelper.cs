@@ -19,6 +19,7 @@ namespace CIM.API.IntegrationTests.Helper
                 new ProductModel{ Code="testC",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=3 },
             };
         }
+
         public static void CompareModelProduct(List<ProductModel> model,ProductModel expect)
         {
             var compareList = model.First(x => x.Code == expect.Code);

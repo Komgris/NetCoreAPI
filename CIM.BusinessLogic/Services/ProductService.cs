@@ -63,6 +63,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return db_list;
         }
+
         public List<ProductModel> Get()
         {
             var db = _productRepository.All().ToList();

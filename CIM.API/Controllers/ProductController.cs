@@ -25,6 +25,7 @@ namespace CIM.API.Controllers
         {
             _productService = productService;
         }
+
         [Route("api/[controller]/Edit")]
         [HttpPost]
         public async Task<object> Edit([FromBody]List<ProductModel> data)
@@ -39,6 +40,7 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
+
         // POST api/<controller>
         [Route("api/[controller]/Insert")]
         [HttpPost]
@@ -53,6 +55,7 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
+
         [Route("api/[controller]/Delete/{id}")]
         [HttpGet]
         public async Task<object> Delete(int id)
@@ -61,7 +64,6 @@ namespace CIM.API.Controllers
             return new object();
         }
 
-
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
         public string Get(int row, int pages)
@@ -69,13 +71,13 @@ namespace CIM.API.Controllers
             var result = _productService.Paging(pages, row);
             return JsonSerializer.Serialize(result);
         }
+
         [Route("api/[controller]/GetNoPaging")]
         [HttpGet]
         public string GetNoPaging()
         {
             var result = _productService.Get();
             return JsonSerializer.Serialize(result);
-        }
-          
+        }        
     }
 }

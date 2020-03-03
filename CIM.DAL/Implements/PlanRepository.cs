@@ -15,6 +15,7 @@ namespace CIM.DAL.Implements
         public PlanRepository(cim_dbContext context) : base(context)
         {
         }
+
         public async Task<PagingModel<ProductionPlanModel>> Paging( int page, int howmany)
         {
             var query = _entities.ProductionPlan;
@@ -44,6 +45,7 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
+
         public List<ProductionPlanModel> Get()
         {
             var query = _entities.ProductionPlan;
@@ -59,6 +61,7 @@ namespace CIM.DAL.Implements
                 }).ToList();
             return data;
         }
+
         public void InsertProduction(List<ProductionPlanModel> import)
         {
             foreach (var plan in import)
@@ -75,6 +78,7 @@ namespace CIM.DAL.Implements
                     _entities.SaveChanges();
             }           
         }
+
         public void DeleteProduction(string id)
         {
         
@@ -86,6 +90,7 @@ namespace CIM.DAL.Implements
                 _entities.SaveChanges();
             
         }
+
         public void UpdateProduction(List<ProductionPlanModel> list)
         {
             foreach (var plan in list)

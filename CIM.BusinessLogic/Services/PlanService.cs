@@ -23,20 +23,24 @@ namespace CIM.BusinessLogic.Services
         {
             _planRepository = planRepository;
         }
+
         public int Plus(int A, int B)
         {
             return A + B;
         }
+
         public List<ProductionPlanModel> Get()
         {
             var result = _planRepository.Get();
             return result;
         }
+
         public Task<PagingModel<ProductionPlanModel>> Paging(int page,int howmany)
         {
             var result =  _planRepository.Paging(page, howmany);
             return result;
         }
+
         public void Insert(List<ProductionPlanModel> import)
         {
             List<ProductionPlanModel> fromDb = _planRepository.Get();
@@ -56,14 +60,17 @@ namespace CIM.BusinessLogic.Services
             _planRepository.InsertProduction(newPlan);
             _planRepository.UpdateProduction(existsPlan);           
         }
+
         public void Delete(string id)
         {
             _planRepository.DeleteProduction(id);
         }
+
         public void Update(List<ProductionPlanModel> list)
         {
             _planRepository.UpdateProduction(list);
         }
+
         public List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan)
         {
             foreach (var plan in import)
@@ -82,6 +89,7 @@ namespace CIM.BusinessLogic.Services
             }
             return import;
         }
+
         public List<ProductionPlanModel> ReadImport(string path)
         {
             FileInfo excel = new FileInfo(path);
@@ -93,6 +101,7 @@ namespace CIM.BusinessLogic.Services
                 return intList;
             }
         }
+
         public List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet)
         {
             int totalRows = oSheet.Dimension.End.Row;
