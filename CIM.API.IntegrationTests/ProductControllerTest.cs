@@ -29,7 +29,7 @@ namespace CIM.API.IntegrationTests
             var beforeInsert = await Get();
             var countBeforeInsert = beforeInsert.Count();
          
-            await Insert_Get(dbProductMoq);
+            await Insert(dbProductMoq);
 
             var afterInsert = await Get();
             var countAfterInsert = afterInsert.Count();
@@ -51,7 +51,7 @@ namespace CIM.API.IntegrationTests
             return responseModel;
         }
 
-        public async Task<List<ProductModel>> Insert_Get(List<ProductModel> data)
+        public async Task<List<ProductModel>> Insert(List<ProductModel> data)
         {
             var content = JsonConvert.SerializeObject(data);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
@@ -67,7 +67,7 @@ namespace CIM.API.IntegrationTests
         public async Task EditProduct_Test()
         {
             var dbProductMoq = ProductTestHelper.GetProductList();
-            var afterInsert = await Insert_Get(dbProductMoq);
+            var afterInsert = await Insert(dbProductMoq);
 
             afterInsert[0].Code = "EditA";
             afterInsert[1].Code = "EditB";
@@ -94,7 +94,7 @@ namespace CIM.API.IntegrationTests
             List<ProductModel> moqList = new List<ProductModel>();
             moqList.Add(dbProductMoq[0]);
 
-            var afterInsert = await Insert_Get(moqList);
+            var afterInsert = await Insert(moqList);
             
             var deleteResponse = await TestClient.GetAsync("/api/Product/Delete/"+ afterInsert[0].Id);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
