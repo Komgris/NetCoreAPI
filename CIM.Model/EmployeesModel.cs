@@ -6,13 +6,11 @@ namespace CIM.Model
 {
     public class EmployeesModel
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
+        public string EmNo { get; set; }
         public int Company { get; set; }
-        public string Level { get; set; }
-        public string FirstNameEng { get; set; }
-        public string LastNameEng { get; set; }
-        public string FirstNameTha { get; set; }
-        public string LastNameTha { get; set; }
+        public string EmLevel { get; set; }
+        public string User_Id { get; set; }
         public DateTime HireDate { get; set; }
         public DateTime TermDate { get; set; }
         public DateTime BirthDate { get; set; }
@@ -28,7 +26,7 @@ namespace CIM.Model
         public string Emsp2 { get; set; }
         public string Education { get; set; }
         public bool IsActive { get; set; }
-        public bool IsDelete { get; set; } 
+        public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

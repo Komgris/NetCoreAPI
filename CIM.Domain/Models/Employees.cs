@@ -6,13 +6,11 @@ namespace CIM.Domain.Models
 {
     public partial class Employees
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
+        public string EmNo { get; set; }
         public int Company { get; set; }
-        public string Level { get; set; }
-        public string FirstNameEng { get; set; }
-        public string LastNameEng { get; set; }
-        public string FirstNameTha { get; set; }
-        public string LastNameTha { get; set; }
+        public string EmLevel { get; set; }
+        public string User_Id { get; set; }
         public DateTime HireDate { get; set; }
         public DateTime TermDate { get; set; }
         public DateTime BirthDate { get; set; }
