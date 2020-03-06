@@ -22,11 +22,10 @@ namespace CIM.DAL.Implements
             if (!string.IsNullOrEmpty(keyword))
             {
                 query = query.Where(x =>
-                    x.UserName.Contains(keyword) ||
-                    x.UserProfiles.Any(profile =>
-                        profile.FirstName.Contains(keyword) ||
-                        profile.LastName.Contains(keyword)
-                    )
+                    x.UserName.Contains(keyword) 
+                    //|| x.UserProfiles.Any(profile =>
+                    //    profile.FirstName.Contains(keyword) ||
+                    //    profile.LastName.Contains(keyword))
                 );
             }
             var data = await query
