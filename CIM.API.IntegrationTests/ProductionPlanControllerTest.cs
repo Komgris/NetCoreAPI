@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
+using System;
 
 namespace CIM.API.IntegrationTests
 {
@@ -18,11 +19,15 @@ namespace CIM.API.IntegrationTests
         {
             var productionPlan = new ProductionPlanModel();
             var testRouteId = 123;
+            var orgUpdateDate = new DateTime(2000, 1, 1);
             var moqProductionPlan = new ProductionPlan
             {
                 PlantId = "1",
-                ProductId = 123
-            };
+                ProductId = 123,
+                UpdatedAt = orgUpdateDate,
+                CreatedBy = "OrgCreatedBy",
+                CreatedAt = new DateTime(2000, 1, 1)
+        };
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
@@ -47,6 +52,12 @@ namespace CIM.API.IntegrationTests
             getResult.Data.ProductId.Should().Equals(productionPlan.ProductId);
             getResult.Data.ActualFinish.Should().Equals(productionPlan.ActualFinish);
             getResult.Data.ActualStart.Should().Equals(productionPlan.ActualStart);
+            getResult.Data.ActualStart.Should().Equals(productionPlan.ActualStart);
+            getResult.Data.CreatedBy.Should().Equals(moqProductionPlan.CreatedBy);
+            getResult.Data.CreatedAt.Should().Equals(moqProductionPlan.CreatedAt);
+            getResult.Data.UpdatedBy.Should().Equals(Admin.Id);
+            (getResult.Data.UpdatedAt != null).Should().BeTrue();
+            (getResult.Data.UpdatedAt != orgUpdateDate).Should().BeTrue();
         }
 
         [Fact]

@@ -34,7 +34,7 @@ namespace CIM.DAL.Implements
                     Unit = x.Unit,
                     Status = x.Status,
                     IsActive = x.IsActive,
-                    LastUpdate = x.UpdatedAt
+                    UpdatedAt = x.UpdatedAt
 
                 }).ToListAsync();
             return new PagingModel<ProductionPlanModel>

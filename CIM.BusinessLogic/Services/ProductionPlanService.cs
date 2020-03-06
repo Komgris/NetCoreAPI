@@ -161,7 +161,6 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == planId);
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
-
         }
 
     }
