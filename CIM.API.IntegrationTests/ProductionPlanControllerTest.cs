@@ -48,5 +48,34 @@ namespace CIM.API.IntegrationTests
             getResult.Data.ActualFinish.Should().Equals(productionPlan.ActualFinish);
             getResult.Data.ActualStart.Should().Equals(productionPlan.ActualStart);
         }
+
+        [Fact]
+        public async Task Load_WhenProductionPlanStarted_Test()
+        {
+            var productionPlan = new ProductionPlanModel();
+            var testRouteId = 123;
+            var moqDbModel = new ProductionPlan
+            {
+                PlantId = "WhenProductionPlanStarted",
+                ProductId = 123,
+                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(moqDbModel);
+                context.SaveChanges();
+            }
+
+            productionPlan.PlantId = moqDbModel.PlantId;
+            productionPlan.RouteId = testRouteId;
+
+            // Act
+            var content = GetHttpContentForPost(productionPlan, AdminToken);
+            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+
+        }
     }
 }

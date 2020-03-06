@@ -143,18 +143,23 @@ namespace CIM.BusinessLogic.Services
         public async Task Load(ProductionPlanModel model)
         {
             var now = DateTime.Now;
-            var dbModel = await _planRepository.FirstOrDefaultAsync(x => x.PlantId == model.PlantId);
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == model.PlantId);
+            if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
+            {
+                throw new Exception("Cannot load started plan.");
+            }
             dbModel.RouteId = model.RouteId;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
             dbModel.LastUpdate = now;
-            _planRepository.Edit(dbModel);
+            dbModel.LastUpdate = now;
+            _productionPlanRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            var dbModel = await _planRepository.FirstOrDefaultAsync(x => x.PlantId == planId);
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == planId);
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
 
         }
