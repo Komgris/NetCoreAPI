@@ -70,13 +70,15 @@ namespace CIM.BusinessLogic.Services
                 if (fromDb.Any(x => x.PlantId == plan.PlantId))
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
-                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.UpdatedBy = CurrentUser.UserId;
+                    db_model.UpdatedAt = DateTime.Now;
                     _productionPlanRepository.Edit(db_model);
                 }
                 else
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
                     db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.CreatedAt = DateTime.Now;
                     _productionPlanRepository.Add(db_model);
                     db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
                 }
