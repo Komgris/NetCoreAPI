@@ -250,9 +250,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ActualStart).HasColumnType("datetime");
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.LastUpdate).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.PlanFinish).HasColumnType("datetime");
 
