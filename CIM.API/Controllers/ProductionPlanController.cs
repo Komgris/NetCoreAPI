@@ -123,6 +123,9 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 await _planService.Load(model);
                 output.IsSuccess = true;
             }

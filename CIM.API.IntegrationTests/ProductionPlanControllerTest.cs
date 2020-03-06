@@ -74,6 +74,9 @@ namespace CIM.API.IntegrationTests
             var content = GetHttpContentForPost(productionPlan, AdminToken);
             var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+            result.IsSuccess.Should().Equals(false);
+            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
 
 
         }

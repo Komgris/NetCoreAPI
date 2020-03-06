@@ -146,13 +146,13 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == model.PlantId);
             if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
             {
-                throw new Exception("Cannot load started plan.");
+                throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
             }
             dbModel.RouteId = model.RouteId;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
-            dbModel.LastUpdate = now;
-            dbModel.LastUpdate = now;
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
         }
