@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CIM.Domain.Models
 {
-    public class Material
+    public partial class Material
     {
         public int Id { get; set; }
         public string? Code { get; set; }
