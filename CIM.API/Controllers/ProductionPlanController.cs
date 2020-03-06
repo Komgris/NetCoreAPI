@@ -13,11 +13,10 @@ using System.IO;
 using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
-{   
+{
     [EnableCors("_myAllowSpecificOrigins")]
-    
     [ApiController]
-    public class ProductionPlanController : ControllerBase
+    public class ProductionPlanController : BaseController
     {
         private IProductionPlanService _planService;
         public ProductionPlanController(
@@ -45,10 +44,13 @@ namespace CIM.API.Controllers
                     {
                         file.CopyTo(stream);
                     }
-                     var fromExcel = _planService.ReadImport(fullPath);
-                     var fromDb = _planService.Get();
-                     var result = _planService.Compare(fromExcel, fromDb);
-                    return  JsonSerializer.Serialize(result);
+
+
+                    var fromExcel = _planService.ReadImport(fullPath);
+                    var fromDb = _planService.Get();
+                    var result = _planService.Compare(fromExcel, fromDb);
+                    return JsonSerializer.Serialize(result);
+                    //return "";
                 }
                 else
                 {
@@ -57,33 +59,25 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                return "";
-            }  
+                throw ex;
+            }
         }
 
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
-        public string Get(int row,int pages)
+        public string Get(int row, int pages)
         {
-            var fromDb = _planService.Paging(pages,row);
+            var fromDb = _planService.Paging(pages, row);
             return JsonSerializer.Serialize(fromDb);
-        }
-
-        [Route("api/[controller]/GetNoPaging")]
-        [HttpGet]
-        public string GetNoPaging()
-        {
-            var result = _planService.Get();
-            return JsonSerializer.Serialize(result);
         }
 
         [Route("api/[controller]/Insert")]
         [HttpPost]
-        public async Task<bool> Insert([FromBody]List<ProductionPlanModel> import)
+        public bool Insert([FromBody]List<ProductionPlanModel> import)
         {
             try
             {
-                await  _planService.Insert(import);
+                _planService.Insert(import);
                 return true;
             }
             catch
@@ -94,11 +88,11 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPost]
-        public async Task<bool> Update([FromBody]List<ProductionPlanModel> list)
+        public bool Update([FromBody]List<ProductionPlanModel> list)
         {
             try
             {
-                await _planService.Insert(list);
+                _planService.Update(list);
                 return true;
             }
             catch
@@ -109,11 +103,11 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Delete/{id}")]
         [HttpDelete]
-        public async Task<bool> Delete(string id)
+        public bool Delete(string id)
         {
             try
             {
-                await _planService.Delete(id);
+                _planService.Delete(id);
                 return true;
             }
             catch
@@ -122,5 +116,42 @@ namespace CIM.API.Controllers
             }
         }
 
+        [Route("api/[controller]/load")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(ProductionPlanModel model)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                await _planService.Load(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/{id}")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(string id)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                output.Data = await _planService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+        
     }
 }

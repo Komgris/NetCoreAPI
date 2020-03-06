@@ -33,10 +33,10 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>();
             var dbPlanMoq = new List<ProductionPlan>()
             {
-                new ProductionPlan{  PlantId = "1" },
-                new ProductionPlan{  PlantId = "2" },
-                new ProductionPlan{  PlantId = "13" },
-                new ProductionPlan{  PlantId = "14" },
+                new ProductionPlan{ PlantId = "1" },
+                new ProductionPlan{ PlantId = "2" },
+                new ProductionPlan{ PlantId = "13" },
+                new ProductionPlan{ PlantId = "14" },
             };
 
             planRepository.Setup(x => x.All())

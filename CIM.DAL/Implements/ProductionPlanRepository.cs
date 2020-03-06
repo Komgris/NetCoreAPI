@@ -35,7 +35,7 @@ namespace CIM.DAL.Implements
                     Unit = x.Unit,
                     Status = x.Status,
                     IsActive = x.IsActive,
-                    LastUpdate = x.LastUpdate
+                    UpdatedAt = x.UpdatedAt
 
                 }).ToListAsync();
             return new PagingModel<ProductionPlanModel>
@@ -71,7 +71,7 @@ namespace CIM.DAL.Implements
                 insert.Target = plan.Target;
                 insert.Unit = plan.Unit;
                 insert.Status = "New";
-                insert.LastUpdate = DateTime.Now;
+                insert.UpdatedAt = DateTime.Now;
                     _entities.ProductionPlan.Add(insert);
                     _entities.SaveChanges();
             }           
@@ -101,7 +101,7 @@ namespace CIM.DAL.Implements
                     update.Target = plan.Target;
                     update.Unit = plan.Unit;
                     update.Status = "Edit";
-                    update.LastUpdate = DateTime.Now;
+                    update.UpdatedAt = DateTime.Now;
                 }
                 _entities.SaveChanges();
             }

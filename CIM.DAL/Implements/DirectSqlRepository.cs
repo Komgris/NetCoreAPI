@@ -5,15 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class DirectSqlRepository : IDirectSqlRepository
     {
+        private IConfiguration configuration;
 
+        public DirectSqlRepository(
+            IConfiguration config
+            )
+        {
+            configuration = config;
+        }
         public void ExecuteNonQuery(string sql, object[] parameters)
         {
-            string connectionString = "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
+            var connectionString = configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -28,8 +36,8 @@ namespace CIM.DAL.Implements
 
         public string ExecuteReader(string sql, object[] parameters)
         {
+            var connectionString = configuration.GetConnectionString("CIMDatabase");
             var output = string.Empty;
-            string connectionString = "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;";// Configuration["ConnectionStrings:DefaultConnection"];
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 //SqlDataReader

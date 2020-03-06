@@ -65,20 +65,24 @@ namespace CIM.BusinessLogic.Services
             List<ProductionPlanModel> fromDb = _productionPlanRepository.Get();
             List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
             List<ProductionPlanModel> existsPlan = new List<ProductionPlanModel>();
+            DateTime timeNow = DateTime.Now;
             foreach (var plan in import)
             {
-                if (fromDb.Any(x=> x.PlantId == plan.PlantId))
+                if (fromDb.Any(x => x.PlantId == plan.PlantId))
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
+                    db_model.UpdatedBy = CurrentUser.UserId;
+                    db_model.UpdatedAt = timeNow;
                     _productionPlanRepository.Edit(db_model);
                 }
                 else
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.CreatedAt = timeNow;
                     _productionPlanRepository.Add(db_model);
                     db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
                 }
-
             }
             await _unitOfWork.CommitAsync();
             return db_list;
@@ -138,6 +142,29 @@ namespace CIM.BusinessLogic.Services
                 listImport.Add(data);
             }
             return listImport;
+        }
+
+        public async Task Load(ProductionPlanModel model)
+        {
+            var now = DateTime.Now;
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == model.PlantId);
+            if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
+            {
+                throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
+            }
+            dbModel.RouteId = model.RouteId;
+            dbModel.PlanStart = now;
+            dbModel.ActualStart = now;
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            _productionPlanRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<ProductionPlanModel> Get(string planId)
+        {
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == planId);
+            return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
         }
 
     }
