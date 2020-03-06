@@ -382,15 +382,7 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("User_Profiles");
 
-                entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
                 entity.Property(e => e.Image).HasColumnType("image");
-
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(500);
 
                 entity.Property(e => e.UserId)
                     .IsRequired()
