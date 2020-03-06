@@ -1,24 +1,22 @@
-﻿using System;
+﻿using CIM.Model;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
-using CIM.Model;
-using OfficeOpenXml;
 using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IProductionPlanService
+    public interface IProductionPlanService : IBaseService
     {
-        int Plus(int A, int B);
+        List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
+        Task<List<ProductionPlanModel>> Insert(List<ProductionPlanModel> import);
+        Task Delete(string id);
+        void Update(List<ProductionPlanModel> list);
         List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan);
         List<ProductionPlanModel> ReadImport(string path);
-        List<ProductionPlanModel> Get();
-        Task<ProductionPlanModel> Get(string planId);
-        void Insert(List<ProductionPlanModel> import);
-        void Delete(string id);
-        void Update(List<ProductionPlanModel> list);
+        List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
         Task Load(ProductionPlanModel model);
     }
 }

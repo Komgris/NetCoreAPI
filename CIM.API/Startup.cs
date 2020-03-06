@@ -40,6 +40,7 @@ namespace CIM.API
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
             services.AddTransient<ISiteRepository, SiteRepository>();
