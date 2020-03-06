@@ -65,20 +65,24 @@ namespace CIM.BusinessLogic.Services
             List<ProductionPlanModel> fromDb = _productionPlanRepository.Get();
             List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
             List<ProductionPlanModel> existsPlan = new List<ProductionPlanModel>();
+            DateTime timeNow = DateTime.Now;
             foreach (var plan in import)
             {
                 if (fromDb.Any(x => x.PlantId == plan.PlantId))
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
+                    db_model.UpdatedBy = CurrentUser.UserId;
+                    db_model.UpdatedAt = timeNow;
                     _productionPlanRepository.Edit(db_model);
                 }
                 else
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.CreatedAt = timeNow;
                     _productionPlanRepository.Add(db_model);
                     db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
                 }
-
             }
             await _unitOfWork.CommitAsync();
             return db_list;
