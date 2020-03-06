@@ -18,5 +18,6 @@ namespace CIM.BusinessLogic.Interfaces
         List<ProductionPlanModel> ReadImport(string path);
         List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
         Task Load(ProductionPlanModel model);
+        Task<ProductionPlanModel> Get(string id);
     }
 }
