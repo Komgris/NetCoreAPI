@@ -18,9 +18,9 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductionPlanController : BaseController
     {
-        private IPlanService _planService;
+        private IProductionPlanService _planService;
         public ProductionPlanController(
-            IPlanService planService
+            IProductionPlanService planService
             )
         {
             _planService = planService;
@@ -152,6 +152,6 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-        
+
     }
 }
