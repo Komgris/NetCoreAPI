@@ -22,11 +22,11 @@ namespace CIM.API.IntegrationTests.Helper
 
         public static void CompareModelProduct(List<ProductModel> model,ProductModel expect)
         {
-            var compareList = model.First(x => x.Code == expect.Code);
-            compareList.Code.Should().Be(expect.Code);
-            compareList.ProductFamilyId.Should().Be(expect.ProductFamilyId);
-            compareList.ProductGroupId.Should().Be(expect.ProductGroupId);
-            compareList.ProductTypeId.Should().Be(expect.ProductTypeId);
+            var compareModel = model.First(x => x.Code == expect.Code);
+            compareModel.Code.Should().Be(expect.Code);
+            compareModel.ProductFamilyId.Should().Be(expect.ProductFamilyId);
+            compareModel.ProductGroupId.Should().Be(expect.ProductGroupId);
+            compareModel.ProductTypeId.Should().Be(expect.ProductTypeId);
         }
     }
 
