@@ -90,5 +90,30 @@ namespace CIM.API.IntegrationTests
             result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
         }
 
+        [Fact]
+        public async Task List_Test()
+        {
+            var productionPlanModel = new ProductionPlan
+            {
+                PlanId = "Testcode",
+                ProductId = 123,
+                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                IsActive = true
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(productionPlanModel);
+                context.SaveChanges();
+            }
+
+            // Act
+            var content = GetHttpContentForPost(productionPlanModel, AdminToken);
+            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Get/1/1", content);
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+            result.IsSuccess.Should().Equals(false);
+            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
+        }
     }
 }
