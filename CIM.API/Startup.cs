@@ -48,12 +48,14 @@ namespace CIM.API
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IProductService, ProductService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -89,7 +91,7 @@ namespace CIM.API
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
-            app.UseCors("CorsPolicy");
+            //app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
@@ -105,7 +107,11 @@ namespace CIM.API
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
+                #if (DEBUG)
+                                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
+                #else
+                                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                #endif
             });
            
 

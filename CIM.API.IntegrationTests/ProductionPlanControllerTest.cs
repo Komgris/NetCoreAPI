@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Net;
+using System.Linq;
 using Xunit;
 using Newtonsoft.Json;
 using CIM.Domain.Models;
@@ -22,7 +23,7 @@ namespace CIM.API.IntegrationTests
             var orgUpdateDate = new DateTime(2000, 1, 1);
             var moqProductionPlan = new ProductionPlan
             {
-                PlantId = "1",
+                PlanId = "1",
                 ProductId = 123,
                 UpdatedAt = orgUpdateDate,
                 CreatedBy = "OrgCreatedBy",
@@ -34,7 +35,7 @@ namespace CIM.API.IntegrationTests
                 context.ProductionPlan.Add(moqProductionPlan);
                 context.SaveChanges();
             }
-            productionPlan.PlantId = moqProductionPlan.PlantId;
+            productionPlan.PlanId = moqProductionPlan.PlanId;
             productionPlan.RouteId = testRouteId;
 
             // Act
@@ -42,12 +43,12 @@ namespace CIM.API.IntegrationTests
             var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.PlantId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.PlanId}");
             request.Headers.Add("token", AdminToken);
             var getResponse = await TestClient.SendAsync(request);
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getResult = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await getResponse.Content.ReadAsStringAsync()));
-            getResult.Data.PlantId.Should().Equals(productionPlan.PlantId);
+            getResult.Data.PlanId.Should().Equals(productionPlan.PlanId);
             getResult.Data.RouteId.Should().Equals(productionPlan.RouteId);
             getResult.Data.ProductId.Should().Equals(productionPlan.ProductId);
             getResult.Data.ActualFinish.Should().Equals(productionPlan.ActualFinish);
@@ -67,7 +68,7 @@ namespace CIM.API.IntegrationTests
             var testRouteId = 123;
             var moqDbModel = new ProductionPlan
             {
-                PlantId = "WhenProductionPlanStarted",
+                PlanId = "WhenProductionPlanStarted",
                 ProductId = 123,
                 Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
             };
@@ -78,7 +79,7 @@ namespace CIM.API.IntegrationTests
                 context.SaveChanges();
             }
 
-            productionPlan.PlantId = moqDbModel.PlantId;
+            productionPlan.PlanId = moqDbModel.PlanId;
             productionPlan.RouteId = testRouteId;
 
             // Act
@@ -90,5 +91,31 @@ namespace CIM.API.IntegrationTests
             result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
         }
 
+        [Fact]
+        public async Task List_Test()
+        {
+            var productionPlanModel = new ProductionPlan
+            {
+                PlanId = "TestListcode",
+                ProductId = 123,
+                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                IsActive = true
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(productionPlanModel);
+                context.SaveChanges();
+            }
+
+            // Act
+            var content = GetHttpContentForPost(productionPlanModel, AdminToken);
+            var loadResponse = await TestClient.GetAsync("api/ProductionPlan/Get/1/1");
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+
+            result.Data.Should().NotBeNull();
+            result.Data.Where(x => x.PlanId == productionPlanModel.PlanId);           
+        }
     }
 }

@@ -65,10 +65,10 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
-        public string Get(int row, int pages)
+        public async Task<PagingModel<ProductionPlanModel>> Get(int row, int pages)
         {
-            var fromDb = _planService.Paging(pages, row);
-            return JsonSerializer.Serialize(fromDb);
+            var model = await _planService.Paging(pages, row);
+            return model;
         }
 
         [Route("api/[controller]/Insert")]

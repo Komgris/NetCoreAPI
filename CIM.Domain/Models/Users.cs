@@ -7,6 +7,8 @@ namespace CIM.Domain.Models
     {
         public Users()
         {
+            Employees = new HashSet<Employees>();
+            Name = new HashSet<Name>();
             SitesUsers = new HashSet<SitesUsers>();
             UserProfiles = new HashSet<UserProfiles>();
         }
@@ -27,6 +29,8 @@ namespace CIM.Domain.Models
 
         public virtual UserGroups UserGroup { get; set; }
         public virtual UserAppTokens UserAppTokens { get; set; }
+        public virtual ICollection<Employees> Employees { get; set; }
+        public virtual ICollection<Name> Name { get; set; }
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
         public virtual ICollection<UserProfiles> UserProfiles { get; set; }
     }
