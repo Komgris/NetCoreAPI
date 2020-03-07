@@ -40,7 +40,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany)
         {
-            var plan = await _productionPlanRepository.WhereAsync(x => x.IsActive == false);
+            var plan = await _productionPlanRepository.WhereAsync(x => x.IsActive == true);
             int total = plan.Count();
 
             int skipRec = (page - 1) * howmany;
