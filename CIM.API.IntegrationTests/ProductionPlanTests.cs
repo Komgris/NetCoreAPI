@@ -23,7 +23,7 @@ namespace CIM.API.IntegrationTests
             var beforeInsert = await Get();
             var countBeforeInsert = beforeInsert.Count();
 
-            await Insert_Get(dbProductionPlanMoq);
+            await SendInsertRequest(dbProductionPlanMoq);
 
             var afterInsert = await Get();
             var countAfterInsert = afterInsert.Count();
@@ -43,7 +43,7 @@ namespace CIM.API.IntegrationTests
             var dbProductMoq = ProductionPlanTestHelper.GetProductionPlansList();
             List<ProductionPlanModel> moqList = new List<ProductionPlanModel>();
             moqList.Add(dbProductMoq[0]);
-            await Insert_Get(moqList);
+            await SendInsertRequest(moqList);
 
             var deleteResponse = await TestClient.DeleteAsync("/api/ProductionPlan/Delete/" + dbProductMoq[0].PlantId);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -62,7 +62,7 @@ namespace CIM.API.IntegrationTests
             return responseModel;
         }
 
-        public async Task Insert_Get(List<ProductionPlanModel> data)
+        public async Task SendInsertRequest(List<ProductionPlanModel> data)
         {
             var content = JsonConvert.SerializeObject(data);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
