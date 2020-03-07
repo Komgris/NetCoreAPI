@@ -8,7 +8,5 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public byte[] Image { get; set; }
         public string UserId { get; set; }
-
-        public virtual Users User { get; set; }
     }
 }

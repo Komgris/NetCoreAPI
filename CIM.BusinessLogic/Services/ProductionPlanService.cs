@@ -46,7 +46,7 @@ namespace CIM.BusinessLogic.Services
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = plan.OrderBy(x => x.PlantId).Skip(skipRec).Take(takeRec).ToList();
+            var dbModel = plan.OrderBy(x => x.PlanId).Skip(skipRec).Take(takeRec).ToList();
 
             var output = new List<ProductionPlanModel>();
             foreach (var item in dbModel)
@@ -68,7 +68,7 @@ namespace CIM.BusinessLogic.Services
             DateTime timeNow = DateTime.Now;
             foreach (var plan in import)
             {
-                if (fromDb.Any(x => x.PlantId == plan.PlantId))
+                if (fromDb.Any(x => x.PlanId == plan.PlanId))
                 {
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
                     db_model.UpdatedBy = CurrentUser.UserId;
@@ -90,7 +90,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Delete(string id)
         {
-            var existingItem = _productionPlanRepository.Where(x => x.PlantId == id).ToList().FirstOrDefault();
+            var existingItem = _productionPlanRepository.Where(x => x.PlanId == id).ToList().FirstOrDefault();
             _productionPlanRepository.Delete(existingItem);
             await _unitOfWork.CommitAsync();
         }
@@ -104,7 +104,7 @@ namespace CIM.BusinessLogic.Services
         {
             foreach (var plan in import)
             {
-                if (dbPlan.Any(x => x.PlantId == plan.PlantId))
+                if (dbPlan.Any(x => x.PlanId == plan.PlanId))
                 {
                     plan.Status = "Inprocess";
                 }
@@ -135,7 +135,7 @@ namespace CIM.BusinessLogic.Services
             for (int i = 2; i <= totalRows; i++)
             {
                 ProductionPlanModel data = new ProductionPlanModel();
-                data.PlantId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
+                data.PlanId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
                 data.ProductId = Convert.ToInt32(oSheet.Cells[i, 2].Value ?? string.Empty);
                 data.Target = Convert.ToInt32(oSheet.Cells[i, 3].Value ?? string.Empty);
                 data.Unit = Convert.ToInt32(oSheet.Cells[i, 4].Value ?? string.Empty);
@@ -147,7 +147,7 @@ namespace CIM.BusinessLogic.Services
         public async Task Load(ProductionPlanModel model)
         {
             var now = DateTime.Now;
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == model.PlantId);
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
             if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
@@ -163,7 +163,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlantId == planId);
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
         }
 

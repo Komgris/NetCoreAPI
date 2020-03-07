@@ -91,7 +91,7 @@ namespace CIM.API
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
-            app.UseCors("CorsPolicy");
+            //app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 

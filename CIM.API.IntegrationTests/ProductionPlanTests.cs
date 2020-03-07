@@ -45,12 +45,12 @@ namespace CIM.API.IntegrationTests
             moqList.Add(dbProductMoq[0]);
             await SendInsertRequest(moqList);
 
-            var deleteResponse = await TestClient.DeleteAsync("/api/ProductionPlan/Delete/" + dbProductMoq[0].PlantId);
+            var deleteResponse = await TestClient.DeleteAsync("/api/ProductionPlan/Delete/" + dbProductMoq[0].PlanId);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var afterDelete = await Get();
 
-            var selected = afterDelete.Where(x => x.PlantId == dbProductMoq[0].PlantId);
+            var selected = afterDelete.Where(x => x.PlanId == dbProductMoq[0].PlanId);
             selected.Should().BeNullOrEmpty();
         }
 

@@ -25,8 +25,7 @@ namespace CIM.DAL.Implements
             int row = query.Count();
             var paging = query.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec);
             var data = await paging
-                .Select(x=>new ProductModel
-                {
+                .Select(x => new ProductModel {
                     Id = x.Id,
                     Code = x.Code,
                     Description = x.Description,
@@ -39,8 +38,7 @@ namespace CIM.DAL.Implements
                     Pmweight = x.Pmweight,
                     WeightPerUom = x.WeightPerUom,
                 }).ToListAsync();
-            return new PagingModel<ProductModel>
-            {
+            return new PagingModel<ProductModel> {
                 HowMany = row,
                 Data = data
             };
@@ -50,8 +48,7 @@ namespace CIM.DAL.Implements
         {
             var query = _entities.Product;
             var data = await query
-                .Select(x => new ProductModel
-                {
+                .Select(x => new ProductModel {
                     Code = x.Code,
                     Description = x.Description,
                     BriteItemPerUpcitem = x.BriteItemPerUpcitem,

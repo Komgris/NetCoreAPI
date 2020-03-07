@@ -12,7 +12,7 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Status { get; set; }
+        public int StatusId { get; set; }
         public int MachineTypeId { get; set; }
         public string Plcaddress { get; set; }
         public bool IsActive { get; set; }
@@ -23,6 +23,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual MachineType MachineType { get; set; }
+        public virtual MachineStatus Status { get; set; }
         public virtual ICollection<Sensor> Sensor { get; set; }
     }
 }

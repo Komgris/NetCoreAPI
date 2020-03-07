@@ -23,13 +23,13 @@ namespace CIM.DAL.Implements
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.OrderBy(s=>s.PlantId).Skip(skipRec).Take(takeRec);
+            var paging = query.OrderBy(s=>s.PlanId).Skip(skipRec).Take(takeRec);
 
             var data = await paging
                
                 .Select(x => new ProductionPlanModel
                 {
-                    PlantId = x.PlantId,
+                    PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
                     Unit = x.Unit,
@@ -51,7 +51,7 @@ namespace CIM.DAL.Implements
             var data =  query
                 .Select(x => new ProductionPlanModel
                 {
-                    PlantId = x.PlantId,
+                    PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
                     Unit = x.Unit,
@@ -66,7 +66,7 @@ namespace CIM.DAL.Implements
             {
                 
                     var insert = new ProductionPlan();
-                insert.PlantId = plan.PlantId;
+                insert.PlanId = plan.PlanId;
                 insert.ProductId = plan.ProductId;
                 insert.Target = plan.Target;
                 insert.Unit = plan.Unit;
@@ -80,7 +80,7 @@ namespace CIM.DAL.Implements
         public void DeleteProduction(string id)
         {
         
-                var delete = _entities.ProductionPlan.Where(x => x.PlantId == id).FirstOrDefault();
+                var delete = _entities.ProductionPlan.Where(x => x.PlanId == id).FirstOrDefault();
                 if (delete != null)
                 {
                     _entities.ProductionPlan.Remove(delete);
@@ -93,10 +93,10 @@ namespace CIM.DAL.Implements
         {
             foreach (var plan in list)
             {
-                var update = _entities.ProductionPlan.Where(x => x.PlantId == plan.PlantId).FirstOrDefault();
+                var update = _entities.ProductionPlan.Where(x => x.PlanId == plan.PlanId).FirstOrDefault();
                 if(update != null)
                 {
-                    update.PlantId = plan.PlantId;
+                    update.PlanId = plan.PlanId;
                     update.ProductId = plan.ProductId;
                     update.Target = plan.Target;
                     update.Unit = plan.Unit;

@@ -13,16 +13,16 @@ namespace CIM.API.IntegrationTests.Helper
         {
             return new List<ProductionPlanModel>()
             {
-                new ProductionPlanModel{ PlantId="testA",ProductId=1,Status="new"},
-                new ProductionPlanModel{ PlantId="testB",ProductId=2,Status="new"},
-                new ProductionPlanModel{ PlantId="testC",ProductId=2,Status="new"},
+                new ProductionPlanModel{ PlanId="testA",ProductId=1,Status="new"},
+                new ProductionPlanModel{ PlanId="testB",ProductId=2,Status="new"},
+                new ProductionPlanModel{ PlanId="testC",ProductId=2,Status="new"},
             };
         }
 
         public static void CompareModelProductionPlan(List<ProductionPlanModel> model, ProductionPlanModel expect)
         {
-            var compareList = model.First(x => x.PlantId == expect.PlantId);
-            compareList.PlantId.Should().Be(expect.PlantId);
+            var compareList = model.First(x => x.PlanId == expect.PlanId);
+            compareList.PlanId.Should().Be(expect.PlanId);
             compareList.ProductId.Should().Be(expect.ProductId);
         }
     }
