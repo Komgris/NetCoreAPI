@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Net;
+using System.Linq;
 using Xunit;
 using Newtonsoft.Json;
 using CIM.Domain.Models;
@@ -95,7 +96,7 @@ namespace CIM.API.IntegrationTests
         {
             var productionPlanModel = new ProductionPlan
             {
-                PlanId = "Testcode",
+                PlanId = "TestListcode",
                 ProductId = 123,
                 Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
                 IsActive = true
@@ -109,11 +110,12 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var content = GetHttpContentForPost(productionPlanModel, AdminToken);
-            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Get/1/1", content);
+            var loadResponse = await TestClient.GetAsync("api/ProductionPlan/Get/1/1");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
-            result.IsSuccess.Should().Equals(false);
-            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
+            var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+
+            result.Data.Should().NotBeNull();
+            result.Data.Where(x => x.PlanId == productionPlanModel.PlanId);           
         }
     }
 }
