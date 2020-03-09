@@ -22,7 +22,7 @@ namespace CIM.API.IntegrationTests
         {
             // Arrange
             var code = "TestCreate001";
-            var model = await CreateDataTest(code);
+            var model = await CreateData(code);
             var expectedCount = 1;
 
             // Act
@@ -43,7 +43,7 @@ namespace CIM.API.IntegrationTests
         {
             // Arrange
             var code = "TestGet001";
-            var model = await CreateDataTest(code);
+            var model = await CreateData(code);
 
             // Act
             var response = await TestClient.GetAsync("/api/Material/Get?id=" + model.Id);
@@ -60,7 +60,7 @@ namespace CIM.API.IntegrationTests
         {
             // Arrange
             var code = "TestUpdate001";
-            var model = await CreateDataTest(code);
+            var model = await CreateData(code);
 
             model.Description = "Update Description";
 
@@ -89,9 +89,9 @@ namespace CIM.API.IntegrationTests
         public async Task List_HowMany_Test()
         {
             // Arrange
-            var model1 = await CreateDataTest("TestList001");
-            var model2 = await CreateDataTest("TestList002");
-            var model3 = await CreateDataTest("TestList003");
+            var model1 = await CreateData("TestList001");
+            var model2 = await CreateData("TestList002");
+            var model3 = await CreateData("TestList003");
             var expectedCount = 2;
 
             // Act
@@ -106,16 +106,13 @@ namespace CIM.API.IntegrationTests
         #endregion
 
         #region Create data for use in test function
-        public async Task<MaterialModel> CreateDataTest(string code)
+        public async Task<MaterialModel> CreateData(string code)
         {
             var model = TestHelper.GetMock(code);
+            var token = string.Empty;
 
-            var content = JsonConvert.SerializeObject(model);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            var response = await TestClient.PostAsync("/api/Material/Create", byteContent);
+            var content = GetHttpContentForPost(model, token);
+            var response = await TestClient.PostAsync("/api/Material/Create", content);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 

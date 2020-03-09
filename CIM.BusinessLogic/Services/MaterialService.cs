@@ -29,7 +29,7 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
-            //dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
             await _unitOfWork.CommitAsync();
             return MapperHelper.AsModel(dbModel, new MaterialModel());
@@ -39,7 +39,7 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
             dbModel = MapperHelper.AsModel(model, dbModel);
-            //dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
             _materialRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
