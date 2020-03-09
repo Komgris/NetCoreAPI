@@ -61,13 +61,11 @@ namespace CIM.API.IntegrationTests
             // Arrange
             var code = "TestUpdate001";
             var model = await CreateData(code);
+            var token = string.Empty;
 
             model.Description = "Update Description";
 
-            var updateContent = JsonConvert.SerializeObject(model);
-            var updateBuffer = System.Text.Encoding.UTF8.GetBytes(updateContent);
-            var updateByteContent = new ByteArrayContent(updateBuffer);
-            updateByteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var updateByteContent = GetHttpContentForPost(model, token);
 
             // Act
             var updateResponse = await TestClient.PostAsync("/api/Material/Update", updateByteContent);

@@ -29,8 +29,7 @@ namespace CIM.API.Controllers
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 //_service.CurrentUser = currentUser;
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-
+                
                return await _service.Create(model);
             }
             catch (Exception e)
@@ -45,8 +44,10 @@ namespace CIM.API.Controllers
         {
             try
             {
-                var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = currentUser;
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                //_service.CurrentUser = currentUser;
+                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 return await _service.Update(model);
             }
