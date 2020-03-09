@@ -7,12 +7,13 @@ using CIM.Model;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductionPlanRepository : IRepository<ProductionPlan> {
+    public interface IProductionPlanRepository : IRepository<ProductionPlan>
+    {
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
         List<ProductionPlanModel> Get();
         void InsertProduction(List<ProductionPlanModel> import);
         void DeleteProduction(string id);
         void UpdateProduction(List<ProductionPlanModel> list);
     }
-    
+
 }
