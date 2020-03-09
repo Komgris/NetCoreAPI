@@ -5,7 +5,7 @@ namespace CIM.Domain.Models
 {
     public partial class ProductionPlan
     {
-        public string PlantId { get; set; }
+        public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int? RouteId { get; set; }
         public int? Target { get; set; }
