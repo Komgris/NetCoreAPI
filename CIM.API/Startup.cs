@@ -48,7 +48,6 @@ namespace CIM.API
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
-            services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
@@ -56,7 +55,6 @@ namespace CIM.API
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IMaterialService, MaterialService>();
             services.AddTransient<IProductService, ProductService>();
 
             services.AddControllers();

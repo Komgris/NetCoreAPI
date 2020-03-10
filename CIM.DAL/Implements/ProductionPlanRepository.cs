@@ -19,14 +19,14 @@ namespace CIM.DAL.Implements
         public async Task<PagingModel<ProductionPlanModel>> Paging( int page, int howmany)
         {
             var query = _entities.ProductionPlan;
-            int skipRec = (page - 1) * howmany;
+            int skipRec = (page-1)*howmany;
             int takeRec = howmany;
             int row = query.Count();
 
             var paging = query.OrderBy(s=>s.PlanId).Skip(skipRec).Take(takeRec);
 
             var data = await paging
-
+               
                 .Select(x => new ProductionPlanModel
                 {
                     PlanId = x.PlanId,
@@ -48,7 +48,7 @@ namespace CIM.DAL.Implements
         public List<ProductionPlanModel> Get()
         {
             var query = _entities.ProductionPlan;
-            var data = query
+            var data =  query
                 .Select(x => new ProductionPlanModel
                 {
                     PlanId = x.PlanId,
@@ -72,9 +72,9 @@ namespace CIM.DAL.Implements
                 insert.Unit = plan.Unit;
                 insert.Status = "New";
                 insert.UpdatedAt = DateTime.Now;
-                _entities.ProductionPlan.Add(insert);
-                _entities.SaveChanges();
-            }
+                    _entities.ProductionPlan.Add(insert);
+                    _entities.SaveChanges();
+            }           
         }
 
         public void DeleteProduction(string id)

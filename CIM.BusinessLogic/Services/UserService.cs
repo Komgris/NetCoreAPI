@@ -46,14 +46,10 @@ namespace CIM.BusinessLogic.Services
             };
             dbModel.UserProfiles.Add(new UserProfiles
             {
+                //FirstName = model.FirstName,
+                //LastName = model.LastName,
                 Image = model.Image,
             });
-            dbModel.Name.Add(new Name
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-            });
-
             _userRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
         }
@@ -82,7 +78,7 @@ namespace CIM.BusinessLogic.Services
                     x=> new
                     {
                         UserName = x.UserName,
-                        FullName = x.Name.Select(x=>x.FirstName).FirstOrDefault() + " " + x.Name.Select(x => x.LastName).FirstOrDefault(),
+                        //FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
                         Group = x.UserGroup.Name,
@@ -99,7 +95,7 @@ namespace CIM.BusinessLogic.Services
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
 
-                result.FullName = dbModel.FullName;
+                //result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
                 result.Token = await CreateToken(dbModel.Id);
