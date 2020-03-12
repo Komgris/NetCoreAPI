@@ -46,7 +46,7 @@ namespace CIM.DAL.Implements
                 var _sql = " DECLARE @result NVARCHAR(max); ";
                 _sql += $" SET @result = ({sql} for json auto); ";
                 _sql += " SELECT @result as Result;";
-                SqlCommand command = new SqlCommand(_sql, connection);
+                SqlCommand command = new SqlCommand(sql, connection);
                 using (SqlDataReader dataReader = command.ExecuteReader())
                 {
                     while (dataReader.Read())
