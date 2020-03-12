@@ -15,10 +15,10 @@ namespace CIM.API.IntegrationTests.Helper
                 Code = code,
                 Description = "Test description",
                 ProductCategory = "Ingredient",
-                ICSGroup = "Ingredient",
+                Icsgroup = "Ingredient",
                 MaterialGroup = "WHITE GRAPE JUICE",
-                UOM = "KG",
-                BHTPerUnit = 999,
+                Uom = "KG",
+                BhtperUnit = 999,
                 IsActive = true,
                 IsDelete = false,
                 CreatedAt = DateTime.Now,
@@ -34,10 +34,10 @@ namespace CIM.API.IntegrationTests.Helper
             model.Code.Should().Be(expect.Code);
             model.Description.Should().Be(expect.Description);
             model.ProductCategory.Should().Be(expect.ProductCategory);
-            model.ICSGroup.Should().Be(expect.ICSGroup);
+            model.Icsgroup.Should().Be(expect.Icsgroup);
             model.MaterialGroup.Should().Be(expect.MaterialGroup);
-            model.UOM.Should().Be(expect.UOM);
-            model.BHTPerUnit.Should().Be(expect.BHTPerUnit);
+            model.Uom.Should().Be(expect.Uom);
+            model.BhtperUnit.Should().Be(expect.BhtperUnit);
             model.IsActive.Should().Be(expect.IsActive);
             model.IsDelete.Should().Be(expect.IsDelete);
             model.CreatedAt.Should().Be(expect.CreatedAt);

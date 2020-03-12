@@ -59,11 +59,11 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<PagingModel<MaterialModel>> List(int page = 1, int howmany = 10)
+        public async Task<PagingModel<MaterialModel>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             try
             {
-                return await _service.List(page, howmany);
+                return await _service.List(keyword,page, howmany);
             }
             catch (Exception e)
             {
