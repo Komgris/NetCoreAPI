@@ -29,8 +29,8 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            dbModel.UpdatedAt = DateTime.Now;
+            dbModel.CreatedBy = CurrentUser.UserId;
+            dbModel.CreatedAt = DateTime.Now;
             await _unitOfWork.CommitAsync();
             return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
