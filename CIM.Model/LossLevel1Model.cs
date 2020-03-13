@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CIM.Model
 {
     //class LossLevel1Model
-    public partial class LossLevel1
+    public partial class LossLevel1Model
     {
         [Key]
         public int Id { get; set; }

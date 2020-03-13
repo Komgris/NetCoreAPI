@@ -1,4 +1,14 @@
-﻿using CIM.BusinessLogic.Interfaces;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Text;
+
+//namespace CIM.BusinessLogic.Services
+//{
+//class DirectSqlService2
+//{
+//}
+//}
+using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using System;
@@ -7,11 +17,11 @@ using System.Text;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class DirectSqlService : IDirectSqlService
+    public class DirectSqlService2 : IDirectSqlService2
     {
-        private IDirectSqlRepository _directSqlRepository;
+        private IDirectSqlRepository2 _directSqlRepository;
 
-        public DirectSqlService(IDirectSqlRepository directSqlRepository)
+        public DirectSqlService2(IDirectSqlRepository2 directSqlRepository)
         {
             _directSqlRepository = directSqlRepository;
         }
@@ -29,7 +39,7 @@ namespace CIM.BusinessLogic.Services
             return _directSqlRepository.LossLevel1ListAll();
             //throw new NotImplementedException();
         }
-        public void LossLevel1Insert(LossLevel1Model lossLevel1)
+        public void LossLevel2Insert(LossLevel1Model lossLevel1)
         {
 
             //object[] parameters;
@@ -39,3 +49,4 @@ namespace CIM.BusinessLogic.Services
         }
     }
 }
+
