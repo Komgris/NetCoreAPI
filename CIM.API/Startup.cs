@@ -47,20 +47,17 @@ namespace CIM.API
             services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
-            services.AddTransient<IDirectSqlRepository2, DirectSqlRepository2>();
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
+            services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
-            services.AddTransient<IDirectSqlService2, DirectSqlService2>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMaterialService, MaterialService>();
             services.AddTransient<IProductService, ProductService>();
-
-            services.AddTransient<ILossLevel1Service, LossLevel1Service>();
-            services.AddTransient<ILossLevel2Service, LossLevel2Service>();
 
             services.AddControllers();
             services.AddSignalR();
