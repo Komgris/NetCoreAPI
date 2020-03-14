@@ -18,7 +18,7 @@ namespace CIM.BusinessLogic.Services
             _repository = repository;
         }
 
-        public void InsertLossLevel1(LossLevel1Model lossLevel1)
+        public void Insert(LossLevel1Model lossLevel1)
         {
 
             String sql = "";
@@ -60,6 +60,82 @@ namespace CIM.BusinessLogic.Services
                                       ,[UpdatedBy]
                                   FROM [Loss_Level_1]
                                   ORDER BY [Id] ASC
+                                ";
+            dt = _repository.Query(sql).Copy();
+
+            try
+            {
+                List<LossLevel1Model> lists = new List<LossLevel1Model>();
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    LossLevel1Model list = new LossLevel1Model();
+
+                    list.Id = Convert.ToInt32(dt.Rows[i]["Id"]);
+                    list.Description = dt.Rows[i]["Description"].ToString();
+                    list.IsActive = Convert.ToBoolean(dt.Rows[i]["IsActive"]);      //public bool IsActive { get; set; }
+                    list.IsDelete = Convert.ToBoolean(dt.Rows[i]["IsDelete"]);      //public bool IsDelete { get; set; }
+                    list.CreatedAt = Convert.ToDateTime(dt.Rows[i]["CreatedAt"]);   //public DateTime CreatedAt { get; set; }
+                    list.CreatedBy = dt.Rows[i]["CreatedBy"].ToString();            //public string CreatedBy { get; set; }
+                    list.UpdatedAt = Convert.ToDateTime(dt.Rows[i]["UpdatedAt"]);   //public DateTime? UpdatedAt { get; set; }
+                    list.UpdatedBy = dt.Rows[i]["UpdatedBy"].ToString();            //public string UpdatedBy { get; set; }
+
+                    lists.Add(list);
+                }
+                return lists;
+            }
+            catch (Exception ex)
+            {
+                //throw new NotImplementedException();
+                throw ex;
+            }
+        }
+
+        public void DeleteByIdLossLevel1(int Id)
+        {
+            String sql = "";
+            sql = @"
+                    DELETE FROM [dbo].[Loss_Level_1]
+                          WHERE [Id] = " + Id + @";
+                    ";
+
+            _repository.NonQuery(sql);
+        }
+
+        public void EditLossLevel1(LossLevel1Model lossLevel1)
+        {
+
+            String sql = "";
+            sql = @"
+                    UPDATE [dbo].[Loss_Level_1]
+                       SET [Description] = '" + lossLevel1.Description + @"'--<Description, nvarchar(250),>
+                          ,[IsActive] = " + Convert.ToInt32(lossLevel1.IsActive) + @"--<IsActive, bit,>
+                          ,[IsDelete] = " + Convert.ToInt32(lossLevel1.IsDelete) + @"--<IsDelete, bit,>
+                          --,[CreatedAt] = --<CreatedAt, datetime,>
+                          --,[CreatedBy] = --<CreatedBy, nvarchar(128),>
+                          ,[UpdatedAt] = CURRENT_TIMESTAMP--<UpdatedAt, datetime,>
+                          ,[UpdatedBy] = '" + lossLevel1.CreatedBy + @"'--<UpdatedBy, nvarchar(128),>
+                     WHERE [Id] = " + Convert.ToInt32(lossLevel1.Id) + @"
+                    ";
+
+            _repository.NonQuery(sql);
+        }
+
+        public List<LossLevel1Model> GetByIdLossLevel1(int Id)
+        {
+            DataTable dt;
+            String sql = @"
+                                SELECT TOP 1
+                                       [Id]
+                                      ,[Description]
+                                      ,[IsActive]
+                                      ,[IsDelete]
+                                      ,[CreatedAt]
+                                      ,[CreatedBy]
+                                      ,[UpdatedAt]
+                                      ,[UpdatedBy]
+                                  FROM [Loss_Level_1]
+                                  WHERE Id = "+ Id + @"
+                                  ORDER BY [Id] ASC;
                                 ";
             dt = _repository.Query(sql).Copy();
 
