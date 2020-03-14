@@ -28,6 +28,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<LossLevel4> LossLevel4 { get; set; }
+        public virtual DbSet<MachineTypeComponentLossLevel3> MachineTypeComponentLossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
@@ -291,8 +292,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel1>(entity =>
             {
-                entity.ToTable("Loss_Level_1");
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -303,7 +302,9 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasMaxLength(250);
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -314,8 +315,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel2>(entity =>
             {
-                entity.ToTable("Loss_Level_2");
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -324,9 +323,13 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.Description)
+                entity.Property(e => e.Description).HasMaxLength(4000);
+
+                entity.Property(e => e.LossLevel1Id).HasColumnName("LossLevel1_Id");
+
+                entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(250);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -337,8 +340,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel3>(entity =>
             {
-                entity.ToTable("Loss_Level_3");
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -349,28 +350,21 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasMaxLength(250);
+                    .HasMaxLength(4000);
 
-                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
+                entity.Property(e => e.LossLevel2Id).HasColumnName("LossLevel2_Id");
 
-                entity.Property(e => e.SymtomId).HasMaxLength(10);
+                entity.Property(e => e.Name).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
-
-                entity.HasOne(d => d.MachineType)
-                    .WithMany(p => p.LossLevel3)
-                    .HasForeignKey(d => d.MachineTypeId)
-                    .HasConstraintName("FK_Loss_MachineType");
             });
 
             modelBuilder.Entity<LossLevel4>(entity =>
             {
-                entity.ToTable("Loss_Level_4");
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedBy)
@@ -379,15 +373,44 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasMaxLength(250);
+                    .HasMaxLength(4000);
 
-                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
 
-                entity.Property(e => e.SymtomId).HasMaxLength(10);
+                entity.Property(e => e.Name).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MachineTypeComponentLossLevel3>(entity =>
+            {
+                entity.ToTable("MachineTypeComponent_LossLevel3");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
+
+                entity.Property(e => e.MachineTypeComponentId).HasColumnName("MachineTypeComponent_Id");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.LossLevel3)
+                    .WithMany(p => p.MachineTypeComponentLossLevel3)
+                    .HasForeignKey(d => d.LossLevel3Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LossLevel3_MachineTypeComponent_LossLevel3");
             });
 
             modelBuilder.Entity<Machine>(entity =>

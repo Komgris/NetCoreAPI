@@ -6,6 +6,7 @@ namespace CIM.Domain.Models
     public partial class LossLevel2
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
@@ -13,5 +14,6 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public int? LossLevel1Id { get; set; }
     }
 }

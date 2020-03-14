@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class LossLevel1
+    public class LossLevel1Model
     {
         public int Id { get; set; }
         public string Name { get; set; }
