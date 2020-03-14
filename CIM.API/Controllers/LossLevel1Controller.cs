@@ -45,11 +45,6 @@ namespace CIM.API.Controllers
         {
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
 
         // GET: api/LossLevel1
         [Route("api/[controller]/Get/{row}/{pages}")]
@@ -122,7 +117,68 @@ namespace CIM.API.Controllers
 
         [Route("Insert")]
         [HttpPost]
-        public bool Insert(List<LossLevel1Model> data)
+        public bool Insert(List<LossLevel1Model> model)
+        {
+            //try
+            //{
+            foreach (var row in model)
+            {
+
+                LossLevel1Model list = new LossLevel1Model();
+
+                list.Id = Convert.ToInt32(row.Id);
+                list.Description = row.Description.ToString();
+                list.IsActive = Convert.ToBoolean(row.IsActive);      //public bool IsActive { get; set; }
+                list.IsDelete = Convert.ToBoolean(row.IsDelete);      //public bool IsDelete { get; set; }
+                list.CreatedAt = Convert.ToDateTime(row.CreatedAt);   //public DateTime CreatedAt { get; set; }
+                list.CreatedBy = row.CreatedBy.ToString();            //public string CreatedBy { get; set; }
+                list.UpdatedAt = Convert.ToDateTime(row.UpdatedAt);   //public DateTime? UpdatedAt { get; set; }
+                list.UpdatedBy = row.UpdatedBy.ToString();            //public string UpdatedBy { get; set; }
+
+                _service.Insert(list);
+            }
+
+            return true;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
+        }
+
+        // GET: api/LossLevel1
+        [Route("ListAll")]
+        [HttpGet]
+        public string ListAll()
+        {
+            var result = _service.ListAllLossLevel1();
+            return JsonSerializer.Serialize(result);
+        }
+
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            _service.DeleteByIdLossLevel1(id);
+        }
+
+        //[Route("api/[controller]/Edit")]
+        //[HttpPost]
+        //public async Task<object> Edit([FromBody]List<ProductModel> data)
+        //{
+        //    try
+        //    {
+        //        await _productService.BulkEdit(data);
+        //        return new object();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw e;
+        //    }
+        //}
+        [Route("Edit")]
+        [HttpPost]
+        public bool Edit(List<LossLevel1Model> data)
         {
             //try
             //{
@@ -140,7 +196,7 @@ namespace CIM.API.Controllers
                 list.UpdatedAt = Convert.ToDateTime(row.UpdatedAt);   //public DateTime? UpdatedAt { get; set; }
                 list.UpdatedBy = row.UpdatedBy.ToString();            //public string UpdatedBy { get; set; }
 
-                _service.InsertLossLevel1(list);
+                _service.EditLossLevel1(list);
             }
 
             return true;
@@ -151,12 +207,19 @@ namespace CIM.API.Controllers
             //}
         }
 
-        // GET: api/LossLevel1
-        [Route("ListAll")]
+
+        //// GET: api/LossLevel1/5
+        //[HttpGet("{id}", Name = "Get")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
+
+        [Route("GetById")]
         [HttpGet]
-        public string ListAll()
+        public string GetById(int Id)
         {
-            var result = _service.ListAllLossLevel1();
+            var result = _service.GetByIdLossLevel1(Id);
             return JsonSerializer.Serialize(result);
         }
 
