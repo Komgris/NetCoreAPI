@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class LossLevel3
     {
+        public LossLevel3()
+        {
+            MachineTypeComponentLossLevel3 = new HashSet<MachineTypeComponentLossLevel3>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -15,5 +20,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public int? LossLevel2Id { get; set; }
+
+        public virtual ICollection<MachineTypeComponentLossLevel3> MachineTypeComponentLossLevel3 { get; set; }
     }
 }
