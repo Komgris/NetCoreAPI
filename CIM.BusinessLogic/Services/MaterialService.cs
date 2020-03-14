@@ -29,8 +29,8 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            dbModel.UpdatedAt = DateTime.Now;
+            dbModel.CreatedBy = CurrentUser.UserId;
+            dbModel.CreatedAt = DateTime.Now;
             await _unitOfWork.CommitAsync();
             return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
@@ -46,16 +46,21 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
 
-        public async Task<PagingModel<MaterialModel>> List(int page, int howmany)
+        public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howmany)
         {
-            var products = await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false);
-            int total = products.Count();
-
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
+
             //to do optimize
-            var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false))
-                            .OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
+            var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false &&
+                                (x.Code.Contains(keyword)
+                                || x.Description.Contains(keyword)
+                                || x.ProductCategory.Contains(keyword)
+                                || x.Icsgroup.Contains(keyword)
+                                || x.MaterialGroup.Contains(keyword)
+                                || x.Uom.Contains(keyword))));
+            int total = dbModel.Count();
+            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
 
             var output = new List<MaterialModel>();
             foreach (var item in dbModel)

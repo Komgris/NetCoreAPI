@@ -101,6 +101,28 @@ namespace CIM.API.IntegrationTests
             // Assert       
             listResponseModel.Data.Count().Should().Be(expectedCount);
         }
+
+        [Fact]
+        public async Task List_Keyword_Test()
+        {
+            // Arrange
+            var model1 = await CreateData("TestList001AA");
+            var model2 = await CreateData("TestList002BB");
+            var model3 = await CreateData("TestList003AA");
+            var expectedKeyword = "AA";
+            var expectedKCount = 2;
+
+            // Act
+            var listResponse = (await TestClient.GetAsync(string.Format("/api/Material/List?keyword={0}&page=1&howmany=2", expectedKeyword)));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Count().Should().Be(expectedKCount);
+            foreach (var model in listResponseModel.Data)
+                model.Code.Should().Contain(expectedKeyword);
+        }
         #endregion
 
         #region Create data for use in test function
@@ -114,7 +136,7 @@ namespace CIM.API.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MaterialModel>((await response.Content.ReadAsStringAsync()));
 
-            return responseModel;// responseModel.Id;
+            return responseModel;
         }
         #endregion
 
