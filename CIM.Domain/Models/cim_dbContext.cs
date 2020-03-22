@@ -471,7 +471,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.Description)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
 
