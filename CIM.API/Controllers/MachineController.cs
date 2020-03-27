@@ -61,7 +61,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/{page}/{howmany}/{keyword}")]
+        [Route("api/[controller]/{page}/{howmany}")]
         public async Task<ProcessReponseModel<PagingModel<MachineModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<MachineModel>>();

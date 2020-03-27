@@ -441,7 +441,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.MachineType)
+                entity.HasOne(d => d.Type)
                     .WithMany(p => p.Machine)
                     .HasForeignKey(d => d.MachineTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)

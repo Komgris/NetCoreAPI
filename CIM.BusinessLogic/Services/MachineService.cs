@@ -38,7 +38,24 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<MachineModel> Get(int id)
         {
-            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _machineRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
+                .Select(
+                        x => new MachineModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            StatusId = x.StatusId,
+                            Status = x.Status.Name,
+                            MachineTypeId = x.MachineTypeId,
+                            Type = x.Type.Name,
+                            Plcaddress = x.Plcaddress,
+                            IsActive = x.IsActive,
+                            IsDelete = x.IsDelete,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy
+                        }).FirstOrDefaultAsync();
             return MapperHelper.AsModel(dbModel, new MachineModel());
         }
 
