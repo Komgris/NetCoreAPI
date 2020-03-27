@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,11 +48,26 @@ namespace CIM.BusinessLogic.Services
             int takeRec = howmany;
 
             //to do optimize
-            var dbModel = (await _machineRepository.WhereAsync(x => x.IsActive && x.IsDelete == false &
-                                (x.Name.Contains(keyword)
-                                || x.Plcaddress.Contains(keyword)
-                                || x.Status.Name.Contains(keyword)
-                                || x.MachineType.Name.Contains(keyword))));
+            var dbModel = await _machineRepository.Where(x => x.IsActive && x.IsDelete == false &
+                    (x.Name.Contains(keyword) || x.Plcaddress.Contains(keyword)
+                    || x.Status.Name.Contains(keyword) || x.Type.Name.Contains(keyword)))
+                    .Select(
+                        x => new MachineModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            StatusId = x.StatusId,
+                            Status = x.Status.Name,
+                            MachineTypeId = x.MachineTypeId,
+                            Type = x.Type.Name,
+                            Plcaddress = x.Plcaddress,
+                            IsActive = x.IsActive,
+                            IsDelete = x.IsDelete,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy
+                        }).ToListAsync();
 
             int total = dbModel.Count();
             dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
@@ -66,6 +82,7 @@ namespace CIM.BusinessLogic.Services
                 Data = output
             };
         }
+
 
         public async Task<MachineModel> Update(MachineModel model)
         {
