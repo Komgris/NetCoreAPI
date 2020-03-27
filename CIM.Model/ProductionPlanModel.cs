@@ -6,9 +6,9 @@ namespace CIM.Model
 {
     public class ProductionPlanModel
     {
-        public int Id { get; set; }
-        public string PlantId { get; set; }
-        public string ProductId { get; set; }
+        public string PlanId { get; set; }
+        public int ProductId { get; set; }
+        public int? RouteId { get; set; }
         public int? Target { get; set; }
         public int? Unit { get; set; }
         public DateTime? PlanStart { get; set; }
@@ -17,6 +17,9 @@ namespace CIM.Model
         public DateTime? ActualFinish { get; set; }
         public string Status { get; set; }
         public bool? IsActive { get; set; }
-        public DateTime? LastUpdate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string UpdatedBy { get; set; }
     }
 }

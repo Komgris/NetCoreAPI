@@ -39,20 +39,25 @@ namespace CIM.API
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
             services.AddTransient<ISiteRepository, SiteRepository>();
             services.AddTransient<IUserAppTokenRepository, UserAppTokenRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDirectSqlRepository, DirectSqlRepository>();
-            services.AddTransient<IPlanRepository, PlanRepository>();
+            services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
+            services.AddTransient<IMaterialRepository, MaterialRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
 
-            services.AddTransient<IPlanService, PlanService>();
+            services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IMachineService, MachineService>();
+            services.AddTransient<IMaterialService, MaterialService>();
+            services.AddTransient<IProductService, ProductService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -97,7 +102,11 @@ namespace CIM.API
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
+                #if (DEBUG)
+                                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
+                #else
+                                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                #endif
             });
            
 

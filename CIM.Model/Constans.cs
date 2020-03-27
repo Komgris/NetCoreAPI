@@ -13,5 +13,9 @@ namespace CIM.Model
             public const string MACHINE_LIST = "machine-list:";
 
         }
+        public class PRODUCTION_PLAN_STATUS {
+            public const string STARTED = "STARTED";
+        }
+
     }
 }
