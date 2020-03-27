@@ -29,21 +29,21 @@ namespace CIM.API.IntegrationTests.Helper
 
         }
 
-        public static void CompareModel(MaterialModel model,MaterialModel expect)
+        public static void CompareModel(MaterialModel model,MaterialModel expected)
         {
-            model.Code.Should().Be(expect.Code);
-            model.Description.Should().Be(expect.Description);
-            model.ProductCategory.Should().Be(expect.ProductCategory);
-            model.Icsgroup.Should().Be(expect.Icsgroup);
-            model.MaterialGroup.Should().Be(expect.MaterialGroup);
-            model.Uom.Should().Be(expect.Uom);
-            model.BhtperUnit.Should().Be(expect.BhtperUnit);
-            model.IsActive.Should().Be(expect.IsActive);
-            model.IsDelete.Should().Be(expect.IsDelete);
-            model.CreatedAt.Should().Be(expect.CreatedAt);
-            model.CreatedBy.Should().Be(expect.CreatedBy);
-            model.UpdatedAt.Should().Be(expect.UpdatedAt);
-            model.UpdatedBy.Should().Be(expect.UpdatedBy);
+            model.Code.Should().Be(expected.Code);
+            model.Description.Should().Be(expected.Description);
+            model.ProductCategory.Should().Be(expected.ProductCategory);
+            model.Icsgroup.Should().Be(expected.Icsgroup);
+            model.MaterialGroup.Should().Be(expected.MaterialGroup);
+            model.Uom.Should().Be(expected.Uom);
+            model.BhtperUnit.Should().Be(expected.BhtperUnit);
+            model.IsActive.Should().Be(expected.IsActive);
+            model.IsDelete.Should().Be(expected.IsDelete);
+            model.CreatedAt.Should().Be(expected.CreatedAt);
+            model.CreatedBy.Should().Be(expected.CreatedBy);
+            model.UpdatedAt.Should().Be(expected.UpdatedAt);
+            model.UpdatedBy.Should().Be(expected.UpdatedBy);
         }
     }
 }
