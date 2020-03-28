@@ -8,7 +8,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public int MaintenanceId { get; set; }
         public string Details { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
         public int CreateBy { get; set; }
         public DateTime CreateDate { get; set; }
         public int? UpdateBy { get; set; }

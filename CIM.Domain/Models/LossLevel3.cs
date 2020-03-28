@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public LossLevel3()
         {
-            MachineTypeComponentLossLevel3 = new HashSet<MachineTypeComponentLossLevel3>();
+            MachineComponentTypeLossLevel3 = new HashSet<MachineComponentTypeLossLevel3>();
         }
 
         public int Id { get; set; }
@@ -19,8 +19,9 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public int? LossLevel2Id { get; set; }
+        public int LossLevel2Id { get; set; }
 
-        public virtual ICollection<MachineTypeComponentLossLevel3> MachineTypeComponentLossLevel3 { get; set; }
+        public virtual LossLevel2 LossLevel2 { get; set; }
+        public virtual ICollection<MachineComponentTypeLossLevel3> MachineComponentTypeLossLevel3 { get; set; }
     }
 }
