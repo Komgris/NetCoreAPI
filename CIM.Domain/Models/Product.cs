@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class Product
     {
+        public Product()
+        {
+            ProductionPlan = new HashSet<ProductionPlan>();
+        }
+
         public int Id { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }
@@ -27,5 +32,6 @@ namespace CIM.Domain.Models
         public virtual ProductFamily ProductFamily { get; set; }
         public virtual ProductGroup ProductGroup { get; set; }
         public virtual ProductType ProductType { get; set; }
+        public virtual ICollection<ProductionPlan> ProductionPlan { get; set; }
     }
 }
