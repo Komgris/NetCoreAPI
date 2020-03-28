@@ -13,34 +13,32 @@ namespace CIM.API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _service;
-        private IGenericService _genericService;
 
-        public UserController(
-            IUserService service,
-            IGenericService genericService
-            )
+        public UserController(IUserService service)
         {
             _service = service;
-            _genericService = genericService;
-
 
         }
 
         [HttpPost]
         [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
-        public async Task Create(UserModel model)
+        public async Task<object> Create(UserModel model)
         {
             try
             {
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                await _service.Create(model);
+                await Task.Run(() => {
+                    _service.Create(model);
+                });
+                return new object();
             }
             catch (Exception e)
             {
                 throw e;
             }
+
         }
 
 
