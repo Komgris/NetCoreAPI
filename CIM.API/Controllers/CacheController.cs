@@ -12,11 +12,11 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MachineCacheController : ControllerBase
+    public class CacheController : ControllerBase
     {
         private IResponseCacheService _responseCacheService;
 
-        public MachineCacheController(
+        public CacheController(
             IResponseCacheService responseCacheService
             )
         {
@@ -24,23 +24,17 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<string> Get(int machineId)
+        public async Task<string> Get(int id, string key)
         {
-            var cacheKey = $"{Constans.RedisKey.MACHINE}{machineId}";
+            var cacheKey = $"{key}{id}";
             var cached = await _responseCacheService.GetAsync(cacheKey);
             return cached;
         }
 
         [HttpPost]
-        public async Task<string> Add(int machineId, string data)
+        public async Task<string> Add(int id, string data, string key)
         {
-            var machineList = await _responseCacheService.GetAsync(Constans.RedisKey.MACHINE_LIST) ?? "";
-            var distinctArray = machineList.Split(',')
-                .ToList();
-            distinctArray.Add(machineId.ToString());
-            var finalList = string.Join(',', distinctArray.Distinct());
-            var cacheKey = $"{Constans.RedisKey.MACHINE}{machineId}";
-            await _responseCacheService.SetAsync(Constans.RedisKey.MACHINE_LIST, finalList);
+            var cacheKey = $"{key}{id}";
             await _responseCacheService.SetAsync(cacheKey, data);
             return "OK";
         }
