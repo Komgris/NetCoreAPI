@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public Machine()
         {
             MachineComponent = new HashSet<MachineComponent>();
+            RouteMachine = new HashSet<RouteMachine>();
             Sensor = new HashSet<Sensor>();
         }
 
@@ -26,6 +27,7 @@ namespace CIM.Domain.Models
         public virtual MachineType MachineType { get; set; }
         public virtual MachineStatus Status { get; set; }
         public virtual ICollection<MachineComponent> MachineComponent { get; set; }
+        public virtual ICollection<RouteMachine> RouteMachine { get; set; }
         public virtual ICollection<Sensor> Sensor { get; set; }
     }
 }

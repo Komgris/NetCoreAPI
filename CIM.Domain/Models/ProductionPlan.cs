@@ -20,5 +20,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual Product Product { get; set; }
     }
 }

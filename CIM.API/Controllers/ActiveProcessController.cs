@@ -16,13 +16,13 @@ namespace CIM.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class MachineController : ControllerBase
+    public class ActiveProcessController : ControllerBase
     {
         private IHubContext<MachineHub> _hub;
         private IResponseCacheService _responseCacheService;
         private IMachineService _machineService;
 
-        public MachineController(IHubContext<MachineHub> hub,
+        public ActiveProcessController(IHubContext<MachineHub> hub,
             IResponseCacheService responseCacheService,
             IMachineService machineService
             )
@@ -34,9 +34,7 @@ namespace CIM.API.Controllers
 
         public IActionResult Get()
         {
-            var timerManager = new TimerService(() =>  _hub.Clients.All.SendAsync("transfermachinedata", _machineService.ListCached()));
-
-            return Ok(new { Message = "Request Machine Completed" });
+            return Ok(new { Message = "Active Process Channel Open." });
         }
 
     }

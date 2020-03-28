@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class ActiveProdcutionPlanModel
+    public class ActiveProcessModel
     {
         public string ProductionPlanId { get; set; }
         public int ProductId { get; set; }

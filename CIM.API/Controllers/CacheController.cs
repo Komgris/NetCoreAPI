@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CIM.API.Cache;
+﻿using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
-using CIM.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers

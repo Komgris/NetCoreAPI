@@ -438,7 +438,9 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Machine_ComponentType");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
@@ -879,6 +881,12 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductionPlan)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Production_Plan_Product");
             });
 
             modelBuilder.Entity<Route>(entity =>
@@ -923,6 +931,12 @@ namespace CIM.Domain.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.RouteMachine)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Route_Machine_Machine");
 
                 entity.HasOne(d => d.Route)
                     .WithMany(p => p.RouteMachine)
