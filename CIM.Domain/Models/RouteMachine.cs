@@ -16,6 +16,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
+        public virtual Machine Machine { get; set; }
         public virtual Route Route { get; set; }
     }
 }

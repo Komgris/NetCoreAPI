@@ -7,13 +7,14 @@ namespace CIM.Domain.Models
     {
         public MachineType()
         {
-            LossLevel3 = new HashSet<LossLevel3>();
             Machine = new HashSet<Machine>();
+            MachineComponentType = new HashSet<MachineComponentType>();
             MachineTypeMaterial = new HashSet<MachineTypeMaterial>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool HasOee { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -21,8 +22,8 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<LossLevel3> LossLevel3 { get; set; }
         public virtual ICollection<Machine> Machine { get; set; }
+        public virtual ICollection<MachineComponentType> MachineComponentType { get; set; }
         public virtual ICollection<MachineTypeMaterial> MachineTypeMaterial { get; set; }
     }
 }
