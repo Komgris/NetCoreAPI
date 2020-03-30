@@ -9,6 +9,7 @@ namespace CIM.DAL.Interfaces
     public interface IRepository<T> where T : class
     {
         IQueryable<T> All();
+        Task<IList<T>> AllAsync();
         IQueryable<T> Where(Expression<Func<T, bool>> predicate);
         Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate);
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);

@@ -17,15 +17,18 @@ namespace CIM.BusinessLogic.Services
     public class ProductionPlanService : BaseService, IProductionPlanService
     {
         private IResponseCacheService _responseCacheService;
+        private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
+            IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository
             )
         {
             _responseCacheService = responseCacheService;
+            _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
             _unitOfWork = unitOfWork;
         }
@@ -163,6 +166,20 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
+
+            var activeProcess = new ActiveProcessModel
+            {
+                ProductionPlanId = model.PlanId,
+                ProductId = model.ProductId,
+            };
+
+            if (model.RouteId.HasValue)
+            {
+                var route = _masterDataService.Routes[model.RouteId.Value];
+                activeProcess.Route = new ActiveRouteModel { 
+                    MachineList = route.MachineList,
+                };
+            }
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
@@ -174,11 +191,14 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
         {
             var componentKey = $"{Constans.RedisKey.COMPONENT}:{id}";
-            var productionPlanId = await _responseCacheService.GetAsync(componentKey);
-            var productionPlanKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}";
-            var productionPlanString = await _responseCacheService.GetAsync(componentKey);
+            var cachedComponentString = await _responseCacheService.GetAsync(componentKey);
+            var cachedComponent = JsonConvert.DeserializeObject<ActiveComponentModel>(cachedComponentString);
+
+            var productionPlanKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}";
+            var productionPlanString = await _responseCacheService.GetAsync(productionPlanKey);
             var productionPlan = JsonConvert.DeserializeObject<ActiveProcessModel>(productionPlanString);
-            productionPlan.Route
+
+            productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
             return productionPlan;
         }
     }

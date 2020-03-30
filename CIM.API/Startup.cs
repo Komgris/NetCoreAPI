@@ -50,6 +50,8 @@ namespace CIM.API
             services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
+            services.AddTransient<IMachineComponentRepository, MachineComponentRepository>();
+            services.AddTransient<IRouteRepository, RouteRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -61,6 +63,8 @@ namespace CIM.API
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IMachineComponentService, MachineComponentService>();
 
+            services.AddTransient<IMasterDataService, MasterDataService>();
+
             services.AddControllers();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
@@ -69,6 +73,11 @@ namespace CIM.API
             });
 
             services.InstallServicesInAssembly(Configuration);
+
+            var sp = services.BuildServiceProvider();
+            var masterDataService = sp.GetService<IMasterDataService>();
+            masterDataService.GetData();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,7 +119,6 @@ namespace CIM.API
                                 c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
                 #endif
             });
-           
 
         }
     }
