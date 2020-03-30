@@ -24,7 +24,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual MachineType Type { get; set; }
+        public virtual MachineType MachineType { get; set; }
         public virtual MachineStatus Status { get; set; }
         public virtual ICollection<MachineComponent> MachineComponent { get; set; }
         public virtual ICollection<RouteMachine> RouteMachine { get; set; }
