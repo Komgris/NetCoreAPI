@@ -19,5 +19,6 @@ namespace CIM.BusinessLogic.Interfaces
         List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
         Task Load(ProductionPlanModel model);
         Task<ProductionPlanModel> Get(string id);
+        Task<ActiveProcessModel> UpdateByComponent(int id, int statusId);
     }
 }

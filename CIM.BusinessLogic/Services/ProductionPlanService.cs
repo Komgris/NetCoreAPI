@@ -10,18 +10,22 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
+using Newtonsoft.Json;
 
 namespace CIM.BusinessLogic.Services
 {
     public class ProductionPlanService : BaseService, IProductionPlanService
     {
+        private IResponseCacheService _responseCacheService;
         private IProductionPlanRepository _productionPlanRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public ProductionPlanService(
+            IResponseCacheService responseCacheService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository
             )
         {
+            _responseCacheService = responseCacheService;
             _productionPlanRepository = productionPlanRepository;
             _unitOfWork = unitOfWork;
         }
@@ -167,5 +171,15 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
         }
 
+        public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
+        {
+            var componentKey = $"{Constans.RedisKey.COMPONENT}:{id}";
+            var productionPlanId = await _responseCacheService.GetAsync(componentKey);
+            var productionPlanKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}";
+            var productionPlanString = await _responseCacheService.GetAsync(componentKey);
+            var productionPlan = JsonConvert.DeserializeObject<ActiveProcessModel>(productionPlanString);
+            productionPlan.Route
+            return productionPlan;
+        }
     }
 }

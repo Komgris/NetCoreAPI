@@ -9,7 +9,7 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
         public int ProductId { get; set; }
 
-        public string Route { get; set; }
+        public RouteModel Route { get; set; }
 
     }
 }
