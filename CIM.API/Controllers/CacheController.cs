@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CIM.API.Cache;
-using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using CIM.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
@@ -18,20 +14,25 @@ namespace CIM.API.Controllers
             IResponseCacheService responseCacheService
             )
         {
-
             _responseCacheService = responseCacheService;
         }
 
-        const string CACHE_KEY = "CACHE_KEY";
-
         [HttpGet]
-        public async Task<int> Get(int id)
+        public async Task<string> Get(int id, string key)
         {
-            var cached = await _responseCacheService.GetAsync(CACHE_KEY);
-            var cachedNum = int.Parse(cached);
-            var sum = id + cachedNum;
-            await _responseCacheService.SetAsync(CACHE_KEY, sum);
-            return sum;
+            var cacheKey = $"{key}{id}";
+            var cached = await _responseCacheService.GetAsync(cacheKey);
+            return cached;
         }
+
+        [HttpPost]
+        public async Task<string> Add(int id, string data, string key)
+        {
+            var cacheKey = $"{key}{id}";
+            await _responseCacheService.SetAsync(cacheKey, data);
+            return "OK";
+        }
+
+
     }
 }

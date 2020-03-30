@@ -8,6 +8,12 @@ namespace CIM.Model
     {
         public const string CURRENT_USER = "CurrentUser";
 
+        public class RedisKey {
+            public const string MACHINE = "machine:";
+            public const string MACHINE_LIST = "machine-list:";
+
+            public static object PRODUCTION_PLAN = "production-plan";
+        }
         public class PRODUCTION_PLAN_STATUS {
             public const string STARTED = "STARTED";
         }
