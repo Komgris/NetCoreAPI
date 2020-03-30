@@ -49,6 +49,7 @@ namespace CIM.API
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
             services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IMachineRepository, MachineRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
