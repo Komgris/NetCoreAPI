@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async void Create(UserModel model)
+        public async Task Create(UserModel model)
         {
             var dbModel = new Users
             {

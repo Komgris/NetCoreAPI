@@ -31,7 +31,6 @@ namespace CIM.API
         {
                       Configuration = configuration;
         }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -56,25 +55,16 @@ namespace CIM.API
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMachineService, MachineService>();
             services.AddTransient<IMaterialService, MaterialService>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IMachineComponentService, MachineComponentService>();
 
             services.AddControllers();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CIM Data Service API", Version = "v1" });
-            });
-            
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                                builder =>
-                                {
-                                    builder.AllowAnyOrigin()
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod();
-                                });
             });
 
             services.InstallServicesInAssembly(Configuration);
@@ -92,8 +82,11 @@ namespace CIM.API
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
-            //app.UseCors("CorsPolicy");
+            app.UseCors(builder =>
+               builder.WithOrigins("http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
 
             app.UseAuthorization();
 
@@ -101,6 +94,7 @@ namespace CIM.API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChartHub>("/chart");
+                endpoints.MapHub<MachineHub>("/activeprocess");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

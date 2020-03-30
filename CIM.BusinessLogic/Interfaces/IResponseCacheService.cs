@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CIM.API.Cache
+namespace CIM.BusinessLogic.Interfaces
 {
     public interface IResponseCacheService
     {
