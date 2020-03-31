@@ -6,6 +6,6 @@ namespace CIM.Model
 {
     public class ActiveRouteModel
     {
-        public Dictionary<int, ActiveMachineModel> MachineList { get; set; }
+        public Dictionary<int, MachineModel> MachineList { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task GetData();
 
-        IDictionary<int, ComponentModel> Components { get; set; }
+        IDictionary<int, MachineComponentModel> Components { get; set; }
         IDictionary<int, MachineModel> Machines { get; set; }
         IDictionary<int, RouteModel> Routes { get; set; }
     }

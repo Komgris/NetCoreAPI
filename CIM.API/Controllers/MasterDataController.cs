@@ -23,7 +23,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public IDictionary<int, ComponentModel> Get()
+        public IDictionary<int, MachineComponentModel> Get()
         {
 
            return _masterDataService.Components;
