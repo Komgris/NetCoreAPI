@@ -151,7 +151,7 @@ namespace CIM.BusinessLogic.Services
             return listImport;
         }
 
-        public async Task Load(ProductionPlanModel model)
+        public async Task Start(ProductionPlanModel model)
         {
             var now = DateTime.Now;
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
@@ -160,6 +160,7 @@ namespace CIM.BusinessLogic.Services
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
             }
             dbModel.RouteId = model.RouteId;
+            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STARTED;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
             dbModel.UpdatedAt = now;
@@ -176,11 +177,13 @@ namespace CIM.BusinessLogic.Services
             if (model.RouteId.HasValue)
             {
                 var route = _masterDataService.Routes[model.RouteId.Value];
-                activeProcess.Route = new ActiveRouteModel { 
+                activeProcess.Route = new ActiveRouteModel
+                {
                     MachineList = route.MachineList,
                 };
             }
         }
+
 
         public async Task<ProductionPlanModel> Get(string planId)
         {

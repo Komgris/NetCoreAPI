@@ -116,9 +116,9 @@ namespace CIM.API.Controllers
             }
         }
 
-        [Route("api/[controller]/load")]
+        [Route("api/[controller]/Start")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(ProductionPlanModel model)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Start(ProductionPlanModel model)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -126,7 +126,7 @@ namespace CIM.API.Controllers
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Load(model);
+                await _planService.Start(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -135,6 +135,7 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
 
         [Route("api/[controller]/{id}")]
         [HttpGet]
