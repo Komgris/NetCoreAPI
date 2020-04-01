@@ -19,17 +19,21 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
+        private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
+
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
-            IProductionPlanRepository productionPlanRepository
+            IProductionPlanRepository productionPlanRepository,
+            IProductRepository productRepository
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
+            _productRepository = productRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -232,7 +236,15 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-
+        public async Task<ProductionPlanModel> Load(string id)
+        {
+            var masterData = await _masterDataService.GetData();
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
+            var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
+            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new [] { "Product"});
+            model.Product = MapperHelper.AsModel(productDb, new ProductModel());
+            return model;
+        }
 
         public async Task<ProductionPlanModel> Get(string planId)
         {

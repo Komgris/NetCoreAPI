@@ -48,31 +48,31 @@ namespace CIM.DAL.Implements
 
         public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
         {
-
-            var sqlQuery = from productionPlan in _entities.ProductionPlan
-                           join r in _entities.Route on productionPlan.RouteId equals r.Id into productionPlanRoute
-                           from route in productionPlanRoute.DefaultIfEmpty()
-                           where productionPlan.IsActive
-                           && !routeId.HasValue ? true : route.Id == routeId
-                           && !productId.HasValue ? true : productionPlan.ProductId == productId
-                           && string.IsNullOrEmpty(keyword) ? true : (
-                               productionPlan.PlanId.Contains(keyword) ||
-                               productionPlan.Product.Code.Contains(keyword) ||
-                               route.Name.Contains(keyword)
-                           )
-                           select new ProductionPlanListModel
-                           {
-                               Id = productionPlan.PlanId,
-                               Line = route.Name,
-                               ActualFinish = productionPlan.ActualFinish,
-                               ActualStart = productionPlan.ActualStart,
-                               Finished = productionPlan.PlanFinish,
-                               Product = productionPlan.Product.Code,
-                               Started = productionPlan.PlanStart,
-                               Status = productionPlan.Status,
-                               Target = productionPlan.Target,
-                               Unit = productionPlan.Unit
-                           };
+            var sqlQuery = 
+                from productionPlan in _entities.ProductionPlan
+                join r in _entities.Route on productionPlan.RouteId equals r.Id into productionPlanRoute
+                from route in productionPlanRoute.DefaultIfEmpty()
+                where productionPlan.IsActive
+                && !routeId.HasValue ? true : route.Id == routeId
+                && !productId.HasValue ? true : productionPlan.ProductId == productId
+                && string.IsNullOrEmpty(keyword) ? true : (
+                    productionPlan.PlanId.Contains(keyword) ||
+                    productionPlan.Product.Code.Contains(keyword) ||
+                    route.Name.Contains(keyword)
+                )
+                select new ProductionPlanListModel
+                {
+                    Id = productionPlan.PlanId,
+                    Line = route.Name,
+                    ActualFinish = productionPlan.ActualFinish,
+                    ActualStart = productionPlan.ActualStart,
+                    Finished = productionPlan.PlanFinish,
+                    Product = productionPlan.Product.Code,
+                    Started = productionPlan.PlanStart,
+                    Status = productionPlan.Status,
+                    Target = productionPlan.Target,
+                    Unit = productionPlan.Unit
+                };
 
             return await ToPagingModel(sqlQuery, page, howmany); 
 
