@@ -386,10 +386,6 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Plcaddress)
-                    .HasColumnName("PLCAddress")
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
