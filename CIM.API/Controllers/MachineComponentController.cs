@@ -41,12 +41,7 @@ namespace CIM.API.Controllers
         public async Task<string> SetStatus(int id, int statusId)
         {
 
-            //get production plan by component
-
-            //update component status in production plan
             var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
-            //boardcast
-
             await _hub.Clients.All.SendAsync($"production-plan-{productionPlan.ProductionPlanId}", productionPlan);
             return "OK";
         }

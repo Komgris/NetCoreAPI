@@ -18,3 +18,8 @@ command-channel
 { "param": "./maintainace", "name": "navigate"}
 { "param": "./production-plan-overview/PRODPLAN-1", "name": "navigate"}
 
+#Redis
+install 
+Sample cmd on cli
+scan 0
+
