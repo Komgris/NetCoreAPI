@@ -185,7 +185,7 @@ namespace CIM.BusinessLogic.Services
                 ProductionPlanId = model.PlanId,
                 ProductId = model.ProductId,
             };
-            //await _masterDataService.GetData();
+
             var route = masterData.Routes[model.RouteId.Value];
             activeProcess.Route = new ActiveRouteModel
             {
