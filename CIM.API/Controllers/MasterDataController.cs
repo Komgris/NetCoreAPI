@@ -41,5 +41,14 @@ namespace CIM.API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("api/[controller]/Clear")]
+        public async Task<string> Clear()
+        {
+            await _masterDataService.Clear();
+            return "OK";
+
+        }
+
     }
 }

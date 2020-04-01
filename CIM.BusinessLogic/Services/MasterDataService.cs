@@ -31,10 +31,6 @@ namespace CIM.BusinessLogic.Services
             _machineRepository = machineRepository;
         }
         public MasterDataModel Data { get; set; }
-        //public IDictionary<int, MachineComponentModel> Components { get; set; }
-        //public IDictionary<int, MachineModel> Machines { get; set; }
-        //public IDictionary<int, int[]> RouteMachines { get; set; }
-        //public IDictionary<int, RouteModel> Routes { get; set; }
 
         private async Task<IDictionary<int, MachineComponentModel>> GetComponents()
         {
@@ -89,18 +85,19 @@ namespace CIM.BusinessLogic.Services
         public async Task<MasterDataModel> GetData()
         {
 
-            var masterData = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
-            if (masterData == null)
+            if (Data == null)
             {
-                masterData = new MasterDataModel();
-                masterData.RouteMachines = await GetRouteMachine();
-                masterData.Components = await GetComponents();
-                masterData.Machines = await GetMachines(masterData.Components);
-                masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
+                Data = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
+
+                if (Data == null)
+                {
+                    Data = await Refresh();
+                }
+                
             }
-            return masterData;
+            return Data;
         }
+
         public async Task<MasterDataModel> Refresh()
         {
             var masterData = new MasterDataModel();
@@ -112,6 +109,10 @@ namespace CIM.BusinessLogic.Services
             return masterData;
         }
 
+        public async Task Clear()
+        {
+            await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", null);
+        }
 
         private async Task<IDictionary<int, int[]>> GetRouteMachine()
         {
