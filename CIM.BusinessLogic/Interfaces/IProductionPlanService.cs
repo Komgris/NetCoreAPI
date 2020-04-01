@@ -17,7 +17,8 @@ namespace CIM.BusinessLogic.Interfaces
         List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan);
         List<ProductionPlanModel> ReadImport(string path);
         List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
-        Task Load(ProductionPlanModel model);
+        Task Start(ProductionPlanModel model);
         Task<ProductionPlanModel> Get(string id);
+        Task<ActiveProcessModel> UpdateByComponent(int id, int statusId);
     }
 }

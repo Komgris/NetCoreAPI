@@ -18,6 +18,14 @@ namespace CIM.BusinessLogic.Services
         {
             _distributedCache = distributedCache;
         }
+
+        public async Task<T> GetAsTypeAsync<T>(string key)
+        {
+            var jsonString = await GetAsync(key);
+            return JsonConvert.DeserializeObject<T>(jsonString);
+
+        }
+
         public async Task<string> GetAsync(string key)
         {
             return await _distributedCache.GetStringAsync(key);

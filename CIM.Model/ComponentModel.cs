@@ -1,13 +1,13 @@
-﻿namespace CIM.Model
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CIM.Model
 {
-    public class MachineComponentModel
+    public class ComponentModel
     {
-
         public int Id { get; set; }
-
         public string Name { get; set; }
-
-        public int Status { get; set; }
         public int MachineId { get; set; }
     }
 }

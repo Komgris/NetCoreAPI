@@ -40,7 +40,7 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var content = GetHttpContentForPost(productionPlan, AdminToken);
-            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
+            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Start", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"api/ProductionPlan/{productionPlan.PlanId}");
@@ -84,11 +84,10 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var content = GetHttpContentForPost(productionPlan, AdminToken);
-            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Load", content);
+            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Start", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
-            result.IsSuccess.Should().Equals(false);
-            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
+            result.IsSuccess.Should().Equals(true);
         }
 
         [Fact]

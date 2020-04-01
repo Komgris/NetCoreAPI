@@ -10,5 +10,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetAsync(string key, object model);
 
         Task<string> GetAsync(string key);
+        Task<T> GetAsTypeAsync<T>(string key);
     }
 }

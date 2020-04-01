@@ -9,10 +9,13 @@ namespace CIM.Model
         public const string CURRENT_USER = "CurrentUser";
 
         public class RedisKey {
+
             public const string MACHINE = "machine:";
             public const string MACHINE_LIST = "machine-list:";
+            public const string PRODUCTION_PLAN = "production-plan";
+            public const string COMPONENT = "component-production-plan";
+            public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
 
-            public static object PRODUCTION_PLAN = "production-plan";
         }
         public class PRODUCTION_PLAN_STATUS {
             public const string STARTED = "STARTED";

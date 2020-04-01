@@ -30,6 +30,12 @@ namespace CIM.DAL.Implements
             return result;
         }
 
+        public async Task<IList<T>> AllAsync()
+        {
+            var result = await _dbset.ToListAsync();
+            return result;
+        }
+
         public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
             T query = await _dbset.FirstOrDefaultAsync(predicate);

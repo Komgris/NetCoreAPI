@@ -10,18 +10,25 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
+using Newtonsoft.Json;
 
 namespace CIM.BusinessLogic.Services
 {
     public class ProductionPlanService : BaseService, IProductionPlanService
     {
+        private IResponseCacheService _responseCacheService;
+        private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public ProductionPlanService(
+            IResponseCacheService responseCacheService,
+            IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository
             )
         {
+            _responseCacheService = responseCacheService;
+            _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
             _unitOfWork = unitOfWork;
         }
@@ -144,7 +151,7 @@ namespace CIM.BusinessLogic.Services
             return listImport;
         }
 
-        public async Task Load(ProductionPlanModel model)
+        public async Task Start(ProductionPlanModel model)
         {
             var now = DateTime.Now;
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
@@ -152,14 +159,48 @@ namespace CIM.BusinessLogic.Services
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
             }
+
+            if (!model.RouteId.HasValue)
+            {
+                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
+            }
+
             dbModel.RouteId = model.RouteId;
+            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STARTED;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
             dbModel.UpdatedAt = now;
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
+
+            var activeProcess = new ActiveProcessModel
+            {
+                ProductionPlanId = model.PlanId,
+                ProductId = model.ProductId,
+            };
+
+            var route = _masterDataService.Routes[model.RouteId.Value];
+            activeProcess.Route = new ActiveRouteModel
+            {
+                MachineList = route.MachineList,
+            };
+            foreach (var machine in activeProcess.Route.MachineList)
+            {
+                foreach (var component in machine.Value.ComponentList)
+                {
+                    var cachedComponent = new ActiveComponentModel
+                    {
+                        MachineComponentId = component.Key,
+                        MachineId = machine.Key,
+                        ProductionPlanId = activeProcess.ProductionPlanId
+                    };
+                    await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Key}", cachedComponent);
+                }
+            }
+            await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{activeProcess.ProductionPlanId}", activeProcess);
         }
+
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
@@ -167,5 +208,13 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
         }
 
+        public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
+        {
+            var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{id}");
+            var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
+
+            productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
+            return productionPlan;
+        }
     }
 }
