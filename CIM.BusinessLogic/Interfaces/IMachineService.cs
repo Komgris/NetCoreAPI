@@ -9,9 +9,9 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IMachineService : IBaseService
     {
         List<MachineCacheModel> ListCached();
-        Task<PagingModel<MachineModel>> List(string keyword, int page, int howmany);
-        Task<MachineModel> Create(MachineModel model);
-        Task<MachineModel> Update(MachineModel model);
-        Task<MachineModel> Get(int id);
+        Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany);
+        Task Create(MachineModel model);
+        Task Update(MachineModel model);
+        Task<MachineListModel> Get(int id);
     }
 }
