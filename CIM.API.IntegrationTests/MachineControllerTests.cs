@@ -31,7 +31,7 @@ namespace CIM.API.IntegrationTests
             var listResponse = (await TestClient.GetAsync($"/api/Machine/{page}/{pageSize}"));
 
             listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineModel>>((await listResponse.Content.ReadAsStringAsync()));
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineListModel>>((await listResponse.Content.ReadAsStringAsync()));
 
             // Assert       
             listResponseModel.Data.Count(x => x.Name == name).Should().Be(expectedCount);
@@ -51,7 +51,7 @@ namespace CIM.API.IntegrationTests
             var response = await TestClient.GetAsync("/api/Machine/" + model.Id);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseModel = JsonConvert.DeserializeObject<MachineModel>((await response.Content.ReadAsStringAsync()));
+            var responseModel = JsonConvert.DeserializeObject<MachineListModel>((await response.Content.ReadAsStringAsync()));
 
             // Assert            
             MachineTestHelper.CompareModel(responseModel, model);
@@ -73,13 +73,13 @@ namespace CIM.API.IntegrationTests
             var updateResponse = await TestClient.PostAsync("/api/Machine/Update", updateByteContent);
 
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var updateResponseModel = JsonConvert.DeserializeObject<MachineModel>((await updateResponse.Content.ReadAsStringAsync()));
+            var updateResponseModel = JsonConvert.DeserializeObject<MachineListModel>((await updateResponse.Content.ReadAsStringAsync()));
 
 
             var response = await TestClient.GetAsync("/api/Machine/Get?id=" + model.Id);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseModel = JsonConvert.DeserializeObject<MachineModel>((await response.Content.ReadAsStringAsync()));
+            var responseModel = JsonConvert.DeserializeObject<MachineListModel>((await response.Content.ReadAsStringAsync()));
 
             // Assert
             MachineTestHelper.CompareModel(responseModel, updateResponseModel);
@@ -98,7 +98,7 @@ namespace CIM.API.IntegrationTests
             var listResponse = (await TestClient.GetAsync("/api/Machine/List?page=1&howmany=" + expectedCount));
             listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineModel>>((await listResponse.Content.ReadAsStringAsync()));
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineListModel>>((await listResponse.Content.ReadAsStringAsync()));
 
             // Assert       
             listResponseModel.Data.Count().Should().Be(expectedCount);
@@ -118,7 +118,7 @@ namespace CIM.API.IntegrationTests
             var listResponse = (await TestClient.GetAsync(string.Format("/api/Machine/List?keyword={0}&page=1&howmany=2", expectedKeyword)));
             listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineModel>>((await listResponse.Content.ReadAsStringAsync()));
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineListModel>>((await listResponse.Content.ReadAsStringAsync()));
 
             // Assert       
             listResponseModel.Data.Count().Should().Be(expectedKCount);
@@ -128,7 +128,7 @@ namespace CIM.API.IntegrationTests
         #endregion
 
         #region Create data for use in test function
-        public async Task<MachineModel> CreateData(string code)
+        public async Task<MachineListModel> CreateData(string code)
         {
             var model = MachineTestHelper.GetMock(code);
             var token = string.Empty;
@@ -136,7 +136,7 @@ namespace CIM.API.IntegrationTests
             var content = GetHttpContentForPost(model, token);
             var response = await TestClient.PostAsync("/api/Machine/Create", content);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseModel = JsonConvert.DeserializeObject<MachineModel>((await response.Content.ReadAsStringAsync()));
+            var responseModel = JsonConvert.DeserializeObject<MachineListModel>((await response.Content.ReadAsStringAsync()));
 
             return responseModel;
         }
