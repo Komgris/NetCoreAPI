@@ -10,28 +10,31 @@ namespace CIM.BusinessLogic.Services
 {
     public class MasterDataService : IMasterDataService
     {
+        private IResponseCacheService _responseCacheService;
         private IRouteRepository _routeRepository;
         private IRouteMachineRepository _routeMachineRepository;
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
 
         public MasterDataService(
+            IResponseCacheService responseCacheService,
             IRouteRepository routeRepository,
             IRouteMachineRepository routeMachineRepository,
             IMachineRepository machineRepository,
             IMachineComponentRepository machineComponentRepository
             )
         {
+            _responseCacheService = responseCacheService;
             _routeRepository = routeRepository;
             _routeMachineRepository = routeMachineRepository;
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
         }
-
-        public IDictionary<int, MachineComponentModel> Components { get; set; }
-        public IDictionary<int, MachineModel> Machines { get; set; }
-        public IDictionary<int, int[]> RouteMachines { get; set; }
-        public IDictionary<int, RouteModel> Routes { get; set; }
+        public MasterDataModel Data { get; set; }
+        //public IDictionary<int, MachineComponentModel> Components { get; set; }
+        //public IDictionary<int, MachineModel> Machines { get; set; }
+        //public IDictionary<int, int[]> RouteMachines { get; set; }
+        //public IDictionary<int, RouteModel> Routes { get; set; }
 
         private async Task<IDictionary<int, MachineComponentModel>> GetComponents()
         {
@@ -83,13 +86,32 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task GetData()
+        public async Task<MasterDataModel> GetData()
         {
-            RouteMachines = await GetRouteMachine();
-            Components = await GetComponents();
-            Machines = await GetMachines(Components);
-            Routes = await GetRoutes(RouteMachines, Machines);
+
+            var masterData = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
+            if (masterData == null)
+            {
+                masterData = new MasterDataModel();
+                masterData.RouteMachines = await GetRouteMachine();
+                masterData.Components = await GetComponents();
+                masterData.Machines = await GetMachines(masterData.Components);
+                masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
+            }
+            return masterData;
         }
+        public async Task<MasterDataModel> Refresh()
+        {
+            var masterData = new MasterDataModel();
+            masterData.RouteMachines = await GetRouteMachine();
+            masterData.Components = await GetComponents();
+            masterData.Machines = await GetMachines(masterData.Components);
+            masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+            await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
+            return masterData;
+        }
+
 
         private async Task<IDictionary<int, int[]>> GetRouteMachine()
         {
@@ -102,5 +124,6 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
     }
 }

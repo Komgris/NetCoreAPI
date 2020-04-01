@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.TestHost;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using System.Threading.Tasks;
+using FluentAssertions;
+using System.Net;
 
 namespace CIM.API.IntegrationTests
 {
@@ -137,6 +139,15 @@ namespace CIM.API.IntegrationTests
             }
 
             return new String(stringChars);
+        }
+
+        public async Task SendRefreshMasterData()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/MasterData/Refresh");
+            request.Headers.Add("token", AdminToken);
+            var getResponse = await TestClient.SendAsync(request);
+            getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
         }
     }
 }

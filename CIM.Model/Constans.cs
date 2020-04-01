@@ -16,6 +16,7 @@ namespace CIM.Model
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
 
+            public const string MASTER_DATA = "master-data";
         }
         public class PRODUCTION_PLAN_STATUS {
             public const string STARTED = "STARTED";

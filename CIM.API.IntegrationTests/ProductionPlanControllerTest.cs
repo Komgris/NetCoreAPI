@@ -16,27 +16,93 @@ namespace CIM.API.IntegrationTests
     {
 
         [Fact]
-        public async Task Load_Test()
+        public async Task Start_Test()
         {
             var productionPlan = new ProductionPlanModel();
-            var testRouteId = 123;
             var orgUpdateDate = new DateTime(2000, 1, 1);
             var moqProductionPlan = new ProductionPlan
             {
                 PlanId = "1",
-                ProductId = 123,
                 UpdatedAt = orgUpdateDate,
                 CreatedBy = "OrgCreatedBy",
                 CreatedAt = new DateTime(2000, 1, 1)
-        };
+            };
+
+            var product = new Product
+            {
+                BriteItemPerUpcitem = "",
+                Code = "P001",
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                Description = "",
+                IsActive = true,
+                Igweight = 100,
+            };
+
+            var machineType = new MachineType
+            {
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                IsActive = true,
+                Name = "MachineType01"
+            };
+
+            var productGroup = new ProductGroup
+            {
+                IsActive = true,
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                Name = "PG1",
+            };
+
+            var route = new Route { 
+                Name = "r01",
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                IsActive = true,
+            };
+            var routeMachine = new RouteMachine
+            {
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                IsActive = true,
+                Machine = new Machine
+                {
+                    CreatedAt = new DateTime(),
+                    CreatedBy = "OrgCreatedBy",
+                    IsActive = true,
+                    MachineType = machineType
+
+                }
+            };
+            route.RouteMachine.Add(routeMachine);
+            var routeProductGroup = new RouteProductGroup
+            {
+                CreatedAt = new DateTime(),
+                CreatedBy = "OrgCreatedBy",
+                IsActive = true,
+                Route = route,
+            };
+            routeProductGroup.RouteId = route.Id;
+            productGroup.Product.Add(product);
+            productGroup.RouteProductGroup.Add(routeProductGroup);
+            productionPlan.RouteId = route.Id;
+
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.RouteMachine.Add(routeMachine);
+                context.ProductGroup.Add(productGroup);
+                context.RouteProductGroup.Add(routeProductGroup);
+                moqProductionPlan.ProductId = product.Id;
                 context.ProductionPlan.Add(moqProductionPlan);
                 context.SaveChanges();
             }
+
+            await SendRefreshMasterData();
+
             productionPlan.PlanId = moqProductionPlan.PlanId;
-            productionPlan.RouteId = testRouteId;
+            productionPlan.RouteId = route.Id;
 
             // Act
             var content = GetHttpContentForPost(productionPlan, AdminToken);
@@ -62,7 +128,7 @@ namespace CIM.API.IntegrationTests
         }
 
         [Fact]
-        public async Task Load_WhenProductionPlanStarted_Test()
+        public async Task Start_WhenProductionPlanStarted_Test()
         {
             var productionPlan = new ProductionPlanModel();
             var testRouteId = 123;
@@ -87,7 +153,8 @@ namespace CIM.API.IntegrationTests
             var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Start", content);
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
-            result.IsSuccess.Should().Equals(true);
+            result.IsSuccess.Should().Equals(false);
+            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
         }
 
         [Fact]
