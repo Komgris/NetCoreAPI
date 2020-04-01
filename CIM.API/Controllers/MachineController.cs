@@ -21,16 +21,17 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<MachineModel>> Create([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineModel model)
         {
-            var output = new ProcessReponseModel<MachineModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _service.Create(model);
+                await _service.Create(model);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
@@ -41,16 +42,16 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<MachineModel>> Update([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineModel model)
         {
-            var output = new ProcessReponseModel<MachineModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _service.Update(model);
+                await _service.Update(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -62,9 +63,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{page}/{howmany}")]
-        public async Task<ProcessReponseModel<PagingModel<MachineModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
-            var output = new ProcessReponseModel<PagingModel<MachineModel>>();
+            var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
                 // todo
@@ -81,9 +82,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public async Task<ProcessReponseModel<MachineModel>> Get(int id)
+        public async Task<ProcessReponseModel<MachineListModel>> Get(int id)
         {
-            var output = new ProcessReponseModel<MachineModel>();
+            var output = new ProcessReponseModel<MachineListModel>();
             try
             {
                 // todo
