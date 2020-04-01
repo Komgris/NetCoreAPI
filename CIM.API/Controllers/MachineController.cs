@@ -21,16 +21,17 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<MachineListModel>> Create([FromBody]MachineListModel model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineModel model)
         {
-            var output = new ProcessReponseModel<MachineListModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _service.Create(model);
+                await _service.Create(model);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
@@ -41,16 +42,16 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<MachineListModel>> Update([FromBody]MachineListModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineModel model)
         {
-            var output = new ProcessReponseModel<MachineListModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _service.Update(model);
+                await _service.Update(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

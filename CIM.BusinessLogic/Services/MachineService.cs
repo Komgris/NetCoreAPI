@@ -34,14 +34,13 @@ namespace CIM.BusinessLogic.Services
             return new List<MachineCacheModel>();
         }
 
-        public async Task<MachineListModel> Create(MachineListModel model)
+        public async Task Create(MachineModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Machine());
             _machineRepository.Add(dbModel);
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             await _unitOfWork.CommitAsync();
-            return MapperHelper.AsModel(dbModel, new MachineListModel());
         }
 
         public async Task<MachineListModel> Get(int id)
@@ -106,7 +105,7 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<MachineListModel> Update(MachineListModel model)
+        public async Task Update(MachineModel model)
         {
             var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
             dbModel = MapperHelper.AsModel(model, dbModel);
@@ -114,7 +113,6 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedAt = DateTime.Now;
             _machineRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
-            return MapperHelper.AsModel(dbModel, new MachineListModel());
         }
     }
 }
