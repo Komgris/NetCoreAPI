@@ -18,9 +18,8 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<string> Get(int id, string key)
+        public async Task<string> Get(string cacheKey)
         {
-            var cacheKey = $"{key}{id}";
             var cached = await _responseCacheService.GetAsync(cacheKey);
             return cached;
         }

@@ -37,5 +37,12 @@ namespace CIM.API.Controllers
             return Ok(new { Message = "Active Process Channel Open." });
         }
 
+        [Route("/{productionPlanId}")]
+        [HttpGet]
+        public async Task<ActiveProcessModel> Get(string productionPlanId)
+        {
+            return await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}");
+        }
+
     }
 }

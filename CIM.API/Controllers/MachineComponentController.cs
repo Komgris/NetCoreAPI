@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CIM.API.Cache;
-using CIM.API.HubConfig;
+﻿using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
-using CIM.BusinessLogic.Services;
 using CIM.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace CIM.API.Controllers
 {
@@ -41,13 +36,9 @@ namespace CIM.API.Controllers
         public async Task<string> SetStatus(int id, int statusId)
         {
 
-            //get production plan by component
-
-            //update component status in production plan
             var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
-            //boardcast
-
-            await _hub.Clients.All.SendAsync($"production-plan-{productionPlan.ProductionPlanId}", productionPlan);
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
+            await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan) );
             return "OK";
         }
 
