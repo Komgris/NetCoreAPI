@@ -7,6 +7,7 @@ using CIM.Domain.Models;
 using CIM.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using StoredProcedureEFCore;
 
 namespace CIM.DAL.Implements
 {
