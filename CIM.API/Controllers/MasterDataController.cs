@@ -6,6 +6,8 @@ using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace CIM.API.Controllers
 {
@@ -27,8 +29,12 @@ namespace CIM.API.Controllers
         [Route("api/[controller]")]
         public async Task<string> Get()
         {
-            await _masterDataService.GetData();
-            return "OK";
+            var result = await _masterDataService.GetData();
+            var stringOut = JsonConvert.SerializeObject( new { data = result }, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            return stringOut;
 
         }
 

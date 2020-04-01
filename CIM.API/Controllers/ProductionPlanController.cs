@@ -14,7 +14,6 @@ using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
 {
-    [EnableCors("_myAllowSpecificOrigins")]
     [ApiController]
     public class ProductionPlanController : BaseController
     {
@@ -65,11 +64,29 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
-        public async Task<PagingModel<ProductionPlanModel>> Get(int row, int pages)
+        public async Task<PagingModel<ProductionPlanModel>> Get(int row, int pages, string keyword = "", string product = null, string line = "")
         {
             var model = await _planService.Paging(pages, row);
             return model;
         }
+
+        [Route("api/production-plan")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanModel>>> List(int howmany, int page, string keyword = "", string product = null, string line = "")
+        {
+            var output = new ProcessReponseModel<PagingModel<ProductionPlanModel>>();
+            try
+            {
+                output.Data = await _planService.List(page, howmany, keyword, product, line, true);
+                output.IsSuccess = true;
+            } 
+            catch( Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
 
         [Route("api/[controller]/Insert")]
         [HttpPost]
