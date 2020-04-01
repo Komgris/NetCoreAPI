@@ -209,6 +209,23 @@ namespace CIM.BusinessLogic.Services
 
         }
 
+        public async Task Stop(string id)
+        {
+            var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
+
+            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STOP;
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            _productionPlanRepository.Edit(dbModel);
+
+            //to handle cache data and boardcast
+            await _unitOfWork.CommitAsync();
+
+        }
+
+
 
         public async Task<ProductionPlanModel> Get(string planId)
         {

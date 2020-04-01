@@ -20,6 +20,8 @@ namespace CIM.Model
         }
         public class PRODUCTION_PLAN_STATUS {
             public const string STARTED = "STARTED";
+
+            public const string STOP = "STOP";
         }
 
     }

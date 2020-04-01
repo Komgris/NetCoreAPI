@@ -136,6 +136,26 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/Stop/:id")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                await _planService.Stop(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
 
         [Route("api/[controller]/{id}")]
         [HttpGet]

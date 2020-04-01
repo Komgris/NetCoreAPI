@@ -20,5 +20,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task Start(ProductionPlanModel model);
         Task<ProductionPlanModel> Get(string id);
         Task<ActiveProcessModel> UpdateByComponent(int id, int statusId);
+        Task Stop(string id);
     }
 }
