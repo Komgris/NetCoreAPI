@@ -8,10 +8,11 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IMasterDataService
     {
-        Task GetData();
+        Task<MasterDataModel> GetData();
+        Task<MasterDataModel> Refresh();
+        Task Clear();
 
-        IDictionary<int, MachineComponentModel> Components { get; set; }
-        IDictionary<int, MachineModel> Machines { get; set; }
-        IDictionary<int, RouteModel> Routes { get; set; }
+        MasterDataModel Data { get; set; }
+
     }
 }

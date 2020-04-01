@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
+
     [ApiController]
     public class MasterDataController : ControllerBase
     {
@@ -22,11 +22,31 @@ namespace CIM.API.Controllers
             _masterDataService = masterDataService;
         }
 
-        [HttpGet]
-        public IDictionary<int, MachineComponentModel> Get()
-        {
 
-           return _masterDataService.Components;
+        [HttpGet]
+        [Route("api/[controller]")]
+        public async Task<string> Get()
+        {
+            await _masterDataService.GetData();
+            return "OK";
+
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/Refresh")]
+        public async Task<string> Refresh()
+        {
+            await _masterDataService.Refresh();
+            return "OK";
+
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/Clear")]
+        public async Task<string> Clear()
+        {
+            await _masterDataService.Clear();
+            return "OK";
 
         }
 

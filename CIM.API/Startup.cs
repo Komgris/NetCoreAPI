@@ -77,7 +77,7 @@ namespace CIM.API
 
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
-            masterDataService.GetData();
+            masterDataService.Refresh();
 
         }
 

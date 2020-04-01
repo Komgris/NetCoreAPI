@@ -154,7 +154,9 @@ namespace CIM.BusinessLogic.Services
         public async Task Start(ProductionPlanModel model)
         {
             var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
+
             if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
@@ -165,6 +167,11 @@ namespace CIM.BusinessLogic.Services
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
             }
 
+            if (masterData.Routes[model.RouteId.Value] == null)
+            {
+                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
+            }
+
             dbModel.RouteId = model.RouteId;
             dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STARTED;
             dbModel.PlanStart = now;
@@ -172,7 +179,6 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedAt = now;
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
-            await _unitOfWork.CommitAsync();
 
             var activeProcess = new ActiveProcessModel
             {
@@ -180,7 +186,7 @@ namespace CIM.BusinessLogic.Services
                 ProductId = model.ProductId,
             };
 
-            var route = _masterDataService.Routes[model.RouteId.Value];
+            var route = masterData.Routes[model.RouteId.Value];
             activeProcess.Route = new ActiveRouteModel
             {
                 MachineList = route.MachineList,
@@ -199,7 +205,26 @@ namespace CIM.BusinessLogic.Services
                 }
             }
             await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{activeProcess.ProductionPlanId}", activeProcess);
+            await _unitOfWork.CommitAsync();
+
         }
+
+        public async Task Stop(string id)
+        {
+            var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
+
+            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STOP;
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            _productionPlanRepository.Edit(dbModel);
+
+            //to handle cache data and boardcast
+            await _unitOfWork.CommitAsync();
+
+        }
+
 
 
         public async Task<ProductionPlanModel> Get(string planId)

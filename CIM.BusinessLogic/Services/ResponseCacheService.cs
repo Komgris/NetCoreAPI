@@ -21,7 +21,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<T> GetAsTypeAsync<T>(string key)
         {
-            var jsonString = await GetAsync(key);
+            var jsonString = await GetAsync(key) ?? string.Empty;
             return JsonConvert.DeserializeObject<T>(jsonString);
 
         }
