@@ -15,5 +15,6 @@ namespace CIM.Model
         public int PreviousPage { get; set; }
 
         public List<T> Data { get; set; } = new List<T>();
+        public int Total { get; set; }
     }
 }

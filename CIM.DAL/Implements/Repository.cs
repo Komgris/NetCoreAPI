@@ -1,5 +1,6 @@
 ﻿using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
+using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -73,6 +74,21 @@ namespace CIM.DAL.Implements
         public bool Any(Expression<Func<T, bool>> predicate)
         {
             return _dbset.Any(predicate);
+        }
+
+        public async Task<PagingModel<T>> ToPagingModel<T>(IQueryable<T> sqlQuery, int page, int howmany)
+        where T : new()
+        {
+            var output = new PagingModel<T>();
+            output.Total = await sqlQuery.CountAsync();
+            output.NextPage = page + 1;
+            output.PreviousPage = page - 1;
+            output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
+            var skip = (page - 1) * howmany;
+            output.Data = await sqlQuery.Skip(skip).Take(howmany).ToListAsync();
+            return output;
         }
 
     }

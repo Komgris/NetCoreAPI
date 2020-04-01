@@ -67,26 +67,10 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<PagingModel<ProductionPlanModel>> List(int page, int howmany, string keyword, string product, string line, bool isActive)
+        public async Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
         {
-            var plan = await _productionPlanRepository.WhereAsync(x => x.IsActive == isActive);
-            int total = plan.Count();
-
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = plan.OrderBy(x => x.PlanId).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<ProductionPlanModel>();
-            foreach (var item in dbModel)
-            {
-                output.Add(MapperHelper.AsModel(item, new ProductionPlanModel()));
-            }
-            return new PagingModel<ProductionPlanModel>
-            {
-                HowMany = total,
-                Data = output
-            };
+            var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive);
+            return output;
         }
 
 

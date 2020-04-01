@@ -158,7 +158,7 @@ namespace CIM.API.IntegrationTests
         }
 
         [Fact]
-        public async Task List_Test()
+        public async Task GET_Test()
         {
             var productionPlanModel = new ProductionPlan
             {
@@ -181,7 +181,34 @@ namespace CIM.API.IntegrationTests
             var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
 
             result.Data.Should().NotBeNull();
-            result.Data.Where(x => x.PlanId == productionPlanModel.PlanId);           
+            result.Data.Where(x => x.PlanId == productionPlanModel.PlanId);
+        }
+
+        [Fact]
+        public async Task List_Test()
+        {
+            var productionPlan = new ProductionPlan
+            {
+                PlanId = "TestListcode",
+                ProductId = 123,
+                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                IsActive = true
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(productionPlan);
+                context.SaveChanges();
+            }
+
+            // Act
+            var content = GetHttpContentForPost(productionPlan, AdminToken);
+            var loadResponse = await TestClient.GetAsync("api/ProductionPlans");
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanListModel>>((await loadResponse.Content.ReadAsStringAsync()));
+
+            result.Data.Should().NotBeNull();
+            result.Data.Where(x => x.Id == productionPlan.PlanId);
         }
     }
 }
