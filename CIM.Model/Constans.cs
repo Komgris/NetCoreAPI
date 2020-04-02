@@ -26,5 +26,14 @@ namespace CIM.Model
             public const string STOP = "STOP";
         }
 
+        public class SIGNAL_R_CHANNEL
+        {
+
+            public const string CHANNEL_MESSAGE = "transfer-message";
+            public const string CHANNEL_COMMAND = "command-channel";
+            public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
+
+        }
+          
     }
 }
