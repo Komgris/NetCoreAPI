@@ -193,10 +193,9 @@ namespace CIM.API.Controllers
             return output;
         }
 
-
-        [Route("api/[controller]/{id}")]
+        [Route("api/[controller]")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Detail(string id)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
