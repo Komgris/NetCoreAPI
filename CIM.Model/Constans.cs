@@ -26,5 +26,15 @@ namespace CIM.Model
             public const string STOP = "STOP";
         }
 
+        public enum AlertType : int
+        {
+            Component = 0
+        }
+
+        public enum AlertStatus: int
+        {
+            New = 0
+        }
+
     }
 }

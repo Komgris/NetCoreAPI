@@ -256,7 +256,14 @@ namespace CIM.BusinessLogic.Services
         {
             var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{id}");
             var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
+            productionPlan.Alerts.Add(new AlertModel
+            {
+                CreatedAt = DateTime.Now,
+                ComponentStatusId = statusId,
+                Type = (int)Constans.AlertType.Component,
+                StatusId = (int)Constans.AlertStatus.New,
 
+            });
             productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
             return productionPlan;
         }

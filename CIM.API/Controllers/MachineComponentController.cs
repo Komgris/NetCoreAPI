@@ -38,7 +38,7 @@ namespace CIM.API.Controllers
 
             var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
-            await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan) );
+            await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
             return "OK";
         }
 
