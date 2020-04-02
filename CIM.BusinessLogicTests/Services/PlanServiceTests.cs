@@ -16,12 +16,23 @@ namespace CIM.BusinessLogicTests.Services
 {
     public class PlanServiceTests
     {
+
         [Fact]
         public void ListTest()
         {
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var responseCacheService = new Mock<IResponseCacheService>().Object;
+            var masterDataService = new Mock<IMasterDataService>().Object;
+            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var planService = new ProductionPlanService(unitOfWork, planRepository);
+            var planService = new ProductionPlanService(
+                responseCacheService,
+                masterDataService,
+                unitOfWork, 
+                planRepository,
+                productRepository
+                );
             //var result = planService.List();
             //result.Should().NotBeNull();
         }
@@ -29,8 +40,22 @@ namespace CIM.BusinessLogicTests.Services
         public void ComparePlan()
         {
             string path = @"D:\PSEC\Dole\Doc\test.xlsx";
+
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
-            var planRepository = new Mock<IProductionPlanRepository>();
+            var responseCacheService = new Mock<IResponseCacheService>().Object;
+            var masterDataService = new Mock<IMasterDataService>().Object;
+            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>().Object;
+            var planRepository = new Mock<IProductionPlanRepository>().Object;
+            var planService = new ProductionPlanService(
+                responseCacheService,
+                masterDataService,
+                unitOfWork,
+                planRepository,
+                productRepository
+                );
+
+
             var dbPlanMoq = new List<ProductionPlan>()
             {
                 new ProductionPlan{ PlanId = "1" },
@@ -39,10 +64,9 @@ namespace CIM.BusinessLogicTests.Services
                 new ProductionPlan{ PlanId = "14" },
             };
 
-            planRepository.Setup(x => x.All())
-                .Returns(dbPlanMoq.AsQueryable());
-            var planService = new ProductionPlanService(unitOfWork,planRepository.Object);
-            var productionPlan = new List<ProductionPlanModel>();
+            //planRepository.Setup(x => x.All())
+            //    .Returns(dbPlanMoq.AsQueryable());
+            //var productionPlan = new List<ProductionPlanModel>();
             //var dbPlan = planService.List();
             //dbPlan.Any(x => string.IsNullOrEmpty( x.PlanId)).Should().Be(false);
             //dbPlan.Should().NotBeNull();
@@ -56,8 +80,18 @@ namespace CIM.BusinessLogicTests.Services
         {
             string path = @"D:\PSEC\Dole\Doc\test.xlsx";
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var responseCacheService = new Mock<IResponseCacheService>().Object;
+            var masterDataService = new Mock<IMasterDataService>().Object;
+            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var planService = new ProductionPlanService(unitOfWork, planRepository);
+            var planService = new ProductionPlanService(
+                responseCacheService,
+                masterDataService,
+                unitOfWork,
+                planRepository,
+                productRepository
+                );
             //var result = planService.ReadImport(path);
             //result.Should().NotBeNull();
         }
@@ -72,8 +106,18 @@ namespace CIM.BusinessLogicTests.Services
                 new ProductionPlanModel{ PlanId = "54" },
             };
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var responseCacheService = new Mock<IResponseCacheService>().Object;
+            var masterDataService = new Mock<IMasterDataService>().Object;
+            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var planService = new ProductionPlanService(unitOfWork, planRepository);
+            var planService = new ProductionPlanService(
+                responseCacheService,
+                masterDataService,
+                unitOfWork,
+                planRepository,
+                productRepository
+                );
             //var result = planService.Insert(dbPlanMoq);
             //result.Should().BeTrue();
         }
