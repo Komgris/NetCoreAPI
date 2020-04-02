@@ -65,7 +65,6 @@ namespace CIM.API.IntegrationTests
             var model = await CreateData(code);
             var token = string.Empty;
 
-            model.Plcaddress = "Update PLC Address";
 
             var updateByteContent = GetHttpContentForPost(model, token);
 

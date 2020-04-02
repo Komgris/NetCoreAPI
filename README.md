@@ -19,7 +19,7 @@ command-channel
 { "param": "./production-plan-overview/PRODPLAN-1", "name": "navigate"}
 
 #Redis
-install 
+install https://github.com/microsoftarchive/redis/releases
 Sample cmd on cli
 scan 0
-
+redis-cli -h 103.70.6.198 -p 6379

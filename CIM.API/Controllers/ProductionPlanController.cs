@@ -70,14 +70,14 @@ namespace CIM.API.Controllers
             return model;
         }
 
-        [Route("api/production-plan")]
+        [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanModel>>> List(int howmany, int page, string keyword = "", string product = null, string line = "")
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null)
         {
-            var output = new ProcessReponseModel<PagingModel<ProductionPlanModel>>();
+            var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _planService.List(page, howmany, keyword, product, line, true);
+                output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true);
                 output.IsSuccess = true;
             } 
             catch( Exception ex)
@@ -153,7 +153,7 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/[controller]/Stop/:id")]
+        [Route("api/[controller]/Stop/{id}")]
         [HttpPost]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id)
         {
@@ -173,10 +173,29 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/Load")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                output.Data = await _planService.Load(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
 
-        [Route("api/[controller]/{id}")]
+        [Route("api/[controller]")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Get(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Detail(string id)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
