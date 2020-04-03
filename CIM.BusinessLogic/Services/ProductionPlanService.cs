@@ -287,16 +287,30 @@ namespace CIM.BusinessLogic.Services
 
                     CreatedAt = DateTime.Now,
                     ComponentStatusId = statusId,
-                    Type = (int)Constans.AlertType.Component,
+                    ItemId = id,
+                    ItemType = (int)Constans.AlertType.Component,
                     StatusId = (int)Constans.AlertStatus.New,
 
                 });
 
                 productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
-
+                await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
             }
 
             return productionPlan;
         }
+
+        public async Task<ActiveProcessModel> TakeAction(int id)
+        {
+            var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}");
+
+            foreach (var item in productionPlan.Alerts)
+            {
+                item.StatusId = (int)Constans.AlertStatus.Processing;
+            }
+            await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
+            return productionPlan;
+        }
+
     }
 }

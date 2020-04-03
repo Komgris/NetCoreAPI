@@ -133,7 +133,7 @@ namespace CIM.API.Controllers
             }
         }
 
-        [Route("api/[controller]/Start")]
+        [Route("api/ProductionPlanStart")]
         [HttpPost]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Start(ProductionPlanModel model)
         {
@@ -153,8 +153,8 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/[controller]/Stop/{id}")]
-        [HttpPost]
+        [Route("api/ProductionPlanStop")]
+        [HttpGet]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
@@ -174,7 +174,7 @@ namespace CIM.API.Controllers
         }
 
         [Route("api/[controller]/Load")]
-        [HttpPost]
+        [HttpGet]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
