@@ -31,9 +31,14 @@ namespace CIM.Model
             Component = 0
         }
 
-        public enum AlertStatus: int
+        public enum AlertStatus : int
         {
             New = 0
+        }
+
+        public enum ComponentStatus : int
+        {
+            Ready = 1
         }
 
         public class SIGNAL_R_CHANNEL
