@@ -106,10 +106,9 @@ namespace CIM.BusinessLogic.Services
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
-            masterData.Dictionary.Products = new Dictionary<string, string>();
             masterData.Dictionary.Products.Add("NFDD001", "NFDD001");
-            masterData.Dictionary.Lines = new Dictionary<string, string>();
             masterData.Dictionary.Lines.Add("Line001", "Line001");
+            masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
         }
