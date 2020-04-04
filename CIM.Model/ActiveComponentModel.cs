@@ -11,5 +11,7 @@ namespace CIM.Model
         public int MachineId { get; set; }
         public int MachineComponentId { get; set; }
 
+        public int StatusId { get; set; }
+
     }
 }

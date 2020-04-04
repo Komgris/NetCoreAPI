@@ -32,13 +32,33 @@ namespace CIM.API.Controllers
             _machineService = machineService;
         }
 
+        [Route("TakeAction")]
+        [HttpGet]
+        public async Task<string> TakeAction(int productionPlanId)
+        {
+
+            var productionPlan = await _productionPlanService.TakeAction(productionPlanId);
+
+            // Production plan of this component doesn't started yet
+            if (productionPlan != null)
+            {
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+            }
+            return "{}";
+        }
         [HttpPost]
         public async Task<string> SetStatus(int id, int statusId)
         {
 
             var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
-            await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan) );
+
+            // Production plan of this component doesn't started yet
+            if (productionPlan != null)
+            {
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+            }
             return "OK";
         }
 
