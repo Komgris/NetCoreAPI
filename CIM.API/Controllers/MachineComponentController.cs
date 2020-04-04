@@ -4,6 +4,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using System;
 using System.Threading.Tasks;
 
 namespace CIM.API.Controllers
@@ -34,18 +35,29 @@ namespace CIM.API.Controllers
 
         [Route("TakeAction")]
         [HttpGet]
-        public async Task<string> TakeAction(int productionPlanId)
+        public async Task<ProcessReponseModel<object>> TakeAction(int productionPlanId)
         {
-
-            var productionPlan = await _productionPlanService.TakeAction(productionPlanId);
-
-            // Production plan of this component doesn't started yet
-            if (productionPlan != null)
+            var output = new ProcessReponseModel<object>();
+             
+            try
             {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+                var productionPlan = await _productionPlanService.TakeAction(productionPlanId);
+
+                // Production plan of this component doesn't started yet
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
+                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+                }
+
+                output.IsSuccess = true;
+            } 
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
             }
-            return "{}";
+
+            return output;
         }
         [HttpPost]
         public async Task<string> SetStatus(int id, int statusId)
