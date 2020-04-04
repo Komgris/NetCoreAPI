@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,18 @@ namespace CIM.BusinessLogic.Services
 {
     public class ProductService: BaseService, IProductService
     {
-        private IProductRepository _productRepository;
+        private readonly IResponseCacheService _responseCacheService;
+        private readonly IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public ProductService(
             IProductRepository productRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IResponseCacheService responseCacheService
             )
         {
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
+            _responseCacheService = responseCacheService; 
         }
 
         public Task<PagingModel<ProductModel>> Paging(int page, int howmany)
@@ -58,22 +62,95 @@ namespace CIM.BusinessLogic.Services
             {
                 var db_model = MapperHelper.AsModel(plan, new Product());              
                 _productRepository.Add(db_model);
+                db_model.CreatedBy = CurrentUser.UserId;
+                db_model.CreatedAt = DateTime.Now;
                 db_list.Add(MapperHelper.AsModel(db_model, new ProductModel()));
             }
             await _unitOfWork.CommitAsync();
             return db_list;
         }
 
-        public List<ProductModel> Get()
+        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
         {
-            var db = _productRepository.All().ToList();
-            List<ProductModel> productDb = new List<ProductModel>();
-            foreach (var plan in db)
+            int skipRec = (page - 1) * howmany;
+            int takeRec = howmany;
+
+            //to do optimize
+            var dbModel = await _productRepository.Where(x => x.IsActive && x.IsDelete == false &
+                (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
+                .Select(
+                    x => new ProductModel
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Description = x.Description,
+                        BriteItemPerUpcitem = x.BriteItemPerUpcitem,
+                        ProductFamilyId = x.ProductFamilyId,
+                        ProductGroupId = x.ProductGroupId,
+                        ProductTypeId = x.ProductTypeId,
+                        PackingMedium = x.PackingMedium,
+                        NetWeight = x.NetWeight,
+                        Igweight = x.Igweight,
+                        Pmweight = x.Pmweight,
+                        WeightPerUom = x.WeightPerUom,
+                        IsActive = x.IsActive,
+                        IsDelete = x.IsDelete,
+                        CreatedAt = x.CreatedAt,
+                        CreatedBy = x.CreatedBy,
+                        UpdatedAt = x.UpdatedAt,
+                        UpdatedBy = x.UpdatedBy,
+                    }).ToListAsync();
+
+            int total = dbModel.Count();
+            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
+
+            var output = new List<ProductModel>();
+            foreach (var item in dbModel)
+                output.Add(MapperHelper.AsModel(item, new ProductModel()));
+
+            return new PagingModel<ProductModel>
             {
-                var db_model = MapperHelper.AsModel(plan, new ProductModel());
-                productDb.Add(db_model);
-            }
-            return productDb;
+                HowMany = total,
+                Data = output
+            };
+        }
+
+        public async Task<ProductModel> Get(int id)
+        {
+            var dbModel = await _productRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
+                .Select(
+                        x => new ProductModel
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            Description = x.Description,
+                            BriteItemPerUpcitem = x.BriteItemPerUpcitem,
+                            ProductFamilyId = x.ProductFamilyId,
+                            ProductGroupId = x.ProductGroupId,
+                            ProductTypeId = x.ProductTypeId,
+                            PackingMedium = x.PackingMedium,
+                            NetWeight = x.NetWeight,
+                            Igweight = x.Igweight,
+                            Pmweight = x.Pmweight,
+                            WeightPerUom = x.WeightPerUom,
+                            IsActive = x.IsActive,
+                            IsDelete = x.IsDelete,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy,
+                        }).FirstOrDefaultAsync();
+            return MapperHelper.AsModel(dbModel, new ProductModel());
+        }
+
+        public async Task Update(ProductModel model)
+        {
+            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            dbModel = MapperHelper.AsModel(model, dbModel);
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.UpdatedAt = DateTime.Now;
+            _productRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

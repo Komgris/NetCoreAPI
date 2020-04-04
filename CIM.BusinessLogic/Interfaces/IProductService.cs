@@ -10,12 +10,14 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task<PagingModel<ProductModel>> Paging(int page, int howmany);
 
-        Task BulkEdit(List<ProductModel> model);
+        Task Update(ProductModel model);
 
         Task Delete(int id);
 
         Task<List<ProductModel>> Create(List<ProductModel> model);
 
-        List<ProductModel> Get();
+        Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany);
+
+        Task<ProductModel> Get(int id);
     }
 }
