@@ -15,7 +15,7 @@ using System.Net.Http.Headers;
 namespace CIM.API.Controllers
 {
     //[EnableCors("_myAllowSpecificOrigins")]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -28,17 +28,18 @@ namespace CIM.API.Controllers
         }
 
         // POST api/<controller>
+        [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> Create([FromBody]List<ProductModel> data)
+        public async Task<ProcessReponseModel<List<ProductModel>>> Create([FromBody]List<ProductModel> data)
         {
-            var output = new ProcessReponseModel<object>();
+            var output = new ProcessReponseModel<List<ProductModel>>();
             try
             {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                await _productService.Create(data);
+                output.Data = await _productService.Create(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -111,7 +112,7 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("api/[controller]/Update")]
         public async Task<ProcessReponseModel<object>> Update([FromBody]ProductModel model)
         {
