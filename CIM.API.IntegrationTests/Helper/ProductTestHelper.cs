@@ -14,9 +14,9 @@ namespace CIM.API.IntegrationTests.Helper
         { //Todo Kom เพิ่ม ม็อคอัพ ยูนีค
             return new List<ProductModel>()
             {
-                new ProductModel{ Code="testA",ProductFamilyId=1,ProductGroupId=1,ProductTypeId=3 },
-                new ProductModel{ Code="testB",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=4 },
-                new ProductModel{ Code="testC",ProductFamilyId=2,ProductGroupId=1,ProductTypeId=3 },
+                new ProductModel{ Code="testA",ProductFamily_Id=1,ProductGroup_Id=1,ProductType_Id=3 },
+                new ProductModel{ Code="testB",ProductFamily_Id=2,ProductGroup_Id=1,ProductType_Id=4 },
+                new ProductModel{ Code="testC",ProductFamily_Id=2,ProductGroup_Id=1,ProductType_Id=3 },
             };
         }
 
@@ -24,9 +24,9 @@ namespace CIM.API.IntegrationTests.Helper
         {
             var compareModel = model.First(x => x.Code == expect.Code);
             compareModel.Code.Should().Be(expect.Code);
-            compareModel.ProductFamilyId.Should().Be(expect.ProductFamilyId);
-            compareModel.ProductGroupId.Should().Be(expect.ProductGroupId);
-            compareModel.ProductTypeId.Should().Be(expect.ProductTypeId);
+            compareModel.ProductFamily_Id.Should().Be(expect.ProductFamily_Id);
+            compareModel.ProductGroup_Id.Should().Be(expect.ProductGroup_Id);
+            compareModel.ProductType_Id.Should().Be(expect.ProductType_Id);
         }
     }
 
