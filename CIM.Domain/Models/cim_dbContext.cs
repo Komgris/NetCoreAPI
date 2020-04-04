@@ -715,11 +715,11 @@ namespace CIM.Domain.Models
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.ProductFamilyId).HasColumnName("ProductFamily_Id");
+                entity.Property(e => e.ProductFamily_Id).HasColumnName("ProductFamily_Id");
 
-                entity.Property(e => e.ProductGroupId).HasColumnName("ProductGroup_Id");
+                entity.Property(e => e.ProductGroup_Id).HasColumnName("ProductGroup_Id");
 
-                entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
+                entity.Property(e => e.ProductType_Id).HasColumnName("ProductType_Id");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -733,19 +733,19 @@ namespace CIM.Domain.Models
 
                 entity.HasOne(d => d.ProductFamily)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductFamilyId)
+                    .HasForeignKey(d => d.ProductFamily_Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductFamily");
 
                 entity.HasOne(d => d.ProductGroup)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductGroupId)
+                    .HasForeignKey(d => d.ProductGroup_Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductGroup");
 
                 entity.HasOne(d => d.ProductType)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductTypeId)
+                    .HasForeignKey(d => d.ProductType_Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductType");
             });
