@@ -30,9 +30,9 @@ namespace CIM.API.Controllers
         // POST api/<controller>
         [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductModel>>> Create([FromBody]List<ProductModel> data)
+        public async Task<ProcessReponseModel<ProductModel>> Create([FromBody] ProductModel data)
         {
-            var output = new ProcessReponseModel<List<ProductModel>>();
+            var output = new ProcessReponseModel<ProductModel>();
             try
             {
                 // todo
@@ -93,7 +93,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/List/{page}/{howmany}")]
+        [Route("api/[controller]/List")]
         public async Task<ProcessReponseModel<PagingModel<ProductModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<ProductModel>>();

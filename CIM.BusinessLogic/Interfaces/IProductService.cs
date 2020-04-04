@@ -14,7 +14,7 @@ namespace CIM.BusinessLogic.Interfaces
 
         Task Delete(int id);
 
-        Task<List<ProductModel>> Create(List<ProductModel> model);
+        Task<ProductModel> Create(ProductModel model);
 
         Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany);
 

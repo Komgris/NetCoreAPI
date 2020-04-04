@@ -55,19 +55,18 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<List<ProductModel>> Create(List<ProductModel> model)
+        public async Task<ProductModel> Create(ProductModel model)
         {
-            List<ProductModel> db_list = new List<ProductModel>();
-            foreach (var plan in model)
-            {
-                var db_model = MapperHelper.AsModel(plan, new Product());              
-                _productRepository.Add(db_model);
-                db_model.CreatedBy = CurrentUser.UserId;
-                db_model.CreatedAt = DateTime.Now;
-                db_list.Add(MapperHelper.AsModel(db_model, new ProductModel()));
-            }
+            var dbModel = MapperHelper.AsModel(model, new Product());
+            _productRepository.Add(dbModel);
+            dbModel.CreatedBy = CurrentUser.UserId;
+            dbModel.CreatedAt = DateTime.Now;
+            dbModel.IsActive = true;
+            dbModel.IsDelete = false;
             await _unitOfWork.CommitAsync();
-            return db_list;
+            var response = MapperHelper.AsModel(dbModel, new ProductModel());
+
+            return response;
         }
 
         public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
@@ -76,8 +75,8 @@ namespace CIM.BusinessLogic.Services
             int takeRec = howmany;
 
             //to do optimize
-            var dbModel = await _productRepository.Where(x => x.IsActive && x.IsDelete == false &
-                (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
+            var dbModel = await _productRepository.Where(x => x.IsActive == true &
+            (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
                 .Select(
                     x => new ProductModel
                     {
