@@ -13,7 +13,7 @@ namespace CIM.API.Controllers
 {
 
     [ApiController]
-    public class MasterDataController : ControllerBase
+    public class MasterDataController : BaseController
     {
         private IMasterDataService _masterDataService;
 
@@ -30,10 +30,7 @@ namespace CIM.API.Controllers
         public async Task<string> Get()
         {
             var result = await _masterDataService.GetData();
-            var stringOut = JsonConvert.SerializeObject( new { data = result }, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+            var stringOut = JsonConvert.SerializeObject( new { data = result }, JsonsSetting);
             return stringOut;
 
         }
