@@ -263,11 +263,10 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
         {
             var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{id}");
-            var hasPropductionPlanStarted = true;
+            ActiveProcessModel productionPlan = null;
             // If Production Plan doesn't start but component just start to send status
             if (cachedComponent == null)
             {
-                hasPropductionPlanStarted = false;
                 var masterData = await _masterDataService.GetData();
                 var component = masterData.Components[id];
                 cachedComponent = new ActiveComponentModel
@@ -277,11 +276,12 @@ namespace CIM.BusinessLogic.Services
                 };
                 await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Id}", cachedComponent);
             }
+            productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
+            bool hasPropductionPlanStarted = productionPlan != null;
 
-            ActiveProcessModel productionPlan = null;
             if (hasPropductionPlanStarted)
             {
-                productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
+                
                 productionPlan.Alerts.Add(new AlertModel
                 {
 
