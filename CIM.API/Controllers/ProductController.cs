@@ -14,7 +14,8 @@ using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
 {
-    [EnableCors("_myAllowSpecificOrigins")]
+    //[EnableCors("_myAllowSpecificOrigins")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -27,7 +28,6 @@ namespace CIM.API.Controllers
         }
 
         // POST api/<controller>
-        [Route("api/[controller]/Create")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> Create([FromBody]List<ProductModel> data)
         {
