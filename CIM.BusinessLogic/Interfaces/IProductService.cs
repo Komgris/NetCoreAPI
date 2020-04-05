@@ -8,7 +8,6 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IProductService : IBaseService
     {
-        Task<PagingModel<ProductModel>> Paging(int page, int howmany);
 
         Task Update(ProductModel model);
 
