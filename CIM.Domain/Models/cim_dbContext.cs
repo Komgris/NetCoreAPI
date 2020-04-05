@@ -46,6 +46,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<ProductType> ProductType { get; set; }
         public virtual DbSet<ProductionDetails> ProductionDetails { get; set; }
         public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
+        public virtual DbSet<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
+        public virtual DbSet<RecordMachineComponentStatus> RecordMachineComponentStatus { get; set; }
+        public virtual DbSet<RecordProductionOutput> RecordProductionOutput { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -409,13 +412,31 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Machine_Component");
 
+                entity.Property(e => e.CreateBy).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.KepwareTagAddrr).HasMaxLength(100);
+
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.StatusId).HasColumnName("Status_Id");
+
                 entity.Property(e => e.TypeId).HasColumnName("Type_Id");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateBy).HasMaxLength(128);
 
                 entity.HasOne(d => d.Machine)
                     .WithMany(p => p.MachineComponent)
@@ -715,11 +736,11 @@ namespace CIM.Domain.Models
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.ProductFamily_Id).HasColumnName("ProductFamily_Id");
+                entity.Property(e => e.ProductFamilyId).HasColumnName("ProductFamily_Id");
 
-                entity.Property(e => e.ProductGroup_Id).HasColumnName("ProductGroup_Id");
+                entity.Property(e => e.ProductGroupId).HasColumnName("ProductGroup_Id");
 
-                entity.Property(e => e.ProductType_Id).HasColumnName("ProductType_Id");
+                entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -733,19 +754,19 @@ namespace CIM.Domain.Models
 
                 entity.HasOne(d => d.ProductFamily)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductFamily_Id)
+                    .HasForeignKey(d => d.ProductFamilyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductFamily");
 
                 entity.HasOne(d => d.ProductGroup)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductGroup_Id)
+                    .HasForeignKey(d => d.ProductGroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductGroup");
 
                 entity.HasOne(d => d.ProductType)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.ProductType_Id)
+                    .HasForeignKey(d => d.ProductTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductType");
             });
@@ -883,6 +904,153 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Production_Plan_Product");
+            });
+
+            modelBuilder.Entity<RecordMachineComponentLoss>(entity =>
+            {
+                entity.ToTable("Record_Machine_Component_Loss");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Guid).HasMaxLength(128);
+
+                entity.Property(e => e.IsAuto)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
+
+                entity.Property(e => e.MachineComponentId).HasColumnName("Machine_Component_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RecordMachineComponentStatusId).HasColumnName("Record_Machine_Component_Status_Id");
+
+                entity.Property(e => e.StartedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.RecordMachineComponentLossCreatedByNavigation)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_Users");
+
+                entity.HasOne(d => d.LossLevel3)
+                    .WithMany(p => p.RecordMachineComponentLoss)
+                    .HasForeignKey(d => d.LossLevel3Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_LossLevel3");
+
+                entity.HasOne(d => d.MachineComponent)
+                    .WithMany(p => p.RecordMachineComponentLoss)
+                    .HasForeignKey(d => d.MachineComponentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_Machine_Component");
+
+                entity.HasOne(d => d.ProductionPlan)
+                    .WithMany(p => p.RecordMachineComponentLoss)
+                    .HasForeignKey(d => d.ProductionPlanId)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_Production_Plan");
+
+                entity.HasOne(d => d.RecordMachineComponentStatus)
+                    .WithMany(p => p.RecordMachineComponentLoss)
+                    .HasForeignKey(d => d.RecordMachineComponentStatusId)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_Record_Machine_Component_Status");
+
+                entity.HasOne(d => d.UpdatedByNavigation)
+                    .WithMany(p => p.RecordMachineComponentLossUpdatedByNavigation)
+                    .HasForeignKey(d => d.UpdatedBy)
+                    .HasConstraintName("FK_Record_Machine_Component_Loss_Users1");
+            });
+
+            modelBuilder.Entity<RecordMachineComponentStatus>(entity =>
+            {
+                entity.ToTable("Record_Machine_Component_Status");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("('System')");
+
+                entity.Property(e => e.MachineComponentId).HasColumnName("Machine_Component_Id");
+
+                entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.RecordMachineComponentStatus)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Record_Machine_Component_Status_Users");
+
+                entity.HasOne(d => d.MachineComponent)
+                    .WithMany(p => p.RecordMachineComponentStatus)
+                    .HasForeignKey(d => d.MachineComponentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Machine_Component_Status_Machine_Component");
+
+                entity.HasOne(d => d.MachineStatus)
+                    .WithMany(p => p.RecordMachineComponentStatus)
+                    .HasForeignKey(d => d.MachineStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Machine_Component_Status_MachineStatus");
+            });
+
+            modelBuilder.Entity<RecordProductionOutput>(entity =>
+            {
+                entity.ToTable("Record_Production_Output");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.RecordProductionOutputCreatedByNavigation)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Production_Output_Users2");
+
+                entity.HasOne(d => d.ProductionPlan)
+                    .WithMany(p => p.RecordProductionOutput)
+                    .HasForeignKey(d => d.ProductionPlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Production_Output_Production_Plan");
+
+                entity.HasOne(d => d.UpdatedByNavigation)
+                    .WithMany(p => p.RecordProductionOutputUpdatedByNavigation)
+                    .HasForeignKey(d => d.UpdatedBy)
+                    .HasConstraintName("FK_Record_Production_Output_Users");
             });
 
             modelBuilder.Entity<Route>(entity =>
