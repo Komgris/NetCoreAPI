@@ -6,6 +6,8 @@ namespace CIM.Model
 {
     public class MasterDataModel
     {
+
+        public IDictionary<int, LossLevel3Model> LossLevel3s { get; set; }
         public IDictionary<int, MachineComponentModel> Components { get; set; }
         public IDictionary<int, MachineModel> Machines { get; set; }
         public IDictionary<int, int[]> RouteMachines { get; set; }

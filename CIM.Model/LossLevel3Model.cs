@@ -23,5 +23,6 @@ namespace CIM.Model
         public int? LossLevel2Id { get; set; }
 
         public virtual ICollection<MachineTypeComponentLossLevel3Model> MachineTypeComponentLossLevel3 { get; set; }
+        public int[] Components { get; set; }
     }
 }
