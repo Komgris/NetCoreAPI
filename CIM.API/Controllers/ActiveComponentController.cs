@@ -29,7 +29,7 @@ namespace CIM.API.Controllers
             var output = new List<ActiveComponentModel>();
             foreach (var machine in activeProcess.Route.MachineList)
             {
-                foreach (var component in machine.Value.ComponentList)
+                foreach (var component in machine.Value.Components)
                 {
                     output.Add( new ActiveComponentModel {
                         MachineComponentId = component.Value.Id,

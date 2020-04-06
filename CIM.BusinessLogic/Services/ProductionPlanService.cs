@@ -204,7 +204,7 @@ namespace CIM.BusinessLogic.Services
             };
             foreach (var machine in activeProcess.Route.MachineList)
             {
-                foreach (var component in machine.Value.ComponentList)
+                foreach (var component in machine.Value.Components)
                 {
                     var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{component.Key}");
                     if (cachedComponent == null)
@@ -241,6 +241,19 @@ namespace CIM.BusinessLogic.Services
 
             //to handle cache data and boardcast
             await _unitOfWork.CommitAsync();
+            var productionPlanKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}";
+            var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanKey);
+            if (productionPlan != null)
+            {
+                foreach (var machine in productionPlan.Route.MachineList)
+                {
+                    foreach (var component in machine.Value.Components)
+                    {
+                        await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Key}", null);
+                    }
+                }
+                await _responseCacheService.SetAsync(productionPlanKey, null);
+            }
 
         }
 
@@ -262,13 +275,15 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
         {
+
             var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{id}");
+            var masterData = await _masterDataService.GetData();
+            var component = masterData.Components[id];
+
             ActiveProcessModel productionPlan = null;
             // If Production Plan doesn't start but component just start to send status
             if (cachedComponent == null)
             {
-                var masterData = await _masterDataService.GetData();
-                var component = masterData.Components[id];
                 cachedComponent = new ActiveComponentModel
                 {
                     MachineComponentId = component.Id,
@@ -277,6 +292,15 @@ namespace CIM.BusinessLogic.Services
                 await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Id}", cachedComponent);
             }
             productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
+
+            var isComponentInActiveProcess = productionPlan?.Route.MachineList.Any(x => x.Key == cachedComponent.MachineId);
+            if (isComponentInActiveProcess.HasValue && !isComponentInActiveProcess.Value)
+            {
+                cachedComponent.ProductionPlanId = "";
+                await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Id}", cachedComponent);
+                productionPlan = null;
+            }
+
             bool hasPropductionPlanStarted = productionPlan != null;
 
             if (hasPropductionPlanStarted)
@@ -290,10 +314,11 @@ namespace CIM.BusinessLogic.Services
                     ItemId = id,
                     ItemType = (int)Constans.AlertType.Component,
                     StatusId = (int)Constans.AlertStatus.New,
+                    Id = Guid.NewGuid()
 
                 });
 
-                productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
+                productionPlan.Route.MachineList[cachedComponent.MachineId].Components[cachedComponent.MachineComponentId].Status = statusId;
                 await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
             }
 
