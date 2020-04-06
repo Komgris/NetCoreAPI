@@ -128,6 +128,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<MasterDataModel> Refresh()
         {
+
             _lossLevel3sMapping = await _lossLevel3Repository.ListComponentMappingAsync();
             _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3Model())).ToList();
 
@@ -143,6 +144,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
+
         }
 
         public async Task Clear()
