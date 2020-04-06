@@ -22,7 +22,7 @@ namespace CIM.DAL.Implements
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = await _entities.Product.Where(x => x.IsActive == true &
+            var dbModel =  _entities.Product.Where(x => x.IsActive == true &
             (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
                                 .Select(
                     x => new ProductModel
@@ -45,18 +45,9 @@ namespace CIM.DAL.Implements
                         CreatedBy = x.CreatedBy,
                         UpdatedAt = x.UpdatedAt,
                         UpdatedBy = x.UpdatedBy,
-                    }).ToListAsync();
+                    });
 
-            int total = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<ProductModel>(dbModel);
-
-            return new PagingModel<ProductModel>
-            {
-                HowMany = total,
-                Data = output
-            };
+            return await ToPagingModel(dbModel, page, howmany);
 
         }
 

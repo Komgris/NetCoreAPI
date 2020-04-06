@@ -66,15 +66,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
         {
             var output = await _productRepository.Paging(keyword, page, howmany);
-            
-            var toList = new List<ProductModel>();
-            foreach (var item in output.Data)
-                toList.Add(MapperHelper.AsModel(item, new ProductModel()));
-
-            return new PagingModel<ProductModel>
-            {
-                Data = toList
-            };
+            return output;
         }
 
         public async Task<ProductModel> Get(int id)
