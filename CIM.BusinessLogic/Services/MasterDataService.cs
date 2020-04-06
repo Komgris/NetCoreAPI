@@ -59,7 +59,8 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ComponentList = components.Where(x=>x.Value.MachineId == item.Id).ToDictionary( x=>x.Key, x=>x.Value)
+                    Components = components.Where(x=>x.Value.MachineId == item.Id).ToDictionary( x=>x.Key, x=>x.Value),
+                    ComponentList = components.Where(x => x.Value.MachineId == item.Id).Select(x => x.Value ).ToList()
                 };
             }
             return output;

@@ -204,7 +204,7 @@ namespace CIM.BusinessLogic.Services
             };
             foreach (var machine in activeProcess.Route.MachineList)
             {
-                foreach (var component in machine.Value.ComponentList)
+                foreach (var component in machine.Value.Components)
                 {
                     var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{component.Key}");
                     if (cachedComponent == null)
@@ -243,14 +243,17 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             var productionPlanKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}";
             var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanKey);
-            foreach (var machine in productionPlan.Route.MachineList)
+            if (productionPlan != null)
             {
-                foreach (var component in machine.Value.ComponentList)
+                foreach (var machine in productionPlan.Route.MachineList)
                 {
-                    await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Key}", null);
+                    foreach (var component in machine.Value.Components)
+                    {
+                        await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Key}", null);
+                    }
                 }
+                await _responseCacheService.SetAsync(productionPlanKey, null);
             }
-            await _responseCacheService.SetAsync(productionPlanKey, null);
 
         }
 
@@ -316,7 +319,7 @@ namespace CIM.BusinessLogic.Services
 
                 });
 
-                productionPlan.Route.MachineList[cachedComponent.MachineId].ComponentList[cachedComponent.MachineComponentId].Status = statusId;
+                productionPlan.Route.MachineList[cachedComponent.MachineId].Components[cachedComponent.MachineComponentId].Status = statusId;
                 await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
             }
 
