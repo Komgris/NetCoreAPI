@@ -51,8 +51,6 @@ namespace CIM.API.Controllers
                     var result = _planService.Compare(fromExcel, fromDb);
                     output.Data = result;
                     output.IsSuccess = true;
-                    //return JsonSerializer.Serialize(result);
-                    //return "";
                 }
                 else
                 {
