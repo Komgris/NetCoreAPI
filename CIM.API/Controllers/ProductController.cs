@@ -14,7 +14,6 @@ using System.Net.Http.Headers;
 
 namespace CIM.API.Controllers
 {
-    [EnableCors("_myAllowSpecificOrigins")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -26,58 +25,110 @@ namespace CIM.API.Controllers
             _productService = productService;
         }
 
-        [Route("api/[controller]/Edit")]
+        [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<object> Edit([FromBody]List<ProductModel> data)
+        public async Task<ProcessReponseModel<ProductModel>> Create([FromBody] ProductModel data)
         {
+            var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                await _productService.BulkEdit(data);
-                return new object();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-        // POST api/<controller>
-        [Route("api/[controller]/Insert")]
-        [HttpPost]
-        public async Task<List<ProductModel>> Insert([FromBody]List<ProductModel> data)
-        {
-            try
-            {
-                return await _productService.Create(data);                
+                output.Data = await _productService.Create(data);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/[controller]/Delete/{id}")]
         [HttpGet]
-        public async Task<object> Delete(int id)
+        public async Task<ProcessReponseModel<object>> Delete(int id)
         {
-            await _productService.Delete(id);
-            return new object();
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _productService.Delete(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
+            }
+            return output;
         }
 
-        [Route("api/[controller]/Get/{row}/{pages}")]
         [HttpGet]
-        public string Get(int row, int pages)
+        [Route("api/[controller]/{id}")]
+        public async Task<ProcessReponseModel<ProductModel>> Get(int id)
         {
-            var result = _productService.Paging(pages, row);
-            return JsonSerializer.Serialize(result);
+            var output = new ProcessReponseModel<ProductModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                output.Data = await _productService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
+            }
+            return output;
         }
 
-        [Route("api/[controller]/GetNoPaging")]
         [HttpGet]
-        public string GetNoPaging()
+        [Route("api/[controller]/List")]
+        public async Task<ProcessReponseModel<PagingModel<ProductModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
-            var result = _productService.Get();
-            return JsonSerializer.Serialize(result);
-        }        
+            var output = new ProcessReponseModel<PagingModel<ProductModel>>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                output.Data = await _productService.List(keyword, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
+        [HttpPut]
+        [Route("api/[controller]/Update")]
+        public async Task<ProcessReponseModel<object>> Update([FromBody]ProductModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _productService.Update(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
     }
 }
