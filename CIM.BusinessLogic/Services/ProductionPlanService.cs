@@ -275,11 +275,10 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProcessModel> UpdateByComponent(int id, int statusId)
         {
+
             var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{id}");
             var masterData = await _masterDataService.GetData();
             var component = masterData.Components[id];
-
-
 
             ActiveProcessModel productionPlan = null;
             // If Production Plan doesn't start but component just start to send status
