@@ -1,4 +1,6 @@
-﻿namespace CIM.Model
+﻿using System.Collections.Generic;
+
+namespace CIM.Model
 {
     public class MachineComponentModel
     {
@@ -9,5 +11,7 @@
 
         public int Status { get; set; }
         public int MachineId { get; set; }
+
+        public int[] LossList { get; set; }
     }
 }
