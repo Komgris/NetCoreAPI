@@ -81,12 +81,13 @@ namespace CIM.BusinessLogic.Services
                 
             foreach (var item in activeMachines)
             {
+                var machineComponents = components.Where(x => x.Value.MachineId == item.Id);
                 output[item.Id] = new MachineModel
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Components = components.Where(x=>x.Value.MachineId == item.Id).ToDictionary( x=>x.Key, x=>x.Value),
-                    ComponentList = components.Where(x => x.Value.MachineId == item.Id).Select(x => x.Value ).ToList()
+                    Components = machineComponents.ToDictionary( x=>x.Key, x=>x.Value),
+                    ComponentList = machineComponents.Select(x => x.Value ).ToList()
                 };
             }
             return output;
