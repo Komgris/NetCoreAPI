@@ -62,14 +62,6 @@ namespace CIM.API.Controllers
             }
         }
 
-        [Route("api/[controller]/Get/{row}/{pages}")]
-        [HttpGet]
-        public async Task<PagingModel<ProductionPlanModel>> Get(int row, int pages, string keyword = "", string product = null, string line = "")
-        {
-            var model = await _planService.Paging(pages, row);
-            return model;
-        }
-
         [Route("api/ProductionPlans")]
         [HttpGet]
         public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null)
@@ -88,49 +80,70 @@ namespace CIM.API.Controllers
         }
 
 
-        [Route("api/[controller]/Insert")]
+        [Route("api/[controller]/Create")]
         [HttpPost]
-        public bool Insert([FromBody]List<ProductionPlanModel> import)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Create([FromBody]List<ProductionPlanModel> data)
         {
+            var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
-                _planService.Insert(import);
-                return true;
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                output.Data = await _planService.Create(data);
+                output.IsSuccess = true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/[controller]/Update")]
-        [HttpPost]
-        public bool Update([FromBody]List<ProductionPlanModel> list)
+        [HttpPut]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody]List<ProductionPlanModel> data)
         {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                _planService.Update(list);
-                return true;
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _planService.Create(data);
+                output.IsSuccess = true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/[controller]/Delete/{id}")]
         [HttpDelete]
-        public bool Delete(string id)
+        public async Task<ProcessReponseModel<ProductionPlanListModel>> Delete(string id)
         {
+            var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                _planService.Delete(id);
-                return true;
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _planService.Delete(id);
+                output.IsSuccess = true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                output.IsSuccess = false;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/ProductionPlanStart")]

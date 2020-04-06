@@ -78,7 +78,7 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<List<ProductionPlanModel>> Insert(List<ProductionPlanModel> import)
+        public async Task<List<ProductionPlanModel>> Create(List<ProductionPlanModel> import)
         {
             List<ProductionPlanModel> fromDb = _productionPlanRepository.Get();
             List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
@@ -98,6 +98,7 @@ namespace CIM.BusinessLogic.Services
                     var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
                     db_model.CreatedBy = CurrentUser.UserId;
                     db_model.CreatedAt = timeNow;
+                    db_model.IsActive = true;
                     _productionPlanRepository.Add(db_model);
                     db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
                 }
@@ -109,7 +110,7 @@ namespace CIM.BusinessLogic.Services
         public async Task Delete(string id)
         {
             var existingItem = _productionPlanRepository.Where(x => x.PlanId == id).ToList().FirstOrDefault();
-            _productionPlanRepository.Delete(existingItem);
+            existingItem.IsActive = false;
             await _unitOfWork.CommitAsync();
         }
 
