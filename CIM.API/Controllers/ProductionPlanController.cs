@@ -27,8 +27,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Compare")]
         [HttpPost]
-        public string Compare()
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Compare()
         {
+            var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
                 var file = Request.Form.Files[0];
@@ -48,18 +49,21 @@ namespace CIM.API.Controllers
                     var fromExcel = _planService.ReadImport(fullPath);
                     var fromDb = _planService.Get();
                     var result = _planService.Compare(fromExcel, fromDb);
-                    return JsonSerializer.Serialize(result);
+                    output.Data = result;
+                    output.IsSuccess = true;
+                    //return JsonSerializer.Serialize(result);
                     //return "";
                 }
                 else
                 {
-                    return "";
+                    output.IsSuccess = false;
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/ProductionPlans")]
