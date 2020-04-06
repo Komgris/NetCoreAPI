@@ -17,13 +17,13 @@ namespace CIM.DAL.Implements
 
         }
 
-        public async Task<PagingModel<ProductModel>>Paging(string keyword, int page,int howmany)
+        public async Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howmany)
         {
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel =  _entities.Product.Where(x => x.IsActive == true &
-            (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
+            var dbModel = _entities.Product.Where(x => x.IsActive == true &
+           string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
                                 .Select(
                     x => new ProductModel
                     {
@@ -55,7 +55,8 @@ namespace CIM.DAL.Implements
         {
             var query = _entities.Product;
             var data = await query
-                .Select(x => new ProductModel {
+                .Select(x => new ProductModel
+                {
                     Code = x.Code,
                     Description = x.Description,
                     BriteItemPerUpcitem = x.BriteItemPerUpcitem,
