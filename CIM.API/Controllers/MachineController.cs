@@ -62,7 +62,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/{page}/{howmany}")]
+        [Route("api/[controller]/List")]
         public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
@@ -81,7 +81,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/{id}")]
+        [Route("api/[controller]/Get")]
         public async Task<ProcessReponseModel<MachineListModel>> Get(int id)
         {
             var output = new ProcessReponseModel<MachineListModel>();
