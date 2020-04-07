@@ -62,7 +62,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        public async Task<string> SetStatus(int id, int statusId)
+        public async Task<string> SetStatus(int id, int statusId, bool isManual = false)
         {
 
             var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);

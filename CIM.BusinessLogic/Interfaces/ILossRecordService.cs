@@ -8,6 +8,8 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface ILossRecordService : IBaseService
     {
-        Task Create(ActiveProcessModel activeProcess);
+        Task Create(ActiveProcessModel activeProcess, int machibeComponentId, int machineComponentStatusId);
+
+        Task ManualCreate(ActiveProcessModel activeProcess, int machibeComponentId, int machineComponentStatusId);
     }
 }
