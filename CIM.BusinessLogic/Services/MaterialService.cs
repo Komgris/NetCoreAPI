@@ -53,7 +53,7 @@ namespace CIM.BusinessLogic.Services
 
             //to do optimize
             var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false &&
-                                (x.Code.Contains(keyword)
+                                string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword)
                                 || x.Description.Contains(keyword)
                                 || x.ProductCategory.Contains(keyword)
                                 || x.Icsgroup.Contains(keyword)

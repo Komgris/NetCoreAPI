@@ -93,6 +93,8 @@ namespace CIM.DAL.Implements
         {
             var output = new PagingModel<T>();
             output.Total = await sqlQuery.CountAsync();
+            output.HowMany = howmany;
+            output.Page = page;
             output.NextPage = page + 1;
             output.PreviousPage = page - 1;
             output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;

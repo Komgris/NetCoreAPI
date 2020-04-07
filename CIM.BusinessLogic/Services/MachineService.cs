@@ -72,7 +72,7 @@ namespace CIM.BusinessLogic.Services
 
             //to do optimize
             var dbModel = await _machineRepository.Where(x => x.IsActive && x.IsDelete == false &
-                (x.Name.Contains(keyword) || x.Status.Name.Contains(keyword) || x.MachineType.Name.Contains(keyword)))
+                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword) || x.Status.Name.Contains(keyword) || x.MachineType.Name.Contains(keyword)))
                 .Select(
                     x => new MachineListModel
                     {

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace CIM.API.Controllers
 {
+    //SignalR used
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -39,7 +40,8 @@ namespace CIM.API.Controllers
 
         [Route("/{productionPlanId}")]
         [HttpGet]
-        public async Task<ActiveProcessModel> Get(string productionPlanId)
+        //Use to open channel
+        public async Task<ActiveProcessModel> OpenChannel(string productionPlanId)
         {
             return await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}");
         }

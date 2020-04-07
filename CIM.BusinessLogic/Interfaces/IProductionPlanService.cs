@@ -11,7 +11,7 @@ namespace CIM.BusinessLogic.Interfaces
     {
         List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
-        Task<List<ProductionPlanModel>> Insert(List<ProductionPlanModel> import);
+        Task<List<ProductionPlanModel>> Create(List<ProductionPlanModel> import);
         Task Delete(string id);
         void Update(List<ProductionPlanModel> list);
         List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan);
