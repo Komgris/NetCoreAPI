@@ -5,10 +5,10 @@ namespace CIM.Domain.Models
 {
     public partial class RecordMachineComponentStatus
     {
-        public RecordMachineComponentStatus()
-        {
-            RecordMachineComponentLoss = new HashSet<RecordMachineComponentLoss>();
-        }
+        //public RecordMachineComponentStatus()
+        //{
+        //    RecordMachineComponentLoss = new HashSet<RecordMachineComponentLoss>();
+        //}
 
         public int Id { get; set; }
         public int MachineComponentId { get; set; }
