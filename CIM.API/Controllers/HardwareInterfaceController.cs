@@ -9,27 +9,36 @@ namespace CIM.API.Controllers
     [ApiController]
     public class HardwareInterfaceController : ControllerBase
     {
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateLoss")]
-        public async Task<bool> UpdateLoss([FromBody]RecordLossModel model)
+        private IHardwareInterfaceService _service;
+        public HardwareInterfaceController(IHardwareInterfaceService service)
         {
-            throw new NotImplementedException();
+            _service = service;
         }
 
-        [HttpPut]
-        [Route("api/[controller]/UpdateStatus")]
-        public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
-        {
-            throw new NotImplementedException();
+        //[HttpPut]
+        //[Route("api/[controller]/UpdateStatus")]
+        //public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
+        //{
+        //    throw new NotImplementedException();
 
-        }
+        //}
 
         [HttpPut]
         [Route("api/[controller]/UpdateOutput")]
         public async Task<bool> UpdateOutput([FromBody]RecordOutputModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                return await _service.OutputUpdate(model);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

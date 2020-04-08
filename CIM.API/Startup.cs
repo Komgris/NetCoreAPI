@@ -68,6 +68,7 @@ namespace CIM.API
             services.AddTransient<IMaterialService, MaterialService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IMachineComponentService, MachineComponentService>();
+            services.AddTransient<IHardwareInterfaceService, HardwareInterfaceService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
 
