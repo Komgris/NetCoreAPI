@@ -9,6 +9,7 @@ namespace CIM.Domain.Models
         {
             Machine = new HashSet<Machine>();
             MachineComponentType = new HashSet<MachineComponentType>();
+            MachineTypeLossLevel3 = new HashSet<MachineTypeLossLevel3>();
             MachineTypeMaterial = new HashSet<MachineTypeMaterial>();
         }
 
@@ -24,6 +25,7 @@ namespace CIM.Domain.Models
 
         public virtual ICollection<Machine> Machine { get; set; }
         public virtual ICollection<MachineComponentType> MachineComponentType { get; set; }
+        public virtual ICollection<MachineTypeLossLevel3> MachineTypeLossLevel3 { get; set; }
         public virtual ICollection<MachineTypeMaterial> MachineTypeMaterial { get; set; }
     }
 }
