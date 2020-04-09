@@ -1267,8 +1267,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<StandardCostBrite>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("StandardCost_Brite");
 
                 entity.Property(e => e.AllBhtperUnit)
@@ -1296,8 +1294,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.FruitBhtperUnit)
                     .HasColumnName("FruitBHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.PackSize)
                     .IsRequired()
