@@ -36,7 +36,8 @@ namespace CIM.BusinessLogic.Services
         }
         public MasterDataModel Data { get; set; }
 
-        private IList<LossLevelComponentMappingModel> _lossLevel3sMapping;
+        private IList<LossLevelComponentMappingModel> _lossLevel3ComponentMapping;
+        private IList<LossLevelMachineMappingModel> _lossLevel3MachineMapping;
         private IList<LossLevel3Model> _lossLevel3s;
 
         private IDictionary<int, LossLevel3Model> GetLossLevel3()
@@ -48,7 +49,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                   Components = _lossLevel3sMapping.Where(x=>x.LossLevelId == item.Id).Select(x=>x.ComponentId).ToArray()
+                   Components = _lossLevel3ComponentMapping.Where(x=>x.LossLevelId == item.Id).Select(x=>x.ComponentId).ToArray()
                 };
             }
             return output;
@@ -67,7 +68,7 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     MachineId = item.MachineId,
-                    LossList = _lossLevel3sMapping.Where(x=>x.ComponentId == item.Id).Select(  x=> x.LossLevelId ).ToArray(),
+                    LossList = _lossLevel3ComponentMapping.Where(x=>x.ComponentId == item.Id).Select(  x=> x.LossLevelId ).ToArray(),
                     
                 };
             }
@@ -87,7 +88,8 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     Components = machineComponents.ToDictionary( x=>x.Key, x=>x.Value),
-                    ComponentList = machineComponents.Select(x => x.Value ).ToList()
+                    ComponentList = machineComponents.Select(x => x.Value ).ToList(),
+                    LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                 };
             }
             return output;
@@ -129,7 +131,8 @@ namespace CIM.BusinessLogic.Services
         public async Task<MasterDataModel> Refresh()
         {
 
-            _lossLevel3sMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+            _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+            _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
             _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3Model())).ToList();
 
             var masterData = new MasterDataModel();
