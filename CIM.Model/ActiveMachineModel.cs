@@ -8,6 +8,8 @@ namespace CIM.Model
 
         public string Name { get; set; }
 
+        public string ProductionPlanId { get; set; }
+
         public Dictionary<int, MachineComponentModel> ComponentList { get; set; }
     }
 }
