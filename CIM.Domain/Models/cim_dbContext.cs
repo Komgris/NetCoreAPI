@@ -19,6 +19,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
+        public virtual DbSet<Bom> Bom { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
@@ -154,6 +155,101 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.SiteId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Areas_Sites");
+            });
+
+            modelBuilder.Entity<Bom>(entity =>
+            {
+                entity.ToTable("BOM");
+
+                entity.Property(e => e.F24).HasMaxLength(255);
+
+                entity.Property(e => e.FruitGroup)
+                    .HasColumnName("FRUIT GROUP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.FruitType)
+                    .HasColumnName("Fruit type")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.FruitTypeDescription)
+                    .HasColumnName("Fruit type Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imdsc1ConsumeDescription)
+                    .HasColumnName("Imdsc1_Consume Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imdsc1Description)
+                    .HasColumnName("Imdsc1_Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ImglptConsumeGlClass)
+                    .HasColumnName("Imglpt_Consume GL Class")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imprp2).HasMaxLength(255);
+
+                entity.Property(e => e.Imprp3ProductGrup)
+                    .HasColumnName("Imprp3Product Grup")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp2CanCount)
+                    .HasColumnName("Imsrp2_Can Count")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp7).HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp9CanSize)
+                    .HasColumnName("Imsrp9_Can Size")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Irdsc1Routing)
+                    .HasColumnName("Irdsc1_Routing")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Irmcu).HasMaxLength(255);
+
+                entity.Property(e => e.Irtrt).HasMaxLength(255);
+
+                entity.Property(e => e.IxcmcuConsumePartBP)
+                    .HasColumnName("Ixcmcu_Consume part b/p")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Ixfser).HasMaxLength(255);
+
+                entity.Property(e => e.Ixfvbt).HasMaxLength(255);
+
+                entity.Property(e => e.IxkitlProduceItem)
+                    .HasColumnName("Ixkitl_ProduceITem")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxlitmConsumePart)
+                    .HasColumnName("Ixlitm_Consume Part")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxmmcuBP)
+                    .HasColumnName("Ixmmcu_B/P")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxqntyUsagePlusSpoilage).HasColumnName("Ixqnty_Usage plus spoilage");
+
+                entity.Property(e => e.IxsbntSubstituteIf0PrimaryOtherAlternate).HasColumnName("Ixsbnt_Substitute(If 0=Primary , Other = Alternate)");
+
+                entity.Property(e => e.IxscrpSpoilage).HasColumnName("Ixscrp_%Spoilage");
+
+                entity.Property(e => e.Ixtbm).HasMaxLength(255);
+
+                entity.Property(e => e.IxumUom)
+                    .HasColumnName("Ixum_UOM")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxuomProductUom)
+                    .HasColumnName("Ixuom_ProductUOM_")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Sysdate).HasColumnName("sysdate");
+
+                entity.Property(e => e.TodayJdate).HasColumnName("today_jdate");
             });
 
             modelBuilder.Entity<Companies>(entity =>
@@ -396,6 +492,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
+                entity.Property(e => e.StatusTags).HasMaxLength(100);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -427,15 +525,11 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.KepwareTagAddrr).HasMaxLength(100);
-
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
                 entity.Property(e => e.TypeId).HasColumnName("Type_Id");
 
@@ -1267,8 +1361,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<StandardCostBrite>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("StandardCost_Brite");
 
                 entity.Property(e => e.AllBhtperUnit)
@@ -1296,8 +1388,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.FruitBhtperUnit)
                     .HasColumnName("FruitBHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.PackSize)
                     .IsRequired()
