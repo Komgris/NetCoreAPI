@@ -18,7 +18,7 @@ namespace CIM.DAL.Implements
 
         public async Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync()
         {
-            IList<LossLevelComponentMappingModel> data = null;
+            IList<LossLevelComponentMappingModel> data = new List<LossLevelComponentMappingModel>();
             var proc = _entities.LoadStoredProc("sp_ListComponentMappingAsync");
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelComponentMappingModel>()));
             return data;
