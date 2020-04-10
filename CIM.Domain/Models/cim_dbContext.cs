@@ -19,6 +19,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
+        public virtual DbSet<Bom> Bom { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
