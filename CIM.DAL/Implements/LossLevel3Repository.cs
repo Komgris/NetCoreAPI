@@ -19,6 +19,7 @@ namespace CIM.DAL.Implements
         public async Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync()
         {
             IList<LossLevelComponentMappingModel> data = null;
+            //If you get a Object reference not set to instance of object error then make sure your sp result column is not null
             var proc = _entities.LoadStoredProc("sp_ListComponentMappingAsync");
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelComponentMappingModel>()));
             return data;
@@ -29,6 +30,7 @@ namespace CIM.DAL.Implements
         {
 
             IList<LossLevelMachineMappingModel> data = null;
+            //If you get a Object reference not set to instance of object error then make sure your sp result column is not null
             var proc = _entities.LoadStoredProc("sp_ListMachineMappingAsync");
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelMachineMappingModel>()));
             return data;
