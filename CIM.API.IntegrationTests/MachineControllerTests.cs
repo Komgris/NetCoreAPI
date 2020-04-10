@@ -124,6 +124,16 @@ namespace CIM.API.IntegrationTests
             foreach (var model in listResponseModel.Data)
                 model.Name.Should().Contain(expectedKeyword);
         }
+
+        [Fact]
+        public async Task SetStatus_Test()
+        {
+            var listResponse = (await TestClient.GetAsync(string.Format("/api/Machine/List?keyword={0}&page=1&howmany=2", "")));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var data = (await listResponse.Content.ReadAsStringAsync());
+            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MachineListModel>>(data);
+        }
+
         #endregion
 
         #region Create data for use in test function
