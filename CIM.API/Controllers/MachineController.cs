@@ -111,6 +111,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
+        [Route("api/[controller]/SetStatus")]
         public async Task<string> SetStatus(int id, int statusId)
         {
 
