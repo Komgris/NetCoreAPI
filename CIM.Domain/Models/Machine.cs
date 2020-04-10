@@ -16,6 +16,7 @@ namespace CIM.Domain.Models
         public string Name { get; set; }
         public int StatusId { get; set; }
         public int MachineTypeId { get; set; }
+        public string StatusTags { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
