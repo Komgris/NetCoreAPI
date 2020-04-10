@@ -52,6 +52,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
         public virtual DbSet<RecordMachineComponentStatus> RecordMachineComponentStatus { get; set; }
         public virtual DbSet<RecordProductionOutput> RecordProductionOutput { get; set; }
+        public virtual DbSet<RecordProductionPlanLoss> RecordProductionPlanLoss { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -1180,6 +1181,48 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordProductionOutputUpdatedByNavigation)
                     .HasForeignKey(d => d.UpdatedBy)
                     .HasConstraintName("FK_Record_Production_Output_Users");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanLoss>(entity =>
+            {
+                entity.ToTable("Record_ProductionPLan_Loss");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Guid).HasMaxLength(128);
+
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StartedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.LossLevel3)
+                    .WithMany(p => p.RecordProductionPlanLoss)
+                    .HasForeignKey(d => d.LossLevel3Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPLan_Loss_LossLevel3");
+
+                entity.HasOne(d => d.ProductionPlan)
+                    .WithMany(p => p.RecordProductionPlanLoss)
+                    .HasForeignKey(d => d.ProductionPlanId)
+                    .HasConstraintName("FK_Record_ProductionPLan_Loss_Production_Plan");
             });
 
             modelBuilder.Entity<Route>(entity =>
