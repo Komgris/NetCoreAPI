@@ -3,17 +3,16 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class Route
+    public partial class WasteLevel1
     {
-        public Route()
+        public WasteLevel1()
         {
-            RouteMachine = new HashSet<RouteMachine>();
-            RouteProductGroup = new HashSet<RouteProductGroup>();
+            WasteLevel2 = new HashSet<WasteLevel2>();
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int? ParentId { get; set; }
+        public string Description { get; set; }
+        public int ProductTypeId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -21,7 +20,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<RouteMachine> RouteMachine { get; set; }
-        public virtual ICollection<RouteProductGroup> RouteProductGroup { get; set; }
+        public virtual ProductType ProductType { get; set; }
+        public virtual ICollection<WasteLevel2> WasteLevel2 { get; set; }
     }
 }

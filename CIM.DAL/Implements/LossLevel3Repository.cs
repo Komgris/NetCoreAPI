@@ -24,5 +24,15 @@ namespace CIM.DAL.Implements
             return data;
 
         }
+
+        public async Task<IList<LossLevelMachineMappingModel>> ListMachineMappingAsync()
+        {
+
+            IList<LossLevelMachineMappingModel> data = null;
+            var proc = _entities.LoadStoredProc("sp_ListMachineMappingAsync");
+            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelMachineMappingModel>()));
+            return data;
+
+        }
     }
 }

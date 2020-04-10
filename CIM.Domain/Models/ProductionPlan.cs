@@ -5,6 +5,12 @@ namespace CIM.Domain.Models
 {
     public partial class ProductionPlan
     {
+        public ProductionPlan()
+        {
+            RecordMachineComponentLoss = new HashSet<RecordMachineComponentLoss>();
+            RecordProductionOutput = new HashSet<RecordProductionOutput>();
+        }
+
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int? RouteId { get; set; }
@@ -22,5 +28,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual Product Product { get; set; }
+        public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
+        public virtual ICollection<RecordProductionOutput> RecordProductionOutput { get; set; }
     }
 }

@@ -22,5 +22,6 @@ namespace CIM.Model
 
         public Dictionary<int, MachineComponentModel> Components { get; set; }
         public List<MachineComponentModel> ComponentList { get; set; }
+        public int[] LossList { get; set; }
     }
 }

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CIM.Model
+namespace CIM.Domain.Models
 {
-    public class MachineStatusModel
+    public partial class MaterialType
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public bool IsRunning { get; set; }
     }
 }
