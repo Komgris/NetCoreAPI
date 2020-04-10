@@ -8,8 +8,8 @@ namespace CIM.Domain.Models
         public ProductionPlan()
         {
             RecordMachineComponentLoss = new HashSet<RecordMachineComponentLoss>();
-            RecordProductionOutput = new HashSet<RecordProductionOutput>();
-            RecordProductionPlanLoss = new HashSet<RecordProductionPlanLoss>();
+            RecordManufacturingLoss = new HashSet<RecordManufacturingLoss>();
+            RecordProductionPlanOutput = new HashSet<RecordProductionPlanOutput>();
         }
 
         public string PlanId { get; set; }
@@ -30,7 +30,7 @@ namespace CIM.Domain.Models
 
         public virtual Product Product { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
-        public virtual ICollection<RecordProductionOutput> RecordProductionOutput { get; set; }
-        public virtual ICollection<RecordProductionPlanLoss> RecordProductionPlanLoss { get; set; }
+        public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
+        public virtual ICollection<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
     }
 }

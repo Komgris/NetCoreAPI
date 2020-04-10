@@ -14,7 +14,7 @@ namespace CIM.Domain.Models
         public decimal AllBhtperUnit { get; set; }
         public decimal FruitBhtperUnit { get; set; }
         public decimal PackingMediumBhtperUnit { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
