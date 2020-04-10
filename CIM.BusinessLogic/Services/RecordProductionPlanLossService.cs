@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class LossRecordService : BaseService, ILossRecordService
+    public class RecordProductionPlanLossService : BaseService, IRecordProductionPlanLossService
     {
 
         /// <summary>

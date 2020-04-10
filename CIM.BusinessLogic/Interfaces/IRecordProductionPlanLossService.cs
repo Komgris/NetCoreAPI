@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface ILossRecordService : IBaseService
+    public interface IRecordProductionPlanLossService : IBaseService
     {
         Task Create(ActiveProcessModel activeProcess, int machibeComponentId, int machineComponentStatusId);
 
