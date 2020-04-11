@@ -40,5 +40,7 @@ namespace CIM.Domain.Models
         public string Irtrt { get; set; }
         public double? Sysdate { get; set; }
         public double? TodayJdate { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

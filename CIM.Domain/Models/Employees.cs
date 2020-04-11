@@ -29,7 +29,7 @@ namespace CIM.Domain.Models
         public string Ddsnam { get; set; }
         public string Emsp2 { get; set; }
         public string Education { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
