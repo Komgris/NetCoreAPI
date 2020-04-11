@@ -163,23 +163,37 @@ namespace CIM.BusinessLogic.Services
             return listImport;
         }
 
-        public async Task Start(ProductionPlanModel model)
+        private string GetRedisKey(string id, int routeId )
+        {
+            return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}:{routeId}";
+        }
+
+        public async Task<ActiveProcessModel> Start(ProductionPlanModel model)
         {
             var now = DateTime.Now;
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
 
+            ActiveProcessModel productionPlan;
             if (!model.RouteId.HasValue)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
             }
+
+            var productionPlanKey = GetRedisKey(model.PlanId, model.RouteId.Value);
 
             if (masterData.Routes[model.RouteId.Value] == null)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
             }
 
-            dbModel.RouteId = model.RouteId;
+            if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
+            {
+                productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanKey);
+                if (productionPlan.Route.Id == model.RouteId)
+                    throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
+            }
+
             dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STARTED;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
@@ -196,31 +210,33 @@ namespace CIM.BusinessLogic.Services
             var route = masterData.Routes[model.RouteId.Value];
             activeProcess.Route = new ActiveRouteModel
             {
+                Id = route.Id,
                 MachineList = route.MachineList,
             };
+
             foreach (var machine in activeProcess.Route.MachineList)
             {
-                foreach (var component in machine.Value.Components)
+
+                var cachedMachine = await _responseCacheService.GetAsTypeAsync<ActiveMachineModel>($"{Constans.RedisKey.MACHINE}:{machine.Key}");
+                if (cachedMachine == null)
                 {
-                    var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{component.Key}");
-                    if (cachedComponent == null)
+                    cachedMachine = new ActiveMachineModel
                     {
-                        cachedComponent = new ActiveComponentModel
-                        {
-                            MachineComponentId = component.Key,
-                            MachineId = machine.Key,
-                            StatusId = (int)Constans.ComponentStatus.Ready
-                        };
-                    }
-                    cachedComponent.ProductionPlanId = activeProcess.ProductionPlanId;
-
-
-                    await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Key}", cachedComponent);
+                        Id = machine.Key,
+                        ProductionPlanId = model.PlanId,
+                        RouteIds = new int[] { model.RouteId.Value }
+                    };
+                } 
+                else
+                {
+                    cachedMachine.RouteIds[cachedMachine.RouteIds.Length + 1] = model.RouteId.Value;
                 }
-            }
-            await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{activeProcess.ProductionPlanId}", activeProcess);
-            await _unitOfWork.CommitAsync();
 
+            }
+
+            await _responseCacheService.SetAsync(productionPlanKey, activeProcess);
+            await _unitOfWork.CommitAsync();
+            return activeProcess;
         }
 
         public async Task Stop(string id)
