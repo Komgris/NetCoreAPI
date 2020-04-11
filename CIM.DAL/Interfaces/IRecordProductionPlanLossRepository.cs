@@ -6,6 +6,4 @@ using System.Text;
 namespace CIM.DAL.Interfaces
 {
     public interface IRecordProductionPlanLossRepository : IRepository<RecordProductionPlanLoss> { }
-    {
-    }
 }
