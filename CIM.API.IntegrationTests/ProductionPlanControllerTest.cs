@@ -15,7 +15,7 @@ namespace CIM.API.IntegrationTests
     public  class ProductionPlanControllerTest : IntegrationTest
     {
 
-        [Fact]
+        [Fact(Skip = "Need to change bl")]
         public async Task Start_Test()
         {
             var productionPlan = new ProductionPlanModel();
@@ -125,6 +125,36 @@ namespace CIM.API.IntegrationTests
             getResult.Data.UpdatedBy.Should().Equals(Admin.Id);
             (getResult.Data.UpdatedAt != null).Should().BeTrue();
             (getResult.Data.UpdatedAt != orgUpdateDate).Should().BeTrue();
+        }
+
+        [Fact(Skip = "Need to change bl")]
+        public async Task Start_WhenProductionPlanStartedOnTheSameRoute_Test()
+        {
+            var productionPlan = new ProductionPlanModel();
+            var testRouteId = 123;
+            var moqDbModel = new ProductionPlan
+            {
+                PlanId = "WhenProductionPlanStarted",
+                ProductId = 123,
+                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+            };
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.ProductionPlan.Add(moqDbModel);
+                context.SaveChanges();
+            }
+
+            productionPlan.PlanId = moqDbModel.PlanId;
+            productionPlan.RouteId = testRouteId;
+
+            // Act
+            var content = GetHttpContentForPost(productionPlan, AdminToken);
+            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Start", content);
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+            result.IsSuccess.Should().Equals(false);
+            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
         }
 
         [Fact]
