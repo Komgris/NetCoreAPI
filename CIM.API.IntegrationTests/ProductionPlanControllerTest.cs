@@ -128,36 +128,6 @@ namespace CIM.API.IntegrationTests
         }
 
         [Fact]
-        public async Task Start_WhenProductionPlanStarted_Test()
-        {
-            var productionPlan = new ProductionPlanModel();
-            var testRouteId = 123;
-            var moqDbModel = new ProductionPlan
-            {
-                PlanId = "WhenProductionPlanStarted",
-                ProductId = 123,
-                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
-            };
-            using (var scope = ServiceScopeFactory.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                context.ProductionPlan.Add(moqDbModel);
-                context.SaveChanges();
-            }
-
-            productionPlan.PlanId = moqDbModel.PlanId;
-            productionPlan.RouteId = testRouteId;
-
-            // Act
-            var content = GetHttpContentForPost(productionPlan, AdminToken);
-            var loadResponse = await TestClient.PostAsync("api/ProductionPlan/Start", content);
-            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
-            result.IsSuccess.Should().Equals(false);
-            result.Message.Should().StartWith($"System.Exception: {ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED}");
-        }
-
-        [Fact]
         public async Task GET_Test()
         {
             var productionPlanModel = new ProductionPlan

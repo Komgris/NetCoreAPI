@@ -169,11 +169,6 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
 
-            if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
-            {
-                throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
-            }
-
             if (!model.RouteId.HasValue)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
