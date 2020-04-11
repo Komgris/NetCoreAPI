@@ -1,9 +1,7 @@
 ﻿using CIM.Model;
 using FluentAssertions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CIM.API.IntegrationTests.Helper
 {
@@ -25,5 +23,7 @@ namespace CIM.API.IntegrationTests.Helper
             compareList.PlanId.Should().Be(expect.PlanId);
             compareList.ProductId.Should().Be(expect.ProductId);
         }
+
+
     }
 }

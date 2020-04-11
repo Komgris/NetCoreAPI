@@ -45,8 +45,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<MachineListModel> Get(int id)
         {
-            var dbModel = await _machineRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
-                .Select(
+            return await _machineRepository.All().Select(
                         x => new MachineListModel
                         {
                             Id = x.Id,
@@ -61,8 +60,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync();
-            return MapperHelper.AsModel(dbModel, new MachineListModel());
+                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
         }
 
         public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)

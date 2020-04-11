@@ -301,57 +301,6 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
         }
 
-        public async Task<ActiveProcessModel> UpdateByComponent(int componentId, int statusId)
-        {
-
-            var cachedComponent = await _responseCacheService.GetAsTypeAsync<ActiveComponentModel>($"{Constans.RedisKey.COMPONENT}:{componentId}");
-            var masterData = await _masterDataService.GetData();
-            var component = masterData.Components[componentId];
-
-            ActiveProcessModel productionPlan = null;
-            // If Production Plan doesn't start but component just start to send status
-            if (cachedComponent == null)
-            {
-                cachedComponent = new ActiveComponentModel
-                {
-                    MachineComponentId = component.Id,
-                    MachineId = component.MachineId,
-                };
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Id}", cachedComponent);
-            }
-            productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{cachedComponent.ProductionPlanId}");
-
-            var isComponentInActiveProcess = productionPlan?.Route.MachineList.Any(x => x.Key == cachedComponent.MachineId);
-            if (isComponentInActiveProcess.HasValue && !isComponentInActiveProcess.Value)
-            {
-                cachedComponent.ProductionPlanId = "";
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.COMPONENT}:{component.Id}", cachedComponent);
-                productionPlan = null;
-            }
-
-            bool hasPropductionPlanStarted = productionPlan != null;
-
-            if (hasPropductionPlanStarted)
-            {
-                
-                productionPlan.Alerts.Add(new AlertModel
-                {
-
-                    CreatedAt = DateTime.Now,
-                    ComponentStatusId = statusId,
-                    ItemId = componentId,
-                    ItemType = (int)Constans.AlertType.Component,
-                    StatusId = (int)Constans.AlertStatus.New,
-                    Id = Guid.NewGuid()
-
-                });
-
-                productionPlan.Route.MachineList[cachedComponent.MachineId].Components[cachedComponent.MachineComponentId].Status = statusId;
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
-            }
-
-            return productionPlan;
-        }
 
         public async Task<ActiveProcessModel> TakeAction(int id)
         {
