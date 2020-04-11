@@ -9,6 +9,9 @@ using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using System;
+using CIM.API.IntegrationTests.Helper;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace CIM.API.IntegrationTests
 {
@@ -162,7 +165,7 @@ namespace CIM.API.IntegrationTests
         {
             var productionPlanModel = new ProductionPlan
             {
-                PlanId = "TestListcode",
+                PlanId = "GET_Test0001",
                 ProductId = 123,
                 Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
                 IsActive = true
@@ -176,12 +179,13 @@ namespace CIM.API.IntegrationTests
 
             // Act
             var content = GetHttpContentForPost(productionPlanModel, AdminToken);
-            var loadResponse = await TestClient.GetAsync("api/ProductionPlan/Get/1/1");
+            var loadResponse = await TestClient.GetAsync($"api/ProductionPlan?id={productionPlanModel.PlanId}");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanModel>>((await loadResponse.Content.ReadAsStringAsync()));
+            var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<ProductionPlanModel>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
-            result.Data.Where(x => x.PlanId == productionPlanModel.PlanId);
+            result.Data.PlanId.Should().Be(productionPlanModel.PlanId);
         }
 
         [Fact]
@@ -205,10 +209,57 @@ namespace CIM.API.IntegrationTests
             var content = GetHttpContentForPost(productionPlan, AdminToken);
             var loadResponse = await TestClient.GetAsync("api/ProductionPlans");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<PagingModel<ProductionPlanListModel>>((await loadResponse.Content.ReadAsStringAsync()));
+            var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<ProductionPlanListModel>>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
-            result.Data.Where(x => x.Id == productionPlan.PlanId);
+            result.Data.Data.Where(x => x.Id == productionPlan.PlanId);
         }
+
+        public int CountProductionPlan()
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                return context.ProductionPlan.Count();
+            }
+        }
+
+        public ProductionPlan Get(string id)
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                return context.ProductionPlan.First( x=>x.PlanId == id);
+            }
+        }
+
+
+        [Fact]
+        public async Task InsertProductionPlan_Test()
+        {
+            var dbProductionPlanMoq = new List<ProductionPlanModel>()
+            {
+                new ProductionPlanModel{ PlanId="testA",ProductId=1,Status="new"},
+                new ProductionPlanModel{ PlanId="testB",ProductId=2,Status="new"},
+                new ProductionPlanModel{ PlanId="testC",ProductId=2,Status="new"},
+            };
+            int countBeforeInsert = CountProductionPlan();
+
+            var content = GetHttpContentForPost(dbProductionPlanMoq, AdminToken);
+            var createResponse = await TestClient.PostAsync("/api/ProductionPlan/Create", content);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            int countAfterInsert = CountProductionPlan();
+            var totalList = countAfterInsert - countBeforeInsert;
+            totalList.Should().Be(dbProductionPlanMoq.Count());
+
+            foreach (var expect in dbProductionPlanMoq)
+            {
+                var result = Get(expect.PlanId);
+                result.PlanId.Should().Be(expect.PlanId);
+            }
+        }
+
     }
 }

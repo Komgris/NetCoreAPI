@@ -61,20 +61,6 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [HttpPost]
-        public async Task<string> SetStatus(int id, int statusId, bool isManual = false)
-        {
-
-            var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
-
-            // Production plan of this component doesn't started yet
-            if (productionPlan != null)
-            {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
-            }
-            return "OK";
-        }
 
     }
 }
