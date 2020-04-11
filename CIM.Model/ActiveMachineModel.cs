@@ -7,7 +7,7 @@ namespace CIM.Model
         public int Id { get; set; }
 
         public string ProductionPlanId { get; set; }
-        public int[] RouteIds { get; set; } 
+        public List<int> RouteIds { get; set; } 
 
         public Dictionary<int, MachineComponentModel> ComponentList { get; set; }
     }
