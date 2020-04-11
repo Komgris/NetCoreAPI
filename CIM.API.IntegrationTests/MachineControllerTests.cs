@@ -124,6 +124,7 @@ namespace CIM.API.IntegrationTests
             foreach (var model in listResponseModel.Data)
                 model.Name.Should().Contain(expectedKeyword);
         }
+
         #endregion
 
         #region Create data for use in test function

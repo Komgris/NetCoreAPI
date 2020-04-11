@@ -10,10 +10,12 @@ namespace CIM.Model
 
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
 
+        public static int DEFAULT_LOSS_LV3 = 1;
+
         public class RedisKey {
 
-            public const string MACHINE = "machine:";
-            public const string MACHINE_LIST = "machine-list:";
+            public const string MACHINE = "machine";
+            public const string MACHINE_LIST = "machine-list";
             public const string PRODUCTION_PLAN = "production-plan";
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";

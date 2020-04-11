@@ -15,7 +15,7 @@ namespace CIM.API.IntegrationTests
     public  class ProductionPlanControllerTest : IntegrationTest
     {
 
-        [Fact]
+        [Fact(Skip = "Need to change bl")]
         public async Task Start_Test()
         {
             var productionPlan = new ProductionPlanModel();
@@ -127,8 +127,8 @@ namespace CIM.API.IntegrationTests
             (getResult.Data.UpdatedAt != orgUpdateDate).Should().BeTrue();
         }
 
-        [Fact]
-        public async Task Start_WhenProductionPlanStarted_Test()
+        [Fact(Skip = "Need to change bl")]
+        public async Task Start_WhenProductionPlanStartedOnTheSameRoute_Test()
         {
             var productionPlan = new ProductionPlanModel();
             var testRouteId = 123;
