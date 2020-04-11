@@ -4,6 +4,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
 
@@ -47,7 +48,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 }
 
                 output.IsSuccess = true;
@@ -59,6 +60,7 @@ namespace CIM.API.Controllers
 
             return output;
         }
+
         [HttpPost]
         public async Task<string> SetStatus(int id, int statusId)
         {
@@ -68,8 +70,8 @@ namespace CIM.API.Controllers
             // Production plan of this component doesn't started yet
             if (productionPlan != null)
             {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan));
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
             }
             return "OK";
         }

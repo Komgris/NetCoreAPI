@@ -21,9 +21,9 @@ namespace CIM.Domain.Models
         public DateTime LastDate { get; set; }
         public DateTime NextDate { get; set; }
         public bool IsActive { get; set; }
-        public int CreateBy { get; set; }
-        public DateTime CreateDate { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
         public virtual MaintenanceTeam MaintenanceTeam { get; set; }
         public virtual ICollection<MaintenanceActivity> MaintenanceActivity { get; set; }

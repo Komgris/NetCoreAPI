@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,21 +14,18 @@ namespace CIM.BusinessLogic.Services
 {
     public class ProductService: BaseService, IProductService
     {
-        private IProductRepository _productRepository;
+        private readonly IResponseCacheService _responseCacheService;
+        private readonly IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public ProductService(
             IProductRepository productRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IResponseCacheService responseCacheService
             )
         {
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
-        }
-
-        public Task<PagingModel<ProductModel>> Paging(int page, int howmany)
-        {
-            var result = _productRepository.Paging(page, howmany);
-            return result;
+            _responseCacheService = responseCacheService; 
         }
 
         public async Task BulkEdit(List<ProductModel> model)
@@ -51,29 +49,62 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<List<ProductModel>> Create(List<ProductModel> model)
+        public async Task<ProductModel> Create(ProductModel model)
         {
-            List<ProductModel> db_list = new List<ProductModel>();
-            foreach (var plan in model)
-            {
-                var db_model = MapperHelper.AsModel(plan, new Product());              
-                _productRepository.Add(db_model);
-                db_list.Add(MapperHelper.AsModel(db_model, new ProductModel()));
-            }
+            var dbModel = MapperHelper.AsModel(model, new Product());
+            _productRepository.Add(dbModel);
+            dbModel.CreatedBy = CurrentUser.UserId;
+            dbModel.CreatedAt = DateTime.Now;
+            dbModel.IsActive = true;
+            dbModel.IsDelete = false;
             await _unitOfWork.CommitAsync();
-            return db_list;
+            var response = MapperHelper.AsModel(dbModel, new ProductModel());
+
+            return response;
         }
 
-        public List<ProductModel> Get()
+        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
         {
-            var db = _productRepository.All().ToList();
-            List<ProductModel> productDb = new List<ProductModel>();
-            foreach (var plan in db)
-            {
-                var db_model = MapperHelper.AsModel(plan, new ProductModel());
-                productDb.Add(db_model);
-            }
-            return productDb;
+            var output = await _productRepository.Paging(keyword, page, howmany);
+            return output;
+        }
+
+        public async Task<ProductModel> Get(int id)
+        {
+            var dbModel = await _productRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
+                .Select(
+                        x => new ProductModel
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            Description = x.Description,
+                            BriteItemPerUpcitem = x.BriteItemPerUpcitem,
+                            ProductFamily_Id = x.ProductFamilyId,
+                            ProductGroup_Id = x.ProductGroupId,
+                            ProductType_Id = x.ProductTypeId,
+                            PackingMedium = x.PackingMedium,
+                            NetWeight = x.NetWeight,
+                            Igweight = x.Igweight,
+                            Pmweight = x.Pmweight,
+                            WeightPerUom = x.WeightPerUom,
+                            IsActive = x.IsActive,
+                            IsDelete = x.IsDelete,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy,
+                        }).FirstOrDefaultAsync();
+            return MapperHelper.AsModel(dbModel, new ProductModel());
+        }
+
+        public async Task Update(ProductModel model)
+        {
+            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            dbModel = MapperHelper.AsModel(model, dbModel);
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.UpdatedAt = DateTime.Now;
+            _productRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

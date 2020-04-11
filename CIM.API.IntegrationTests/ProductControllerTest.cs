@@ -21,88 +21,130 @@ namespace CIM.API.IntegrationTests
 {
     public class ProductControllerTest : IntegrationTest
     {
+        #region Test function
         [Fact]
-        public async Task InsertProduct_Test()
+        public async Task Create_Test()
         {
-            // Arrange   
-            var dbProductMoq = ProductTestHelper.GetProductList();
-            var beforeInsert = await Get();
-            var countBeforeInsert = beforeInsert.Count();
-         
-            await Insert(dbProductMoq);
-
-            var afterInsert = await Get();
-            var countAfterInsert = afterInsert.Count();
-
-            var totalList = countAfterInsert - countBeforeInsert;
-            totalList.Should().Be(dbProductMoq.Count());
-
-            foreach (var expect in dbProductMoq)
-            {
-                ProductTestHelper.CompareModelProduct(afterInsert, expect);
-            }
-        }
-
-        public async Task<List<ProductModel>> Get()
-        {
-            var getResponse = await TestClient.GetAsync("/api/Product/GetNoPaging");
-            getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await getResponse.Content.ReadAsStringAsync()));
-            return responseModel;
-        }
-
-        public async Task<List<ProductModel>> Insert(List<ProductModel> data)
-        {
-            var content = JsonConvert.SerializeObject(data);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var createResponse = await TestClient.PostAsync("/api/Product/Insert", byteContent);
-            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseModel = JsonConvert.DeserializeObject<List<ProductModel>>((await createResponse.Content.ReadAsStringAsync()));
-            return responseModel;
-        }
-
-        [Fact]
-        public async Task EditProduct_Test()
-        {
-            var dbProductMoq = ProductTestHelper.GetProductList();
-            var afterInsert = await Insert(dbProductMoq);
-
-            afterInsert[0].Code = "EditA";
-            afterInsert[1].Code = "EditB";
-            afterInsert[2].Code = "EditC";
-
-            var content = JsonConvert.SerializeObject(afterInsert);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var createResponse = await TestClient.PostAsync("/api/Product/Edit", byteContent);
-            createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var afterEdit = await Get();
-            foreach (var expect in afterInsert)
-            {
-                ProductTestHelper.CompareModelProduct(afterEdit, expect);
-            }
-        }
-        
-        [Fact]
-        public async Task DeleteProduct_Test()
-        {
-            var dbProductMoq = ProductTestHelper.GetProductList();
-            List<ProductModel> moqList = new List<ProductModel>();
-            moqList.Add(dbProductMoq[0]);
-
-            var afterInsert = await Insert(moqList);
+            // Arrange
+            var name = "testA";
+            var model = await CreateData(name);
             
-            var deleteResponse = await TestClient.GetAsync("/api/Product/Delete/"+ afterInsert[0].Id);
-            deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var expectedCount = 1;
+            var page = 1;
+            var pageSize = 10;
 
-            var afterDelete = await Get();
+            // Act
+            var listResponse = (await TestClient.GetAsync($"/api/Product/List?page={page}&howmany={pageSize}"));
 
-            var selected = afterDelete.Where(x => x.Id == afterInsert[0].Id);
-            selected.Should().BeNullOrEmpty();
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var listResponseModel = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<ProductModel>>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Data.Count(x => x.Code == name).Should().Be(expectedCount);
+            var responseModel = listResponseModel.Data.Data.First(x => x.Code == name);
+
+            ProductTestHelper.CompareModelProduct(model.Data, responseModel);
         }
+
+        [Fact]
+        public async Task Get_Test()
+        {
+            // Arrange
+            var name = "ProductA";
+            var model = await CreateData(name);
+
+            // Act
+            var response = await TestClient.GetAsync("/api/Product/" + model.Data.Id);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<ProcessReponseModel<ProductModel>>((await response.Content.ReadAsStringAsync()));
+
+            // Assert            
+            ProductTestHelper.CompareModelProduct(responseModel.Data, model.Data);
+        }
+
+        [Fact]
+        public async Task Update_Test()
+        {
+            // Arrange
+            var code = "updateProductA";
+            var model = await CreateData(code);
+            var token = string.Empty;
+
+
+            var updateByteContent = GetHttpContentForPost(model, token);
+
+            // Act
+            var updateResponse = await TestClient.PutAsync("/api/Product/Update", updateByteContent);
+
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updateResponseModel = JsonConvert.DeserializeObject<MachineListModel>((await updateResponse.Content.ReadAsStringAsync()));
+
+
+            var response = await TestClient.GetAsync("/api/Product/" + model.Data.Id);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<MachineListModel>((await response.Content.ReadAsStringAsync()));
+
+            // Assert
+            MachineTestHelper.CompareModel(responseModel, updateResponseModel);
+        }
+
+        [Fact]
+        public async Task List_HowMany_Test()
+        {
+            // Arrange
+            var model1 = await CreateData("TestList001");
+            var model2 = await CreateData("TestList002");
+            var model3 = await CreateData("TestList003");
+            var expectedCount = 2;
+
+            // Act
+            var listResponse = (await TestClient.GetAsync($"/api/Product/List?page=1&howmany={expectedCount}"));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var listResponseModel = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<ProductModel>>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Data.Count().Should().Be(expectedCount);
+        }
+
+        [Fact]
+        public async Task List_Keyword_Test()
+        {
+            // Arrange
+            var model1 = await CreateData("TestList001AA");
+            var model2 = await CreateData("TestList002BB");
+            var model3 = await CreateData("TestList003AA");
+            var expectedKeyword = "AA";
+            var expectedKCount = 2;
+
+            // Act
+            var listResponse = (await TestClient.GetAsync(string.Format("/api/Product/List?keyword={0}&page=1&howmany=2", expectedKeyword)));
+            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var listResponseModel = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<ProductModel>>>((await listResponse.Content.ReadAsStringAsync()));
+
+            // Assert       
+            listResponseModel.Data.Data.Count().Should().Be(expectedKCount);
+            foreach (var model in listResponseModel.Data.Data)
+                model.Code.Should().Contain(expectedKeyword);
+        }
+        #endregion
+
+        #region Create data for use in test function
+        public async Task<ProcessReponseModel<ProductModel>> CreateData(string code)
+        {
+            var model = ProductTestHelper.GetProduct(code);
+            var token = string.Empty;
+
+            var content = GetHttpContentForPost(model, AdminToken);
+            var response = await TestClient.PostAsync("/api/Product/Create", content);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<ProcessReponseModel<ProductModel>>((await response.Content.ReadAsStringAsync()));
+
+            return responseModel;
+        }
+        #endregion
     }
 }

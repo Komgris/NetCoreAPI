@@ -20,6 +20,8 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public Dictionary<int, MachineComponentModel> ComponentList { get; set; }
+        public Dictionary<int, MachineComponentModel> Components { get; set; }
+        public List<MachineComponentModel> ComponentList { get; set; }
+        public int[] LossList { get; set; }
     }
 }

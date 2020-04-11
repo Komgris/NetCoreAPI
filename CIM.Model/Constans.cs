@@ -28,7 +28,8 @@ namespace CIM.Model
 
         public enum AlertType : int
         {
-            Component = 0
+            Component = 0,
+            MACHINE = 1
         }
 
         public enum AlertStatus : int

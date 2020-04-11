@@ -11,9 +11,9 @@ namespace CIM.Domain.Models
         public bool IsLeader { get; set; }
         public string Response { get; set; }
         public bool IsActive { get; set; }
-        public int AddBy { get; set; }
+        public string AddBy { get; set; }
         public DateTime AddDate { get; set; }
-        public int? UpdateBy { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
 }

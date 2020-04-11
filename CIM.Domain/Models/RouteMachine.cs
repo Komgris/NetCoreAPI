@@ -9,7 +9,7 @@ namespace CIM.Domain.Models
         public int RouteId { get; set; }
         public int MachineId { get; set; }
         public int Sequence { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }

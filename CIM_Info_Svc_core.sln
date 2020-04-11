@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.BusinessLogicTests", "C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{CC38A1AE-CA6D-4879-B484-9822DADDE459}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIM.DALTests", "CIM.DALTests\CIM.DALTests.csproj", "{6BDCAE54-D11D-419F-B3FA-14203F406686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIM.DALTests", "CIM.DALTests\CIM.DALTests.csproj", "{6BDCAE54-D11D-419F-B3FA-14203F406686}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
