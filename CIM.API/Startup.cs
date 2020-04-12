@@ -70,6 +70,7 @@ namespace CIM.API
             services.AddTransient<IMachineComponentService, MachineComponentService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
+            services.AddTransient<IReportService, ReportService>();
 
             services.AddControllers();
             services.AddSignalR();
