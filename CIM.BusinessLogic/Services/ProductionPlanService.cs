@@ -125,11 +125,11 @@ namespace CIM.BusinessLogic.Services
             {
                 if (dbPlan.Any(x => x.PlanId == plan.PlanId))
                 {
-                    plan.Status = "Inprocess";
+                    //plan.StatusId = "Inprocess";
                 }
                 else
                 {
-                    plan.Status = "New";
+                    plan.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
                 }
             }
             return import;
@@ -192,14 +192,14 @@ namespace CIM.BusinessLogic.Services
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
             }
 
-            if (dbModel.Status == Constans.PRODUCTION_PLAN_STATUS.STARTED)
+            if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production)
             {
                 productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanRouteKey);
                 if (productionPlan.Route.Id == model.RouteId)
                     throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
             }
 
-            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STARTED;
+            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
             dbModel.PlanStart = now;
             dbModel.ActualStart = now;
             dbModel.UpdatedAt = now;
@@ -255,7 +255,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
 
-            dbModel.Status = Constans.PRODUCTION_PLAN_STATUS.STOP;
+            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
             dbModel.UpdatedAt = now;
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
