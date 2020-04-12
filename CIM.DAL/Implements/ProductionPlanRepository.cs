@@ -34,7 +34,7 @@ namespace CIM.DAL.Implements
                     ProductId = x.ProductId,
                     Target = x.Target,
                     Unit = x.Unit,
-                    Status = x.Status,
+                    StatusId = x.StatusId,
                     IsActive = x.IsActive,
                     UpdatedAt = x.UpdatedAt
 
@@ -52,7 +52,7 @@ namespace CIM.DAL.Implements
                 from productionPlan in _entities.ProductionPlan
                 join r in _entities.Route on productionPlan.RouteId equals r.Id into productionPlanRoute
                 from route in productionPlanRoute.DefaultIfEmpty()
-                where productionPlan.IsActive
+                where productionPlan.IsActive == true
                 && !routeId.HasValue ? true : route.Id == routeId
                 && !productId.HasValue ? true : productionPlan.ProductId == productId
                 && string.IsNullOrEmpty(keyword) ? true : (
@@ -69,7 +69,7 @@ namespace CIM.DAL.Implements
                     Finished = productionPlan.PlanFinish,
                     Product = productionPlan.Product.Code,
                     Started = productionPlan.PlanStart,
-                    Status = productionPlan.Status,
+                    StatusId = productionPlan.StatusId,
                     Target = productionPlan.Target,
                     Unit = productionPlan.Unit
                 };
@@ -88,7 +88,7 @@ namespace CIM.DAL.Implements
                     ProductId = x.ProductId,
                     Target = x.Target,
                     Unit = x.Unit,
-                    Status = x.Status,
+                    StatusId = x.StatusId,
                 }).ToList();
             return data;
         }
@@ -103,7 +103,7 @@ namespace CIM.DAL.Implements
                 insert.ProductId = plan.ProductId;
                 insert.Target = plan.Target;
                 insert.Unit = plan.Unit;
-                insert.Status = "New";
+                insert.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
                 insert.UpdatedAt = DateTime.Now;
                 _entities.ProductionPlan.Add(insert);
                 _entities.SaveChanges();
@@ -133,7 +133,6 @@ namespace CIM.DAL.Implements
                     update.ProductId = plan.ProductId;
                     update.Target = plan.Target;
                     update.Unit = plan.Unit;
-                    update.Status = "Edit";
                     update.UpdatedAt = DateTime.Now;
                 }
                 _entities.SaveChanges();

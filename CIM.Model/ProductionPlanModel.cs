@@ -15,7 +15,7 @@ namespace CIM.Model
         public DateTime? PlanFinish { get; set; }
         public DateTime? ActualStart { get; set; }
         public DateTime? ActualFinish { get; set; }
-        public string Status { get; set; }
+        public int? StatusId { get; set; }
         public bool? IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
