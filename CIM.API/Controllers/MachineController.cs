@@ -16,8 +16,6 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
-        private IProductionPlanService _productionPlanService;
         private IMachineService _service;
         public MachineController(
             IHubContext<MachineHub> hub,
@@ -25,8 +23,6 @@ namespace CIM.API.Controllers
             IMachineService service
         )
         {
-            _hub = hub;
-            _productionPlanService = productionPlanService;
             _service = service;
         }
 

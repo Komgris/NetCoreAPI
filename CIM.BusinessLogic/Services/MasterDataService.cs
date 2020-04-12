@@ -87,7 +87,6 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Components = machineComponents.ToDictionary( x=>x.Key, x=>x.Value),
                     ComponentList = machineComponents.Select(x => x.Value ).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                 };
