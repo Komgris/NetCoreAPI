@@ -170,13 +170,13 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, string>> GetProductionStatus()
+        private async Task<IDictionary<string, int>> GetProductionStatus()
         {
             var db = (await _productionStatusRepository.WhereAsync(x => x.IsActive == true));
-            var output = new Dictionary<int, string>();
+            var output = new Dictionary<string, int>();
             foreach (var productionStatus in db)
             {
-                output.Add(productionStatus.Id, productionStatus.Name);
+                output.Add(productionStatus.Name, productionStatus.Id);
             }
             return output;
         }
