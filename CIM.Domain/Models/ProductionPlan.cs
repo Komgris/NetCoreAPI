@@ -16,7 +16,7 @@ namespace CIM.Domain.Models
         public int ProductId { get; set; }
         public int? RouteId { get; set; }
         public int? Target { get; set; }
-        public int? Unit { get; set; }
+        public int? UnitId { get; set; }
         public DateTime? PlanStart { get; set; }
         public DateTime? PlanFinish { get; set; }
         public DateTime? ActualStart { get; set; }
@@ -29,7 +29,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual Product Product { get; set; }
-        public virtual ProductionStatus Status { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
         public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual ICollection<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
