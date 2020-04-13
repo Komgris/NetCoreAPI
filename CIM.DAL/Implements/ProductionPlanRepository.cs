@@ -33,7 +33,7 @@ namespace CIM.DAL.Implements
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
-                    Unit = x.Unit,
+                    Unit = x.UnitId,
                     StatusId = x.StatusId,
                     IsActive = x.IsActive,
                     UpdatedAt = x.UpdatedAt
@@ -48,33 +48,17 @@ namespace CIM.DAL.Implements
 
         public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
         {
-            var sqlQuery = 
-                from productionPlan in _entities.ProductionPlan
-                join r in _entities.Route on productionPlan.RouteId equals r.Id into productionPlanRoute
-                from route in productionPlanRoute.DefaultIfEmpty()
-                where productionPlan.IsActive == true
-                && !routeId.HasValue ? true : route.Id == routeId
-                && !productId.HasValue ? true : productionPlan.ProductId == productId
-                && string.IsNullOrEmpty(keyword) ? true : (
-                    productionPlan.PlanId.Contains(keyword) ||
-                    productionPlan.Product.Code.Contains(keyword) ||
-                    route.Name.Contains(keyword)
-                )
-                select new ProductionPlanListModel
-                {
-                    Id = productionPlan.PlanId,
-                    Line = route.Name,
-                    ActualFinish = productionPlan.ActualFinish,
-                    ActualStart = productionPlan.ActualStart,
-                    Finished = productionPlan.PlanFinish,
-                    Product = productionPlan.Product.Code,
-                    Started = productionPlan.PlanStart,
-                    StatusId = productionPlan.StatusId,
-                    Target = productionPlan.Target,
-                    Unit = productionPlan.Unit
-                };
+            List<ProductionPlanListModel> data = null;
+            //int totalCount = 0;
+            var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
+            proc.AddParam("total_count", out IOutParam<int> totalCount );
+            proc.AddParam("@route_id", routeId);
+            proc.AddParam("@product_id", productId);
+            proc.AddParam("@keyword", keyword);
+            proc.AddParam("@is_active", isActive);
+            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
-            return await ToPagingModel(sqlQuery, page, howmany); 
+            return ToPagingModel(data, totalCount.Value, page, howmany);
 
         }
 
@@ -87,7 +71,7 @@ namespace CIM.DAL.Implements
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
-                    Unit = x.Unit,
+                    Unit = x.UnitId,
                     StatusId = x.StatusId,
                 }).ToList();
             return data;
@@ -102,7 +86,7 @@ namespace CIM.DAL.Implements
                 insert.PlanId = plan.PlanId;
                 insert.ProductId = plan.ProductId;
                 insert.Target = plan.Target;
-                insert.Unit = plan.Unit;
+                insert.UnitId = plan.Unit;
                 insert.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
                 insert.UpdatedAt = DateTime.Now;
                 _entities.ProductionPlan.Add(insert);
@@ -132,7 +116,7 @@ namespace CIM.DAL.Implements
                     update.PlanId = plan.PlanId;
                     update.ProductId = plan.ProductId;
                     update.Target = plan.Target;
-                    update.Unit = plan.Unit;
+                    update.UnitId = plan.Unit;
                     update.UpdatedAt = DateTime.Now;
                 }
                 _entities.SaveChanges();

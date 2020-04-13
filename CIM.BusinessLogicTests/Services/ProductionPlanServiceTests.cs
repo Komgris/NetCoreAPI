@@ -49,7 +49,7 @@ namespace CIM.BusinessLogic.Services.Tests
 
             // return production plan that haven't started yet
             var productionPlanRepository = new Mock<IProductionPlanRepository>();
-            var productionPlanMoq = new ProductionPlan { PlanId = productionPlanId, Status = null };
+            var productionPlanMoq = new ProductionPlan { PlanId = productionPlanId, StatusId = null };
             productionPlanRepository.Setup(x => x.FirstOrDefaultAsync(It.IsAny<Expression<Func<ProductionPlan, bool>>>())).Returns(Task.FromResult(productionPlanMoq));
 
             var productRepository = new Mock<IProductRepository>();
