@@ -4,6 +4,7 @@ using CIM.DAL.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace CIM.BusinessLogic.Services {
@@ -23,9 +24,8 @@ namespace CIM.BusinessLogic.Services {
             repo = new DirectSqlRepository(_configuration);
         }
 
-        public string GetProductionSummary(int planid, int routeid, DateTime? from, DateTime? to) {
-            var result = repo.ExecuteReader("select * from sites ", null);
-            return result;
+        public DataTable GetProductionSummary(int planid, int routeid, DateTime? from, DateTime? to) {
+            return repo.ExecuteWithQuery("exec sp_testNoparam", null);
         }
 
         public string GetMachineSpeed(int planid, int routeid, DateTime? from, DateTime? to) {
@@ -41,6 +41,18 @@ namespace CIM.BusinessLogic.Services {
         }
 
         public string GetProductionPlanInfomation(int planid, int routeid) {
+
+            //List<ProductionPlanListModel> data = null;
+            ////int totalCount = 0;
+            //var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
+            //proc.AddParam("total_count", out IOutParam<int> totalCount);
+            //proc.AddParam("@route_id", routeId);
+            //proc.AddParam("@product_id", productId);
+            //proc.AddParam("@keyword", keyword);
+            //proc.AddParam("@is_active", isActive);
+            //await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
+
+            //return ToPagingModel(data, totalCount.Value, page, howmany);
             throw new NotImplementedException();
         }
 
