@@ -47,7 +47,7 @@ namespace CIM.DAL.Implements
                         UpdatedBy = x.UpdatedBy,
                     });
 
-            return await ToPagingModel(dbModel, page, howmany);
+            return await ToPagingModelAsync(dbModel, page, howmany);
 
         }
 

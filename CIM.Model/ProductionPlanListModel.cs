@@ -7,15 +7,17 @@ namespace CIM.Model
     public class ProductionPlanListModel
     {
         public string Id { get; set; }
-        public string Line { get; set; }
+        public int? RouteId { get; set; }
+        public string Route { get; set; }
 
+        public int ProductId { get; set; }
         public string Product { get; set; }
 
         public int? Target { get; set; }
 
-        public int? Unit { get; set; }
+        public string Unit { get; set; }
 
-        public int? StatusId { get; set; }
+        public string Status { get; set; }
 
         public DateTime? Started { get; set; }
 
