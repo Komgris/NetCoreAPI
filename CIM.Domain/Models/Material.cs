@@ -13,7 +13,7 @@ namespace CIM.Domain.Models
         public string MaterialGroup { get; set; }
         public string Uom { get; set; }
         public decimal? BhtperUnit { get; set; }
-        public int? MaterialTypeId { get; set; }
+        public int MaterialTypeId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

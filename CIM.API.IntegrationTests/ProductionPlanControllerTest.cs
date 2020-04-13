@@ -139,7 +139,7 @@ namespace CIM.API.IntegrationTests
             {
                 PlanId = "WhenProductionPlanStarted",
                 ProductId = 123,
-                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
             };
             using (var scope = ServiceScopeFactory.CreateScope())
             {
@@ -167,7 +167,7 @@ namespace CIM.API.IntegrationTests
             {
                 PlanId = "GET_Test0001",
                 ProductId = 123,
-                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
                 IsActive = true
             };
             using (var scope = ServiceScopeFactory.CreateScope())
@@ -195,7 +195,7 @@ namespace CIM.API.IntegrationTests
             {
                 PlanId = "TestListcode",
                 ProductId = 123,
-                Status = Constans.PRODUCTION_PLAN_STATUS.STARTED,
+                StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
                 IsActive = true
             };
             using (var scope = ServiceScopeFactory.CreateScope())
@@ -240,9 +240,9 @@ namespace CIM.API.IntegrationTests
         {
             var dbProductionPlanMoq = new List<ProductionPlanModel>()
             {
-                new ProductionPlanModel{ PlanId="testA",ProductId=1,Status="new"},
-                new ProductionPlanModel{ PlanId="testB",ProductId=2,Status="new"},
-                new ProductionPlanModel{ PlanId="testC",ProductId=2,Status="new"},
+                new ProductionPlanModel{ PlanId="testA",ProductId=1,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
+                new ProductionPlanModel{ PlanId="testB",ProductId=2,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
+                new ProductionPlanModel{ PlanId="testC",ProductId=2,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
             };
             int countBeforeInsert = CountProductionPlan();
 
