@@ -15,7 +15,7 @@ namespace CIM.Model
 
         public int? Unit { get; set; }
 
-        public string Status { get; set; }
+        public int? StatusId { get; set; }
 
         public DateTime? Started { get; set; }
 

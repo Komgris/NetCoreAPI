@@ -22,10 +22,17 @@ namespace CIM.Model
             public const string MASTER_DATA = "master-data";
         }
 
-        public class PRODUCTION_PLAN_STATUS {
-
-            public const string STARTED = "STARTED";
-            public const string STOP = "STOP";
+        public enum PRODUCTION_PLAN_STATUS : int
+        {
+            New                    = 1,	
+            Production             = 2,	
+            Finished               = 3,	
+            Preparatory            = 4,	
+            Changeover             = 5,	
+            CleaningAndSanitation  = 6,	
+            MealTeaBreak           = 7,	
+            Hold                   = 8,	
+            Cancel                 = 9
         }
 
         public enum AlertType : int
