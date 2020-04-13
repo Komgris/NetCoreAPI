@@ -30,7 +30,7 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
-        public string GetProductionSummary(int planid, int routeid, DateTime? from=null, DateTime? to=null) {
+        public string GetProductionSummary(string planid, int routeid, DateTime? from=null, DateTime? to=null) {
             try {
                 return JsonConvert.SerializeObject(_service.GetProductionSummary(planid, routeid, from, to));
             }
@@ -41,9 +41,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionPlanInfomation")]
-        public string GetProductionPlanInfomation(int planid, int routeid) {
+        public string GetProductionPlanInfomation(string planid, int routeid) {
             try {
-                return _service.GetProductionPlanInfomation(planid, routeid);
+                return JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planid, routeid));
             }
             catch (Exception e) {
                 throw e;
@@ -51,9 +51,9 @@ namespace CIM.API.Controllers {
         }
 
         [HttpGet]
-        public string GetProductionOperators(int planid, int routeid) {
+        public string GetProductionOperators(string planid, int routeid) {
             try {
-                return _service.GetProductionOperators(planid, routeid);
+                return JsonConvert.SerializeObject(_service.GetProductionOperators(planid, routeid));
             }
             catch (Exception e) {
                 throw e;
@@ -62,9 +62,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionEvents")]
-        public string GetProductionEvents(int planid, int routeid, DateTime? from = null, DateTime? to = null) {
+        public string GetProductionEvents(string planid, int routeid, DateTime? from = null, DateTime? to = null) {
             try {
-                return _service.GetProductionEvents(planid, routeid, from, to);
+                return JsonConvert.SerializeObject(_service.GetProductionEvents(planid, routeid, from, to));
             }
             catch (Exception e) {
                 throw e;
@@ -73,9 +73,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetMachineSpeed")]
-        public string GetMachineSpeed(int planid, int routeid, DateTime? from = null, DateTime? to = null) {
+        public string GetMachineSpeed(string planid, int routeid, DateTime? from = null, DateTime? to = null) {
             try {
-                return _service.GetMachineSpeed(planid, routeid, from, to);
+                return JsonConvert.SerializeObject(_service.GetMachineSpeed(planid, routeid, from, to));
             }
             catch (Exception e) {
                 throw e;
