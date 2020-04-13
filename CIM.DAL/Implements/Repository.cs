@@ -88,7 +88,7 @@ namespace CIM.DAL.Implements
             return _dbset.Any(predicate);
         }
 
-        public async Task<PagingModel<T>> ToPagingModel<T>(IQueryable<T> sqlQuery, int page, int howmany)
+        public async Task<PagingModel<T>> ToPagingModelAsync<T>(IQueryable<T> sqlQuery, int page, int howmany)
         where T : new()
         {
             var output = new PagingModel<T>();
@@ -105,6 +105,21 @@ namespace CIM.DAL.Implements
             return output;
         }
 
-
+        public PagingModel<T> ToPagingModel<T>(List<T> data, int total, int page, int howmany)
+        where T : new()
+        {
+            var output = new PagingModel<T>();
+            output.Total = total;
+            output.HowMany = howmany;
+            output.Page = page;
+            output.NextPage = page + 1;
+            output.PreviousPage = page - 1;
+            output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
+            var skip = (page - 1) * howmany;
+            output.Data = data;
+            return output;
+        }
     }
 }

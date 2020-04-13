@@ -1101,6 +1101,8 @@ namespace CIM.Domain.Models
                     .HasColumnName("Status_Id")
                     .HasDefaultValueSql("((1))");
 
+                entity.Property(e => e.UnitId).HasColumnName("Unit_Id");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -1110,11 +1112,6 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Production_Plan_Product");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.ProductionPlan)
-                    .HasForeignKey(d => d.StatusId)
-                    .HasConstraintName("FK_Production_Plan_Production_Status");
             });
 
             modelBuilder.Entity<ProductionStatus>(entity =>
