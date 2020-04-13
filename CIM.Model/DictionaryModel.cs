@@ -8,5 +8,6 @@ namespace CIM.Model
         public IDictionary<string, string> Products { get; set; } = new Dictionary<string, string>();
         public IDictionary<string, string> Lines { get; set; } = new Dictionary<string, string>();
         public IDictionary<int, object> ComponentAlerts { get; set; } = new Dictionary<int, object>();
+        public IDictionary<int, string> ProductionStatuses { get; set; } = new Dictionary<int, string>();
     }
 }
