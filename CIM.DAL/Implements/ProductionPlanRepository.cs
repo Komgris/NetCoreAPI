@@ -17,14 +17,14 @@ namespace CIM.DAL.Implements
         {
         }
 
-        public async Task<PagingModel<ProductionPlanModel>> Paging( int page, int howmany)
+        public async Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany)
         {
             var query = _entities.ProductionPlan;
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.OrderBy(s=>s.PlanId).Skip(skipRec).Take(takeRec);
+            var paging = query.OrderBy(s => s.PlanId).Skip(skipRec).Take(takeRec);
 
             var data = await paging
 
@@ -46,16 +46,17 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
         {
             List<ProductionPlanListModel> data = null;
             //int totalCount = 0;
             var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
-            proc.AddParam("total_count", out IOutParam<int> totalCount );
+            proc.AddParam("total_count", out IOutParam<int> totalCount);
             proc.AddParam("@route_id", routeId);
             proc.AddParam("@product_id", productId);
             proc.AddParam("@keyword", keyword);
             proc.AddParam("@is_active", isActive);
+            proc.AddParam("@status_id", statusIds);
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
             return ToPagingModel(data, totalCount.Value, page, howmany);
@@ -81,8 +82,8 @@ namespace CIM.DAL.Implements
         {
             foreach (var plan in import)
             {
-                
-                    var insert = new ProductionPlan();
+
+                var insert = new ProductionPlan();
                 insert.PlanId = plan.PlanId;
                 insert.ProductId = plan.ProductId;
                 insert.Target = plan.Target;
@@ -96,14 +97,14 @@ namespace CIM.DAL.Implements
 
         public void DeleteProduction(string id)
         {
-        
-                var delete = _entities.ProductionPlan.Where(x => x.PlanId == id).FirstOrDefault();
-                if (delete != null)
-                {
-                    _entities.ProductionPlan.Remove(delete);
-                }
-                _entities.SaveChanges();
-            
+
+            var delete = _entities.ProductionPlan.Where(x => x.PlanId == id).FirstOrDefault();
+            if (delete != null)
+            {
+                _entities.ProductionPlan.Remove(delete);
+            }
+            _entities.SaveChanges();
+
         }
 
         public void UpdateProduction(List<ProductionPlanModel> list)
@@ -111,7 +112,7 @@ namespace CIM.DAL.Implements
             foreach (var plan in list)
             {
                 var update = _entities.ProductionPlan.Where(x => x.PlanId == plan.PlanId).FirstOrDefault();
-                if(update != null)
+                if (update != null)
                 {
                     update.PlanId = plan.PlanId;
                     update.ProductId = plan.ProductId;
