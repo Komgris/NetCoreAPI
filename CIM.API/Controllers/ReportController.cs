@@ -19,15 +19,58 @@ namespace CIM.API.Controllers {
             _service = reportService;
         }
 
+        #region Cim-Oper Production overview
+
         [HttpGet]
-        public string Get(int id) {
+        public string GetProductionSummary(int planid, int routeid, DateTime? from=null, DateTime? to=null) {
             try {
-                var now = DateTime.Now;
-                return _service.GetProductionSummary(1,1,now,now);
+                return _service.GetProductionSummary(planid, routeid, from, to);
             }
             catch (Exception e) {
                 throw e;
             }
         }
+
+        [HttpGet]
+        public string GetProductionPlanInfomation(int planid, int routeid) {
+            try {
+                return _service.GetProductionPlanInfomation(planid, routeid);
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        public string GetProductionOperators(int planid, int routeid) {
+            try {
+                return _service.GetProductionOperators(planid, routeid);
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        public string GetProductionEvents(int planid, int routeid, DateTime? from = null, DateTime? to = null) {
+            try {
+                return _service.GetProductionEvents(planid, routeid, from, to);
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        public string GetMachineSpeed(int planid, int routeid, DateTime? from = null, DateTime? to = null) {
+            try {
+                return _service.GetMachineSpeed(planid, routeid, from, to);
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        #endregion
     }
 }

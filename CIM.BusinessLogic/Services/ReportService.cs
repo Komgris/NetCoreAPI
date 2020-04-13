@@ -23,11 +23,16 @@ namespace CIM.BusinessLogic.Services {
             repo = new DirectSqlRepository(_configuration);
         }
 
-        public string GetMachineSpeed(int planid, int routeid, DateTime from, DateTime to) {
+        public string GetProductionSummary(int planid, int routeid, DateTime? from, DateTime? to) {
+            var result = repo.ExecuteReader("select * from sites ", null);
+            return result;
+        }
+
+        public string GetMachineSpeed(int planid, int routeid, DateTime? from, DateTime? to) {
             throw new NotImplementedException();
         }
 
-        public string GetProductionEvents(int planid, int routeid, DateTime from, DateTime to) {
+        public string GetProductionEvents(int planid, int routeid, DateTime? from, DateTime? to) {
             throw new NotImplementedException();
         }
 
@@ -39,10 +44,6 @@ namespace CIM.BusinessLogic.Services {
             throw new NotImplementedException();
         }
 
-        public string GetProductionSummary(int planid, int routeid, DateTime from, DateTime to) {
-            var result = repo.ExecuteReader("select * from sites ", null);
-            return result;
-        }
 
     }
 }
