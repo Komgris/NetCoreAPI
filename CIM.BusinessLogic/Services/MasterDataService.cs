@@ -17,6 +17,7 @@ namespace CIM.BusinessLogic.Services
         private IRouteMachineRepository _routeMachineRepository;
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
+        private IProductionStatusRepository _productionStatusRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -24,7 +25,8 @@ namespace CIM.BusinessLogic.Services
             IRouteRepository routeRepository,
             IRouteMachineRepository routeMachineRepository,
             IMachineRepository machineRepository,
-            IMachineComponentRepository machineComponentRepository
+            IMachineComponentRepository machineComponentRepository,
+            IProductionStatusRepository productionStatusRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -33,6 +35,7 @@ namespace CIM.BusinessLogic.Services
             _routeMachineRepository = routeMachineRepository;
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
+            _productionStatusRepository = productionStatusRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -142,8 +145,9 @@ namespace CIM.BusinessLogic.Services
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
             masterData.Dictionary.Products.Add("NFDD001", "NFDD001");
-            masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
+            masterData.Dictionary.Lines.Add("Line001", "Line001");
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.ProductionStatuses = await GetProductionStatus();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -162,6 +166,17 @@ namespace CIM.BusinessLogic.Services
             foreach (var routeId in routeList)
             {
                 output[routeId] = db.Where(x => x.RouteId == routeId).Select(x => x.MachineId).ToArray();
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProductionStatus()
+        {
+            var db = (await _productionStatusRepository.WhereAsync(x => x.IsActive == true));
+            var output = new Dictionary<int, string>();
+            foreach (var productionStatus in db)
+            {
+                output.Add(productionStatus.Id, productionStatus.Name);
             }
             return output;
         }
