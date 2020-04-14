@@ -298,20 +298,12 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            //var masterData = await _masterDataService.GetData();
-            //var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-            //var output = MapperHelper.AsModel(dbModel, new ProductionPlanModel());
-
-            //if (output.RouteId.HasValue)
-            //output.Route = masterData.Routes[output.RouteId.Value]?.Name;
-            //return output;
-
-
             var output = await _productionPlanRepository.Where( x=>x.PlanId == planId).Select(
                         x => new ProductionPlanModel
                         {
                             PlanId = x.PlanId,
                             ProductId = x.ProductId,
+                            ProductCode = x.Product.Code,
                             RouteId = x.RouteId,
                             Route = x.Route.Name,
                             Target = x.Target,
@@ -327,13 +319,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedAt = x.CreatedAt,
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
-                            UpdatedBy = x. UpdatedBy,
-                            Product = new ProductModel
-                            {
-                                Id = x.Product.Id,
-                                Code = x.Product.Code,
-                                Description = x.Product.Description
-                            }
+                            UpdatedBy = x.UpdatedBy,
                         }).FirstOrDefaultAsync(x => x.PlanId == planId );
             return output;
         }

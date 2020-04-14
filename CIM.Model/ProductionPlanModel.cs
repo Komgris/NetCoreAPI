@@ -8,6 +8,7 @@ namespace CIM.Model
     {
         public string PlanId { get; set; }
         public int ProductId { get; set; }
+        public string ProductCode { get; set; }
         public int? RouteId { get; set; }
         public string Route { get; set; }
         public int? Target { get; set; }
@@ -25,5 +26,6 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public ProductModel Product { get; set; }
+        public string CompareResult { get; set; }
     }
 }
