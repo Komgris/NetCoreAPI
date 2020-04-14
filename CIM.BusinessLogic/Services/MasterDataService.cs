@@ -17,6 +17,8 @@ namespace CIM.BusinessLogic.Services
         private IRouteMachineRepository _routeMachineRepository;
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
+        private IProductionStatusRepository _productionStatusRepository;
+        private IProductRepository _productsRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -24,7 +26,9 @@ namespace CIM.BusinessLogic.Services
             IRouteRepository routeRepository,
             IRouteMachineRepository routeMachineRepository,
             IMachineRepository machineRepository,
-            IMachineComponentRepository machineComponentRepository
+            IMachineComponentRepository machineComponentRepository,
+            IProductionStatusRepository productionStatusRepository,
+            IProductRepository productRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -33,6 +37,8 @@ namespace CIM.BusinessLogic.Services
             _routeMachineRepository = routeMachineRepository;
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
+            _productionStatusRepository = productionStatusRepository;
+            _productsRepository = productRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -141,9 +147,10 @@ namespace CIM.BusinessLogic.Services
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
-            masterData.Dictionary.Products.Add("NFDD001", "NFDD001");
+            masterData.Dictionary.Products = await GetProductDictionary();
             masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
