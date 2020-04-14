@@ -9,6 +9,7 @@ namespace CIM.Domain.Models
         {
             Employees = new HashSet<Employees>();
             Name = new HashSet<Name>();
+            RecordActiveProductionPlan = new HashSet<RecordActiveProductionPlan>();
             RecordMachineComponentLossCreatedByNavigation = new HashSet<RecordMachineComponentLoss>();
             RecordMachineComponentLossUpdatedByNavigation = new HashSet<RecordMachineComponentLoss>();
             RecordMachineStatus = new HashSet<RecordMachineStatus>();
@@ -38,6 +39,7 @@ namespace CIM.Domain.Models
         public virtual UserAppTokens UserAppTokens { get; set; }
         public virtual ICollection<Employees> Employees { get; set; }
         public virtual ICollection<Name> Name { get; set; }
+        public virtual ICollection<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLossCreatedByNavigation { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLossUpdatedByNavigation { get; set; }
         public virtual ICollection<RecordMachineStatus> RecordMachineStatus { get; set; }

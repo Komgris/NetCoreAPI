@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int Count { get; set; }
+        public int Total { get; set; }
         public string Remark { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
