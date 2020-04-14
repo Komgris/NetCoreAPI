@@ -190,7 +190,8 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
-                output.Add(item.Id, $"{item.Code}: {item.BriteItemPerUpcitem}");
+                if (!output.ContainsValue(item.Code))
+                    output.Add(item.Id, item.Code);
             }
             return output;
         }
