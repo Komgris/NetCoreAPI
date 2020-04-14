@@ -208,9 +208,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanListModel>> Detail(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Detail(string id)
         {
-            var output = new ProcessReponseModel<ProductionPlanListModel>();
+            var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
                 output.Data = await _planService.Get(id);

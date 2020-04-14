@@ -21,7 +21,6 @@ namespace CIM.BusinessLogic.Services
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
         private IProductRepository _productRepository;
-        private IRouteRepository _routeRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public ProductionPlanService(
@@ -29,15 +28,13 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository,
-            IRouteRepository routeRepository
+            IProductRepository productRepository
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
             _productRepository = productRepository;
-            _routeRepository = routeRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -299,13 +296,45 @@ namespace CIM.BusinessLogic.Services
             return model;
         }
 
-        public async Task<ProductionPlanListModel> Get(string planId)
+        public async Task<ProductionPlanModel> Get(string planId)
         {
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-            var output = MapperHelper.AsModel(dbModel, new ProductionPlanListModel());
-            if (output.RouteId.HasValue)
-            output.Route = masterData.Routes[output.RouteId.Value]?.Name;
+            //var masterData = await _masterDataService.GetData();
+            //var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+            //var output = MapperHelper.AsModel(dbModel, new ProductionPlanModel());
+
+            //if (output.RouteId.HasValue)
+            //output.Route = masterData.Routes[output.RouteId.Value]?.Name;
+            //return output;
+
+
+            var output = await _productionPlanRepository.Where( x=>x.PlanId == planId).Select(
+                        x => new ProductionPlanModel
+                        {
+                            PlanId = x.PlanId,
+                            ProductId = x.ProductId,
+                            RouteId = x.RouteId,
+                            Route = x.Route.Name,
+                            Target = x.Target,
+                            Unit = x.UnitId,
+                            UnitName = x.Unit.Name,
+                            PlanStart = x.PlanStart,
+                            PlanFinish = x.PlanFinish,
+                            ActualStart = x.ActualStart,
+                            ActualFinish = x.ActualFinish,
+                            StatusId = x.StatusId,
+                            Status = x.Status.Name,
+                            IsActive = x.IsActive,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x. UpdatedBy,
+                            Product = new ProductModel
+                            {
+                                Id = x.Product.Id,
+                                Code = x.Product.Code,
+                                Description = x.Product.Description
+                            }
+                        }).FirstOrDefaultAsync(x => x.PlanId == planId );
             return output;
         }
 
