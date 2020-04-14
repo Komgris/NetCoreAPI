@@ -11,6 +11,7 @@ using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -232,10 +233,10 @@ namespace CIM.BusinessLogic.Services
                         RouteIds = new List<int> { model.RouteId.Value }
                     };
                     await _responseCacheService.SetAsync($"{Constans.RedisKey.MACHINE}:{machine.Key}", cachedMachine);
-                } 
+                }
                 else
                 {
-                    cachedMachine.RouteIds.Add( model.RouteId.Value );
+                    cachedMachine.RouteIds.Add(model.RouteId.Value);
                 }
 
             }
@@ -290,15 +291,37 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
             var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
-            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new [] { "Product"});
+            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new[] { "Product" });
             model.Product = MapperHelper.AsModel(productDb, new ProductModel());
             return model;
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-            return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
+            var output = await _productionPlanRepository.Where( x=>x.PlanId == planId).Select(
+                        x => new ProductionPlanModel
+                        {
+                            PlanId = x.PlanId,
+                            ProductId = x.ProductId,
+                            ProductCode = x.Product.Code,
+                            RouteId = x.RouteId,
+                            Route = x.Route.Name,
+                            Target = x.Target,
+                            Unit = x.UnitId,
+                            UnitName = x.Unit.Name,
+                            PlanStart = x.PlanStart,
+                            PlanFinish = x.PlanFinish,
+                            ActualStart = x.ActualStart,
+                            ActualFinish = x.ActualFinish,
+                            StatusId = x.StatusId,
+                            Status = x.Status.Name,
+                            IsActive = x.IsActive,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy,
+                        }).FirstOrDefaultAsync();
+            return output;
         }
 
 
