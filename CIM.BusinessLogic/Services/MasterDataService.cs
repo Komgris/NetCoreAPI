@@ -166,5 +166,27 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async Task<IDictionary<int, string>> GetProductionStatusDictionary()
+        {
+            var db = (await _productionStatusRepository.WhereAsync(x => x.IsActive == true));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProductDictionary()
+        {
+            var db = (await _productsRepository.WhereAsync(x => x.IsActive == true));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                output.Add(item.Id, $"{item.Code}: {item.BriteItemPerUpcitem}");
+            }
+            return output;
+        }
+
     }
 }
