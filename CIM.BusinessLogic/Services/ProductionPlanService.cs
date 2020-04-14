@@ -11,6 +11,7 @@ using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -20,6 +21,7 @@ namespace CIM.BusinessLogic.Services
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
         private IProductRepository _productRepository;
+        private IRouteRepository _routeRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public ProductionPlanService(
@@ -27,13 +29,15 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository
+            IProductRepository productRepository,
+            IRouteRepository routeRepository
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
             _productRepository = productRepository;
+            _routeRepository = routeRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -232,10 +236,10 @@ namespace CIM.BusinessLogic.Services
                         RouteIds = new List<int> { model.RouteId.Value }
                     };
                     await _responseCacheService.SetAsync($"{Constans.RedisKey.MACHINE}:{machine.Key}", cachedMachine);
-                } 
+                }
                 else
                 {
-                    cachedMachine.RouteIds.Add( model.RouteId.Value );
+                    cachedMachine.RouteIds.Add(model.RouteId.Value);
                 }
 
             }
@@ -290,15 +294,19 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
             var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
-            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new [] { "Product"});
+            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new[] { "Product" });
             model.Product = MapperHelper.AsModel(productDb, new ProductModel());
             return model;
         }
 
-        public async Task<ProductionPlanModel> Get(string planId)
+        public async Task<ProductionPlanListModel> Get(string planId)
         {
+            var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-            return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
+            var output = MapperHelper.AsModel(dbModel, new ProductionPlanListModel());
+            if (output.RouteId.HasValue)
+            output.Route = masterData.Routes[output.RouteId.Value]?.Name;
+            return output;
         }
 
 
