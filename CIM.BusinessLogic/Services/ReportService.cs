@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace CIM.BusinessLogic.Services {
@@ -24,36 +25,58 @@ namespace CIM.BusinessLogic.Services {
             repo = new DirectSqlRepository(_configuration);
         }
 
-        public DataTable GetProductionSummary(int planid, int routeid, DateTime? from, DateTime? to) {
-            return repo.ExecuteWithQuery("exec sp_testNoparam", null);
+        public DataTable GetProductionSummary(string planid, int routeid, DateTime? from, DateTime? to) {
+
+            var plist = new List<SqlParameter>();
+            
+            plist.Add(new SqlParameter("@planid", planid));
+            plist.Add(new SqlParameter("@routeid", routeid));
+            if (from != null) plist.Add(new SqlParameter("@from", from));
+            if (to != null) plist.Add(new SqlParameter("@to", to));
+
+            return repo.ExecuteSPWithQuery("sp_report_productionsummary", plist);
         }
 
-        public string GetMachineSpeed(int planid, int routeid, DateTime? from, DateTime? to) {
-            throw new NotImplementedException();
+        public DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to) {
+            
+            var plist = new List<SqlParameter>();
+            
+            plist.Add(new SqlParameter("@planid", planid));
+            plist.Add(new SqlParameter("@routeid", routeid));
+            if (from != null) plist.Add(new SqlParameter("@from", from));
+            if (to != null) plist.Add(new SqlParameter("@to", to));
+
+            return repo.ExecuteSPWithQuery("sp_report_machinespeed", plist);
         }
 
-        public string GetProductionEvents(int planid, int routeid, DateTime? from, DateTime? to) {
-            throw new NotImplementedException();
+        public DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to) {
+            
+            var plist = new List<SqlParameter>();
+            
+            plist.Add(new SqlParameter("@planid", planid));
+            plist.Add(new SqlParameter("@routeid", routeid));
+            if (from != null) plist.Add(new SqlParameter("@from", from));
+            if (to != null) plist.Add(new SqlParameter("@to", to));
+
+            return repo.ExecuteSPWithQuery("sp_report_productionevents", plist);
         }
 
-        public string GetProductionOperators(int planid, int routeid) {
-            throw new NotImplementedException();
+        public DataTable GetProductionOperators(string planid, int routeid) {
+            var plist = new List<SqlParameter>();
+            plist.Add(new SqlParameter("@planid", planid));
+            plist.Add(new SqlParameter("@routeid", routeid));
+
+            return repo.ExecuteSPWithQuery("sp_report_productionoperators", plist);
         }
 
-        public string GetProductionPlanInfomation(int planid, int routeid) {
+        public DataTable GetProductionPlanInfomation(string planid, int routeid) {
+            
+            var plist = new List<SqlParameter>();
+            
+            plist.Add(new SqlParameter("@planid", planid));
+            plist.Add(new SqlParameter("@routeid", routeid));
 
-            //List<ProductionPlanListModel> data = null;
-            ////int totalCount = 0;
-            //var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
-            //proc.AddParam("total_count", out IOutParam<int> totalCount);
-            //proc.AddParam("@route_id", routeId);
-            //proc.AddParam("@product_id", productId);
-            //proc.AddParam("@keyword", keyword);
-            //proc.AddParam("@is_active", isActive);
-            //await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
-
-            //return ToPagingModel(data, totalCount.Value, page, howmany);
-            throw new NotImplementedException();
+            return repo.ExecuteSPWithQuery("sp_report_productioninfo", plist);
         }
 
 

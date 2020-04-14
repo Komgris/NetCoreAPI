@@ -5,10 +5,10 @@ using System.Text;
 
 namespace CIM.BusinessLogic.Interfaces {
     public interface IReportService : IBaseService {
-        DataTable GetProductionSummary(int planid,int routeid,DateTime? from,DateTime? to);
-        string GetProductionPlanInfomation(int planid, int routeid);
-        string GetMachineSpeed(int planid, int routeid, DateTime? from, DateTime? to);
-        string GetProductionEvents(int planid, int routeid, DateTime? from, DateTime? to);
-        string GetProductionOperators(int planid, int routeid);
+        DataTable GetProductionSummary(string planid,int routeid,DateTime? from,DateTime? to);
+        DataTable GetProductionPlanInfomation(string planid, int routeid);
+        DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to);
+        DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to);
+        DataTable GetProductionOperators(string planid, int routeid);
     }
 }

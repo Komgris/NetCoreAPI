@@ -59,7 +59,7 @@ namespace CIM.DAL.Implements
             return output;
         }
 
-        public DataTable ExecuteWithQuery(string sql, SqlParameter[] parameters) {
+        public DataTable ExecuteSPWithQuery(string sql, List<SqlParameter> parameters) {
             var connectionString = configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
                 using (SqlCommand command = new SqlCommand(sql, connection)) {
@@ -68,9 +68,27 @@ namespace CIM.DAL.Implements
                             command.Parameters.AddWithValue(p.ParameterName, p.Value);
 
                     connection.Open();
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable();
+                    dt.Load(command.ExecuteReader());
+
+                    return dt;
+                }
+            }
+        }
+
+        public DataTable ExecuteWithQuery(string sql) {
+            var connectionString = configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+                using (SqlCommand command = new SqlCommand(sql, connection)) {
+
+                    connection.Open();
+
                     command.CommandType = CommandType.Text;
                     DataTable dt = new DataTable();
                     dt.Load(command.ExecuteReader());
+
                     return dt;
                 }
             }
