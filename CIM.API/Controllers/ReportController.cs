@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 namespace CIM.API.Controllers {
 
     [ApiController]
-    [Route("api/[controller]/action")]
     public class ReportController : ControllerBase {
 
         private IReportService _service;
@@ -21,12 +20,6 @@ namespace CIM.API.Controllers {
         }
 
         #region Cim-Oper Production overview
-
-
-        //[HttpGet]
-        //public string Get() {
-        //    return "";
-        //}
 
         [HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
@@ -51,6 +44,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpGet]
+        [Route("api/[controller]/GetProductionOperators")]
         public string GetProductionOperators(string planid, int routeid) {
             try {
                 return JsonConvert.SerializeObject(_service.GetProductionOperators(planid, routeid));
