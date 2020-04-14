@@ -50,6 +50,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<ProductType> ProductType { get; set; }
         public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
         public virtual DbSet<ProductionStatus> ProductionStatus { get; set; }
+        public virtual DbSet<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual DbSet<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
         public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
@@ -1112,6 +1113,21 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Production_Plan_Product");
+
+                entity.HasOne(d => d.Route)
+                    .WithMany(p => p.ProductionPlan)
+                    .HasForeignKey(d => d.RouteId)
+                    .HasConstraintName("FK_Production_Plan_Route");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ProductionPlan)
+                    .HasForeignKey(d => d.StatusId)
+                    .HasConstraintName("FK_Production_Plan_Production_Status");
+
+                entity.HasOne(d => d.Unit)
+                    .WithMany(p => p.ProductionPlan)
+                    .HasForeignKey(d => d.UnitId)
+                    .HasConstraintName("FK_Production_Plan_Units");
             });
 
             modelBuilder.Entity<ProductionStatus>(entity =>
@@ -1119,6 +1135,50 @@ namespace CIM.Domain.Models
                 entity.ToTable("Production_Status");
 
                 entity.Property(e => e.Name).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<RecordActiveProductionPlan>(entity =>
+            {
+                entity.ToTable("Record_Active_ProductionPlan");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Finish).HasColumnType("datetime");
+
+                entity.Property(e => e.OperatorSetId).HasColumnName("OperatorSet_Id");
+
+                entity.Property(e => e.ProductionPlanPlanId)
+                    .IsRequired()
+                    .HasColumnName("ProductionPlan_PlanId")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+
+                entity.Property(e => e.Start).HasColumnType("datetime");
+
+                entity.Property(e => e.StatusId).HasColumnName("Status_Id");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.RecordActiveProductionPlan)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Record_Active_ProductionPlan_Users");
+
+                entity.HasOne(d => d.ProductionPlanPlan)
+                    .WithMany(p => p.RecordActiveProductionPlan)
+                    .HasForeignKey(d => d.ProductionPlanPlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Active_ProductionPlan_Production_Plan");
+
+                entity.HasOne(d => d.Route)
+                    .WithMany(p => p.RecordActiveProductionPlan)
+                    .HasForeignKey(d => d.RouteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Active_ProductionPlan_Route");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.RecordActiveProductionPlan)
+                    .HasForeignKey(d => d.StatusId)
+                    .HasConstraintName("FK_Record_Active_ProductionPlan_Production_Status");
             });
 
             modelBuilder.Entity<RecordMachineComponentLoss>(entity =>
@@ -1617,10 +1677,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Units>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.Uom)
