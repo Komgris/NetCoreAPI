@@ -59,7 +59,6 @@ namespace CIM.API
             services.AddTransient<IProductionOutputRepository, RecordProductionOutputRepository>();
             services.AddTransient<IProductionStatusRepository, ProductionStatusRepository>();
 
-
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
             services.AddTransient<ICipherService, CipherService>();

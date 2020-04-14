@@ -14,7 +14,7 @@ namespace CIM.DAL.Implements
     {
         public ProductionStatusRepository(cim_dbContext context) : base(context)
         {
-        }        
+        }
 
     }
 }

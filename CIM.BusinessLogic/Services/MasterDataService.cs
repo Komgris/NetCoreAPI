@@ -148,8 +148,8 @@ namespace CIM.BusinessLogic.Services
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
             masterData.Dictionary.Products = await GetProductDictionary();
-            masterData.Dictionary.Lines.Add("Line001", "Line001");
-            masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
+            masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -190,7 +190,8 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
-                output.Add(item.Id, $"{item.Code}: {item.BriteItemPerUpcitem}");
+                if (!output.ContainsValue(item.Code))
+                    output.Add(item.Id, item.Code);
             }
             return output;
         }
