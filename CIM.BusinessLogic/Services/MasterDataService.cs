@@ -18,6 +18,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
         private IProductionStatusRepository _productionStatusRepository;
+        private IProductRepository _productsRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -26,7 +27,8 @@ namespace CIM.BusinessLogic.Services
             IRouteMachineRepository routeMachineRepository,
             IMachineRepository machineRepository,
             IMachineComponentRepository machineComponentRepository,
-            IProductionStatusRepository productionStatusRepository
+            IProductionStatusRepository productionStatusRepository,
+            IProductRepository productRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -36,6 +38,7 @@ namespace CIM.BusinessLogic.Services
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
             _productionStatusRepository = productionStatusRepository;
+            _productsRepository = productRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -52,7 +55,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                   Components = _lossLevel3ComponentMapping.Where(x=>x.LossLevelId == item.Id).Select(x=>x.ComponentId).ToArray()
+                    Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }
             return output;
@@ -71,8 +74,8 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     MachineId = item.MachineId,
-                    LossList = _lossLevel3ComponentMapping.Where(x=>x.ComponentId == item.Id).Select(  x=> x.LossLevelId ).ToArray(),
-                    
+                    LossList = _lossLevel3ComponentMapping.Where(x => x.ComponentId == item.Id).Select(x => x.LossLevelId).ToArray(),
+
                 };
             }
             return output;
@@ -81,8 +84,8 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, MachineModel>> GetMachines(IDictionary<int, MachineComponentModel> components)
         {
             var output = new Dictionary<int, MachineModel>();
-            var activeMachines = await _machineRepository.WhereAsync( x=>x.IsActive && !x.IsDelete);
-                
+            var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+
             foreach (var item in activeMachines)
             {
                 var machineComponents = components.Where(x => x.Value.MachineId == item.Id);
@@ -90,7 +93,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ComponentList = machineComponents.Select(x => x.Value ).ToList(),
+                    ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                 };
             }
@@ -107,7 +110,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    MachineList = routeMachines[item.Id].ToDictionary( x=>x, x=> machines[x])
+                    MachineList = routeMachines[item.Id].ToDictionary(x => x, x => machines[x])
                 };
             }
             return output;
@@ -125,7 +128,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh();
                 }
-                
+
             }
             return Data;
         }
@@ -144,9 +147,9 @@ namespace CIM.BusinessLogic.Services
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
-            masterData.Dictionary.Products.Add("NFDD001", "NFDD001");
+            masterData.Dictionary.Products = await GetProduct();
             masterData.Dictionary.Lines.Add("Line001", "Line001");
-            masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatus();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -174,9 +177,20 @@ namespace CIM.BusinessLogic.Services
         {
             var db = (await _productionStatusRepository.WhereAsync(x => x.IsActive == true));
             var output = new Dictionary<int, string>();
-            foreach (var productionStatus in db)
+            foreach (var item in db)
             {
-                output.Add(productionStatus.Id, productionStatus.Name);
+                output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProduct()
+        {
+            var db = (await _productsRepository.WhereAsync(x => x.IsActive == true));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                output.Add(item.Id, $"{item.Code}: {item.BriteItemPerUpcitem}");
             }
             return output;
         }
