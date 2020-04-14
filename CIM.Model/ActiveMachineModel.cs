@@ -10,5 +10,6 @@ namespace CIM.Model
         public List<int> RouteIds { get; set; } 
 
         public Dictionary<int, MachineComponentModel> ComponentList { get; set; }
+        public int StatusId { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace CIM.Model
         public DateTime CreatedAt { get; set; }
         public int ItemType { get; set; }
         public int ItemId { get; set; }
-        public int ComponentStatusId { get; set; }
+        public int ItemStatusId { get; set; }
 
         public int StatusId { get; set; }
 
