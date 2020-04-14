@@ -147,7 +147,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Products.Add("NFDD001", "NFDD001");
             masterData.Dictionary.Lines.Add("Line001", "Line001");
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
-            masterData.Dictionary.ProductionStatuses = await GetProductionStatus();
+            masterData.Dictionary.ProductionStatus = await GetProductionStatus();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
