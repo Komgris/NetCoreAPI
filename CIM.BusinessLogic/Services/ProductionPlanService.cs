@@ -320,7 +320,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy,
-                        }).FirstOrDefaultAsync(x => x.PlanId == planId );
+                        }).FirstOrDefaultAsync();
             return output;
         }
 
