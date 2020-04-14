@@ -147,10 +147,10 @@ namespace CIM.BusinessLogic.Services
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
 
-            masterData.Dictionary.Products = await GetProduct();
+            masterData.Dictionary.Products = await GetProductDictionary();
             masterData.Dictionary.Lines.Add("Line001", "Line001");
             masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
-            masterData.Dictionary.ProductionStatus = await GetProductionStatus();
+            masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -173,7 +173,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, string>> GetProductionStatus()
+        private async Task<IDictionary<int, string>> GetProductionStatusDictionary()
         {
             var db = (await _productionStatusRepository.WhereAsync(x => x.IsActive == true));
             var output = new Dictionary<int, string>();
@@ -184,7 +184,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, string>> GetProduct()
+        private async Task<IDictionary<int, string>> GetProductDictionary()
         {
             var db = (await _productsRepository.WhereAsync(x => x.IsActive == true));
             var output = new Dictionary<int, string>();
