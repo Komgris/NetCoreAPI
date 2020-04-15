@@ -19,6 +19,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineRepository _machineRepository;
         private IProductionStatusRepository _productionStatusRepository;
         private IProductRepository _productsRepository;
+        private IProductionPlanRepository _productionPlanRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -28,7 +29,8 @@ namespace CIM.BusinessLogic.Services
             IMachineRepository machineRepository,
             IMachineComponentRepository machineComponentRepository,
             IProductionStatusRepository productionStatusRepository,
-            IProductRepository productRepository
+            IProductRepository productRepository,
+            IProductionPlanRepository productionPlanRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -39,6 +41,7 @@ namespace CIM.BusinessLogic.Services
             _machineRepository = machineRepository;
             _productionStatusRepository = productionStatusRepository;
             _productsRepository = productRepository;
+            _productionPlanRepository = productionPlanRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -116,6 +119,27 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async Task<IDictionary<string, ProductionPlanModel>> GetProductionPlan()
+        {
+            var output = new Dictionary<string, ProductionPlanModel>();
+            var dbModel = await _productionPlanRepository.AllAsync();
+            foreach (var item in dbModel)
+            {
+                output[item.PlanId] = new ProductionPlanModel
+                {
+                   PlanId = item.PlanId,
+                   ProductId = item.ProductId,
+                   Target = item.Target,
+                   Unit = item.UnitId,
+                   RouteId = item.RouteId,
+                   StatusId = item.StatusId,
+                   PlanStart = item.PlanStart,
+                   PlanFinish = item.PlanFinish
+                };
+            }
+            return output;
+        }
+
 
         public async Task<MasterDataModel> GetData()
         {
@@ -146,11 +170,14 @@ namespace CIM.BusinessLogic.Services
             masterData.Components = await GetComponents();
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+            masterData.ProductionPlan = await GetProductionPlan();
 
             masterData.Dictionary.Products = await GetProductDictionary();
+            masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
             masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
+
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -186,7 +213,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductDictionary()
         {
-            var db = (await _productsRepository.WhereAsync(x => x.IsActive == true));
+            var db = (await _productsRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x=> x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -195,6 +222,5 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
-
     }
 }

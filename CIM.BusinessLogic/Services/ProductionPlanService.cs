@@ -79,33 +79,56 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<List<ProductionPlanModel>> Create(List<ProductionPlanModel> import)
+        public async Task<List<ProductionPlanModel>> CheckDuplicate(List<ProductionPlanModel> import)
         {
-            List<ProductionPlanModel> fromDb = _productionPlanRepository.Get();
             List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
-            List<ProductionPlanModel> existsPlan = new List<ProductionPlanModel>();
-            DateTime timeNow = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+            var productionPlanDict = masterData.ProductionPlan;
             foreach (var plan in import)
             {
-                if (fromDb.Any(x => x.PlanId == plan.PlanId))
+                if (productionPlanDict.ContainsKey(plan.PlanId))
                 {
-                    var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
-                    db_model.UpdatedBy = CurrentUser.UserId;
-                    db_model.UpdatedAt = timeNow;
-                    _productionPlanRepository.Edit(db_model);
+                    if (productionPlanDict[plan.PlanId].IsActive == false) plan.IsActive = true;
+                    await Update(plan);
                 }
                 else
                 {
-                    var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
-                    db_model.CreatedBy = CurrentUser.UserId;
-                    db_model.CreatedAt = timeNow;
-                    db_model.IsActive = true;
-                    _productionPlanRepository.Add(db_model);
-                    db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+                    var model = await Create(plan);
+                    db_list.Add(model);
                 }
             }
-            await _unitOfWork.CommitAsync();
             return db_list;
+        }
+
+
+        public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
+        {
+            model.ProductId = await ProductCodeToId(model.ProductCode);
+            //model.UnitId = await UnitsToId(model.Unit ?? string.Empty);
+            //model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan());
+            db_model.CreatedBy = CurrentUser.UserId;
+            db_model.CreatedAt = DateTime.Now;
+            db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.UpdatedAt = DateTime.Now;
+            db_model.IsActive = true;
+            db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
+            _productionPlanRepository.Add(db_model);
+            await _unitOfWork.CommitAsync();
+            return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+        }
+
+        public async Task Update(ProductionPlanModel model)
+        {
+            model.ProductId = await ProductCodeToId(model.ProductCode);
+            //model.UnitId = await UnitsToId(model.Unit ?? string.Empty);
+            //model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
+            String[] except = new String[] { "StatusId" };
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), except);
+            db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.UpdatedAt = DateTime.Now;
+            _productionPlanRepository.Edit(db_model);
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task Delete(string id)
@@ -115,25 +138,86 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public void Update(List<ProductionPlanModel> list)
+        public async Task<List<ProductionPlanModel>> Compare(List<ProductionPlanModel> import)
         {
-            _productionPlanRepository.UpdateProduction(list);
-        }
+            var masterData = await _masterDataService.GetData();
+            var productionPlanDict = masterData.ProductionPlan;
+            var productDict = masterData.Dictionary.Products;
+            DateTime timeNow = DateTime.Now;
 
-        public List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan)
-        {
             foreach (var plan in import)
             {
-                if (dbPlan.Any(x => x.PlanId == plan.PlanId))
+                plan.ProductId = await ProductCodeToId(plan.ProductCode);
+                if (productDict.ContainsKey(plan.ProductId))
                 {
-                    //plan.StatusId = "Inprocess";
+                    if (productionPlanDict.ContainsKey(plan.PlanId))
+                    {
+                        plan.StatusId = productionPlanDict[plan.PlanId].StatusId;
+                        plan.CompareResult = "Inprocess";
+                        switch (plan.StatusId)
+                        {
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Production:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                                if (!IsPlanTimeOut(plan.PlanFinish.Value, timeNow))
+                                    plan.CompareResult = "Invalid Plan Finish";
+                                else if (!IsTargetMoreThanOutput(plan.Target.Value))
+                                    plan.CompareResult = "Invalid Plan Taget";
+                                break;
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.New:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Hold:
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                                // Do some different stuff
+                                break;
+                            case (int)Constans.PRODUCTION_PLAN_STATUS.Finished:
+                                plan.CompareResult = "Plan Finished";
+                                break;
+                            default:
+                                plan.CompareResult = "";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        plan.CompareResult = "NEW";
+                    }
                 }
                 else
                 {
-                    plan.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
-                }
+                    plan.CompareResult = "No Product ID";
+                }              
             }
             return import;
+        }
+
+        public async Task<int> ProductCodeToId(string Code)
+        {
+            var masterData = await _masterDataService.GetData();
+            var productDict = masterData.Dictionary.ProductsByCode;
+            int productCode;
+            if (productDict.TryGetValue(Code, out productCode))
+                return productCode;
+            else
+                return 0;
+        }
+
+        public bool IsPlanTimeOut(DateTime dateTime,DateTime CurrentTime)
+        {
+            int result = DateTime.Compare(dateTime, CurrentTime);
+            if (result < 0)
+                return false;
+            else if (result == 0)
+                return false;
+            else
+                return true;             
+        }
+
+        public bool IsTargetMoreThanOutput(int Target)
+        {
+            //var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive);
+            return true;
         }
 
         public List<ProductionPlanModel> ReadImport(string path)
@@ -152,13 +236,17 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
-            for (int i = 2; i <= totalRows; i++)
+            for (int i = 5; i <= totalRows - 2; i++)
             {
+                int _target;
                 ProductionPlanModel data = new ProductionPlanModel();
-                data.PlanId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
-                data.ProductId = Convert.ToInt32(oSheet.Cells[i, 2].Value ?? string.Empty);
-                data.Target = Convert.ToInt32(oSheet.Cells[i, 3].Value ?? string.Empty);
-                data.Unit = Convert.ToInt32(oSheet.Cells[i, 4].Value ?? string.Empty);
+
+                data.PlanId = (oSheet.Cells[i, 3].Value ?? string.Empty).ToString();
+                data.ProductCode = (oSheet.Cells[i, 4].Value ?? string.Empty).ToString();
+                int.TryParse((oSheet.Cells[i, 14].Value ?? string.Empty).ToString(), out _target);
+                data.Target = _target;
+                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, 15].Value ?? string.Empty);
+                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, 16].Value ?? string.Empty);
                 listImport.Add(data);
             }
             return listImport;

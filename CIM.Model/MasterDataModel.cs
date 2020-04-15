@@ -12,6 +12,7 @@ namespace CIM.Model
         public IDictionary<int, MachineModel> Machines { get; set; }
         public IDictionary<int, int[]> RouteMachines { get; set; }
         public IDictionary<int, RouteModel> Routes { get; set; }
+        public IDictionary<string, ProductionPlanModel> ProductionPlan { get; set; }
 
         public DictionaryModel Dictionary { get; set; } = new DictionaryModel();
     }
