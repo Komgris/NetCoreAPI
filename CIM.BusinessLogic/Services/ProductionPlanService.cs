@@ -274,19 +274,21 @@ namespace CIM.BusinessLogic.Services
 
             var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
 
-            foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
+            if (activeProductionPlan != null)
             {
-                if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
+                foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
                 {
-                    foreach (var machine in activeProcess.Value.Route.MachineList)
+                    if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
                     {
-                        await _machineService.RemoveCached(machine.Key, null);
+                        foreach (var machine in activeProcess.Value.Route.MachineList)
+                        {
+                            await _machineService.RemoveCached(machine.Key, null);
+                        }
+                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
                     }
-                    activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
                 }
+                await _activeProductionPlanService.SetCached(activeProductionPlan);
             }
-            await _activeProductionPlanService.SetCached(activeProductionPlan);
-            //to handle cache data and boardcast
             await _unitOfWork.CommitAsync();
 
         }

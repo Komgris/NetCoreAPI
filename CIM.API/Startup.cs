@@ -69,7 +69,7 @@ namespace CIM.API
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IMachineComponentService, MachineComponentService>();
             services.AddTransient<IMachineAlertService, MachineAlertService>();
-            services.AddTransient<IActiveProcessService, ActiveProcessService>();
+            services.AddTransient<IActiveProductionPlanService, ActiveProductionPlanService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
