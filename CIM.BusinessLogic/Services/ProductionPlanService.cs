@@ -320,6 +320,27 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy,
+                            Product = new ProductModel
+                            {
+                                Id = x.Product.Id,
+                                Code = x.Product.Code,
+                                Description = x.Product.Description,
+                                BriteItemPerUpcitem = x.Product.BriteItemPerUpcitem,
+                                ProductFamily_Id = x.Product.ProductFamilyId,
+                                ProductGroup_Id = x.Product.ProductGroupId,
+                                ProductType_Id = x.Product.ProductTypeId,
+                                PackingMedium = x.Product.PackingMedium,
+                                NetWeight = x.Product.NetWeight,
+                                Igweight = x.Product.Igweight,
+                                Pmweight = x.Product.Pmweight,
+                                WeightPerUom = x.Product.WeightPerUom,
+                                IsActive = x.Product.IsActive,
+                                IsDelete = x.Product.IsDelete,
+                                CreatedAt = x.Product.CreatedAt,
+                                CreatedBy = x.Product.CreatedBy,
+                                UpdatedAt = x.Product.UpdatedAt,
+                                UpdatedBy = x.Product.UpdatedBy
+                            }
                         }).FirstOrDefaultAsync();
             return output;
         }
