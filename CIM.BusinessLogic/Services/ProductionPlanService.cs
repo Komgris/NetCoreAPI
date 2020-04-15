@@ -170,22 +170,6 @@ namespace CIM.BusinessLogic.Services
             return listImport;
         }
 
-        //public string GetProductionPlanRouteKey(string id, int routeId)
-        //{
-        //    return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}:{routeId}";
-        //}
-
-        //public async Task<ActiveProcessModel> GetActiveProcess(string id, int routeId)
-        //{
-        //    var key = GetProductionPlanRouteKey(id, routeId);
-        //    return await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(key);
-        //}
-
-        //public async Task SetActiveProcess(ActiveProcessModel model)
-        //{
-        //    await _responseCacheService.SetAsync(model.Key, model);
-        //}
-
         public string GetProductionPlanKey(string id)
         {
             return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}";
@@ -208,10 +192,9 @@ namespace CIM.BusinessLogic.Services
 
         public async Task AddCachedActiveProcessRoute(string id, int routeId)
         {
-            var cachedProductionPlanRoutes = await GetCachedActiveProcessRoutes(id);
-            cachedProductionPlanRoutes.ToList().Add(routeId);
-
-            await SetCachedActiveProcessRoute(GetProductionPlanKey(id), cachedProductionPlanRoutes.ToArray());
+            var cachedProductionPlanRoutes = (await GetCachedActiveProcessRoutes(id)).ToList();
+            cachedProductionPlanRoutes.Add(routeId);
+            await SetCachedActiveProcessRoute(id, cachedProductionPlanRoutes.Distinct().ToArray());
         }
 
         public async Task RemoveCachedActiveProcessRoutes(string productionPlanKey)
@@ -384,7 +367,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProcessModel> UpdateByMachine(int machineId, int statusId)
         {
-            var cachedMachine = await _responseCacheService.GetAsTypeAsync<ActiveMachineModel>(GetMachineKey(machineId));
+            var cachedMachine = await _machineService.GetCached(machineId);
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
 
@@ -397,7 +380,7 @@ namespace CIM.BusinessLogic.Services
                     Id = machine.Id,
                     StatusId = statusId
                 };
-                await _responseCacheService.SetAsync(GetMachineKey(machineId), cachedMachine);
+                await _machineService.SetCached(machineId, cachedMachine);
             }
 
             //if machine is apart of production plan

@@ -143,14 +143,18 @@ namespace CIM.BusinessLogic.Services
                     cachedMachine = new ActiveMachineModel
                     {
                         Id = machine.Key,
-                        ProductionPlanId = productionPlanId,
                         RouteIds = new List<int> { routeId },
                     };
                 }
                 else
                 {
+                    if (cachedMachine.RouteIds == null)
+                    {
+                        cachedMachine.RouteIds = new List<int>();
+                    }
                     cachedMachine.RouteIds.Add(routeId);
                 }
+                cachedMachine.ProductionPlanId = productionPlanId;
                 await SetCached(machine.Key, cachedMachine);
 
 
