@@ -11,6 +11,7 @@ using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -313,15 +314,58 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
             var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
-            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new [] { "Product"});
+            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new[] { "Product" });
             model.Product = MapperHelper.AsModel(productDb, new ProductModel());
             return model;
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-            return MapperHelper.AsModel(dbModel, new ProductionPlanModel());
+            var output = await _productionPlanRepository.Where( x=>x.PlanId == planId).Select(
+                        x => new ProductionPlanModel
+                        {
+                            PlanId = x.PlanId,
+                            ProductId = x.ProductId,
+                            ProductCode = x.Product.Code,
+                            RouteId = x.RouteId,
+                            Route = x.Route.Name,
+                            Target = x.Target,
+                            Unit = x.UnitId,
+                            UnitName = x.Unit.Name,
+                            PlanStart = x.PlanStart,
+                            PlanFinish = x.PlanFinish,
+                            ActualStart = x.ActualStart,
+                            ActualFinish = x.ActualFinish,
+                            StatusId = x.StatusId,
+                            Status = x.Status.Name,
+                            IsActive = x.IsActive,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy,
+                            Product = new ProductModel
+                            {
+                                Id = x.Product.Id,
+                                Code = x.Product.Code,
+                                Description = x.Product.Description,
+                                BriteItemPerUpcitem = x.Product.BriteItemPerUpcitem,
+                                ProductFamily_Id = x.Product.ProductFamilyId,
+                                ProductGroup_Id = x.Product.ProductGroupId,
+                                ProductType_Id = x.Product.ProductTypeId,
+                                PackingMedium = x.Product.PackingMedium,
+                                NetWeight = x.Product.NetWeight,
+                                Igweight = x.Product.Igweight,
+                                Pmweight = x.Product.Pmweight,
+                                WeightPerUom = x.Product.WeightPerUom,
+                                IsActive = x.Product.IsActive,
+                                IsDelete = x.Product.IsDelete,
+                                CreatedAt = x.Product.CreatedAt,
+                                CreatedBy = x.Product.CreatedBy,
+                                UpdatedAt = x.Product.UpdatedAt,
+                                UpdatedBy = x.Product.UpdatedBy
+                            }
+                        }).FirstOrDefaultAsync();
+            return output;
         }
 
         public async Task<ActiveProcessModel> TakeAction(string id)
