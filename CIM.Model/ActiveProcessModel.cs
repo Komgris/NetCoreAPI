@@ -11,8 +11,5 @@ namespace CIM.Model
 
         public ActiveRouteModel Route { get; set; }
 
-        public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
-
-        public string Key { get; set; }
     }
 }

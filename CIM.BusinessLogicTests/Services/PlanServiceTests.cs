@@ -26,7 +26,7 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>().Object;
             var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
-            var activeProcessService = new Mock<IActiveProcessService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -51,7 +51,7 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>().Object;
             var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
-            var activeProcessService = new Mock<IActiveProcessService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -92,7 +92,7 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>().Object;
             var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
-            var activeProcessService = new Mock<IActiveProcessService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -122,7 +122,7 @@ namespace CIM.BusinessLogicTests.Services
             var planRepository = new Mock<IProductionPlanRepository>().Object;
             var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
-            var activeProcessService = new Mock<IActiveProcessService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
