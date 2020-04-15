@@ -72,6 +72,7 @@ namespace CIM.API
             services.AddTransient<IActiveProcessService, ActiveProcessService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
+            services.AddTransient<IReportService, ReportService>();
 
             services.AddControllers();
             services.AddSignalR();

@@ -55,7 +55,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                   Components = _lossLevel3ComponentMapping.Where(x=>x.LossLevelId == item.Id).Select(x=>x.ComponentId).ToArray()
+                    Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }
             return output;
@@ -74,8 +74,8 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     MachineId = item.MachineId,
-                    LossList = _lossLevel3ComponentMapping.Where(x=>x.ComponentId == item.Id).Select(  x=> x.LossLevelId ).ToArray(),
-                    
+                    LossList = _lossLevel3ComponentMapping.Where(x => x.ComponentId == item.Id).Select(x => x.LossLevelId).ToArray(),
+
                 };
             }
             return output;
@@ -84,8 +84,8 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, MachineModel>> GetMachines(IDictionary<int, MachineComponentModel> components)
         {
             var output = new Dictionary<int, MachineModel>();
-            var activeMachines = await _machineRepository.WhereAsync( x=>x.IsActive && !x.IsDelete);
-                
+            var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+
             foreach (var item in activeMachines)
             {
                 var machineComponents = components.Where(x => x.Value.MachineId == item.Id);
@@ -93,7 +93,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ComponentList = machineComponents.Select(x => x.Value ).ToList(),
+                    ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                 };
             }
@@ -110,7 +110,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    MachineList = routeMachines[item.Id].ToDictionary( x=>x, x=> machines[x])
+                    MachineList = routeMachines[item.Id].ToDictionary(x => x, x => machines[x])
                 };
             }
             return output;
@@ -128,7 +128,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh();
                 }
-                
+
             }
             return Data;
         }
