@@ -9,6 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IProductionPlanService : IBaseService
     {
+        string GetProductionPlanKey(string id);
         List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
         Task<List<ProductionPlanModel>> Create(List<ProductionPlanModel> import);
@@ -22,7 +23,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task Stop(string id, int[] routeId);
         Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive);
         Task<ProductionPlanModel> Load(string id);
-        Task<ActiveProcessModel> TakeAction(int id);
+        Task<ActiveProcessModel> TakeAction(string id);
         Task<ActiveProcessModel> UpdateByMachine(int id, int statusId);
     }
 }

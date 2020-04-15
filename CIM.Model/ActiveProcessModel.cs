@@ -13,5 +13,6 @@ namespace CIM.Model
 
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
 
+        public string Key { get; set; }
     }
 }

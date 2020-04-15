@@ -53,7 +53,7 @@ namespace CIM.API.Controllers
 
         [Route("TakeAction")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> TakeAction(int productionPlanId)
+        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId)
         {
             var output = new ProcessReponseModel<object>();
 
