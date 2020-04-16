@@ -234,7 +234,7 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<string, int>();
             foreach (var item in db)
             {
-                if (!output.ContainsValue(item.Id))
+                if (!output.ContainsKey(item.Uom))
                     output.Add(item.Uom, item.Id);
             }
             return output;
@@ -246,7 +246,7 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<string, int>();
             foreach (var item in db)
             {
-                if (!output.ContainsValue(item.Id))
+                if (!output.ContainsKey(item.Name))
                     output.Add(item.Name, item.Id);
             }
             return output;
