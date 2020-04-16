@@ -30,7 +30,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        public async Task Create(string productionPlanId, int? machibeId, int statusId, bool isAuto = false)
+        public async Task Create(string productionPlanId, int? machineId, int statusId, bool isAuto = false)
         {
             try
             {

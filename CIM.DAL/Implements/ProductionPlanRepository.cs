@@ -22,11 +22,13 @@ namespace CIM.DAL.Implements
             List<ProductionPlanListModel> data = null;
             //int totalCount = 0;
             var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
-            proc.AddParam("total_count", out IOutParam<int> totalCount );
+            proc.AddParam("total_count", out IOutParam<int> totalCount);
             proc.AddParam("@route_id", routeId);
             proc.AddParam("@product_id", productId);
             proc.AddParam("@keyword", keyword);
             proc.AddParam("@is_active", isActive);
+            proc.AddParam("@status_id", statusIds);
+            proc.AddParam("@howmany", howmany);
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
             return ToPagingModel(data, totalCount.Value, page, howmany);
