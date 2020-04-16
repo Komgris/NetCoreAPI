@@ -267,14 +267,6 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
 
-            //var productionPlanKey = GetProductionPlanKey(id);
-            //// If client doesn't send any routes, get from cached routes
-            //if (routeIds.Count() == 0)
-            //{
-            //    // If cached route doesn't have any value return empty array
-            //    routeIds = (await GetCachedActiveProcessRoutes(id)).ToArray();
-            //}
-
             var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
 
             if (activeProductionPlan != null)
