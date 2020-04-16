@@ -89,7 +89,6 @@ namespace CIM.BusinessLogic.Services
             {
                 if (productionPlanDict.ContainsKey(plan.PlanId))
                 {
-                    if (productionPlanDict[plan.PlanId].IsActive == false) plan.IsActive = true;
                     await Update(plan);
                 }
                 else
@@ -105,9 +104,9 @@ namespace CIM.BusinessLogic.Services
         public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
         {
             model.ProductId = await ProductCodeToId(model.ProductCode);
-            //model.UnitId = await UnitsToId(model.Unit ?? string.Empty);
-            //model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan());
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route" });
+            db_model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
+            db_model.UnitId = await UnitsUOMToId(model.UnitName ?? string.Empty);
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.CreatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
@@ -121,12 +120,12 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(ProductionPlanModel model)
         {
-            model.ProductId = await ProductCodeToId(model.ProductCode);
-            //model.UnitId = await UnitsToId(model.Unit ?? string.Empty);
-            //model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
-            String[] except = new String[] { "StatusId" };
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), except);
+            model.ProductId = await ProductCodeToId(model.ProductCode); 
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status" });
+            db_model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
+            db_model.UnitId = await UnitsUOMToId(model.UnitName ?? string.Empty);
             db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
             _productionPlanRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
@@ -208,10 +207,26 @@ namespace CIM.BusinessLogic.Services
                 return 0;
         }
 
-        public bool IsTargetMoreThanOutput(int Target)
+        public async Task<int> UnitsUOMToId(string UOM)
         {
-            //var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive);
-            return true;
+            var masterData = await _masterDataService.GetData();
+            var unitsDict = masterData.Dictionary.Units;
+            int unitsId;
+            if (unitsDict.TryGetValue(UOM, out unitsId))
+                return unitsId;
+            else
+                return 0;
+        }
+
+        public async Task<int> RouteNameToId(string Name)
+        {
+            var masterData = await _masterDataService.GetData();
+            var routeDict = masterData.Dictionary.Routes;
+            int routeId;
+            if (routeDict.TryGetValue(Name, out routeId))
+                return routeId;
+            else
+                return 0;
         }
 
         public List<ProductionPlanModel> ReadImport(string path)
@@ -235,12 +250,15 @@ namespace CIM.BusinessLogic.Services
                 int _target;
                 ProductionPlanModel data = new ProductionPlanModel();
 
+                
                 data.PlanId = (oSheet.Cells[i, 3].Value ?? string.Empty).ToString();
-                data.ProductCode = (oSheet.Cells[i, 4].Value ?? string.Empty).ToString();
-                int.TryParse((oSheet.Cells[i, 14].Value ?? string.Empty).ToString(), out _target);
+                data.Route = (oSheet.Cells[i, 4].Value ?? string.Empty).ToString();
+                data.ProductCode = (oSheet.Cells[i, 5].Value ?? string.Empty).ToString();
+                int.TryParse((oSheet.Cells[i, 15].Value ?? string.Empty).ToString(), out _target);
                 data.Target = _target;
-                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, 15].Value ?? string.Empty);
-                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, 16].Value ?? string.Empty);
+                data.UnitName = (oSheet.Cells[i, 16].Value ?? string.Empty).ToString();
+                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, 17].Value ?? string.Empty);
+                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, 18].Value ?? string.Empty);
                 listImport.Add(data);
             }
             return listImport;

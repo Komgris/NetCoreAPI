@@ -20,6 +20,7 @@ namespace CIM.BusinessLogic.Services
         private IProductionStatusRepository _productionStatusRepository;
         private IProductRepository _productsRepository;
         private IProductionPlanRepository _productionPlanRepository;
+        private IUnitsRepository _unitsRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -30,7 +31,8 @@ namespace CIM.BusinessLogic.Services
             IMachineComponentRepository machineComponentRepository,
             IProductionStatusRepository productionStatusRepository,
             IProductRepository productRepository,
-            IProductionPlanRepository productionPlanRepository
+            IProductionPlanRepository productionPlanRepository,
+            IUnitsRepository unitsRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -42,6 +44,7 @@ namespace CIM.BusinessLogic.Services
             _productionStatusRepository = productionStatusRepository;
             _productsRepository = productRepository;
             _productionPlanRepository = productionPlanRepository;
+            _unitsRepository = unitsRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -177,6 +180,8 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
             masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
+            masterData.Dictionary.Units = await GetUnitsDictionary();
+            masterData.Dictionary.Routes = await GetRoutesDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -219,6 +224,30 @@ namespace CIM.BusinessLogic.Services
             {
                 if (!output.ContainsValue(item.Code))
                     output.Add(item.Id, item.Code);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<string, int>> GetUnitsDictionary()
+        {
+            var db = (await _unitsRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<string, int>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsValue(item.Id))
+                    output.Add(item.Uom, item.Id);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<string, int>> GetRoutesDictionary()
+        {
+            var db = (await _routeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<string, int>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsValue(item.Id))
+                    output.Add(item.Name, item.Id);
             }
             return output;
         }

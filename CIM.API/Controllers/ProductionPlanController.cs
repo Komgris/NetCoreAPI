@@ -104,8 +104,8 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/[controller]/Update")]
-        [HttpPut]
+        [Route("api/[controller]/Create")]
+        [HttpPost]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
