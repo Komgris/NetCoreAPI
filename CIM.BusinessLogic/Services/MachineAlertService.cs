@@ -11,25 +11,17 @@ namespace CIM.BusinessLogic.Services
     {
         private IResponseCacheService _responseCacheService;
         private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
 
         public MachineAlertService(
             IResponseCacheService responseCacheService,
-            IProductionPlanService productionPlanService
+            IProductionPlanService productionPlanService,
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
             _responseCacheService = responseCacheService;
             _productionPlanService = productionPlanService;
-        }
-        public async Task<MachineAlertModel> Get(string productionPlanId)
-        {
-            var productionPlanRouteKey = _productionPlanService.GetProductionPlanKey(productionPlanId);
-            var routes = await _responseCacheService.GetAsTypeAsync<List<int>>(productionPlanRouteKey);
-            foreach (var item in routes)
-            {
-               //var activeProcess = 
-            }
-
-            throw new NotImplementedException();
+            _activeProductionPlanService = activeProductionPlanService;
         }
     }
 }

@@ -9,6 +9,5 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IMachineAlertService
     {
 
-        Task<MachineAlertModel> Get(string productionPlanId); 
     }
 }

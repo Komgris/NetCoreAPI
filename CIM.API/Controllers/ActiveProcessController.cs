@@ -21,20 +21,17 @@ namespace CIM.API.Controllers
     public class ActiveProcessController : BaseController
     {
         private IHubContext<MachineHub> _hub;
-        private IResponseCacheService _responseCacheService;
-        private IMachineService _machineService;
         private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveProcessController(IHubContext<MachineHub> hub,
-            IResponseCacheService responseCacheService,
-            IMachineService machineService,
-            IProductionPlanService productionPlanService
+            IProductionPlanService productionPlanService,
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
             _hub = hub;
-            _responseCacheService = responseCacheService;
-            _machineService = machineService;
             _productionPlanService = productionPlanService;
+            _activeProductionPlanService = activeProductionPlanService;
 
         }
 
@@ -43,12 +40,26 @@ namespace CIM.API.Controllers
             return Ok(new { Message = "Active Process Channel Open." });
         }
 
-        [Route("/{productionPlanId}")]
+        [Route("ProductionPlan")]
         [HttpGet]
         //Use to open channel
-        public async Task<ActiveProcessModel> OpenChannel(string productionPlanId)
+        public async Task<ProcessReponseModel<object>> OpenChannel(string productionPlanId)
         {
-            return await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}");
+            var output = new ProcessReponseModel<object>();
+
+            try
+            {
+                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); ;
+                output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+
         }
 
         [Route("TakeAction")]

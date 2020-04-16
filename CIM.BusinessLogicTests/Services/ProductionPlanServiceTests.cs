@@ -55,6 +55,7 @@ namespace CIM.BusinessLogic.Services.Tests
             var productRepository    = new Mock<IProductRepository>();
             var machineService       = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
 
             var service = new ProductionPlanService(
                     responseCacheService.Object,
@@ -63,7 +64,8 @@ namespace CIM.BusinessLogic.Services.Tests
                     productionPlanRepository.Object,
                     productRepository.Object,
                     machineService.Object,
-                    activeProcessService.Object
+                    activeProcessService.Object,
+                    recordManufacturingLossService.Object
             );
             service.CurrentUser = new CurrentUserModel { UserId = "UnitTest1" };
             var productionPlan = new ProductionPlanModel
@@ -119,6 +121,7 @@ namespace CIM.BusinessLogic.Services.Tests
             var productRepository    = new Mock<IProductRepository>();
             var machineService       = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
 
             var service = new ProductionPlanService(
                 responseCacheService.Object,
@@ -127,7 +130,8 @@ namespace CIM.BusinessLogic.Services.Tests
                 productionPlanRepository.Object,
                 productRepository.Object,
                 machineService.Object,
-                activeProcessService.Object
+                activeProcessService.Object,
+                recordManufacturingLossService.Object
             );
             service.CurrentUser = new CurrentUserModel { UserId = "UnitTest1" };
             var productionPlan = new ProductionPlanModel

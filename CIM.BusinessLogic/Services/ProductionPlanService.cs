@@ -24,6 +24,7 @@ namespace CIM.BusinessLogic.Services
         private IUnitOfWorkCIM _unitOfWork;
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
+        private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -32,7 +33,8 @@ namespace CIM.BusinessLogic.Services
             IProductionPlanRepository productionPlanRepository,
             IProductRepository productRepository,
             IMachineService machineService,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IRecordManufacturingLossService recordManufacturingLossService
             )
         {
             _responseCacheService = responseCacheService;
@@ -42,6 +44,7 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
+            _recordManufacturingLossService = recordManufacturingLossService;
         }
 
         public List<ProductionPlanModel> Get()
@@ -287,7 +290,7 @@ namespace CIM.BusinessLogic.Services
                         activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
                     }
                 }
-                await _activeProductionPlanService.SetCached(activeProductionPlan);
+                await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
             }
             await _unitOfWork.CommitAsync();
 
@@ -390,7 +393,7 @@ namespace CIM.BusinessLogic.Services
                 foreach (var routeId in cachedMachine.RouteIds)
                 {
                     output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
-                    output.Alerts.Add(new AlertModel
+                    var alert = new AlertModel
                     {
                         StatusId = (int)Constans.AlertStatus.New,
                         ItemStatusId = statusId,
@@ -398,6 +401,17 @@ namespace CIM.BusinessLogic.Services
                         Id = Guid.NewGuid(),
                         ItemId = machineId,
                         ItemType = (int)Constans.AlertType.MACHINE
+                    };
+                    output.Alerts.Add(alert);
+                    await _recordManufacturingLossService.Create(new RecordManufacturingLossModel
+                    {
+                        CreatedBy = CurrentUser.UserId,
+                        Guid = alert.Id.ToString(),
+                        IsAuto = false,
+                        LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                        MachineId = machineId,
+                        ProductionPlanId = cachedMachine.ProductionPlanId,
+                        StartedAt = DateTime.Now,
                     });
                 }
                 await _activeProductionPlanService.SetCached(output);
