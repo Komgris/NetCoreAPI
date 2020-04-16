@@ -165,10 +165,10 @@ namespace CIM.BusinessLogic.Services
                             case (int)Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
                                 if (plan.PlanFinish.Value < timeNow.AddHours(6))
-                                    plan.CompareResult = "Less than 6 hrs";
+                                    plan.CompareResult = "Imported finished date time must be further then now + 6h";
                                 else if (productionPlanOutput != null && productionPlanOutput.ContainsKey(plan.PlanId))
                                        if(productionPlanOutput[plan.PlanId] > plan.Target + 100)
-                                        plan.CompareResult = "Lower Target + 100";
+                                        plan.CompareResult = "Imported target is lower then current target";
                                 break;
                             case (int)Constans.PRODUCTION_PLAN_STATUS.New:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.Hold:
