@@ -12,6 +12,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -143,6 +144,9 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var productionPlanDict = masterData.ProductionPlan;
             var productDict = masterData.Dictionary.Products;
+            var productionPlanOutput = new ReportService().GetActiveProductionPlanOutput()?
+                                            .AsEnumerable()
+                                            .ToDictionary<DataRow, string,int>(row=>row.Field<string>(0),r=>r.Field<int>(1));
             DateTime timeNow = DateTime.Now;
 
             foreach (var plan in import)
@@ -161,10 +165,11 @@ namespace CIM.BusinessLogic.Services
                             case (int)Constans.PRODUCTION_PLAN_STATUS.Changeover:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                if (!IsPlanTimeOut(plan.PlanFinish.Value, timeNow))
-                                    plan.CompareResult = "Invalid Plan Finish";
-                                else if (!IsTargetMoreThanOutput(plan.Target.Value))
-                                    plan.CompareResult = "Invalid Plan Taget";
+                                if (plan.PlanFinish.Value < timeNow.AddHours(6))
+                                    plan.CompareResult = "Less than 6 hrs";
+                                else if (productionPlanOutput != null && productionPlanOutput.ContainsKey(plan.PlanId))
+                                       if(productionPlanOutput[plan.PlanId] > plan.Target + 100)
+                                        plan.CompareResult = "Lower Target + 100";
                                 break;
                             case (int)Constans.PRODUCTION_PLAN_STATUS.New:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.Hold:
@@ -176,7 +181,7 @@ namespace CIM.BusinessLogic.Services
                                 break;
                             default:
                                 plan.CompareResult = "";
-                                break;
+                                    break;
                         }
                     }
                     else
@@ -201,17 +206,6 @@ namespace CIM.BusinessLogic.Services
                 return productCode;
             else
                 return 0;
-        }
-
-        public bool IsPlanTimeOut(DateTime dateTime,DateTime CurrentTime)
-        {
-            int result = DateTime.Compare(dateTime, CurrentTime);
-            if (result < 0)
-                return false;
-            else if (result == 0)
-                return false;
-            else
-                return true;             
         }
 
         public bool IsTargetMoreThanOutput(int Target)

@@ -17,7 +17,7 @@ namespace CIM.DAL.Implements
         {
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
         {
             List<ProductionPlanListModel> data = null;
             //int totalCount = 0;

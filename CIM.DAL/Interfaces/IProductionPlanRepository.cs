@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IProductionPlanRepository : IRepository<ProductionPlan>
     {
-        Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive);
+        Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
     }
 
 }
