@@ -206,16 +206,13 @@ namespace CIM.BusinessLogic.Services
             var db = (await _routeProductGroupRepository.AllAsync());
             var output = new Dictionary<int, IDictionary<int, string>>();
 
-            var productGroupList = db.Select(x => x.ProductGroupId).Distinct().ToList();
-            foreach (var productGroupId in productGroupList)
+            foreach (var item in db)
             {
-                var dbRoute = db.Where(x => x.ProductGroupId == productGroupId);
-                var outputRoute = new Dictionary<int, string>();
-                foreach (var item in dbRoute)
+                if (!output.ContainsKey(item.ProductGroupId))
                 {
-                    outputRoute.Add(item.Id, item.Route.Name);
+                    var dbRoute = db.Where(x => x.ProductGroupId == item.ProductGroupId).ToDictionary(x => x.RouteId, y => y.Route.Name);
+                    output.Add(item.ProductGroupId, dbRoute);
                 }
-                output.Add(productGroupId, outputRoute);
             }
             return output;
         }
