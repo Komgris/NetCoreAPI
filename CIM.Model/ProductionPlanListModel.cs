@@ -12,6 +12,8 @@ namespace CIM.Model
 
         public int ProductId { get; set; }
         public string Product { get; set; }
+        public int ProductGroupId { get; set; }
+        public string ProductGroup { get; set; }
 
         public int? Target { get; set; }
 

@@ -304,6 +304,8 @@ namespace CIM.BusinessLogic.Services
                             PlanId = x.PlanId,
                             ProductId = x.ProductId,
                             ProductCode = x.Product.Code,
+                            ProductGroupId = x.Product.ProductGroupId,
+                            ProductGroup = x.Product.ProductGroup.Name,
                             RouteId = x.RouteId,
                             Route = x.Route.Name,
                             Target = x.Target,
