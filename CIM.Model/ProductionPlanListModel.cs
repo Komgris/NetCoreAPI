@@ -6,7 +6,7 @@ namespace CIM.Model
 {
     public class ProductionPlanListModel
     {
-        public string Id { get; set; }
+        public string PlanId { get; set; }
         public int? RouteId { get; set; }
         public string Route { get; set; }
 
