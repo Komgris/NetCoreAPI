@@ -77,6 +77,7 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     MachineId = item.MachineId,
+                    TypeId = item.TypeId,
                     LossList = _lossLevel3ComponentMapping.Where(x => x.ComponentId == item.Id).Select(x => x.LossLevelId).ToArray(),
 
                 };
