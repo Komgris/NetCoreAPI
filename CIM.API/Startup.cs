@@ -58,6 +58,7 @@ namespace CIM.API
             services.AddTransient<IMachineComponentStatusRepository, RecordMachineComponentStatusRepository>();
             services.AddTransient<IProductionOutputRepository, RecordProductionOutputRepository>();
             services.AddTransient<IProductionStatusRepository, ProductionStatusRepository>();
+            services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -68,6 +69,10 @@ namespace CIM.API
             services.AddTransient<IMaterialService, MaterialService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IMachineComponentService, MachineComponentService>();
+            services.AddTransient<IMachineAlertService, MachineAlertService>();
+            services.AddTransient<IActiveProductionPlanService, ActiveProductionPlanService>();
+            services.AddTransient<IRecordManufacturingLossService, RecordManufacturingLossService>();
+
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
 

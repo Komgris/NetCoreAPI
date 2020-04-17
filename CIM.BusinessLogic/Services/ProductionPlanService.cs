@@ -22,13 +22,19 @@ namespace CIM.BusinessLogic.Services
         private IProductionPlanRepository _productionPlanRepository;
         private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IMachineService _machineService;
+        private IActiveProductionPlanService _activeProductionPlanService;
+        private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository
+            IProductRepository productRepository,
+            IMachineService machineService,
+            IActiveProductionPlanService activeProductionPlanService,
+            IRecordManufacturingLossService recordManufacturingLossService
             )
         {
             _responseCacheService = responseCacheService;
@@ -36,6 +42,9 @@ namespace CIM.BusinessLogic.Services
             _productionPlanRepository = productionPlanRepository;
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
+            _machineService = machineService;
+            _activeProductionPlanService = activeProductionPlanService;
+            _recordManufacturingLossService = recordManufacturingLossService;
         }
 
         public List<ProductionPlanModel> Get()
@@ -164,39 +173,61 @@ namespace CIM.BusinessLogic.Services
             return listImport;
         }
 
-        private string GetProductionPlanRouteKey(string id, int routeId)
-        {
-            return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}:{routeId}";
-        }
-
-        private string GetProductionPlanKey(string id)
+        public string GetProductionPlanKey(string id)
         {
             return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}";
         }
 
-        public async Task<ActiveProcessModel> Start(ProductionPlanModel model)
+        private string GetMachineKey(int machineId)
         {
-            var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
+            return $"{Constans.RedisKey.MACHINE}:{machineId}";
+        }
 
-            ActiveProcessModel productionPlan;
+        public async Task<List<int>> GetCachedActiveProcessRoutes(string id)
+        {
+            return (await _responseCacheService.GetAsTypeAsync<List<int>>(GetProductionPlanKey(id))) ?? new List<int>();
+        }
+
+        public async Task SetCachedActiveProcessRoute(string id, int[] routeIds)
+        {
+            await _responseCacheService.SetAsync(GetProductionPlanKey(id), routeIds);
+        }
+
+        public async Task AddCachedActiveProcessRoute(string id, int routeId)
+        {
+            var cachedProductionPlanRoutes = (await GetCachedActiveProcessRoutes(id)).ToList();
+            cachedProductionPlanRoutes.Add(routeId);
+            await SetCachedActiveProcessRoute(id, cachedProductionPlanRoutes.Distinct().ToArray());
+        }
+
+        public async Task RemoveCachedActiveProcessRoutes(string productionPlanKey)
+        {
+            await _responseCacheService.SetAsync(productionPlanKey, null);
+        }
+
+        public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model)
+        {
             if (!model.RouteId.HasValue)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
             }
 
-            var productionPlanRouteKey = GetProductionPlanRouteKey(model.PlanId, model.RouteId.Value);
-
+            var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
             if (masterData.Routes[model.RouteId.Value] == null)
             {
                 throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
             }
 
+            var output = (await _activeProductionPlanService.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel
+            {
+                ProductionPlanId = model.PlanId,
+            };
+
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
             if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production)
             {
-                productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanRouteKey);
-                if (productionPlan.Route.Id == model.RouteId)
+                if (output.ActiveProcesses[model.RouteId.Value] != null)
                     throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
             }
 
@@ -207,46 +238,21 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
 
-            var activeProcess = new ActiveProcessModel
+            output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
             {
                 ProductionPlanId = model.PlanId,
                 ProductId = model.ProductId,
+                Route = new ActiveRouteModel
+                {
+                    Id = model.RouteId.Value,
+                    MachineList = masterData.Routes[model.RouteId.Value].MachineList,
+                }
             };
 
-            var route = masterData.Routes[model.RouteId.Value];
-            activeProcess.Route = new ActiveRouteModel
-            {
-                Id = route.Id,
-                MachineList = route.MachineList,
-            };
-
-            foreach (var machine in activeProcess.Route.MachineList)
-            {
-
-                var cachedMachine = await _responseCacheService.GetAsTypeAsync<ActiveMachineModel>($"{Constans.RedisKey.MACHINE}:{machine.Key}");
-                if (cachedMachine == null)
-                {
-                    cachedMachine = new ActiveMachineModel
-                    {
-                        Id = machine.Key,
-                        ProductionPlanId = model.PlanId,
-                        RouteIds = new List<int> { model.RouteId.Value }
-                    };
-                    await _responseCacheService.SetAsync($"{Constans.RedisKey.MACHINE}:{machine.Key}", cachedMachine);
-                }
-                else
-                {
-                    cachedMachine.RouteIds.Add(model.RouteId.Value);
-                }
-
-            }
-            var productionPlanKey = GetProductionPlanKey(model.PlanId);
-            var cachedProductionPlanRoute = (await _responseCacheService.GetAsTypeAsync<List<int>>(productionPlanKey)) ?? new List<int>();
-            cachedProductionPlanRoute.Add(model.RouteId.Value);
-            await _responseCacheService.SetAsync(productionPlanKey, cachedProductionPlanRoute.Distinct().ToArray());
-            await _responseCacheService.SetAsync(productionPlanRouteKey, activeProcess);
+            await _machineService.BulkCacheMachines(model.PlanId, model.RouteId.Value, output.ActiveProcesses[model.RouteId.Value].Route.MachineList);
+            await _activeProductionPlanService.SetCached(output);
             await _unitOfWork.CommitAsync();
-            return activeProcess;
+            return output;
         }
 
         public async Task Stop(string id, int[] routeIds)
@@ -261,27 +267,23 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
 
-            var productionPlanKey = GetProductionPlanKey(id);
-            if (routeIds.Count() == 0)
-            {
-                routeIds = (await _responseCacheService.GetAsTypeAsync<List<int>>(productionPlanKey)).ToArray();
-            }
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
 
-            foreach (var routeId in routeIds)
+            if (activeProductionPlan != null)
             {
-                var productionPlanRouteKey = GetProductionPlanRouteKey(id, routeId);
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>(productionPlanRouteKey);
-                if (productionPlan != null)
+                foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
                 {
-                    foreach (var machine in productionPlan.Route.MachineList)
+                    if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
                     {
-                        await _responseCacheService.SetAsync($"{Constans.RedisKey.MACHINE}:{machine.Key}", null);
+                        foreach (var machine in activeProcess.Value.Route.MachineList)
+                        {
+                            await _machineService.RemoveCached(machine.Key, null);
+                        }
+                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
                     }
-                    await _responseCacheService.SetAsync(productionPlanRouteKey, null);
                 }
+                await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
             }
-            await _responseCacheService.SetAsync(productionPlanKey, null);
-            //to handle cache data and boardcast
             await _unitOfWork.CommitAsync();
 
         }
@@ -345,18 +347,70 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-
-        public async Task<ActiveProcessModel> TakeAction(int id)
+        public async Task<ActiveProductionPlanModel> TakeAction(string id)
         {
-            var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{id}");
+            var output = await _activeProductionPlanService.GetCached(id);
 
-            foreach (var item in productionPlan.Alerts)
+            var alertList = output.Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
+            foreach (var item in alertList)
             {
                 item.StatusId = (int)Constans.AlertStatus.Processing;
             }
-            await _responseCacheService.SetAsync($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan.ProductId}", productionPlan);
-            return productionPlan;
+            await _activeProductionPlanService.SetCached(output);
+            return output;
         }
 
+        public async Task<ActiveProductionPlanModel> UpdateByMachine(int machineId, int statusId)
+        {
+            var cachedMachine = await _machineService.GetCached(machineId);
+            var masterData = await _masterDataService.GetData();
+            var machine = masterData.Machines[machineId];
+            ActiveProductionPlanModel output = null;
+            //ActiveProcessModel activeProcess = null;
+            // If Production Plan doesn't start but machine just start to send status
+            if (cachedMachine == null)
+            {
+                cachedMachine = new ActiveMachineModel
+                {
+                    Id = machine.Id,
+                    StatusId = statusId
+                };
+                await _machineService.SetCached(machineId, cachedMachine);
+            }
+
+            //if machine is apart of production plan
+            if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && cachedMachine.RouteIds != null)
+            {
+                output = await _activeProductionPlanService.GetCached(cachedMachine.ProductionPlanId);
+                foreach (var routeId in cachedMachine.RouteIds)
+                {
+                    output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
+                    var alert = new AlertModel
+                    {
+                        StatusId = (int)Constans.AlertStatus.New,
+                        ItemStatusId = statusId,
+                        CreatedAt = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        ItemId = machineId,
+                        ItemType = (int)Constans.AlertType.MACHINE
+                    };
+                    output.Alerts.Add(alert);
+                    await _recordManufacturingLossService.Create(new RecordManufacturingLossModel
+                    {
+                        CreatedBy = CurrentUser.UserId,
+                        Guid = alert.Id.ToString(),
+                        IsAuto = false,
+                        LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                        MachineId = machineId,
+                        ProductionPlanId = cachedMachine.ProductionPlanId,
+                        StartedAt = DateTime.Now,
+                    });
+                }
+                await _activeProductionPlanService.SetCached(output);
+
+            }
+
+            return output;
+        }
     }
 }

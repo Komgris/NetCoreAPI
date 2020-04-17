@@ -1301,9 +1301,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.EndAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EndBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
+                entity.Property(e => e.EndBy).HasMaxLength(128);
 
                 entity.Property(e => e.Guid).HasMaxLength(128);
 
