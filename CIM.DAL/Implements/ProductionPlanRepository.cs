@@ -58,6 +58,7 @@ namespace CIM.DAL.Implements
             proc.AddParam("@is_active", isActive);
             proc.AddParam("@status_id", statusIds);
             proc.AddParam("@howmany", howmany);
+            proc.AddParam("@page", page);
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
             return ToPagingModel(data, totalCount.Value, page, howmany);
