@@ -29,7 +29,7 @@ namespace CIM.API
     {
         public Startup(IConfiguration configuration)
         {
-                      Configuration = configuration;
+            Configuration = configuration;
         }
         public IConfiguration Configuration { get; }
 
@@ -58,6 +58,7 @@ namespace CIM.API
             services.AddTransient<IMachineComponentStatusRepository, RecordMachineComponentStatusRepository>();
             services.AddTransient<IProductionOutputRepository, RecordProductionOutputRepository>();
             services.AddTransient<IProductionStatusRepository, ProductionStatusRepository>();
+            services.AddTransient<IRouteProductGroupRepository, RouteProductGroupRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -119,11 +120,11 @@ namespace CIM.API
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                #if (DEBUG)
-                                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
-                #else
+#if (DEBUG)
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
+#else
                                 c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
-                #endif
+#endif
             });
 
         }
