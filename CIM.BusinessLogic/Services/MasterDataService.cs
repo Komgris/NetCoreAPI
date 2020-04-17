@@ -15,6 +15,7 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IRouteRepository _routeRepository;
         private IRouteMachineRepository _routeMachineRepository;
+        private IRouteProductGroupRepository _routeProductGroupRepository;
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
         private IProductionStatusRepository _productionStatusRepository;
@@ -25,6 +26,7 @@ namespace CIM.BusinessLogic.Services
             IResponseCacheService responseCacheService,
             IRouteRepository routeRepository,
             IRouteMachineRepository routeMachineRepository,
+            IRouteProductGroupRepository routeProductGroupRepository,
             IMachineRepository machineRepository,
             IMachineComponentRepository machineComponentRepository,
             IProductionStatusRepository productionStatusRepository,
@@ -35,6 +37,7 @@ namespace CIM.BusinessLogic.Services
             _responseCacheService = responseCacheService;
             _routeRepository = routeRepository;
             _routeMachineRepository = routeMachineRepository;
+            _routeProductGroupRepository = routeProductGroupRepository;
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
             _productionStatusRepository = productionStatusRepository;
@@ -147,10 +150,11 @@ namespace CIM.BusinessLogic.Services
             masterData.Components = await GetComponents();
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+            masterData.ProductGroupRoutes = await GetProductGroupRoutes();
 
             masterData.Dictionary.Products = await GetProductDictionary();
-            masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
-            masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.Lines.Add("Line001", "Line001");
+            masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -193,6 +197,22 @@ namespace CIM.BusinessLogic.Services
             {
                 if (!output.ContainsValue(item.Code))
                     output.Add(item.Id, item.Code);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, IDictionary<int, string>>> GetProductGroupRoutes()
+        {
+            var db = (await _routeProductGroupRepository.AllAsync());
+            var output = new Dictionary<int, IDictionary<int, string>>();
+
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.ProductGroupId))
+                {
+                    var dbRoute = db.Where(x => x.ProductGroupId == item.ProductGroupId).ToDictionary(x => x.RouteId, y => y.Route.Name);
+                    output.Add(item.ProductGroupId, dbRoute);
+                }
             }
             return output;
         }
