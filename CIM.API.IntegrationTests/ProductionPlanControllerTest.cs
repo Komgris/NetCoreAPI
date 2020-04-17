@@ -183,7 +183,7 @@ namespace CIM.API.IntegrationTests
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<ProductionPlanListModel>>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
-            result.Data.Data.Where(x => x.Id == productionPlan.PlanId);
+            result.Data.Data.Where(x => x.PlanId == productionPlan.PlanId);
         }
 
         [Fact]
