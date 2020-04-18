@@ -9,6 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IProductionPlanService : IBaseService
     {
+        string GetProductionPlanKey(string id);
         List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
         Task<List<ProductionPlanModel>> CheckDuplicate(List<ProductionPlanModel> import);
@@ -18,12 +19,12 @@ namespace CIM.BusinessLogic.Interfaces
         Task<List<ProductionPlanModel>> Compare(List<ProductionPlanModel> import);
         List<ProductionPlanModel> ReadImport(string path);
         List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
-        Task<ActiveProcessModel> Start(ProductionPlanModel model);
-        Task<ProductionPlanModel> Get(string planId);
+        Task<ActiveProductionPlanModel> Start(ProductionPlanModel model);
+        Task<ProductionPlanModel> Get(string id);
         Task Stop(string id, int[] routeId);
         Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
         Task<ProductionPlanModel> Load(string id);
-        Task<ActiveProcessModel> TakeAction(int id);
-
+        Task<ActiveProductionPlanModel> TakeAction(string id);
+        Task<ActiveProductionPlanModel> UpdateByMachine(int id, int statusId);
     }
 }

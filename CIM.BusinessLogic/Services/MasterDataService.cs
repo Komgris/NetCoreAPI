@@ -15,6 +15,7 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IRouteRepository _routeRepository;
         private IRouteMachineRepository _routeMachineRepository;
+        private IRouteProductGroupRepository _routeProductGroupRepository;
         private IMachineComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
         private IProductionStatusRepository _productionStatusRepository;
@@ -27,6 +28,7 @@ namespace CIM.BusinessLogic.Services
             IResponseCacheService responseCacheService,
             IRouteRepository routeRepository,
             IRouteMachineRepository routeMachineRepository,
+            IRouteProductGroupRepository routeProductGroupRepository,
             IMachineRepository machineRepository,
             IMachineComponentRepository machineComponentRepository,
             IProductionStatusRepository productionStatusRepository,
@@ -39,6 +41,7 @@ namespace CIM.BusinessLogic.Services
             _responseCacheService = responseCacheService;
             _routeRepository = routeRepository;
             _routeMachineRepository = routeMachineRepository;
+            _routeProductGroupRepository = routeProductGroupRepository;
             _machineComponentRepository = machineComponentRepository;
             _machineRepository = machineRepository;
             _productionStatusRepository = productionStatusRepository;
@@ -80,6 +83,7 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     MachineId = item.MachineId,
+                    TypeId = item.TypeId,
                     LossList = _lossLevel3ComponentMapping.Where(x => x.ComponentId == item.Id).Select(x => x.LossLevelId).ToArray(),
 
                 };
@@ -174,11 +178,11 @@ namespace CIM.BusinessLogic.Services
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
             masterData.ProductionPlan = await GetProductionPlan();
+            masterData.ProductGroupRoutes = await GetProductGroupRoutes();
 
             masterData.Dictionary.Products = await GetProductDictionary();
-            masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
-            masterData.Dictionary.Lines.Add("Line001", "Line001");// fern to do
-            masterData.Dictionary.ComponentAlerts.Add(1, new  { Name = "Error", Description = "Some description" });
+            masterData.Dictionary.Lines.Add("Line001", "Line001");
+            masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
             masterData.Dictionary.Routes = await GetRoutesDictionary();
@@ -251,5 +255,21 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+        private async Task<IDictionary<int, IDictionary<int, string>>> GetProductGroupRoutes()
+        {
+            var db = (await _routeProductGroupRepository.AllAsync());
+            var output = new Dictionary<int, IDictionary<int, string>>();
+
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.ProductGroupId))
+                {
+                    var dbRoute = db.Where(x => x.ProductGroupId == item.ProductGroupId).ToDictionary(x => x.RouteId, y => y.Route.Name);
+                    output.Add(item.ProductGroupId, dbRoute);
+                }
+            }
+            return output;
+        }
+
     }
 }

@@ -102,7 +102,6 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-
         public async Task Update(MachineModel model)
         {
             var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
@@ -112,5 +111,56 @@ namespace CIM.BusinessLogic.Services
             _machineRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
         }
+
+        public string CachedKey(int id)
+        {
+            return $"{Constans.RedisKey.MACHINE}:{id}";
+        }
+
+        public async Task<ActiveMachineModel> GetCached(int id)
+        {
+            return await _responseCacheService.GetAsTypeAsync<ActiveMachineModel>(CachedKey(id));
+        }
+
+        public async Task SetCached(int id, ActiveMachineModel model)
+        {
+            await _responseCacheService.SetAsync(CachedKey(id), model);
+        }
+
+        public async Task RemoveCached(int id, ActiveMachineModel model)
+        {
+            await _responseCacheService.SetAsync(CachedKey(id), model);
+        }
+
+        public async Task BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, MachineModel> machineList)
+        {
+            foreach (var machine in machineList)
+            {
+                var key = CachedKey(machine.Key);
+                var cachedMachine = await GetCached(machine.Key);
+                if (cachedMachine == null)
+                {
+                    cachedMachine = new ActiveMachineModel
+                    {
+                        Id = machine.Key,
+                        RouteIds = new List<int> { routeId },
+                    };
+                }
+                else
+                {
+                    if (cachedMachine.RouteIds == null)
+                    {
+                        cachedMachine.RouteIds = new List<int>();
+                    }
+                    cachedMachine.RouteIds.Add(routeId);
+                }
+                cachedMachine.ProductionPlanId = productionPlanId;
+                await SetCached(machine.Key, cachedMachine);
+
+
+            }
+
+        }
+
     }
 }

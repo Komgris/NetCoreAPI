@@ -31,7 +31,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var activePrcess = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}"); ;
+                var activePrcess = await _responseCacheService.GetAsTypeAsync<ActiveProcessModel>($"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlanId}");
                 output.Data = JsonConvert.SerializeObject( activePrcess, JsonsSetting);
                 output.IsSuccess = true;
             }
