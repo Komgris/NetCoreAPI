@@ -232,26 +232,26 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<string, int>> GetUnitsDictionary()
+        private async Task<IDictionary<int, string>> GetUnitsDictionary()
         {
             var db = (await _unitsRepository.AllAsync()).OrderBy(x => x.Id);
-            var output = new Dictionary<string, int>();
+            var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
-                if (!output.ContainsKey(item.Uom))
-                    output.Add(item.Uom, item.Id);
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Uom);
             }
             return output;
         }
 
-        private async Task<IDictionary<string, int>> GetRoutesDictionary()
+        private async Task<IDictionary<int, string>> GetRoutesDictionary()
         {
             var db = (await _routeRepository.AllAsync()).OrderBy(x => x.Id);
-            var output = new Dictionary<string, int>();
+            var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
-                if (!output.ContainsKey(item.Name))
-                    output.Add(item.Name, item.Id);
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }

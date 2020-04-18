@@ -112,10 +112,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
         {
-            model.ProductId = await ProductCodeToId(model.ProductCode);
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route" });
-            db_model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
-            db_model.UnitId = await UnitsUOMToId(model.UnitName ?? string.Empty);
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Unit" });
+            db_model.UnitId = model.Unit;
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.CreatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
@@ -129,10 +127,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(ProductionPlanModel model)
         {
-            model.ProductId = await ProductCodeToId(model.ProductCode); 
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status" });
-            db_model.RouteId = await RouteNameToId(model.Route ?? string.Empty);
-            db_model.UnitId = await UnitsUOMToId(model.UnitName ?? string.Empty);
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
+            db_model.UnitId = model.Unit;
             db_model.UpdatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
@@ -212,28 +208,6 @@ namespace CIM.BusinessLogic.Services
             int productCode;
             if (productDict.TryGetValue(Code, out productCode))
                 return productCode;
-            else
-                return 0;
-        }
-
-        public async Task<int> UnitsUOMToId(string UOM)
-        {
-            var masterData = await _masterDataService.GetData();
-            var unitsDict = masterData.Dictionary.Units;
-            int unitsId;
-            if (unitsDict.TryGetValue(UOM, out unitsId))
-                return unitsId;
-            else
-                return 0;
-        }
-
-        public async Task<int> RouteNameToId(string Name)
-        {
-            var masterData = await _masterDataService.GetData();
-            var routeDict = masterData.Dictionary.Routes;
-            int routeId;
-            if (routeDict.TryGetValue(Name, out routeId))
-                return routeId;
             else
                 return 0;
         }
