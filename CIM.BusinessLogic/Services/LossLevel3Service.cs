@@ -41,70 +41,11 @@ namespace CIM.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        /*
-        public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
-        {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            //to do optimize
-            var dbModel = _repository
-                .Where(
-                x => x.IsActive == true && x.IsDelete == false
-                )
-                .Select(
-                x => new
-                {
-                    x.Id,
-                    x.Name,
-                    x.Description,
-                    x.IsActive,
-                    x.IsDelete,
-                    x.CreatedAt,
-                    x.CreatedBy,
-                    x.UpdatedAt,
-                    x.UpdatedBy,
-                    LossLevel1Id = x.LossLevel2.LossLevel1.Id,
-                    LossLevel1Name = x.LossLevel2.LossLevel1.Name,
-                    x.LossLevel2Id,
-                    LossLevel2Name = x.LossLevel2.Name
-                }
-                )
-                .Where(
-                x =>
-                                x.Name.Contains(keyword)
-                                || x.Description.Contains(keyword)
-                                || x.LossLevel1Name.Contains(keyword)
-                                || x.LossLevel2Name.Contains(keyword)
-                )
-                .ToList();
-
-            int total = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<LossLevel3ViewModel>();
-            foreach (var item in dbModel)
-                output.Add(MapperHelper.AsModel(item, new LossLevel3ViewModel()));
-
-            return new PagingModel<LossLevel3ViewModel>
-            {
-                HowMany = total,
-                Data = output
-            };
-        }
-    */
-
         public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
         {
             bool isActive = true;
             var output = await _repository.ListAsPaging(page, howmany, keyword, isActive);
             return output;
-            //throw new NotImplementedException();
         }
-
-        //public Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }
