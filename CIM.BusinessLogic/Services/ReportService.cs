@@ -11,18 +11,10 @@ using System.Text;
 namespace CIM.BusinessLogic.Services {
     public class ReportService : BaseService, IReportService {
 
-        private IConfiguration _configuration;
-        private IDirectSqlRepository repo;
-        Dictionary<string, string> InMemorySettings = new Dictionary<string, string>
-        {
-            {"ConnectionStrings:CIMDatabase", "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"},
-        };
+        private IDirectSqlRepository _directSqlRepository;
 
-        public ReportService() {
-            _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(InMemorySettings)
-            .Build();
-            repo = new DirectSqlRepository(_configuration);
+        public ReportService(IDirectSqlRepository directSqlRepository) {
+            _directSqlRepository = directSqlRepository;
         }
 
         public DataTable GetProductionSummary(string planid, int routeid, DateTime? from, DateTime? to) {
@@ -34,7 +26,7 @@ namespace CIM.BusinessLogic.Services {
             if (from != null) plist.Add(new SqlParameter("@from", from));
             if (to != null) plist.Add(new SqlParameter("@to", to));
 
-            return repo.ExecuteSPWithQuery("sp_report_productionsummary", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", plist);
         }
 
         public DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to) {
@@ -46,7 +38,7 @@ namespace CIM.BusinessLogic.Services {
             if (from != null) plist.Add(new SqlParameter("@from", from));
             if (to != null) plist.Add(new SqlParameter("@to", to));
 
-            return repo.ExecuteSPWithQuery("sp_report_machinespeed", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", plist);
         }
 
         public DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to) {
@@ -58,7 +50,7 @@ namespace CIM.BusinessLogic.Services {
             if (from != null) plist.Add(new SqlParameter("@from", from));
             if (to != null) plist.Add(new SqlParameter("@to", to));
 
-            return repo.ExecuteSPWithQuery("sp_report_productionevents", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", plist);
         }
 
         public DataTable GetProductionOperators(string planid, int routeid) {
@@ -66,7 +58,7 @@ namespace CIM.BusinessLogic.Services {
             plist.Add(new SqlParameter("@planid", planid));
             plist.Add(new SqlParameter("@routeid", routeid));
 
-            return repo.ExecuteSPWithQuery("sp_report_productionoperators", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", plist);
         }
 
         public DataTable GetProductionPlanInfomation(string planid, int routeid) {
@@ -76,7 +68,7 @@ namespace CIM.BusinessLogic.Services {
             plist.Add(new SqlParameter("@planid", planid));
             plist.Add(new SqlParameter("@routeid", routeid));
 
-            return repo.ExecuteSPWithQuery("sp_report_productioninfo", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", plist);
         }
 
         public DataTable GetActiveProductionPlanOutput()
