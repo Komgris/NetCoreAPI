@@ -185,7 +185,6 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
-            masterData.Dictionary.Routes = await GetRoutesDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -244,17 +243,6 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, string>> GetRoutesDictionary()
-        {
-            var db = (await _routeRepository.AllAsync()).OrderBy(x => x.Id);
-            var output = new Dictionary<int, string>();
-            foreach (var item in db)
-            {
-                if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Name);
-            }
-            return output;
-        }
         private async Task<IDictionary<int, IDictionary<int, string>>> GetProductGroupRoutes()
         {
             var db = (await _routeProductGroupRepository.AllAsync());

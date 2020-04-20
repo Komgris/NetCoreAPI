@@ -11,6 +11,5 @@ namespace CIM.Model
         public IDictionary<int, object> ComponentAlerts { get; set; } = new Dictionary<int, object>();
         public IDictionary<int, string> ProductionStatus { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> Units { get; set; } = new Dictionary<int, string>();
-        public IDictionary<int, string> Routes { get; set; } = new Dictionary<int, string>();
     }
 }

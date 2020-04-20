@@ -20,7 +20,6 @@ namespace CIM.DAL.Implements
         public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
         {
             List<ProductionPlanListModel> data = null;
-            //int totalCount = 0;
             var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
             proc.AddParam("total_count", out IOutParam<int> totalCount);
             proc.AddParam("@route_id", routeId);
@@ -33,14 +32,7 @@ namespace CIM.DAL.Implements
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
             return ToPagingModel(data, totalCount.Value, page, howmany);
-
         }
-
-        //public async Task<int> ProductPlanOutputCount(int planId)
-        //{
-        //    int output;
-        //    var proc = _entities.Lo
-        //}
     }
 
 }

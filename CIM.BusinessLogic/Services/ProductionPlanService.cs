@@ -116,8 +116,6 @@ namespace CIM.BusinessLogic.Services
             db_model.UnitId = model.Unit;
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.CreatedAt = DateTime.Now;
-            db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.UpdatedAt = DateTime.Now;
             db_model.IsActive = true;
             db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
             _productionPlanRepository.Add(db_model);
@@ -148,6 +146,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var productionPlanDict = masterData.ProductionPlan;
             var productDict = masterData.Dictionary.Products;
+            var productCodeToId = masterData.Dictionary.ProductsByCode;
             var productionPlanOutput = new ReportService().GetActiveProductionPlanOutput()?
                                             .AsEnumerable()
                                             .ToDictionary<DataRow, string,int>(row=>row.Field<string>(0),r=>r.Field<int>(1));
@@ -155,7 +154,7 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var plan in import)
             {
-                plan.ProductId = await ProductCodeToId(plan.ProductCode);
+                plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToId);
                 if (productDict.ContainsKey(plan.ProductId))
                 {
                     if (productionPlanDict.ContainsKey(plan.PlanId))
@@ -201,10 +200,8 @@ namespace CIM.BusinessLogic.Services
             return import;
         }
 
-        public async Task<int> ProductCodeToId(string Code)
+        public int ProductCodeToId(string Code, IDictionary<string, int> productDict)
         {
-            var masterData = await _masterDataService.GetData();
-            var productDict = masterData.Dictionary.ProductsByCode;
             int productCode;
             if (productDict.TryGetValue(Code, out productCode))
                 return productCode;
