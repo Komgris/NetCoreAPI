@@ -8,6 +8,8 @@ namespace CIM.Domain.Models
         public ProductType()
         {
             Product = new HashSet<Product>();
+            StandardCostBrite = new HashSet<StandardCostBrite>();
+            WasteLevel1 = new HashSet<WasteLevel1>();
         }
 
         public int Id { get; set; }
@@ -20,5 +22,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual ICollection<Product> Product { get; set; }
+        public virtual ICollection<StandardCostBrite> StandardCostBrite { get; set; }
+        public virtual ICollection<WasteLevel1> WasteLevel1 { get; set; }
     }
 }

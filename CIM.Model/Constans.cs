@@ -10,25 +10,35 @@ namespace CIM.Model
 
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
 
+        public static int DEFAULT_LOSS_LV3 = 1;
+
         public class RedisKey {
 
-            public const string MACHINE = "machine:";
-            public const string MACHINE_LIST = "machine-list:";
+            public const string MACHINE = "machine";
+            public const string MACHINE_LIST = "machine-list";
             public const string PRODUCTION_PLAN = "production-plan";
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
             public const string MASTER_DATA = "master-data";
         }
 
-        public class PRODUCTION_PLAN_STATUS {
-
-            public const string STARTED = "STARTED";
-            public const string STOP = "STOP";
+        public enum PRODUCTION_PLAN_STATUS : int
+        {
+            New                    = 1,	
+            Production             = 2,	
+            Finished               = 3,	
+            Preparatory            = 4,	
+            Changeover             = 5,	
+            CleaningAndSanitation  = 6,	
+            MealTeaBreak           = 7,	
+            Hold                   = 8,	
+            Cancel                 = 9
         }
 
         public enum AlertType : int
         {
-            Component = 0
+            Component = 0,
+            MACHINE = 1
         }
 
         public enum AlertStatus : int

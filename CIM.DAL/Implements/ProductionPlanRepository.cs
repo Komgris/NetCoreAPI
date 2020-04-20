@@ -17,14 +17,14 @@ namespace CIM.DAL.Implements
         {
         }
 
-        public async Task<PagingModel<ProductionPlanModel>> Paging( int page, int howmany)
+        public async Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany)
         {
             var query = _entities.ProductionPlan;
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
             int row = query.Count();
 
-            var paging = query.OrderBy(s=>s.PlanId).Skip(skipRec).Take(takeRec);
+            var paging = query.OrderBy(s => s.PlanId).Skip(skipRec).Take(takeRec);
 
             var data = await paging
 
@@ -33,8 +33,8 @@ namespace CIM.DAL.Implements
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
-                    Unit = x.Unit,
-                    Status = x.Status,
+                    Unit = x.UnitId,
+                    StatusId = x.StatusId,
                     IsActive = x.IsActive,
                     UpdatedAt = x.UpdatedAt
 
@@ -45,36 +45,23 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
-
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive)
+    
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
         {
-            var sqlQuery = 
-                from productionPlan in _entities.ProductionPlan
-                join r in _entities.Route on productionPlan.RouteId equals r.Id into productionPlanRoute
-                from route in productionPlanRoute.DefaultIfEmpty()
-                where productionPlan.IsActive
-                && !routeId.HasValue ? true : route.Id == routeId
-                && !productId.HasValue ? true : productionPlan.ProductId == productId
-                && string.IsNullOrEmpty(keyword) ? true : (
-                    productionPlan.PlanId.Contains(keyword) ||
-                    productionPlan.Product.Code.Contains(keyword) ||
-                    route.Name.Contains(keyword)
-                )
-                select new ProductionPlanListModel
-                {
-                    Id = productionPlan.PlanId,
-                    Line = route.Name,
-                    ActualFinish = productionPlan.ActualFinish,
-                    ActualStart = productionPlan.ActualStart,
-                    Finished = productionPlan.PlanFinish,
-                    Product = productionPlan.Product.Code,
-                    Started = productionPlan.PlanStart,
-                    Status = productionPlan.Status,
-                    Target = productionPlan.Target,
-                    Unit = productionPlan.Unit
-                };
+            List<ProductionPlanListModel> data = null;
+            //int totalCount = 0;
+            var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
+            proc.AddParam("total_count", out IOutParam<int> totalCount);
+            proc.AddParam("@route_id", routeId);
+            proc.AddParam("@product_id", productId);
+            proc.AddParam("@keyword", keyword);
+            proc.AddParam("@is_active", isActive);
+            proc.AddParam("@status_id", statusIds);
+            proc.AddParam("@howmany", howmany);
+            proc.AddParam("@page", page);
+            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
 
-            return await ToPagingModel(sqlQuery, page, howmany); 
+            return ToPagingModel(data, totalCount.Value, page, howmany);
 
         }
 
@@ -87,8 +74,8 @@ namespace CIM.DAL.Implements
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
                     Target = x.Target,
-                    Unit = x.Unit,
-                    Status = x.Status,
+                    Unit = x.UnitId,
+                    StatusId = x.StatusId,
                 }).ToList();
             return data;
         }
@@ -97,13 +84,13 @@ namespace CIM.DAL.Implements
         {
             foreach (var plan in import)
             {
-                
-                    var insert = new ProductionPlan();
+
+                var insert = new ProductionPlan();
                 insert.PlanId = plan.PlanId;
                 insert.ProductId = plan.ProductId;
                 insert.Target = plan.Target;
-                insert.Unit = plan.Unit;
-                insert.Status = "New";
+                insert.UnitId = plan.Unit;
+                insert.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
                 insert.UpdatedAt = DateTime.Now;
                 _entities.ProductionPlan.Add(insert);
                 _entities.SaveChanges();
@@ -112,14 +99,14 @@ namespace CIM.DAL.Implements
 
         public void DeleteProduction(string id)
         {
-        
-                var delete = _entities.ProductionPlan.Where(x => x.PlanId == id).FirstOrDefault();
-                if (delete != null)
-                {
-                    _entities.ProductionPlan.Remove(delete);
-                }
-                _entities.SaveChanges();
-            
+
+            var delete = _entities.ProductionPlan.Where(x => x.PlanId == id).FirstOrDefault();
+            if (delete != null)
+            {
+                _entities.ProductionPlan.Remove(delete);
+            }
+            _entities.SaveChanges();
+
         }
 
         public void UpdateProduction(List<ProductionPlanModel> list)
@@ -127,13 +114,12 @@ namespace CIM.DAL.Implements
             foreach (var plan in list)
             {
                 var update = _entities.ProductionPlan.Where(x => x.PlanId == plan.PlanId).FirstOrDefault();
-                if(update != null)
+                if (update != null)
                 {
                     update.PlanId = plan.PlanId;
                     update.ProductId = plan.ProductId;
                     update.Target = plan.Target;
-                    update.Unit = plan.Unit;
-                    update.Status = "Edit";
+                    update.UnitId = plan.Unit;
                     update.UpdatedAt = DateTime.Now;
                 }
                 _entities.SaveChanges();

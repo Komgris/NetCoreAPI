@@ -9,7 +9,6 @@ namespace CIM.Model
 
         public string Name { get; set; }
         public int StatusId { get; set; }
-        public string Status { get; set; }
         public int MachineTypeId { get; set; }
         public string Type { get; set; }
         public string Plcaddress { get; set; }
@@ -20,7 +19,7 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public Dictionary<int, MachineComponentModel> Components { get; set; }
         public List<MachineComponentModel> ComponentList { get; set; }
+        public int[] LossList { get; set; }
     }
 }

@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    //[MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
+
     [ApiController]
-    public class MachineController : ControllerBase
+    public class MachineController : BaseController
     {
         private IMachineService _service;
-        public MachineController(IMachineService service)
+        public MachineController(
+            IHubContext<MachineHub> hub,
+            IProductionPlanService productionPlanService,
+            IMachineService service
+        )
         {
             _service = service;
         }
@@ -98,6 +105,7 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
 
     }
 }

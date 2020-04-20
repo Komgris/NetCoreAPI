@@ -9,10 +9,10 @@ namespace CIM.Domain.Models
         public int MaintenanceId { get; set; }
         public string Details { get; set; }
         public bool IsActive { get; set; }
-        public int CreateBy { get; set; }
-        public DateTime CreateDate { get; set; }
-        public int? UpdateBy { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
         public virtual MaintenancePlan Maintenance { get; set; }
     }

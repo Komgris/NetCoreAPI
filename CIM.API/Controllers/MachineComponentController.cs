@@ -34,47 +34,7 @@ namespace CIM.API.Controllers
             _machineService = machineService;
         }
 
-        [Route("TakeAction")]
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> TakeAction(int productionPlanId)
-        {
-            var output = new ProcessReponseModel<object>();
-             
-            try
-            {
-                var productionPlan = await _productionPlanService.TakeAction(productionPlanId);
 
-                // Production plan of this component doesn't started yet
-                if (productionPlan != null)
-                {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
-                }
-
-                output.IsSuccess = true;
-            } 
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-
-            return output;
-        }
-
-        [HttpPost]
-        public async Task<string> SetStatus(int id, int statusId)
-        {
-
-            var productionPlan = await _productionPlanService.UpdateByComponent(id, statusId);
-
-            // Production plan of this component doesn't started yet
-            if (productionPlan != null)
-            {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
-            }
-            return "OK";
-        }
 
     }
 }
