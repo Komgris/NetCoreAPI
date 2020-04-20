@@ -162,6 +162,8 @@ namespace CIM.BusinessLogic.Services
             var productDict = masterData.Dictionary.Products;
             var productCodeToId = masterData.Dictionary.ProductsByCode;
             var productionPlanOutput = _reportService.GetActiveProductionPlanOutput();
+            var timeLimit = (int)Constans.ProductionPlanLimit.HOUR_LIMIT;
+            var targetLimit = (int)Constans.ProductionPlanLimit.TARGET_LIMIT;
 
             DateTime timeNow = DateTime.Now;
 
@@ -181,10 +183,10 @@ namespace CIM.BusinessLogic.Services
                             case (int)Constans.PRODUCTION_PLAN_STATUS.Changeover:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
                             case (int)Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                if (plan.PlanFinish.Value < timeNow.AddHours(6))
+                                if (plan.PlanFinish.Value < timeNow.AddHours(timeLimit))
                                     plan.CompareResult = "Imported finished date time must be further then now + 6h";
                                 else if (productionPlanOutput != null && productionPlanOutput.ContainsKey(plan.PlanId))
-                                       if(productionPlanOutput[plan.PlanId] > plan.Target + 100)
+                                       if(productionPlanOutput[plan.PlanId] > plan.Target + targetLimit)
                                         plan.CompareResult = "Imported target is lower then current target";
                                 break;
                             case (int)Constans.PRODUCTION_PLAN_STATUS.New:
@@ -238,22 +240,22 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
-            int offsetTop = (int)Constans.ImportProductionPlanFileOffset.OFFSET_TOP_ROW;
-            int offsetBottom = (int)Constans.ImportProductionPlanFileOffset.OFFSET_BOTTOM_ROW;
+            int offsetTop = (int)Constans.ImportProductionPlanFile.OFFSET_TOP_ROW;
+            int offsetBottom = (int)Constans.ImportProductionPlanFile.OFFSET_BOTTOM_ROW;
             for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
                 int _target;
                 ProductionPlanModel data = new ProductionPlanModel();
 
                 
-                data.PlanId = (oSheet.Cells[i, 3].Value ?? string.Empty).ToString();
-                data.Route = (oSheet.Cells[i, 4].Value ?? string.Empty).ToString();
-                data.ProductCode = (oSheet.Cells[i, 5].Value ?? string.Empty).ToString();
-                int.TryParse((oSheet.Cells[i, 15].Value ?? string.Empty).ToString(), out _target);
+                data.PlanId = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLAN_COL].Value ?? string.Empty).ToString();
+                data.Route = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.ROUTE_COL].Value ?? string.Empty).ToString();
+                data.ProductCode = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PRODUCT_COL].Value ?? string.Empty).ToString();
+                int.TryParse((oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.TARGET_COL].Value ?? string.Empty).ToString(), out _target);
                 data.Target = _target;
-                data.UnitName = (oSheet.Cells[i, 16].Value ?? string.Empty).ToString();
-                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, 17].Value ?? string.Empty);
-                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, 18].Value ?? string.Empty);
+                data.UnitName = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.UNIT_COL].Value ?? string.Empty).ToString();
+                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLANSTART_COL].Value ?? string.Empty);
+                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLANFINISH_COL].Value ?? string.Empty);
                 listImport.Add(data);
             }
             return listImport;

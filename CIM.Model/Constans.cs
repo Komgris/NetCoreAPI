@@ -52,10 +52,23 @@ namespace CIM.Model
             Ready = 1
         }
 
-        public enum ImportProductionPlanFileOffset : int
+        public enum ImportProductionPlanFile : int
         {
             OFFSET_TOP_ROW = 5,
-            OFFSET_BOTTOM_ROW = 2
+            OFFSET_BOTTOM_ROW = 2,
+            PLAN_COL = 3,
+            ROUTE_COL = 4,
+            PRODUCT_COL = 5,
+            TARGET_COL = 15,
+            UNIT_COL = 16,
+            PLANSTART_COL = 17,
+            PLANFINISH_COL = 18
+        }
+
+        public enum ProductionPlanLimit : int
+        {
+            TARGET_LIMIT = 100,
+            HOUR_LIMIT = 6
         }
 
         public class SIGNAL_R_CHANNEL
