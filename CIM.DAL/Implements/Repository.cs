@@ -2,7 +2,6 @@
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
@@ -10,17 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using CIM.DAL.Interfaces;
-using CIM.Domain.Models;
-using CIM.Model;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using StoredProcedureEFCore;
 
 namespace CIM.DAL.Implements
 {
