@@ -42,7 +42,8 @@ namespace CIM.BusinessLogic.Services
             int takeRec = howmany;
 
             //to do optimize
-            var dbModel = _repository.Where(
+            var dbModel = _repository
+                .Where(
                 x => x.IsActive == true && x.IsDelete == false
                 )
                 .Select(
@@ -51,6 +52,12 @@ namespace CIM.BusinessLogic.Services
                     x.Id,
                     x.Name,
                     x.Description,
+                    x.IsActive,
+                    x.IsDelete,
+                    x.CreatedAt,
+                    x.CreatedBy,
+                    x.UpdatedAt,
+                    x.UpdatedBy,
                     LossLevel1Id = x.LossLevel2.LossLevel1.Id,
                     LossLevel1Name = x.LossLevel2.LossLevel1.Name,
                     x.LossLevel2Id,
@@ -63,33 +70,8 @@ namespace CIM.BusinessLogic.Services
                                 || x.Description.Contains(keyword)
                                 || x.LossLevel1Name.Contains(keyword)
                                 || x.LossLevel2Name.Contains(keyword)
-
                 )
                 .ToList();
-
-            //var dbModel = (await _repository.AllAsync())
-            //.Select(
-            //x => new
-            //{
-            //    x.Id,
-            //    x.Name,
-            //    x.Description,
-            //    LossLevel1Id = x.LossLevel2.LossLevel1.Id,
-            //    LossLevel1Name = x.LossLevel2.LossLevel1.Name,
-            //    x.LossLevel2Id,
-            //    LossLevel2Name = x.LossLevel2.Name
-            //}
-            //)
-            //.Where(
-            //x =>
-            //                x.Name.Contains(keyword)
-            //                || x.Description.Contains(keyword)
-            //                || x.LossLevel1Name.Contains(keyword)
-            //                || x.LossLevel2Name.Contains(keyword)
-
-            //)
-            //.ToList();
-
 
             int total = dbModel.Count();
             dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
@@ -103,8 +85,6 @@ namespace CIM.BusinessLogic.Services
                 HowMany = total,
                 Data = output
             };
-
-            //throw new NotImplementedException();
         }
 
         public Task<LossLevel3Model> Update(LossLevel3Model model)
