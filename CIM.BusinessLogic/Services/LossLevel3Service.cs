@@ -36,6 +36,12 @@ namespace CIM.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
+        public Task<LossLevel3Model> Update(LossLevel3Model model)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*
         public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
         {
             int skipRec = (page - 1) * howmany;
@@ -86,10 +92,19 @@ namespace CIM.BusinessLogic.Services
                 Data = output
             };
         }
+    */
 
-        public Task<LossLevel3Model> Update(LossLevel3Model model)
+        public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
         {
-            throw new NotImplementedException();
+            bool isActive = true;
+            var output = await _repository.ListAsPaging(page, howmany, keyword, isActive);
+            return output;
+            //throw new NotImplementedException();
         }
+
+        //public Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

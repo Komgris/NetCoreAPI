@@ -34,7 +34,20 @@ namespace CIM.DAL.Implements
             var proc = _entities.LoadStoredProc("sp_ListMachineMappingAsync");
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelMachineMappingModel>()));
             return data;
-
         }
+
+        public async Task<PagingModel<LossLevel3ViewModel>> ListAsPaging(int page, int howmany, string keyword, bool isActive)
+        {
+            List<LossLevel3ViewModel> data = null;
+            var proc = _entities.LoadStoredProc("[sp_ListLossLevel3]");
+            proc.AddParam("total_count", out IOutParam<int> totalCount);
+            proc.AddParam("@keyword", keyword);
+            proc.AddParam("@is_active", isActive);
+            proc.AddParam("@howmany", howmany);
+            proc.AddParam("@page", page);
+            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevel3ViewModel>()));
+            return ToPagingModel(data, totalCount.Value, page, howmany);
+        }
+
     }
 }
