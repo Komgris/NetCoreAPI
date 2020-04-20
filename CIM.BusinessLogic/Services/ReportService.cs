@@ -73,7 +73,7 @@ namespace CIM.BusinessLogic.Services {
 
         public DataTable GetActiveProductionPlanOutput()
         {
-            return repo.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null);
         }
 
 

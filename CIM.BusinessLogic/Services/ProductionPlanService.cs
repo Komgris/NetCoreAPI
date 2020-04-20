@@ -26,6 +26,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IReportService _reportService;
 
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -35,7 +36,8 @@ namespace CIM.BusinessLogic.Services
             IProductRepository productRepository,
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
-            IRecordManufacturingLossService recordManufacturingLossService
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
@@ -46,6 +48,7 @@ namespace CIM.BusinessLogic.Services
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _reportService = reportService;
         }
 
         public List<ProductionPlanModel> Get()
@@ -147,7 +150,7 @@ namespace CIM.BusinessLogic.Services
             var productionPlanDict = masterData.ProductionPlan;
             var productDict = masterData.Dictionary.Products;
             var productCodeToId = masterData.Dictionary.ProductsByCode;
-            var productionPlanOutput = new ReportService().GetActiveProductionPlanOutput()?
+            var productionPlanOutput = _reportService.GetActiveProductionPlanOutput()?
                                             .AsEnumerable()
                                             .ToDictionary<DataRow, string,int>(row=>row.Field<string>(0),r=>r.Field<int>(1));
             DateTime timeNow = DateTime.Now;

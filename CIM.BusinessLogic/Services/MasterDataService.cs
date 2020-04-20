@@ -181,6 +181,7 @@ namespace CIM.BusinessLogic.Services
             masterData.ProductGroupRoutes = await GetProductGroupRoutes();
 
             masterData.Dictionary.Products = await GetProductDictionary();
+            masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
             masterData.Dictionary.Lines.Add("Line001", "Line001");
             masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
