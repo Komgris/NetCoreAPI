@@ -176,25 +176,25 @@ namespace CIM.BusinessLogic.Services
                     {
                         plan.StatusId = productionPlanDict[plan.PlanId].StatusId;
                         plan.CompareResult = "Inprocess";
-                        switch (plan.StatusId)
+                        switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
                         {
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Production:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Preparatory:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Changeover:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                            case Constans.PRODUCTION_PLAN_STATUS.Production:
+                            case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                            case Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                            case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                            case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
                                 if (plan.PlanFinish.Value < timeNow.AddHours(timeLimit))
                                     plan.CompareResult = "Imported finished date time must be further then now + 6h";
                                 else if (productionPlanOutput != null && productionPlanOutput.ContainsKey(plan.PlanId))
                                        if(productionPlanOutput[plan.PlanId] > plan.Target + targetLimit)
                                         plan.CompareResult = "Imported target is lower then current target";
                                 break;
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.New:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Hold:
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                            case Constans.PRODUCTION_PLAN_STATUS.New:
+                            case Constans.PRODUCTION_PLAN_STATUS.Hold:
+                            case Constans.PRODUCTION_PLAN_STATUS.Cancel:
                                 // Do some different stuff
                                 break;
-                            case (int)Constans.PRODUCTION_PLAN_STATUS.Finished:
+                            case Constans.PRODUCTION_PLAN_STATUS.Finished:
                                 plan.CompareResult = "Plan Finished";
                                 break;
                             default:
@@ -240,22 +240,20 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
-            int offsetTop = (int)Constans.ImportProductionPlanFile.OFFSET_TOP_ROW;
-            int offsetBottom = (int)Constans.ImportProductionPlanFile.OFFSET_BOTTOM_ROW;
+            int offsetTop = Constans.ExcelColumnMapping[Constans.XcelCol.OFFSET_TOP_ROW];
+            int offsetBottom = Constans.ExcelColumnMapping[Constans.XcelCol.OFFSET_BOTTOM_ROW];
             for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
                 int _target;
                 ProductionPlanModel data = new ProductionPlanModel();
-
                 
-                data.PlanId = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLAN_COL].Value ?? string.Empty).ToString();
-                data.Route = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.ROUTE_COL].Value ?? string.Empty).ToString();
-                data.ProductCode = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PRODUCT_COL].Value ?? string.Empty).ToString();
-                int.TryParse((oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.TARGET_COL].Value ?? string.Empty).ToString(), out _target);
-                data.Target = _target;
-                data.UnitName = (oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.UNIT_COL].Value ?? string.Empty).ToString();
-                data.PlanStart = Convert.ToDateTime(oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLANSTART_COL].Value ?? string.Empty);
-                data.PlanFinish = Convert.ToDateTime(oSheet.Cells[i, (int)Constans.ImportProductionPlanFile.PLANFINISH_COL].Value ?? string.Empty);
+                data.PlanId = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.PLAN_COL]]._cellval2str();
+                data.Route = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.ROUTE_COL]]._cellval2str();
+                data.ProductCode = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.PRODUCT_COL]]._cellval2str();
+                data.Target = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.TARGET_COL]]._cellval2int();
+                data.UnitName = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.UNIT_COL]]._cellval2str();
+                data.PlanStart = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.PLANSTART_COL]]._cellval2dtnull();
+                data.PlanFinish = oSheet.Cells[i, Constans.ExcelColumnMapping[Constans.XcelCol.PLANFINISH_COL]]._cellval2dtnull();
                 listImport.Add(data);
             }
             return listImport;

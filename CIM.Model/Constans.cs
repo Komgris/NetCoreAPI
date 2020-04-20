@@ -24,15 +24,15 @@ namespace CIM.Model
 
         public enum PRODUCTION_PLAN_STATUS : int
         {
-            New                    = 1,	
-            Production             = 2,	
-            Finished               = 3,	
-            Preparatory            = 4,	
-            Changeover             = 5,	
-            CleaningAndSanitation  = 6,	
-            MealTeaBreak           = 7,	
-            Hold                   = 8,	
-            Cancel                 = 9
+            New = 1,
+            Production = 2,
+            Finished = 3,
+            Preparatory = 4,
+            Changeover = 5,
+            CleaningAndSanitation = 6,
+            MealTeaBreak = 7,
+            Hold = 8,
+            Cancel = 9
         }
 
         public enum AlertType : int
@@ -52,18 +52,31 @@ namespace CIM.Model
             Ready = 1
         }
 
-        public enum ImportProductionPlanFile : int
+        public enum XcelCol
         {
-            OFFSET_TOP_ROW = 5,
-            OFFSET_BOTTOM_ROW = 2,
-            PLAN_COL = 3,
-            ROUTE_COL = 4,
-            PRODUCT_COL = 5,
-            TARGET_COL = 15,
-            UNIT_COL = 16,
-            PLANSTART_COL = 17,
-            PLANFINISH_COL = 18
+            OFFSET_TOP_ROW,
+            OFFSET_BOTTOM_ROW,
+            PLAN_COL,
+            ROUTE_COL,
+            PRODUCT_COL,
+            TARGET_COL,
+            UNIT_COL,
+            PLANSTART_COL,
+            PLANFINISH_COL
         }
+
+        public static Dictionary<XcelCol, int> ExcelColumnMapping = new Dictionary<XcelCol, int>()
+        {
+            {XcelCol.PLAN_COL           ,3},
+            {XcelCol.ROUTE_COL          ,4},
+            {XcelCol.PRODUCT_COL        ,5},
+            {XcelCol.TARGET_COL         ,15},
+            {XcelCol.UNIT_COL           ,16},
+            {XcelCol.PLANSTART_COL      ,17},
+            {XcelCol.PLANFINISH_COL     ,18},
+            {XcelCol.OFFSET_TOP_ROW     ,5},
+            {XcelCol.OFFSET_BOTTOM_ROW  ,2},
+        };
 
         public enum ProductionPlanLimit : int
         {
@@ -79,6 +92,5 @@ namespace CIM.Model
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
 
         }
-          
-    }
+    } 
 }
