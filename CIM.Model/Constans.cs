@@ -52,6 +52,12 @@ namespace CIM.Model
             Ready = 1
         }
 
+        public enum ImportProductionPlanFileOffset : int
+        {
+            OFFSET_TOP_ROW = 5,
+            OFFSET_BOTTOM_ROW = 2
+        }
+
         public class SIGNAL_R_CHANNEL
         {
 

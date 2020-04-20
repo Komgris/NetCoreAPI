@@ -238,7 +238,9 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
-            for (int i = 5; i <= totalRows - 2; i++)
+            int offsetTop = (int)Constans.ImportProductionPlanFileOffset.OFFSET_TOP_ROW;
+            int offsetBottom = (int)Constans.ImportProductionPlanFileOffset.OFFSET_BOTTOM_ROW;
+            for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
                 int _target;
                 ProductionPlanModel data = new ProductionPlanModel();
