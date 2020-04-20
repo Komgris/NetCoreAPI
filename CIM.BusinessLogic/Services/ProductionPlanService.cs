@@ -109,11 +109,24 @@ namespace CIM.BusinessLogic.Services
                     db_list.Add(model);
                 }
             }
+            await _unitOfWork.CommitAsync();
             return db_list;
         }
 
-
         public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
+        {
+            var plan = CreatePlan(model);
+            await _unitOfWork.CommitAsync();
+            return plan;
+        }
+
+        public async Task Update(ProductionPlanModel model)
+        {
+            UpdatePlan(model);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public ProductionPlanModel CreatePlan(ProductionPlanModel model)
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Unit" });
             db_model.UnitId = model.Unit;
@@ -122,11 +135,10 @@ namespace CIM.BusinessLogic.Services
             db_model.IsActive = true;
             db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
             _productionPlanRepository.Add(db_model);
-            await _unitOfWork.CommitAsync();
             return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
         }
 
-        public async Task Update(ProductionPlanModel model)
+        public void UpdatePlan(ProductionPlanModel model)
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
             db_model.UnitId = model.Unit;
@@ -134,7 +146,6 @@ namespace CIM.BusinessLogic.Services
             db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
             _productionPlanRepository.Edit(db_model);
-            await _unitOfWork.CommitAsync();
         }
 
         public async Task Delete(string id)
@@ -150,9 +161,8 @@ namespace CIM.BusinessLogic.Services
             var productionPlanDict = masterData.ProductionPlan;
             var productDict = masterData.Dictionary.Products;
             var productCodeToId = masterData.Dictionary.ProductsByCode;
-            var productionPlanOutput = _reportService.GetActiveProductionPlanOutput()?
-                                            .AsEnumerable()
-                                            .ToDictionary<DataRow, string,int>(row=>row.Field<string>(0),r=>r.Field<int>(1));
+            var productionPlanOutput = _reportService.GetActiveProductionPlanOutput();
+
             DateTime timeNow = DateTime.Now;
 
             foreach (var plan in import)

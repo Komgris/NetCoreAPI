@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 
 namespace CIM.BusinessLogic.Services {
@@ -71,9 +72,9 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", plist);
         }
 
-        public DataTable GetActiveProductionPlanOutput()
+        public Dictionary<string,int> GetActiveProductionPlanOutput()
         {
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
         }
 
 

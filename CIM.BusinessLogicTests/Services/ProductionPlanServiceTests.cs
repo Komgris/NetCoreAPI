@@ -34,6 +34,7 @@ namespace CIM.BusinessLogic.Services.Tests
 
             //moq master data
             var masterDataService = new Mock<IMasterDataService>();
+            var reportServices = new Mock<IReportService>();
             var masterDataMoq = new MasterDataModel
             {
                 Routes = new Dictionary<int, RouteModel>()
@@ -65,7 +66,8 @@ namespace CIM.BusinessLogic.Services.Tests
                     productRepository.Object,
                     machineService.Object,
                     activeProcessService.Object,
-                    recordManufacturingLossService.Object
+                    recordManufacturingLossService.Object,
+                    reportServices.Object
             );
             service.CurrentUser = new CurrentUserModel { UserId = "UnitTest1" };
             var productionPlan = new ProductionPlanModel
@@ -97,6 +99,7 @@ namespace CIM.BusinessLogic.Services.Tests
 
             //moq master data
             var masterDataService = new Mock<IMasterDataService>();
+            var reportService = new Mock<IReportService>();
             var masterDataMoq = new MasterDataModel
             {
                 Routes = new Dictionary<int, RouteModel>()
@@ -131,7 +134,8 @@ namespace CIM.BusinessLogic.Services.Tests
                 productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
-                recordManufacturingLossService.Object
+                recordManufacturingLossService.Object,
+                reportService.Object
             );
             service.CurrentUser = new CurrentUserModel { UserId = "UnitTest1" };
             var productionPlan = new ProductionPlanModel

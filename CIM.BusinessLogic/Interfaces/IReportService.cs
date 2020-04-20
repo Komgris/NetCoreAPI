@@ -10,6 +10,6 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to);
         DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to);
         DataTable GetProductionOperators(string planid, int routeid);
-        DataTable GetActiveProductionPlanOutput();
+        Dictionary<string, int> GetActiveProductionPlanOutput();
     }
 }
