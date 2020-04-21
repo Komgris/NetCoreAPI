@@ -19,71 +19,71 @@ namespace CIM.BusinessLogic.Services {
 
         #region  Cim-Oper Production overview
 
-        public DataTable GetProductionSummary(string planid, int routeid, DateTime? from, DateTime? to) {
+        public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
 
-            var plist = new List<SqlParameter>();
+            var parlist = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) parlist.Add(new SqlParameter("@from", from));
+            if (to != null) parlist.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", parlist);
         }
 
-        public DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to) {
+        public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
             
-            var plist = new List<SqlParameter>();
+            var parlist = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) parlist.Add(new SqlParameter("@from", from));
+            if (to != null) parlist.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", parlist);
         }
 
-        public DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to) {
+        public DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to) {
             
-            var plist = new List<SqlParameter>();
+            var parlist = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) parlist.Add(new SqlParameter("@from", from));
+            if (to != null) parlist.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", parlist);
         }
 
-        public DataTable GetProductionOperators(string planid, int routeid) {
+        public DataTable GetProductionOperators(string planid, int routeId) {
             var plist = new List<SqlParameter>();
             plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
+            plist.Add(new SqlParameter("@routeid", routeId));
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", plist);
         }
 
-        public DataTable GetProductionPlanInfomation(string planid, int routeid) {
+        public DataTable GetProductionPlanInfomation(string planId, int routeId) {
             
-            var plist = new List<SqlParameter>();
+            var parlist = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", parlist);
         }
 
         #endregion
 
         #region  Cim-Oper Mc-Loss
-        public DataTable GetProductionWCMLoss(string planid, int routeid,int? losslv,int? mcid, DateTime? from, DateTime? to) {
+        public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? mcId, DateTime? from, DateTime? to) {
 
             var parlist = new List<SqlParameter>();
 
-            parlist.Add(new SqlParameter("@planid", planid));
-            parlist.Add(new SqlParameter("@routeid", routeid));
-            if (losslv != null)parlist.Add(new SqlParameter("@losslv", losslv));
-            if (mcid != null)parlist.Add(new SqlParameter("@mcid", mcid));
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
+            if (lossLv != null)parlist.Add(new SqlParameter("@losslv", lossLv));
+            if (mcId != null)parlist.Add(new SqlParameter("@mcid", mcId));
             if (from != null)parlist.Add(new SqlParameter("@from", from));
             if (to != null) parlist.Add(new SqlParameter("@to", to));
 
