@@ -77,5 +77,29 @@ namespace CIM.API.Controllers {
         }
 
         #endregion
+
+        #region Cim-Oper Mc-Loss
+        [HttpGet]
+        [Route("api/[controller]/GetProductionLoss")]
+        public string GetProductionLoss(string planid, int routeid,int losslv) {
+            try {
+                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planid, routeid,losslv,null,null,null));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetProductionLoss")]
+        public string GetProductionLossHistory(string planid, int routeid) {
+            try {
+                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planid, routeid, null, null, null, null));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+        #endregion
     }
 }

@@ -17,6 +17,8 @@ namespace CIM.BusinessLogic.Services {
             _directSqlRepository = directSqlRepository;
         }
 
+        #region  Cim-Oper Production overview
+
         public DataTable GetProductionSummary(string planid, int routeid, DateTime? from, DateTime? to) {
 
             var plist = new List<SqlParameter>();
@@ -71,6 +73,23 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", plist);
         }
 
+        #endregion
 
+        #region  Cim-Oper Mc-Loss
+        public DataTable GetProductionWCMLoss(string planid, int routeid,int? losslv,int? mcid, DateTime? from, DateTime? to) {
+
+            var parlist = new List<SqlParameter>();
+
+            parlist.Add(new SqlParameter("@planid", planid));
+            parlist.Add(new SqlParameter("@routeid", routeid));
+            parlist.Add(new SqlParameter("@losslv", losslv));
+            parlist.Add(new SqlParameter("@mcid", mcid));
+            parlist.Add(new SqlParameter("@from", from));
+            parlist.Add(new SqlParameter("@to", to));
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", parlist);
+        }
+
+        #endregion
     }
 }
