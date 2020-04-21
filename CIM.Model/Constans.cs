@@ -52,36 +52,20 @@ namespace CIM.Model
             Ready = 1
         }
 
-        public enum XcelCol
-        {
-            OFFSET_TOP_ROW,
-            OFFSET_BOTTOM_ROW,
-            PLAN_COL,
-            ROUTE_COL,
-            PRODUCT_COL,
-            TARGET_COL,
-            UNIT_COL,
-            PLANSTART_COL,
-            PLANFINISH_COL
-        }
-
-        public static Dictionary<XcelCol, int> ExcelColumnMapping = new Dictionary<XcelCol, int>()
-        {
-            {XcelCol.PLAN_COL           ,3},
-            {XcelCol.ROUTE_COL          ,4},
-            {XcelCol.PRODUCT_COL        ,5},
-            {XcelCol.TARGET_COL         ,15},
-            {XcelCol.UNIT_COL           ,16},
-            {XcelCol.PLANSTART_COL      ,17},
-            {XcelCol.PLANFINISH_COL     ,18},
-            {XcelCol.OFFSET_TOP_ROW     ,5},
-            {XcelCol.OFFSET_BOTTOM_ROW  ,2},
-        };
-
         public enum ProductionPlanLimit : int
         {
             TARGET_LIMIT = 100,
             HOUR_LIMIT = 6
+        }
+
+        public static class CompareMapping
+        {
+            public const int InvalidDateTime = 1;
+            public const int InvalidTarget = 2;
+            public const int PlanFinished = 3;
+            public const int NEW = 4;
+            public const int NoProduct = 5;
+            public const int Inprocess = 6;
         }
 
         public class SIGNAL_R_CHANNEL

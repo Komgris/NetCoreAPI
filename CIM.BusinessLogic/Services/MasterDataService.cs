@@ -186,6 +186,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
+            masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -260,5 +261,16 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private IDictionary<int, string> GetProductionPlanCompareResult()
+        {
+            var planCompare = new Dictionary<int, string>();
+            planCompare.Add(Constans.CompareMapping.InvalidDateTime, "Imported finished date time must be further then now + 6h");
+            planCompare.Add(Constans.CompareMapping.InvalidTarget, "Imported target is lower then current target");
+            planCompare.Add(Constans.CompareMapping.PlanFinished, "Plan Finished");
+            planCompare.Add(Constans.CompareMapping.NEW, "NEW");
+            planCompare.Add(Constans.CompareMapping.NoProduct, "No Product ID");
+            planCompare.Add(Constans.CompareMapping.Inprocess, "Inprocess");
+            return planCompare;
+        }
     }
 }
