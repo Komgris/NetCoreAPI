@@ -43,5 +43,43 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [HttpPost]
+        [Route("api/[controller]/Create")]
+        public async Task<LossLevel3Model> Create([FromBody]LossLevel3EditableModel model)
+        {
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                //_service.CurrentUser = currentUser;
+                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                return await _service.Create(model);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/Update")]
+        public async Task<LossLevel3Model> Update([FromBody]LossLevel3EditableModel model)
+        {
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                //_service.CurrentUser = currentUser;
+                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                return await _service.Update(model);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }
