@@ -102,5 +102,19 @@ namespace CIM.API.Controllers {
             }
         }
         #endregion
+
+        #region MyRegion  Cim-Oper dashboard
+
+        [HttpGet]
+        [Route("api/[controller]/GetProductionDasboard")]
+        public string GetProductionDasboard(string planId, int routeId, int mcId) {
+            try {
+                return JsonConvert.SerializeObject(_service.GetProductionDasboard(planId, routeId, mcId));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+        #endregion
     }
 }

@@ -91,5 +91,18 @@ namespace CIM.BusinessLogic.Services {
         }
 
         #endregion
+        #region  Cim-Oper dashboard
+        public DataTable GetProductionDasboard(string planId, int routeId, int mcId) {
+
+            var parlist = new List<SqlParameter>();
+
+            parlist.Add(new SqlParameter("@planid", planId));
+            parlist.Add(new SqlParameter("@routeid", routeId));
+            parlist.Add(new SqlParameter("@mcid", mcId));
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Dashboard", parlist);
+        }
+
+        #endregion
     }
 }
