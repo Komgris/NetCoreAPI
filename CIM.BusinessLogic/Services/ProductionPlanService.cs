@@ -173,8 +173,8 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var productionPlanDict = masterData.ProductionPlan;
             var productDict = masterData.Dictionary.Products;
-            var productCodeToId = masterData.Dictionary.ProductsByCode;
-            var productionPlanOutput = _reportService.GetActiveProductionPlanOutput();
+            var productCodeToIds = masterData.Dictionary.ProductsByCode;
+            var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
             var timeLimit = (int)Constans.ProductionPlanLimit.HOUR_LIMIT;
             var targetLimit = (int)Constans.ProductionPlanLimit.TARGET_LIMIT;
 
@@ -182,13 +182,14 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var plan in import)
             {
-                plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToId);
-                if (productDict.ContainsKey(plan.ProductId))
+                plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
+                if (plan.ProductId != 0)
                 {
                     if (productionPlanDict.ContainsKey(plan.PlanId))
                     {
-                        plan.StatusId = productionPlanDict[plan.PlanId].StatusId;
+                        plan.StatusId = await planStatus(plan.PlanId);
                         plan.CompareResult = Constans.CompareMapping.Inprocess;
+                        //Validate updated production plan status with current existing
                         switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
                         {
                             case Constans.PRODUCTION_PLAN_STATUS.Production:
@@ -198,8 +199,8 @@ namespace CIM.BusinessLogic.Services
                             case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
                                 if (plan.PlanFinish.Value < timeNow.AddHours(timeLimit))
                                     plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                                else if (productionPlanOutput != null && productionPlanOutput.ContainsKey(plan.PlanId))
-                                       if(productionPlanOutput[plan.PlanId] > plan.Target + targetLimit)
+                                else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
+                                    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetLimit)
                                         plan.CompareResult = Constans.CompareMapping.InvalidTarget;
                                 break;
                             case Constans.PRODUCTION_PLAN_STATUS.New:
@@ -210,7 +211,7 @@ namespace CIM.BusinessLogic.Services
                                 plan.CompareResult = Constans.CompareMapping.PlanFinished;
                                 break;
                             default:
-                                    break;
+                                break;
                         }
                     }
                     else
@@ -221,9 +222,14 @@ namespace CIM.BusinessLogic.Services
                 else
                 {
                     plan.CompareResult = Constans.CompareMapping.NoProduct;
-                }              
+                }
             }
             return import;
+        }
+        public async Task<int> planStatus(string planId)
+        {
+            var plan = await _productionPlanRepository.WhereAsync(x => x.PlanId == planId);
+            return plan.Select(x => x.StatusId).FirstOrDefault().Value;
         }
 
         public int ProductCodeToId(string Code, IDictionary<string, int> productDict)
