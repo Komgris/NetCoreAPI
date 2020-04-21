@@ -53,7 +53,6 @@ namespace CIM.BusinessLogic.Services
             _repository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
             return MapperHelper.AsModel(dbModel, new LossLevel3Model());
-            //throw new NotImplementedException();
         }
 
         public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
