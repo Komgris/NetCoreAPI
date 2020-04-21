@@ -91,7 +91,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpGet]
-        [Route("api/[controller]/GetProductionLoss")]
+        [Route("api/[controller]/GetProductionLossHistory")]
         public string GetProductionLossHistory(string planid, int routeid) {
             try {
                 return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planid, routeid, null, null, null, null));

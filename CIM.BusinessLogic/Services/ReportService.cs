@@ -82,10 +82,10 @@ namespace CIM.BusinessLogic.Services {
 
             parlist.Add(new SqlParameter("@planid", planid));
             parlist.Add(new SqlParameter("@routeid", routeid));
-            parlist.Add(new SqlParameter("@losslv", losslv));
-            parlist.Add(new SqlParameter("@mcid", mcid));
-            parlist.Add(new SqlParameter("@from", from));
-            parlist.Add(new SqlParameter("@to", to));
+            if (losslv != null)parlist.Add(new SqlParameter("@losslv", losslv));
+            if (mcid != null)parlist.Add(new SqlParameter("@mcid", mcid));
+            if (from != null)parlist.Add(new SqlParameter("@from", from));
+            if (to != null) parlist.Add(new SqlParameter("@to", to));
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", parlist);
         }
