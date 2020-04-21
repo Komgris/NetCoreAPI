@@ -37,7 +37,6 @@ namespace CIM.DAL.Implements
 
         public async Task<int> CommitAsync()
         {
-
             try
             {
                 int result = await _dbContext.SaveChangesAsync();

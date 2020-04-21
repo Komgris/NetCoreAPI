@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CIM.Model
+{
+    public class RecordManufacturingLossModel
+    {
+        public string ProductionPlanId { get; set; }
+
+        public int MachineId { get; set; }
+
+        public int? ComponentId { get; set; }
+
+        public int LossLevelId { get; set; }
+
+        public string Guid { get; set; }
+        public int Id { get; set; }
+        public string CreatedBy { get; set; }
+        public bool IsAuto { get; set; }
+        public int LossLevel3Id { get; set; }
+        public DateTime StartedAt { get; set; }
+    }
+}

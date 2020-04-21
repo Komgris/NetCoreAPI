@@ -1,6 +1,9 @@
 ﻿using CIM.DAL.Interfaces;
+using CIM.Domain.Models;
+using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
 
@@ -8,15 +11,26 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using CIM.DAL.Interfaces;
+using CIM.Domain.Models;
+using CIM.Model;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using StoredProcedureEFCore;
+
 namespace CIM.DAL.Implements
 {
     public abstract class Repository<T> : IRepository<T>
          where T : class
     {
-        protected DbContext _entities;
+        protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
 
-        public Repository(DbContext context)
+        public Repository(cim_dbContext context)
         {
 
             _entities = context;
@@ -26,6 +40,12 @@ namespace CIM.DAL.Implements
         public virtual IQueryable<T> All()
         {
             var result = _dbset;
+            return result;
+        }
+
+        public async Task<IList<T>> AllAsync()
+        {
+            var result = await _dbset.ToListAsync();
             return result;
         }
 
@@ -68,5 +88,38 @@ namespace CIM.DAL.Implements
             return _dbset.Any(predicate);
         }
 
+        public async Task<PagingModel<T>> ToPagingModelAsync<T>(IQueryable<T> sqlQuery, int page, int howmany)
+        where T : new()
+        {
+            var output = new PagingModel<T>();
+            output.Total = await sqlQuery.CountAsync();
+            output.HowMany = howmany;
+            output.Page = page;
+            output.NextPage = page + 1;
+            output.PreviousPage = page - 1;
+            output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
+            var skip = (page - 1) * howmany;
+            output.Data = await sqlQuery.Skip(skip).Take(howmany).ToListAsync();
+            return output;
+        }
+
+        public PagingModel<T> ToPagingModel<T>(List<T> data, int total, int page, int howmany)
+        where T : new()
+        {
+            var output = new PagingModel<T>();
+            output.Total = total;
+            output.HowMany = howmany;
+            output.Page = page;
+            output.NextPage = page + 1;
+            output.PreviousPage = page - 1;
+            output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
+            var skip = (page - 1) * howmany;
+            output.Data = data;
+            return output;
+        }
     }
 }

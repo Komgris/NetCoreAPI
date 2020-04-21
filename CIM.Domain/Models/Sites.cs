@@ -9,12 +9,13 @@ namespace CIM.Domain.Models
         {
             Areas = new HashSet<Areas>();
             CompaniesSites = new HashSet<CompaniesSites>();
-            SiteLocals = new HashSet<SiteLocals>();
             SitesUsers = new HashSet<SitesUsers>();
         }
 
         public int Id { get; set; }
-        public bool IsActive { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
@@ -23,7 +24,6 @@ namespace CIM.Domain.Models
 
         public virtual ICollection<Areas> Areas { get; set; }
         public virtual ICollection<CompaniesSites> CompaniesSites { get; set; }
-        public virtual ICollection<SiteLocals> SiteLocals { get; set; }
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }
     }
 }

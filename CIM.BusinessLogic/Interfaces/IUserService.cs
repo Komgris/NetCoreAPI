@@ -8,9 +8,11 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IUserService :  IBaseService
     {
-        void Register(RegisterUserModel model);
+        Task Create(UserModel model);
         Task<AuthModel> Auth(string username, string password);
         CurrentUserModel GetCurrentUserModel(string token);
-        string HashPassword(RegisterUserModel model);
+        string HashPassword(UserModel model);
+        Task<string> CreateToken(string userId);
+        Task<PagingModel<UserModel>> List(string keyword, int page, int howmany);
     }
 }

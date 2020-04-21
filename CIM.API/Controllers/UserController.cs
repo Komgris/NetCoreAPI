@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using CIM.BusinessLogic;
 using CIM.BusinessLogic.Interfaces;
-using CIM.DAL.Implements;
-using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
 
     public class UserController : ControllerBase
     {
@@ -21,19 +17,21 @@ namespace CIM.API.Controllers
         public UserController(IUserService service)
         {
             _service = service;
-            
+
         }
 
         [HttpPost]
-        [MiddlewareFilter(typeof(MyCustomAuthenticationMiddlewarePipeline))]
-        public async Task<object> Register(RegisterUserModel model)
+        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
+        public async Task<object> Create(UserModel model)
         {
             try
             {
                 var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = currentUser;
 
-                _service.Register(model);
+                await Task.Run(() => {
+                    _service.Create(model);
+                });
                 return new object();
             }
             catch (Exception e)
@@ -43,12 +41,14 @@ namespace CIM.API.Controllers
 
         }
 
+
         [HttpGet]
-        public async Task<AuthModel> Auth(string username, string password)
+        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
+        public async Task<PagingModel<UserModel>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             try
             {
-                var result = await _service.Auth(username, password);
+                var result = await _service.List(keyword, page, howmany);
                 return result;
             }
             catch (Exception e)

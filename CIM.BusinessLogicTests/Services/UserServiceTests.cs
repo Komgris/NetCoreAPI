@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using FluentAssertions;
 using Moq;
 using CIM.DAL.Interfaces;
 using CIM.Model;
-using FluentAssertions;
 using CIM.BusinessLogic.Interfaces;
 
 namespace CIM.BusinessLogic.Services.Tests
@@ -26,7 +26,7 @@ namespace CIM.BusinessLogic.Services.Tests
                 cipherService, 
                 userRep, 
                 unitOfWork);
-            var registerUserModel = new RegisterUserModel
+            var registerUserModel = new UserModel
             {
                 Password = "password"
             };

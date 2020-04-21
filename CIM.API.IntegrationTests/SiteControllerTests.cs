@@ -18,7 +18,7 @@ namespace CIM.API.IntegrationTests
             // Arrange
 
             // Act
-            var response = await TestClient.GetAsync("Site");
+            var response = await TestClient.GetAsync("api/Site");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

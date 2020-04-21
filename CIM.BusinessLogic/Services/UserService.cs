@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async void Register(RegisterUserModel model)
+        public async Task Create(UserModel model)
         {
             var dbModel = new Users
             {
@@ -46,15 +46,19 @@ namespace CIM.BusinessLogic.Services
             };
             dbModel.UserProfiles.Add(new UserProfiles
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
                 Image = model.Image,
             });
+            dbModel.Name.Add(new Name
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+            });
+
             _userRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
         }
 
-        public string HashPassword(RegisterUserModel model)
+        public string HashPassword(UserModel model)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
@@ -78,7 +82,7 @@ namespace CIM.BusinessLogic.Services
                     x=> new
                     {
                         UserName = x.UserName,
-                        FullName = x.UserProfiles.Select(x=>x.FirstName).FirstOrDefault() + " " + x.UserProfiles.Select(x => x.LastName).FirstOrDefault(),
+                        FullName = x.Name.Select(x=>x.FirstName).FirstOrDefault() + " " + x.Name.Select(x => x.LastName).FirstOrDefault(),
                         Id = x.Id,
                         HashedPassword = x.HashedPassword,
                         Group = x.UserGroup.Name,
@@ -166,6 +170,12 @@ namespace CIM.BusinessLogic.Services
                 LanguageId = user.DefaultLanguageId
             };
             return currentUserModel;
+        }
+
+        public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
+        {
+            var output = await _userRepository.List(keyword, page, howmany);
+            return output;
         }
     }
 }
