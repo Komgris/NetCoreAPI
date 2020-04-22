@@ -4,16 +4,15 @@ using CIM.Model;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class LossLevel3Repository : Repository<LossLevel3>, ILossLevel3Repository
     {
-        public LossLevel3Repository(cim_dbContext context) : base(context)
+        public LossLevel3Repository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
-
         }
 
         public async Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync()

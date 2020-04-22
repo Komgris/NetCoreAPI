@@ -11,6 +11,7 @@ using StoredProcedureEFCore;
 using System.Data.SqlClient;
 using System.Data;
 using CIM.DAL.Utility;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
@@ -18,8 +19,8 @@ namespace CIM.DAL.Implements
     {
 
         private IDirectSqlRepository _directSqlRepository;
-        public ProductionPlanRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository)
-            : base(context)
+        public ProductionPlanRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration)
+            : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }
