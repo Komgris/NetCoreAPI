@@ -23,9 +23,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
-        public string GetProductionSummary(string planid, int routeid, DateTime? from=null, DateTime? to=null) {
+        public string GetProductionSummary(string planId, int routeId, DateTime? from=null, DateTime? to=null) {
             try {
-                return JsonConvert.SerializeObject(_service.GetProductionSummary(planid, routeid, from, to));
+                return JsonConvert.SerializeObject(_service.GetProductionSummary(planId, routeId, from, to));
             }
             catch (Exception e) {
                 throw e;
@@ -34,9 +34,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionPlanInfomation")]
-        public string GetProductionPlanInfomation(string planid, int routeid) {
+        public string GetProductionPlanInfomation(string planId, int routeId) {
             try {
-                return JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planid, routeid));
+                return JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planId, routeId));
             }
             catch (Exception e) {
                 throw e;
@@ -45,9 +45,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionOperators")]
-        public string GetProductionOperators(string planid, int routeid) {
+        public string GetProductionOperators(string planId, int routeId) {
             try {
-                return JsonConvert.SerializeObject(_service.GetProductionOperators(planid, routeid));
+                return JsonConvert.SerializeObject(_service.GetProductionOperators(planId, routeId));
             }
             catch (Exception e) {
                 throw e;
@@ -56,9 +56,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionEvents")]
-        public string GetProductionEvents(string planid, int routeid, DateTime? from = null, DateTime? to = null) {
+        public string GetProductionEvents(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
             try {
-                return JsonConvert.SerializeObject(_service.GetProductionEvents(planid, routeid, from, to));
+                return JsonConvert.SerializeObject(_service.GetProductionEvents(planId, routeId, from, to));
             }
             catch (Exception e) {
                 throw e;
@@ -67,15 +67,54 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetMachineSpeed")]
-        public string GetMachineSpeed(string planid, int routeid, DateTime? from = null, DateTime? to = null) {
+        public string GetMachineSpeed(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
             try {
-                return JsonConvert.SerializeObject(_service.GetMachineSpeed(planid, routeid, from, to));
+                return JsonConvert.SerializeObject(_service.GetMachineSpeed(planId, routeId, from, to));
             }
             catch (Exception e) {
                 throw e;
             }
         }
 
+        #endregion
+
+        #region Cim-Oper Mc-Loss
+        [HttpGet]
+        [Route("api/[controller]/GetProductionLoss")]
+        public string GetProductionLoss(string planId, int routeId,int lossLv,int? machineId) {
+            try {
+                if (lossLv == 0) return "";
+                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId,lossLv, machineId, null,null));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetProductionLossHistory")]
+        public string GetProductionLossHistory(string planId, int routeId) {
+            try {
+                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, null, null, null, null));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
+        #endregion
+
+        #region MyRegion  Cim-Oper dashboard
+
+        [HttpGet]
+        [Route("api/[controller]/GetProductionDasboard")]
+        public string GetProductionDasboard(string planId, int routeId, int machineId) {
+            try {
+                return JsonConvert.SerializeObject(_service.GetProductionDasboard(planId, routeId, machineId));
+            }
+            catch (Exception e) {
+                throw e;
+            }
+        }
         #endregion
     }
 }
