@@ -28,6 +28,7 @@ namespace CIM.BusinessLogicTests.Services
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -37,7 +38,8 @@ namespace CIM.BusinessLogicTests.Services
                 productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
-                recordManufacturingLossService.Object
+                recordManufacturingLossService.Object,
+                reportService.Object
             );
             //var result = planService.List();
             //result.Should().NotBeNull();
@@ -55,6 +57,7 @@ namespace CIM.BusinessLogicTests.Services
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -64,7 +67,8 @@ namespace CIM.BusinessLogicTests.Services
                 productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
-                recordManufacturingLossService.Object
+                recordManufacturingLossService.Object,
+                reportService.Object
             );
 
             var dbPlanMoq = new List<ProductionPlan>()
@@ -98,6 +102,7 @@ namespace CIM.BusinessLogicTests.Services
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
 
 
             var planService = new ProductionPlanService(
@@ -108,7 +113,8 @@ namespace CIM.BusinessLogicTests.Services
                 productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
-                recordManufacturingLossService.Object
+                recordManufacturingLossService.Object,
+                reportService.Object
             );
             //var result = planService.ReadImport(path);
             //result.Should().NotBeNull();
@@ -131,6 +137,7 @@ namespace CIM.BusinessLogicTests.Services
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
 
             var planService = new ProductionPlanService(
                 responseCacheService,
@@ -140,7 +147,8 @@ namespace CIM.BusinessLogicTests.Services
                 productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
-                recordManufacturingLossService.Object
+                recordManufacturingLossService.Object,
+                reportService.Object
             );
             //var result = planService.Insert(dbPlanMoq);
             //result.Should().BeTrue();

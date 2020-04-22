@@ -12,5 +12,6 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetProductionOperators(string planId, int routeId); 
         DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? mcId, DateTime? from, DateTime? to);
         DataTable GetProductionDasboard(string planId, int routeId, int mcId);
+        Dictionary<string, int> GetActiveProductionPlanOutput();
     }
 }

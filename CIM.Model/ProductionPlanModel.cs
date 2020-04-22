@@ -28,6 +28,6 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public ProductModel Product { get; set; }
-        public string CompareResult { get; set; }
+        public int CompareResult { get; set; }
     }
 }
