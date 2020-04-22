@@ -45,25 +45,36 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
-    
+
         public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
         {
             List<ProductionPlanListModel> data = null;
             //int totalCount = 0;
-            var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
-            proc.AddParam("total_count", out IOutParam<int> totalCount);
-            proc.AddParam("@route_id", routeId);
-            proc.AddParam("@product_id", productId);
-            proc.AddParam("@keyword", keyword);
-            proc.AddParam("@is_active", isActive);
-            proc.AddParam("@status_id", statusIds);
-            proc.AddParam("@howmany", howmany);
-            proc.AddParam("@page", page);
-            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
-
-            return ToPagingModel(data, totalCount.Value, page, howmany);
+            //var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
+            //proc.AddParam("total_count", out IOutParam<int> totalCount);
+            //proc.AddParam("@route_id", routeId);
+            //proc.AddParam("@product_id", productId);
+            //proc.AddParam("@keyword", keyword);
+            //proc.AddParam("@is_active", isActive);
+            //proc.AddParam("@status_id", statusIds);
+            //proc.AddParam("@howmany", howmany);
+            //proc.AddParam("@page", page);
+            //await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
+            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+            {
+                {"@route_id", routeId},
+                {"@product_id", productId},
+                {"@keyword", keyword},
+                {"@is_active", isActive},
+                {"@status_id", statusIds},
+                {"@howmany", howmany},
+                { "@page", page}
+            };
+            var resonsedata = execStoreProcedureDataTable("[sp_ListProductionPlan]", parameterList);
+            return null;// ToPagingModel(resonsedata,, page, howmany);
 
         }
+
 
         public List<ProductionPlanModel> Get()
         {

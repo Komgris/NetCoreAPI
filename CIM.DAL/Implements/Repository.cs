@@ -65,6 +65,23 @@ namespace CIM.DAL.Implements
             }
         }
 
+        public async Task<IEnumerable<DataTable>> execStoreProcedureDataTable(string storeProcedureName, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new List<DynamicParameters>();
+            foreach (var item in parameterDic)
+            {
+                var p = new DynamicParameters();
+                p.Add(item.Key, item.Value);
+                parameters.Add(p);
+            }
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var output = await connection.QueryAsync<DataTable>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+                return output;
+            }
+        }
+
         public virtual IQueryable<T> All()
         {
             var result = _dbset;
