@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -22,13 +21,16 @@ namespace CIM.DAL.Implements
     {
         protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
-        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
 
-        public Repository(cim_dbContext context)
+        public Repository(
+            cim_dbContext context, 
+            IConfiguration configuration
+        )
         {
             _entities = context;
             _dbset = context.Set<T>();
-            //_connectionString = _entities.Database.GetDbConnection().ConnectionString;
+            _configuration = configuration;
         }
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
@@ -39,7 +41,8 @@ namespace CIM.DAL.Implements
                 parameters.Add(item.Key, item.Value);
             }
 
-            using (var connection = new SqlConnection(_connectionString))
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (var connection = new SqlConnection(connectionString))
             {
                 var output = await connection.QueryAsync<T>(sql, parameters);
                 return output.ToList();
@@ -54,7 +57,9 @@ namespace CIM.DAL.Implements
                 parameters.Add(item.Key, item.Value);
             }
 
-            using (var connection = new SqlConnection(_connectionString))
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+
+            using (var connection = new SqlConnection(connectionString))
             {
                 var output = await connection.QueryAsync<T>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
                 return output.ToList();

@@ -3,12 +3,13 @@ using CIM.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss>, IRecordManufacturingLossRepository
     {
-        public RecordManufacturingLossRepository(cim_dbContext context) : base(context)
+        public RecordManufacturingLossRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }
