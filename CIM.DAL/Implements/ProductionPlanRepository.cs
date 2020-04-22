@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using StoredProcedureEFCore;
 using System.Data.SqlClient;
 using System.Data;
+using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
