@@ -13,7 +13,6 @@ using System.Linq;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class LossLevel3Controller : ControllerBase
     {
