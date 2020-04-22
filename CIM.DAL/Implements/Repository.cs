@@ -33,7 +33,6 @@ namespace CIM.DAL.Implements
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
         {
-
             var parameters = new List<DynamicParameters>();
             foreach (var item in parameterDic)
             {
@@ -47,12 +46,10 @@ namespace CIM.DAL.Implements
                 var output = await connection.QueryAsync<T>(sql, parameters);
                 return output.ToList();
             }
-
         }
 
         public async Task<List<T>> execStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
         {
-
             var parameters = new List<DynamicParameters>();
             foreach (var item in parameterDic)
             {
@@ -66,9 +63,7 @@ namespace CIM.DAL.Implements
                 var output = await connection.QueryAsync<T>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
                 return output.ToList();
             }
-
         }
-
 
         public virtual IQueryable<T> All()
         {
@@ -98,7 +93,6 @@ namespace CIM.DAL.Implements
             IList<T> query = await _dbset.Where(predicate).ToListAsync();
             return query;
         }
-
 
         public virtual void Add(T entity)
         {
