@@ -17,60 +17,92 @@ namespace CIM.BusinessLogic.Services {
             _directSqlRepository = directSqlRepository;
         }
 
-        public DataTable GetProductionSummary(string planid, int routeid, DateTime? from, DateTime? to) {
+        #region  Cim-Oper Production overview
 
-            var plist = new List<SqlParameter>();
+        public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
+
+            var paramsList = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) paramsList.Add(new SqlParameter("@from", from));
+            if (to != null) paramsList.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
         }
 
-        public DataTable GetMachineSpeed(string planid, int routeid, DateTime? from, DateTime? to) {
+        public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
             
-            var plist = new List<SqlParameter>();
+            var paramsList = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) paramsList.Add(new SqlParameter("@from", from));
+            if (to != null) paramsList.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", paramsList);
         }
 
-        public DataTable GetProductionEvents(string planid, int routeid, DateTime? from, DateTime? to) {
+        public DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to) {
             
-            var plist = new List<SqlParameter>();
+            var paramsList = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
-            if (from != null) plist.Add(new SqlParameter("@from", from));
-            if (to != null) plist.Add(new SqlParameter("@to", to));
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
+            if (from != null) paramsList.Add(new SqlParameter("@from", from));
+            if (to != null) paramsList.Add(new SqlParameter("@to", to));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", paramsList);
         }
 
-        public DataTable GetProductionOperators(string planid, int routeid) {
+        public DataTable GetProductionOperators(string planid, int routeId) {
             var plist = new List<SqlParameter>();
             plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
+            plist.Add(new SqlParameter("@routeid", routeId));
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", plist);
         }
 
-        public DataTable GetProductionPlanInfomation(string planid, int routeid) {
+        public DataTable GetProductionPlanInfomation(string planId, int routeId) {
             
-            var plist = new List<SqlParameter>();
+            var paramsList = new List<SqlParameter>();
             
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeid));
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", paramsList);
         }
 
+        #endregion
 
+        #region  Cim-Oper Mc-Loss
+        public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId, DateTime? from, DateTime? to) {
+
+            var paramsList = new List<SqlParameter>();
+
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
+            if (lossLv != null)paramsList.Add(new SqlParameter("@losslv", lossLv));
+            if (machineId != null)paramsList.Add(new SqlParameter("@mcid", machineId));
+            if (from != null)paramsList.Add(new SqlParameter("@from", from));
+            if (to != null) paramsList.Add(new SqlParameter("@to", to));
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
+        }
+
+        #endregion
+        #region  Cim-Oper dashboard
+        public DataTable GetProductionDasboard(string planId, int routeId, int machineId) {
+
+            var paramsList = new List<SqlParameter>();
+
+            paramsList.Add(new SqlParameter("@planid", planId));
+            paramsList.Add(new SqlParameter("@routeid", routeId));
+            paramsList.Add(new SqlParameter("@mcid", machineId));
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Dashboard", paramsList);
+        }
+
+        #endregion
     }
 }
