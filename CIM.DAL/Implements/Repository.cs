@@ -33,12 +33,10 @@ namespace CIM.DAL.Implements
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
         {
-            var parameters = new List<DynamicParameters>();
+            var parameters = new DynamicParameters();
             foreach (var item in parameterDic)
             {
-                var p = new DynamicParameters();
-                p.Add(item.Key, item.Value);
-                parameters.Add(p);
+                parameters.Add(item.Key, item.Value);
             }
 
             using (var connection = new SqlConnection(_connectionString))
@@ -48,14 +46,12 @@ namespace CIM.DAL.Implements
             }
         }
 
-        public async Task<List<T>> execStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
+        public async Task<List<T>> ExecStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
         {
-            var parameters = new List<DynamicParameters>();
+            var parameters = new DynamicParameters();
             foreach (var item in parameterDic)
             {
-                var p = new DynamicParameters();
-                p.Add(item.Key, item.Value);
-                parameters.Add(p);
+                parameters.Add(item.Key, item.Value);
             }
 
             using (var connection = new SqlConnection(_connectionString))
