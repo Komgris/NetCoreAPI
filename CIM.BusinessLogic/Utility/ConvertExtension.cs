@@ -7,7 +7,7 @@ namespace CIM.BusinessLogic.Utility
 {
     public static class ConvertExtension
     {
-        public static DateTime? _cellval2dtnull(this ExcelRange val)
+        public static DateTime? CellValToDateTimeNull (this ExcelRange val)
         {
 			try
 			{
@@ -20,7 +20,7 @@ namespace CIM.BusinessLogic.Utility
 			}
         }
 
-		public static DateTime _cellval2dt(this ExcelRange val)
+		public static DateTime CellValToDateTime(this ExcelRange val)
 		{
 			try
 			{
@@ -33,7 +33,7 @@ namespace CIM.BusinessLogic.Utility
 			}
 		}
 
-		public static int _cellval2int(this ExcelRange val)
+		public static int CellValToInt(this ExcelRange val)
 		{
 			try
 			{
@@ -45,7 +45,7 @@ namespace CIM.BusinessLogic.Utility
 			}
 		}
 
-		public static string _cellval2str(this ExcelRange val)
+		public static string CellValToString(this ExcelRange val)
 		{
 			try
 			{

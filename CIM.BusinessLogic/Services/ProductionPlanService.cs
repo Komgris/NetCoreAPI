@@ -175,8 +175,8 @@ namespace CIM.BusinessLogic.Services
             var productDict = masterData.Dictionary.Products;
             var productCodeToIds = masterData.Dictionary.ProductsByCode;
             var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
-            var timeLimit = (int)Constans.ProductionPlanLimit.HOUR_LIMIT;
-            var targetLimit = (int)Constans.ProductionPlanLimit.TARGET_LIMIT;
+            var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
+            var targetBuffer = (int)Constans.ProductionPlanBuffer.TARGET_BUFFER;
 
             DateTime timeNow = DateTime.Now;
 
@@ -197,10 +197,10 @@ namespace CIM.BusinessLogic.Services
                             case Constans.PRODUCTION_PLAN_STATUS.Changeover:
                             case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
                             case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                if (plan.PlanFinish.Value < timeNow.AddHours(timeLimit))
+                                if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
                                     plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
                                 else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
-                                    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetLimit)
+                                    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
                                         plan.CompareResult = Constans.CompareMapping.InvalidTarget;
                                 break;
                             case Constans.PRODUCTION_PLAN_STATUS.New:
@@ -262,13 +262,13 @@ namespace CIM.BusinessLogic.Services
             for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
                 ProductionPlanModel data = new ProductionPlanModel();
-                data.PlanId = oSheet.Cells[i, ExcelMapping.PLAN]._cellval2str();
-                data.Route = oSheet.Cells[i, ExcelMapping.ROUTE]._cellval2str();
-                data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT]._cellval2str();
-                data.Target = oSheet.Cells[i, ExcelMapping.TARGET]._cellval2int();
-                data.UnitName = oSheet.Cells[i, ExcelMapping.UNIT]._cellval2str();
-                data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART]._cellval2dtnull();
-                data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH]._cellval2dtnull();
+                data.PlanId = oSheet.Cells[i, ExcelMapping.PLAN].CellValToString();
+                data.Route = oSheet.Cells[i, ExcelMapping.ROUTE].CellValToString();
+                data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
+                data.Target = oSheet.Cells[i, ExcelMapping.TARGET].CellValToInt();
+                data.UnitName = oSheet.Cells[i, ExcelMapping.UNIT].CellValToString();
+                data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
+                data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 listImport.Add(data);
             }
             return listImport;

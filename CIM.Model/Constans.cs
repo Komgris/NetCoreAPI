@@ -52,10 +52,10 @@ namespace CIM.Model
             Ready = 1
         }
 
-        public enum ProductionPlanLimit : int
+        public enum ProductionPlanBuffer : int
         {
-            TARGET_LIMIT = 100,
-            HOUR_LIMIT = 6
+            TARGET_BUFFER = 100,
+            HOUR_BUFFER = 6
         }
 
         public static class CompareMapping
