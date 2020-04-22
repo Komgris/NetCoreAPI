@@ -55,6 +55,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
+        public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -1398,6 +1399,48 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordProductionPlanOutputUpdatedByNavigation)
                     .HasForeignKey(d => d.UpdatedBy)
                     .HasConstraintName("FK_Record_Production_Output_Users");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanWaste>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.CauseMachineId).HasColumnName("CauseMachine_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Reason).HasMaxLength(4000);
+
+                entity.Property(e => e.RecordManufacturingLossId).HasColumnName("Record_Manufacturing_Loss_Id");
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WasteLevel2Id).HasColumnName("WasteLevel2_Id");
+
+                entity.HasOne(d => d.RecordManufacturingLoss)
+                    .WithMany(p => p.RecordProductionPlanWaste)
+                    .HasForeignKey(d => d.RecordManufacturingLossId)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_Record_Manufacturing_Loss");
             });
 
             modelBuilder.Entity<Route>(entity =>
