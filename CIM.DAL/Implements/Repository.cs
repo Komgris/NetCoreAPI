@@ -28,7 +28,7 @@ namespace CIM.DAL.Implements
         {
             _entities = context;
             _dbset = context.Set<T>();
-            _connectionString = _entities.Database.GetDbConnection().ConnectionString;
+            //_connectionString = _entities.Database.GetDbConnection().ConnectionString;
         }
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
