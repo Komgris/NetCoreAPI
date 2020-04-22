@@ -44,7 +44,7 @@ namespace CIM.API.Controllers
         {
             try
             {
-                return JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planId, routeId));
+                return JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planId, routeId), JsonsSetting);
             }
             catch (Exception e)
             {
