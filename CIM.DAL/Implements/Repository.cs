@@ -28,7 +28,7 @@ namespace CIM.DAL.Implements
         {
             _entities = context;
             _dbset = context.Set<T>();
-            _connectionString = _entities.Database.GetDbConnection().ConnectionString;
+            //_connectionString = _entities.Database.GetDbConnection().ConnectionString;
         }
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
@@ -60,6 +60,23 @@ namespace CIM.DAL.Implements
                 return output.ToList();
             }
         }
+
+        //to do it not complete need to p'ton fix for output data table
+        //public async Task<IEnumerable<DataTable>> execStoreProcedureDataTable(string storeProcedureName, Dictionary<string, object> parameterDic)
+        //{
+        //    var parameters = new List<DynamicParameters>();
+        //    foreach (var item in parameterDic)
+        //    {
+        //        var p = new DynamicParameters();
+        //        p.Add(item.Key, item.Value);
+        //        parameters.Add(p);
+        //    }
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        var output = await connection.QueryAsync<DataTable>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+        //        return output;
+        //    }
+        //}
 
         public virtual IQueryable<T> All()
         {
@@ -143,7 +160,8 @@ namespace CIM.DAL.Implements
             var skip = (page - 1) * howmany;
             output.Data = data;
             return output;
-        }
+        }        
 
     }
+
 }
