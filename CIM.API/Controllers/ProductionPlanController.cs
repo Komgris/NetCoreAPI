@@ -48,8 +48,7 @@ namespace CIM.API.Controllers
 
 
                     var fromExcel = _planService.ReadImport(fullPath);
-                    var fromDb = _planService.Get();
-                    var result = _planService.Compare(fromExcel, fromDb);
+                    var result = await _planService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
                 }
@@ -83,9 +82,9 @@ namespace CIM.API.Controllers
         }
 
 
-        [Route("api/[controller]/Create")]
+        [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Create([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
         {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
@@ -94,19 +93,20 @@ namespace CIM.API.Controllers
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _planService.Create(data);
+                output.Data = await _planService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
+                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
         }
 
-        [Route("api/[controller]/Update")]
-        [HttpPut]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody]List<ProductionPlanModel> data)
+        [Route("api/[controller]/Create")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -120,6 +120,29 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Update")]
+        [HttpPut]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody] ProductionPlanModel data)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _planService.Update(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
