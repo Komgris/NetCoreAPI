@@ -81,10 +81,10 @@ namespace CIM.API.Controllers {
         #region Cim-Oper Mc-Loss
         [HttpGet]
         [Route("api/[controller]/GetProductionLoss")]
-        public string GetProductionLoss(string planId, int routeId,int lossLv,int? mcId) {
+        public string GetProductionLoss(string planId, int routeId,int lossLv,int? machineId) {
             try {
                 if (lossLv == 0) return "";
-                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId,lossLv, mcId, null,null));
+                return JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId,lossLv, machineId, null,null));
             }
             catch (Exception e) {
                 throw e;
@@ -107,9 +107,9 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionDasboard")]
-        public string GetProductionDasboard(string planId, int routeId, int mcId) {
+        public string GetProductionDasboard(string planId, int routeId, int machineId) {
             try {
-                return JsonConvert.SerializeObject(_service.GetProductionDasboard(planId, routeId, mcId));
+                return JsonConvert.SerializeObject(_service.GetProductionDasboard(planId, routeId, machineId));
             }
             catch (Exception e) {
                 throw e;
