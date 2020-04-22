@@ -65,6 +65,15 @@ namespace CIM.DAL.Implements
             }
         }
 
+        public async Task<List<T>> execStoreProcedure2<T>(string storeProcedureName, DynamicParameters parameter)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var output = await connection.QueryAsync<T>(storeProcedureName, parameter, null, null, CommandType.StoredProcedure);
+                return output.ToList();
+            }
+        }
+
         public virtual IQueryable<T> All()
         {
             var result = _dbset;
