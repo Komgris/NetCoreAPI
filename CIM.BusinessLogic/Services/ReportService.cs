@@ -21,54 +21,55 @@ namespace CIM.BusinessLogic.Services {
 
         public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
 
-            var paramsList = new List<SqlParameter>();
-            
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
-            if (from != null) paramsList.Add(new SqlParameter("@from", from));
-            if (to != null) paramsList.Add(new SqlParameter("@to", to));
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
         }
 
         public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
-            
-            var paramsList = new List<SqlParameter>();
-            
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
-            if (from != null) paramsList.Add(new SqlParameter("@from", from));
-            if (to != null) paramsList.Add(new SqlParameter("@to", to));
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", paramsList);
         }
 
         public DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to) {
-            
-            var paramsList = new List<SqlParameter>();
-            
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
-            if (from != null) paramsList.Add(new SqlParameter("@from", from));
-            if (to != null) paramsList.Add(new SqlParameter("@to", to));
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", paramsList);
         }
 
-        public DataTable GetProductionOperators(string planid, int routeId) {
-            var plist = new List<SqlParameter>();
-            plist.Add(new SqlParameter("@planid", planid));
-            plist.Add(new SqlParameter("@routeid", routeId));
+        public DataTable GetProductionOperators(string planId, int routeId) {
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", plist);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", paramsList);
         }
 
         public DataTable GetProductionPlanInfomation(string planId, int routeId) {
-            
-            var paramsList = new List<SqlParameter>();
-            
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", paramsList);
         }
@@ -78,27 +79,27 @@ namespace CIM.BusinessLogic.Services {
         #region  Cim-Oper Mc-Loss
         public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId, DateTime? from, DateTime? to) {
 
-            var paramsList = new List<SqlParameter>();
-
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
-            if (lossLv != null)paramsList.Add(new SqlParameter("@losslv", lossLv));
-            if (machineId != null)paramsList.Add(new SqlParameter("@mcid", machineId));
-            if (from != null)paramsList.Add(new SqlParameter("@from", from));
-            if (to != null) paramsList.Add(new SqlParameter("@to", to));
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@losslv", lossLv },
+                {"@mcid", machineId },
+                {"@from", from },
+                {"@to", to }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
         }
 
         #endregion
+
         #region  Cim-Oper dashboard
         public DataTable GetProductionDasboard(string planId, int routeId, int machineId) {
-
-            var paramsList = new List<SqlParameter>();
-
-            paramsList.Add(new SqlParameter("@planid", planId));
-            paramsList.Add(new SqlParameter("@routeid", routeId));
-            paramsList.Add(new SqlParameter("@mcid", machineId));
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@mcid", machineId }
+            };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Dashboard", paramsList);
         }

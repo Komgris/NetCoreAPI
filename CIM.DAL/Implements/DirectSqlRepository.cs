@@ -59,13 +59,13 @@ namespace CIM.DAL.Implements
             return output;
         }
 
-        public DataTable ExecuteSPWithQuery(string sql, List<SqlParameter> parameters) {
+        public DataTable ExecuteSPWithQuery(string sql, Dictionary<string,object> parameters) {
             var connectionString = configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
                 using (SqlCommand command = new SqlCommand(sql, connection)) {
                     if (parameters != null) 
                         foreach (var p in parameters)
-                            command.Parameters.AddWithValue(p.ParameterName, p.Value);
+                            if(p.Value!=null) command.Parameters.AddWithValue(p.Key, p.Value);
 
                     connection.Open();
 

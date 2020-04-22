@@ -8,13 +8,16 @@ using CIM.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using StoredProcedureEFCore;
+using System.Data.SqlClient;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductionPlanRepository : Repository<ProductionPlan>, IProductionPlanRepository
-    {
-        public ProductionPlanRepository(cim_dbContext context) : base(context)
-        {
+    public class ProductionPlanRepository : Repository<ProductionPlan>, IProductionPlanRepository {
+
+        private IDirectSqlRepository _directSqlRepository;
+        public ProductionPlanRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository) 
+            : base(context) {
+            _directSqlRepository = directSqlRepository;
         }
 
         public async Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany)
@@ -70,7 +73,9 @@ namespace CIM.DAL.Implements
                 {"@howmany", howmany},
                 { "@page", page}
             };
-            var resonsedata = execStoreProcedureDataTable("[sp_ListProductionPlan]", parameterList);
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", parameterList);
+
             return null;// ToPagingModel(resonsedata,, page, howmany);
 
         }
