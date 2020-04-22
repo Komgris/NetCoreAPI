@@ -18,15 +18,7 @@ namespace CIM.DAL.Implements
 
         public async Task<IList<SiteModel>> ExecuteProcedure(string procedureName, Dictionary<string, object> parameters)
         {
-            IList<SiteModel> data = null;
-            var proc = _entities.LoadStoredProc(procedureName);
-            foreach (var item in parameters)
-            {
-                proc.AddParam(item.Key, item.Value);
-            }
-
-            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<SiteModel>()));
-            return data;
+            return await execStoreProcedure<SiteModel>(procedureName, parameters);
         }
 
     }

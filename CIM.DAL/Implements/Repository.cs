@@ -9,6 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Dapper;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace CIM.DAL.Implements
 {
@@ -17,12 +21,47 @@ namespace CIM.DAL.Implements
     {
         protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
+        private readonly string _connectionString;
 
         public Repository(cim_dbContext context)
         {
-
             _entities = context;
             _dbset = context.Set<T>();
+            _connectionString = _entities.Database.GetDbConnection().ConnectionString;
+        }
+
+        public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new List<DynamicParameters>();
+            foreach (var item in parameterDic)
+            {
+                var p = new DynamicParameters();
+                p.Add(item.Key, item.Value);
+                parameters.Add(p);
+            }
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var output = await connection.QueryAsync<T>(sql, parameters);
+                return output.ToList();
+            }
+        }
+
+        public async Task<List<T>> execStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new List<DynamicParameters>();
+            foreach (var item in parameterDic)
+            {
+                var p = new DynamicParameters();
+                p.Add(item.Key, item.Value);
+                parameters.Add(p);
+            }
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var output = await connection.QueryAsync<T>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+                return output.ToList();
+            }
         }
 
         public virtual IQueryable<T> All()
@@ -53,7 +92,6 @@ namespace CIM.DAL.Implements
             IList<T> query = await _dbset.Where(predicate).ToListAsync();
             return query;
         }
-
 
         public virtual void Add(T entity)
         {
@@ -109,5 +147,6 @@ namespace CIM.DAL.Implements
             output.Data = data;
             return output;
         }
+
     }
 }
