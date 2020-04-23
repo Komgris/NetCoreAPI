@@ -18,7 +18,7 @@ namespace CIM.DAL.Implements
 
         public async Task<IList<SiteModel>> ExecuteProcedure(string procedureName, Dictionary<string, object> parameters)
         {
-            return await execStoreProcedure<SiteModel>(procedureName, parameters);
+            return await ExecStoreProcedure<SiteModel>(procedureName, parameters);
         }
 
     }
