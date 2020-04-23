@@ -55,15 +55,20 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
         {
             bool isActive = true;
-            var output = await _repository.ListAsPaging(page, howmany, keyword, isActive);
+            var output = await _repository.List(page, howmany, keyword, isActive);
             return output;
         }
 
         public async Task<LossLevel3EditableModel> Get(int id)
         {
-            var output = await _repository.Get(id);
+            var result = await _repository.Get(id);
+            if (result == null)
+            {
+                return null;
+            }
+
+            var output = MapperHelper.AsModel(result, new LossLevel3EditableModel());
             return output;
-            //throw new NotImplementedException();
         }
     }
 }

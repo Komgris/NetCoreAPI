@@ -50,7 +50,7 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<LossLevel3ViewModel>> ListAsPaging(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<LossLevel3ViewModel>> List(int page, int howmany, string keyword, bool isActive)
         {
             List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
             int total = 0;
@@ -91,41 +91,23 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public async Task<LossLevel3EditableModel> Get(int Id)
+        public async Task<LossLevel3> Get(int id)
         {
-            LossLevel3EditableModel output = new LossLevel3EditableModel();
-
             string sql = @" SELECT TOP 1 *
                             FROM          dbo.LossLevel3
-                            WHERE		  dbo.LossLevel3.Id = @Id;";
+                            WHERE		  dbo.LossLevel3.Id = @id;";
 
             Dictionary<string, object> dictParameter = new Dictionary<string, object>
             {
-                { "@Id", Id }
+                { "@id", id }
             };
             List<LossLevel3> result = await Sql<LossLevel3>(sql, dictParameter);
 
-            //foreach (var item in result)
-            //{
-            //    output.Id = Convert.ToInt16(item.Id);
-            //    output.Name = Convert.ToString(item.Name);
-            //    output.Description = Convert.ToString(item.Description);
-            //    output.IsActive = Convert.ToBoolean(item.IsActive);
-            //    output.LossLevel2Id = Convert.ToInt16(item.LossLevel2Id);
-            //}
             if (result.Count == 0)
             {
-                //throw new System.Exception("Id not found");
                 return null;
             }
-
-            output.Id = Convert.ToInt16(result[0].Id);
-            output.Name = Convert.ToString(result[0].Name);
-            output.Description = Convert.ToString(result[0].Description);
-            output.IsActive = Convert.ToBoolean(result[0].IsActive);
-            output.LossLevel2Id = Convert.ToInt16(result[0].LossLevel2Id);
-
-            return output;
+            return result[0];
         }
     }
 }
