@@ -105,14 +105,25 @@ namespace CIM.DAL.Implements
             };
             List<LossLevel3> result = await Sql<LossLevel3>(sql, dictParameter);
 
-            foreach (var item in result)
+            //foreach (var item in result)
+            //{
+            //    output.Id = Convert.ToInt16(item.Id);
+            //    output.Name = Convert.ToString(item.Name);
+            //    output.Description = Convert.ToString(item.Description);
+            //    output.IsActive = Convert.ToBoolean(item.IsActive);
+            //    output.LossLevel2Id = Convert.ToInt16(item.LossLevel2Id);
+            //}
+            if (result.Count == 0)
             {
-                output.Id = Convert.ToInt16(item.Id);
-                output.Name = Convert.ToString(item.Name);
-                output.Description = Convert.ToString(item.Description);
-                output.IsActive = Convert.ToBoolean(item.IsActive);
-                output.LossLevel2Id = Convert.ToInt16(item.LossLevel2Id);
+                //throw new System.Exception("Id not found");
+                return null;
             }
+
+            output.Id = Convert.ToInt16(result[0].Id);
+            output.Name = Convert.ToString(result[0].Name);
+            output.Description = Convert.ToString(result[0].Description);
+            output.IsActive = Convert.ToBoolean(result[0].IsActive);
+            output.LossLevel2Id = Convert.ToInt16(result[0].LossLevel2Id);
 
             return output;
         }
