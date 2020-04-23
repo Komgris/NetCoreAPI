@@ -50,27 +50,6 @@ namespace CIM.DAL.Implements
             };
 
             List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
-
-            //List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
-            //foreach (var item in result)
-            //{
-            //    if (total == 0)
-            //    {
-            //        total = Convert.ToInt16(item.TotalCount);
-            //    }
-            //    //output.Add(new LossLevel3ViewModel
-            //    //{
-            //    //    Id = Convert.ToInt16(item.Id),
-            //    //    Name = Convert.ToString(item.Name),
-            //    //    Description = Convert.ToString(item.Description),
-            //    //    IsActive = Convert.ToBoolean(item.IsActive),
-            //    //    LossLevel2Id = Convert.ToInt16(item.LossLevel2_Id),
-            //    //    LossLevel1Id = Convert.ToInt16(item.LossLevel1_Id),
-            //    //    LossLevel1Name = Convert.ToString(item.LossLevel1Name),
-            //    //    LossLevel2Name = Convert.ToString(item.LossLevel2Name),
-            //    //});
-            //}
-
             if (result.Count == 0)
             {
                 return new PagingModel<SpListLossLevel3>
