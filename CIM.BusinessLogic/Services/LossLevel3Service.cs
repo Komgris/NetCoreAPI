@@ -39,8 +39,6 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new LossLevel3Model());
         }
 
-
-
         public async Task<LossLevel3Model> Update(LossLevel3EditableModel model)
         {
             var dbModel = await _repository.FirstOrDefaultAsync(x => x.Id == model.Id);
