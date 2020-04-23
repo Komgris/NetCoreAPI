@@ -77,6 +77,7 @@ namespace CIM.API
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
+
             services.AddControllers();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
