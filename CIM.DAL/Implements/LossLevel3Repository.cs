@@ -4,8 +4,8 @@ using CIM.Model;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 using Dapper;
 using System.Data.SqlClient;
@@ -24,10 +24,8 @@ namespace CIM.DAL.Implements
 {
     public class LossLevel3Repository : Repository<LossLevel3>, ILossLevel3Repository
     {
-        private readonly string _connectionString;
-        public LossLevel3Repository(cim_dbContext context) : base(context)
+        public LossLevel3Repository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
-            _connectionString = _entities.Database.GetDbConnection().ConnectionString;
         }
 
         public async Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync()

@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class UserRepository : Repository<Users>, IUserRepository
     {
-        public UserRepository(cim_dbContext context) : base(context)
+        public UserRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
         }
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
