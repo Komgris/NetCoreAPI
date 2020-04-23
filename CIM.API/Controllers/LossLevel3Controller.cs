@@ -27,9 +27,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<LossLevel3ViewModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<LossLevel3ListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
-            var output = new ProcessReponseModel<PagingModel<LossLevel3ViewModel>>();
+            var output = new ProcessReponseModel<PagingModel<LossLevel3ListModel>>();
             try
             {
                 // todo
