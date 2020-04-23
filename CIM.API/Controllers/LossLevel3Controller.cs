@@ -66,7 +66,6 @@ namespace CIM.API.Controllers
             try
             {
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 return await _service.Update(model);
             }
             catch (Exception e)

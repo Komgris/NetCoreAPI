@@ -54,13 +54,26 @@ namespace CIM.DAL.Implements
         {
             List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
             int total = 0;
-            DynamicParameters parameter = new DynamicParameters();
-            parameter.Add("@keyword", keyword, DbType.String, ParameterDirection.Input);
-            parameter.Add("@is_active", isActive, DbType.Boolean, ParameterDirection.Input);
-            parameter.Add("@page", page, DbType.Int16, ParameterDirection.Input);
-            parameter.Add("@howmany", howmany, DbType.Int16, ParameterDirection.Input);
             string sql = @"sp_ListLossLevel3";
-            List<SpListLossLevel3> result = await execStoreProcedure2<SpListLossLevel3>(sql, parameter);
+
+
+            //DynamicParameters parameter = new DynamicParameters();
+            //parameter.Add("@keyword", keyword, DbType.String, ParameterDirection.Input);
+            //parameter.Add("@is_active", isActive, DbType.Boolean, ParameterDirection.Input);
+            //parameter.Add("@page", page, DbType.Int16, ParameterDirection.Input);
+            //parameter.Add("@howmany", howmany, DbType.Int16, ParameterDirection.Input);
+            //List<SpListLossLevel3> result = await execStoreProcedure2<SpListLossLevel3>(sql, parameter);
+
+
+            Dictionary<string, object> dictParameter = new Dictionary<string, object>
+            {
+                { "@keyword", keyword },
+                { "@is_active", isActive},
+                { "@page", page},
+                { "@howmany", howmany}
+            };
+
+            List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
 
             foreach (var item in result)
             {
@@ -68,7 +81,7 @@ namespace CIM.DAL.Implements
                 {
                     total = Convert.ToInt16(item.TotalCount);
                 }
-                
+
                 output.Add(new LossLevel3ViewModel
                 {
                     Id = Convert.ToInt16(item.Id),

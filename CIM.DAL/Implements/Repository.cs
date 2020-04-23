@@ -28,7 +28,7 @@ namespace CIM.DAL.Implements
         {
             _entities = context;
             _dbset = context.Set<T>();
-            //_connectionString = _entities.Database.GetDbConnection().ConnectionString;
+            _connectionString = _entities.Database.GetDbConnection().ConnectionString;
         }
 
         public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
@@ -52,6 +52,21 @@ namespace CIM.DAL.Implements
             foreach (var item in parameterDic)
             {
                 parameters.Add(item.Key, item.Value);
+            }
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var output = await connection.QueryAsync<T>(storeProcedureName, parameters,commandType: CommandType.StoredProcedure);
+                return output.ToList();
+            }
+        }
+
+        public async Task<List<T>> ExecStoreProcedure3<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new DynamicParameters();
+            foreach (var item in parameterDic)
+            {
+                parameters.Add(item.Key, item.Value,null ,ParameterDirection.Input);
             }
 
             using (var connection = new SqlConnection(_connectionString))
