@@ -39,10 +39,7 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new LossLevel3Model());
         }
 
-        public async Task<LossLevel3ViewModel> Get(int id)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<LossLevel3Model> Update(LossLevel3EditableModel model)
         {
@@ -60,6 +57,13 @@ namespace CIM.BusinessLogic.Services
             bool isActive = true;
             var output = await _repository.ListAsPaging(page, howmany, keyword, isActive);
             return output;
+        }
+
+        public async Task<LossLevel3EditableModel> Get(int id)
+        {
+            var output = await _repository.Get(id);
+            return output;
+            //throw new NotImplementedException();
         }
     }
 }

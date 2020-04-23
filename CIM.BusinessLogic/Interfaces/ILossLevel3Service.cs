@@ -12,6 +12,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany);
         Task<LossLevel3Model> Create(LossLevel3EditableModel model);
         Task<LossLevel3Model> Update(LossLevel3EditableModel model);
-        Task<LossLevel3ViewModel> Get(int id);
+        Task<LossLevel3EditableModel> Get(int id);
     }
 }

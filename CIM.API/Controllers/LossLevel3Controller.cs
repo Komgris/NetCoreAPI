@@ -73,5 +73,22 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
+
+        [HttpGet]
+        [Route("api/[controller]/Get")]
+        public async Task<ProcessReponseModel<LossLevel3EditableModel>> Get(int id)
+        {
+            var output = new ProcessReponseModel<LossLevel3EditableModel>();
+            try
+            {
+                output.Data = await _service.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
     }
 }

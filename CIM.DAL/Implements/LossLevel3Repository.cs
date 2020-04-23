@@ -55,16 +55,6 @@ namespace CIM.DAL.Implements
             List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
             int total = 0;
             string sql = @"sp_ListLossLevel3";
-
-
-            //DynamicParameters parameter = new DynamicParameters();
-            //parameter.Add("@keyword", keyword, DbType.String, ParameterDirection.Input);
-            //parameter.Add("@is_active", isActive, DbType.Boolean, ParameterDirection.Input);
-            //parameter.Add("@page", page, DbType.Int16, ParameterDirection.Input);
-            //parameter.Add("@howmany", howmany, DbType.Int16, ParameterDirection.Input);
-            //List<SpListLossLevel3> result = await execStoreProcedure2<SpListLossLevel3>(sql, parameter);
-
-
             Dictionary<string, object> dictParameter = new Dictionary<string, object>
             {
                 { "@keyword", keyword },
@@ -74,7 +64,6 @@ namespace CIM.DAL.Implements
             };
 
             List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
-
             foreach (var item in result)
             {
                 if (total == 0)
@@ -100,6 +89,32 @@ namespace CIM.DAL.Implements
                 HowMany = total,
                 Data = output
             };
+        }
+
+        public async Task<LossLevel3EditableModel> Get(int Id)
+        {
+            LossLevel3EditableModel output = new LossLevel3EditableModel();
+
+            string sql = @" SELECT TOP 1 *
+                            FROM          dbo.LossLevel3
+                            WHERE		  dbo.LossLevel3.Id = @Id;";
+
+            Dictionary<string, object> dictParameter = new Dictionary<string, object>
+            {
+                { "@Id", Id }
+            };
+            List<LossLevel3> result = await Sql<LossLevel3>(sql, dictParameter);
+
+            foreach (var item in result)
+            {
+                output.Id = Convert.ToInt16(item.Id);
+                output.Name = Convert.ToString(item.Name);
+                output.Description = Convert.ToString(item.Description);
+                output.IsActive = Convert.ToBoolean(item.IsActive);
+                output.LossLevel2Id = Convert.ToInt16(item.LossLevel2Id);
+            }
+
+            return output;
         }
     }
 }
