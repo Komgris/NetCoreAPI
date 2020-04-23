@@ -54,7 +54,7 @@ namespace CIM.API.IntegrationTests
             var model = await CreateData(name);
 
             // Act
-            var response = await TestClient.GetAsync("/api/Product/" + model.Data.Id);
+            var response = await TestClient.GetAsync($"/api/Product/Get?id={model.Data.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<ProcessReponseModel<ProductModel>>((await response.Content.ReadAsStringAsync()));
@@ -80,8 +80,7 @@ namespace CIM.API.IntegrationTests
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var updateResponseModel = JsonConvert.DeserializeObject<MachineListModel>((await updateResponse.Content.ReadAsStringAsync()));
 
-
-            var response = await TestClient.GetAsync("/api/Product/" + model.Data.Id);
+            var response = await TestClient.GetAsync($"/api/Product/Get?id={model.Data.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var responseModel = JsonConvert.DeserializeObject<MachineListModel>((await response.Content.ReadAsStringAsync()));

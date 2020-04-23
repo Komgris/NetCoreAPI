@@ -16,8 +16,6 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
-        private IProductionPlanService _productionPlanService;
         private IMachineService _service;
         public MachineController(
             IHubContext<MachineHub> hub,
@@ -25,8 +23,6 @@ namespace CIM.API.Controllers
             IMachineService service
         )
         {
-            _hub = hub;
-            _productionPlanService = productionPlanService;
             _service = service;
         }
 
@@ -108,22 +104,6 @@ namespace CIM.API.Controllers
                 output.Message = ex.ToString();
             }
             return output;
-        }
-
-        [HttpPost]
-        [Route("api/[controller]/SetStatus")]
-        public async Task<string> SetStatus(int id, int statusId)
-        {
-
-            var productionPlan = await _productionPlanService.UpdateByMachine(id, statusId);
-
-            // Production plan of this component doesn't started yet
-            if (productionPlan != null)
-            {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
-            }
-            return "OK";
         }
 
 

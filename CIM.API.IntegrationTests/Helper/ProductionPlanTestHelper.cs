@@ -1,9 +1,7 @@
 ﻿using CIM.Model;
 using FluentAssertions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CIM.API.IntegrationTests.Helper
 {
@@ -13,9 +11,9 @@ namespace CIM.API.IntegrationTests.Helper
         {
             return new List<ProductionPlanModel>()
             {
-                new ProductionPlanModel{ PlanId="testA",ProductId=1,Status="new"},
-                new ProductionPlanModel{ PlanId="testB",ProductId=2,Status="new"},
-                new ProductionPlanModel{ PlanId="testC",ProductId=2,Status="new"},
+                new ProductionPlanModel{ PlanId="testA",ProductId=1,StatusId= (int)Constans.PRODUCTION_PLAN_STATUS.New},
+                new ProductionPlanModel{ PlanId="testB",ProductId=2,StatusId= (int)Constans.PRODUCTION_PLAN_STATUS.New},
+                new ProductionPlanModel{ PlanId="testC",ProductId=2,StatusId= (int)Constans.PRODUCTION_PLAN_STATUS.New},
             };
         }
 
@@ -25,5 +23,7 @@ namespace CIM.API.IntegrationTests.Helper
             compareList.PlanId.Should().Be(expect.PlanId);
             compareList.ProductId.Should().Be(expect.ProductId);
         }
+
+
     }
 }

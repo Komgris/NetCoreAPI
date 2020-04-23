@@ -1,8 +1,5 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CIM.BusinessLogic.Services
 {

@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(cim_dbContext context) : base(context)
+        public ProductRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }
@@ -47,7 +48,7 @@ namespace CIM.DAL.Implements
                         UpdatedBy = x.UpdatedBy,
                     });
 
-            return await ToPagingModel(dbModel, page, howmany);
+            return await ToPagingModelAsync(dbModel, page, howmany);
 
         }
 

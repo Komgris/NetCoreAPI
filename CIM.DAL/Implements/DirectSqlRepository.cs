@@ -11,17 +11,17 @@ namespace CIM.DAL.Implements
 {
     public class DirectSqlRepository : IDirectSqlRepository
     {
-        private IConfiguration configuration;
+        private IConfiguration _configuration;
 
         public DirectSqlRepository(
-            IConfiguration config
-            )
+            IConfiguration configuration
+        )
         {
-            configuration = config;
+            _configuration = configuration;
         }
         public void ExecuteNonQuery(string sql, object[] parameters)
         {
-            var connectionString = configuration.GetConnectionString("CIMDatabase");
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -36,7 +36,7 @@ namespace CIM.DAL.Implements
 
         public string ExecuteReader(string sql, object[] parameters)
         {
-            var connectionString = configuration.GetConnectionString("CIMDatabase");
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
             var output = string.Empty;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -57,6 +57,41 @@ namespace CIM.DAL.Implements
                 connection.Close();
             }
             return output;
+        }
+
+        public DataTable ExecuteSPWithQuery(string sql, Dictionary<string,object> parameters) {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+                using (SqlCommand command = new SqlCommand(sql, connection)) {
+                    if (parameters != null) 
+                        foreach (var p in parameters)
+                            if(p.Value!=null) command.Parameters.AddWithValue(p.Key, p.Value);
+
+                    connection.Open();
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable();
+                    dt.Load(command.ExecuteReader());
+
+                    return dt;
+                }
+            }
+        }
+
+        public DataTable ExecuteWithQuery(string sql) {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+                using (SqlCommand command = new SqlCommand(sql, connection)) {
+
+                    connection.Open();
+
+                    command.CommandType = CommandType.Text;
+                    DataTable dt = new DataTable();
+                    dt.Load(command.ExecuteReader());
+
+                    return dt;
+                }
+            }
         }
     }
 }

@@ -23,16 +23,24 @@ namespace CIM.BusinessLogicTests.Services
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
-            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>();
+            var machineService = new Mock<IMachineService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
+
             var planService = new ProductionPlanService(
                 responseCacheService,
                 masterDataService,
-                unitOfWork, 
+                unitOfWork,
                 planRepository,
-                productRepository
-                );
+                productRepository.Object,
+                machineService.Object,
+                activeProcessService.Object,
+                recordManufacturingLossService.Object,
+                reportService.Object
+            );
             //var result = planService.List();
             //result.Should().NotBeNull();
         }
@@ -44,17 +52,24 @@ namespace CIM.BusinessLogicTests.Services
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
-            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>();
+            var machineService = new Mock<IMachineService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
+
             var planService = new ProductionPlanService(
                 responseCacheService,
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository
-                );
-
+                productRepository.Object,
+                machineService.Object,
+                activeProcessService.Object,
+                recordManufacturingLossService.Object,
+                reportService.Object
+            );
 
             var dbPlanMoq = new List<ProductionPlan>()
             {
@@ -82,16 +97,25 @@ namespace CIM.BusinessLogicTests.Services
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
-            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>();
+            var machineService = new Mock<IMachineService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
+
+
             var planService = new ProductionPlanService(
                 responseCacheService,
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository
-                );
+                productRepository.Object,
+                machineService.Object,
+                activeProcessService.Object,
+                recordManufacturingLossService.Object,
+                reportService.Object
+            );
             //var result = planService.ReadImport(path);
             //result.Should().NotBeNull();
         }
@@ -108,16 +132,24 @@ namespace CIM.BusinessLogicTests.Services
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
-            var productionPlanRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
+            var productRepository = new Mock<IProductRepository>();
+            var machineService = new Mock<IMachineService>();
+            var activeProcessService = new Mock<IActiveProductionPlanService>();
+            var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
+            var reportService = new Mock<IReportService>();
+
             var planService = new ProductionPlanService(
                 responseCacheService,
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository
-                );
+                productRepository.Object,
+                machineService.Object,
+                activeProcessService.Object,
+                recordManufacturingLossService.Object,
+                reportService.Object
+            );
             //var result = planService.Insert(dbPlanMoq);
             //result.Should().BeTrue();
         }

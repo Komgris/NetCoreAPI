@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
+using CIM.BusinessLogic.Utility;
 
 namespace CIM.API.Controllers
 {
@@ -47,8 +48,7 @@ namespace CIM.API.Controllers
 
 
                     var fromExcel = _planService.ReadImport(fullPath);
-                    var fromDb = _planService.Get();
-                    var result = _planService.Compare(fromExcel, fromDb);
+                    var result = await _planService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
                 }
@@ -59,32 +59,32 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null)
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true);
+                output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
             } 
             catch( Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
 
-        [Route("api/[controller]/Create")]
+        [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Create([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
         {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
@@ -93,20 +93,20 @@ namespace CIM.API.Controllers
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _planService.Create(data);
+                output.Data = await _planService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
                 output.IsSuccess = false;
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
-        [Route("api/[controller]/Update")]
-        [HttpPut]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody]List<ProductionPlanModel> data)
+        [Route("api/[controller]/Create")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -121,7 +121,29 @@ namespace CIM.API.Controllers
             catch (Exception ex)
             {
                 output.IsSuccess = false;
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Update")]
+        [HttpPut]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody] ProductionPlanModel data)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+
+                await _planService.Update(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -142,8 +164,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.IsSuccess = false;
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -163,14 +184,14 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
         [Route("api/ProductionPlanStop")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id, string routeIds = "")
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -178,12 +199,12 @@ namespace CIM.API.Controllers
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Stop(id);
+                await _planService.Stop(id, HelperUtility.StringToArray(routeIds));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -203,7 +224,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -220,7 +241,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }

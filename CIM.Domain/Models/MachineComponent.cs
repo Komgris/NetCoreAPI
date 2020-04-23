@@ -8,7 +8,6 @@ namespace CIM.Domain.Models
         public MachineComponent()
         {
             RecordMachineComponentLoss = new HashSet<RecordMachineComponentLoss>();
-            RecordMachineComponentStatus = new HashSet<RecordMachineComponentStatus>();
         }
 
         public int Id { get; set; }
@@ -17,14 +16,13 @@ namespace CIM.Domain.Models
         public int TypeId { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
-        public string CreateBy { get; set; }
+        public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdateBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Machine Machine { get; set; }
         public virtual MachineComponentType Type { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
-        public virtual ICollection<RecordMachineComponentStatus> RecordMachineComponentStatus { get; set; }
     }
 }

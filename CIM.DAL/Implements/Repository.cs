@@ -6,21 +6,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using CIM.DAL.Interfaces;
-using CIM.Domain.Models;
-using CIM.Model;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using StoredProcedureEFCore;
+using Dapper;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace CIM.DAL.Implements
 {
@@ -29,13 +21,67 @@ namespace CIM.DAL.Implements
     {
         protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
+        private readonly IConfiguration _configuration;
 
-        public Repository(cim_dbContext context)
+        public Repository(
+            cim_dbContext context, 
+            IConfiguration configuration
+        )
         {
-
             _entities = context;
             _dbset = context.Set<T>();
+            _configuration = configuration;
         }
+
+        public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new DynamicParameters();
+            foreach (var item in parameterDic)
+            {
+                parameters.Add(item.Key, item.Value);
+            }
+
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var output = await connection.QueryAsync<T>(sql, parameters);
+                return output.ToList();
+            }
+        }
+
+        public async Task<List<T>> ExecStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new DynamicParameters();
+            foreach (var item in parameterDic)
+            {
+                parameters.Add(item.Key, item.Value);
+            }
+
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var output = await connection.QueryAsync<T>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+                return output.ToList();
+            }
+        }
+
+        //to do it not complete need to p'ton fix for output data table
+        //public async Task<IEnumerable<DataTable>> execStoreProcedureDataTable(string storeProcedureName, Dictionary<string, object> parameterDic)
+        //{
+        //    var parameters = new List<DynamicParameters>();
+        //    foreach (var item in parameterDic)
+        //    {
+        //        var p = new DynamicParameters();
+        //        p.Add(item.Key, item.Value);
+        //        parameters.Add(p);
+        //    }
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        var output = await connection.QueryAsync<DataTable>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+        //        return output;
+        //    }
+        //}
 
         public virtual IQueryable<T> All()
         {
@@ -66,7 +112,6 @@ namespace CIM.DAL.Implements
             return query;
         }
 
-
         public virtual void Add(T entity)
         {
             _dbset.Add(entity);
@@ -88,7 +133,7 @@ namespace CIM.DAL.Implements
             return _dbset.Any(predicate);
         }
 
-        public async Task<PagingModel<T>> ToPagingModel<T>(IQueryable<T> sqlQuery, int page, int howmany)
+        public async Task<PagingModel<T>> ToPagingModelAsync<T>(IQueryable<T> sqlQuery, int page, int howmany)
         where T : new()
         {
             var output = new PagingModel<T>();
@@ -105,6 +150,23 @@ namespace CIM.DAL.Implements
             return output;
         }
 
+        public PagingModel<T> ToPagingModel<T>(List<T> data, int total, int page, int howmany)
+        where T : new()
+        {
+            var output = new PagingModel<T>();
+            output.Total = total;
+            output.HowMany = howmany;
+            output.Page = page;
+            output.NextPage = page + 1;
+            output.PreviousPage = page - 1;
+            output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
+            var skip = (page - 1) * howmany;
+            output.Data = data;
+            return output;
+        }        
 
     }
+
 }
