@@ -53,8 +53,17 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<LossLevel3ViewModel>> List(string keyword, int page, int howmany)
         {
             bool isActive = true;
-            var output = await _repository.List(page, howmany, keyword, isActive);
-            return output;
+            var result = await _repository.List(page, howmany, keyword, isActive);
+            var output = new List<LossLevel3ViewModel>();
+            foreach (var item in result.Data)
+            {
+                output.Add(MapperHelper.AsModel(item, new LossLevel3ViewModel()));
+            }
+            return new PagingModel<LossLevel3ViewModel>
+            {
+                HowMany = result.Total,
+                Data = output
+            };
         }
 
         public async Task<LossLevel3EditableModel> Get(int id)
@@ -64,7 +73,6 @@ namespace CIM.BusinessLogic.Services
             {
                 return null;
             }
-
             var output = MapperHelper.AsModel(result, new LossLevel3EditableModel());
             return output;
         }

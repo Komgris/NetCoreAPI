@@ -6,20 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-
-using Dapper;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Data;
-
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Dapper;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Data;
-using Microsoft.EntityFrameworkCore;
+
 namespace CIM.DAL.Implements
 {
     public class LossLevel3Repository : Repository<LossLevel3>, ILossLevel3Repository
@@ -48,9 +36,9 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<LossLevel3ViewModel>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<SpListLossLevel3>> List(int page, int howmany, string keyword, bool isActive)
         {
-            List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
+
             int total = 0;
             string sql = @"sp_ListLossLevel3";
             Dictionary<string, object> dictParameter = new Dictionary<string, object>
@@ -62,30 +50,41 @@ namespace CIM.DAL.Implements
             };
 
             List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
-            foreach (var item in result)
-            {
-                if (total == 0)
-                {
-                    total = Convert.ToInt16(item.TotalCount);
-                }
 
-                output.Add(new LossLevel3ViewModel
+            //List<LossLevel3ViewModel> output = new List<LossLevel3ViewModel>();
+            //foreach (var item in result)
+            //{
+            //    if (total == 0)
+            //    {
+            //        total = Convert.ToInt16(item.TotalCount);
+            //    }
+            //    //output.Add(new LossLevel3ViewModel
+            //    //{
+            //    //    Id = Convert.ToInt16(item.Id),
+            //    //    Name = Convert.ToString(item.Name),
+            //    //    Description = Convert.ToString(item.Description),
+            //    //    IsActive = Convert.ToBoolean(item.IsActive),
+            //    //    LossLevel2Id = Convert.ToInt16(item.LossLevel2_Id),
+            //    //    LossLevel1Id = Convert.ToInt16(item.LossLevel1_Id),
+            //    //    LossLevel1Name = Convert.ToString(item.LossLevel1Name),
+            //    //    LossLevel2Name = Convert.ToString(item.LossLevel2Name),
+            //    //});
+            //}
+
+            if (result.Count == 0)
+            {
+                return new PagingModel<SpListLossLevel3>
                 {
-                    Id = Convert.ToInt16(item.Id),
-                    Name = Convert.ToString(item.Name),
-                    Description = Convert.ToString(item.Description),
-                    IsActive = Convert.ToBoolean(item.IsActive),
-                    LossLevel2Id = Convert.ToInt16(item.LossLevel2_Id),
-                    LossLevel1Id = Convert.ToInt16(item.LossLevel1_Id),
-                    LossLevel1Name = Convert.ToString(item.LossLevel1Name),
-                    LossLevel2Name = Convert.ToString(item.LossLevel2Name),
-                });
+                    HowMany = total,
+                    Data = null
+                };
             }
 
-            return new PagingModel<LossLevel3ViewModel>
+            total = Convert.ToInt16(result[0].TotalCount);
+            return new PagingModel<SpListLossLevel3>
             {
                 HowMany = total,
-                Data = output
+                Data = result
             };
         }
 

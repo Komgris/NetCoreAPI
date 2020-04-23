@@ -15,9 +15,9 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public int LossLevel1_Id { get; set; }
+        public int LossLevel1Id { get; set; }
         public string LossLevel1Name { get; set; }
-        public int LossLevel2_Id { get; set; }
+        public int LossLevel2Id { get; set; }
         public string LossLevel2Name { get; set; }
         public int TotalCount { get; set; }
     }
