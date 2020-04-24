@@ -32,7 +32,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<LossLevel3ListModel>>();
             try
             {
-                // todo
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }

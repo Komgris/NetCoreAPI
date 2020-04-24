@@ -50,38 +50,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<Model.LossLevel3ListModel>> List(string keyword, int page, int howmany, bool isActive)
         {
-            string sql = @"sp_ListLossLevel3";
-            int total;
-            Dictionary<string, object> dictParameter = new Dictionary<string, object>
-            {
-                { "@keyword", keyword },
-                { "@is_active", isActive},
-                { "@page", page},
-                { "@howmany", howmany}
-            };
-
-            IList<Domain.Models.LossLevel3ListModel> result;
-            result = await _lossLevel3Repository.List(sql, dictParameter);
-            var output = new List<Model.LossLevel3ListModel>();
-            foreach (var item in result)
-            {
-                output.Add(MapperHelper.AsModel(item, new Model.LossLevel3ListModel()));
-            }
-
-            if (result.Count > 0)
-            {
-                total = result[0].TotalCount;
-            }
-            else
-            {
-                total = 0;
-            }
-
-            return new PagingModel<Model.LossLevel3ListModel>
-            {
-                Total = total,
-                Data = output
-            };
+            var output = await _lossLevel3Repository.List(page, howmany, keyword, isActive);
+            return output;
         }
 
         public async Task<LossLevel3EditableModel> Get(int id)

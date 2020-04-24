@@ -7,13 +7,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
     public class LossLevel3Repository : Repository<LossLevel3>, ILossLevel3Repository
     {
-        public LossLevel3Repository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        private IDirectSqlRepository _directSqlRepository;
+
+        public LossLevel3Repository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
         {
+            _directSqlRepository = directSqlRepository;
         }
 
         public async Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync()
@@ -23,7 +27,6 @@ namespace CIM.DAL.Implements
             var proc = _entities.LoadStoredProc("sp_ListComponentMappingAsync");
             await proc.ExecAsync(x => Task.Run(() => data = x.ToList<LossLevelComponentMappingModel>()));
             return data;
-
         }
 
         public async Task<IList<LossLevelMachineMappingModel>> ListMachineMappingAsync()
@@ -36,31 +39,21 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        //public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
-        public async Task<IList<Domain.Models.LossLevel3ListModel>> List(string procedureName, Dictionary<string, object> parameters)
+        public async Task<PagingModel<LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
         {
-            return await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(procedureName, parameters);
-
-            //int total = 0;
-            //string sql = @"sp_ListLossLevel3";
-            //Dictionary<string, object> dictParameter = new Dictionary<string, object>
-            //{
-            //    { "@keyword", keyword },
-            //    { "@is_active", isActive},
-            //    { "@page", page},
-            //    { "@howmany", howmany}
-            //};
-
-            //List<Domain.Models.LossLevel3ListModel> result = await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(sql, dictParameter);
-            //if (result.Count > 0)
-            //{
-            //    total = result[0].TotalCount;
-            //}
-            //return new PagingModel<Domain.Models.LossLevel3ListModel>
-            //{
-            //    HowMany = total,
-            //    Data = result
-            //};
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            { "@keyword", keyword },
+                                            { "@is_active", isActive},
+                                            { "@page", page},
+                                            { "@howmany", howmany}
+                                        };
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListLossLevel3", parameterList);
+                var totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+                return ToPagingModel(dt.ToModel<LossLevel3ListModel>(), totalCount, page, howmany);
+            });
         }
     }
 }
