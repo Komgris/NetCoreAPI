@@ -36,24 +36,31 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword)
+        //public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<IList<Domain.Models.LossLevel3ListModel>> List(string procedureName, Dictionary<string, object> parameters)
         {
+            return await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(procedureName, parameters);
 
-            int total = 0;
-            string sql = @"sp_ListLossLevel3";
-            Dictionary<string, object> dictParameter = new Dictionary<string, object>
-            {
-                { "@keyword", keyword },
-                { "@page", page},
-                { "@howmany", howmany}
-            };
+            //int total = 0;
+            //string sql = @"sp_ListLossLevel3";
+            //Dictionary<string, object> dictParameter = new Dictionary<string, object>
+            //{
+            //    { "@keyword", keyword },
+            //    { "@is_active", isActive},
+            //    { "@page", page},
+            //    { "@howmany", howmany}
+            //};
 
-            List<Domain.Models.LossLevel3ListModel> result = await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(sql, dictParameter);
-            return new PagingModel<Domain.Models.LossLevel3ListModel>
-            {
-                HowMany = total,
-                Data = result
-            };
+            //List<Domain.Models.LossLevel3ListModel> result = await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(sql, dictParameter);
+            //if (result.Count > 0)
+            //{
+            //    total = result[0].TotalCount;
+            //}
+            //return new PagingModel<Domain.Models.LossLevel3ListModel>
+            //{
+            //    HowMany = total,
+            //    Data = result
+            //};
         }
     }
 }
