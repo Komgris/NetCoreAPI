@@ -36,7 +36,7 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<SpListLossLevel3>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
         {
 
             int total = 0;
@@ -48,10 +48,10 @@ namespace CIM.DAL.Implements
                 { "@page", page},
                 { "@howmany", howmany}
             };
-            
 
-            List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
-            return new PagingModel<SpListLossLevel3>
+
+            List<Domain.Models.LossLevel3ListModel> result = await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(sql, dictParameter);
+            return new PagingModel<Domain.Models.LossLevel3ListModel>
             {
                 HowMany = total,
                 Data = result

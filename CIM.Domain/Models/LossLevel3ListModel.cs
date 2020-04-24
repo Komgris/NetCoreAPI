@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class SpListLossLevel3
+    public partial class LossLevel3ListModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
