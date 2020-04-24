@@ -10,8 +10,8 @@ namespace CIM.BusinessLogic.Interfaces
     public interface ILossLevel3Service : IBaseService
     {
         Task<PagingModel<LossLevel3ListModel>> List(string keyword, int page, int howmany, bool isActive);
-        Task<LossLevel3Model> Create(LossLevel3EditableModel model);
-        Task<LossLevel3Model> Update(LossLevel3EditableModel model);
-        Task<LossLevel3EditableModel> Get(int id);
+        Task<LossLevel3Model> Create(LossLevel3Model model);
+        Task<LossLevel3Model> Update(LossLevel3Model model);
+        Task<LossLevel3Model> Get(int id);
     }
 }

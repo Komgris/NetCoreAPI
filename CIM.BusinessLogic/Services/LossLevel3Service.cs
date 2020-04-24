@@ -26,7 +26,7 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<LossLevel3Model> Create(LossLevel3EditableModel model)
+        public async Task<LossLevel3Model> Create(LossLevel3Model model)
         {
             var dbModel = MapperHelper.AsModel(model, new LossLevel3());
             _lossLevel3Repository.Add(dbModel);
@@ -37,7 +37,7 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new LossLevel3Model());
         }
 
-        public async Task<LossLevel3Model> Update(LossLevel3EditableModel model)
+        public async Task<LossLevel3Model> Update(LossLevel3Model model)
         {
             var dbModel = await _lossLevel3Repository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel = MapperHelper.AsModel(model, dbModel);
@@ -54,10 +54,10 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<LossLevel3EditableModel> Get(int id)
+        public async Task<LossLevel3Model> Get(int id)
         {
             var dbModel = await _lossLevel3Repository.FirstOrDefaultAsync(x => x.Id == id);
-            return MapperHelper.AsModel(dbModel, new LossLevel3EditableModel());
+            return MapperHelper.AsModel(dbModel, new LossLevel3Model());
         }
     }
 }

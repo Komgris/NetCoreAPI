@@ -44,7 +44,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<LossLevel3Model> Create([FromBody]LossLevel3EditableModel model)
+        public async Task<LossLevel3Model> Create([FromBody]LossLevel3Model model)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<LossLevel3Model> Update([FromBody]LossLevel3EditableModel model)
+        public async Task<LossLevel3Model> Update([FromBody]LossLevel3Model model)
         {
             try
             {
@@ -75,9 +75,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/Get")]
-        public async Task<ProcessReponseModel<LossLevel3EditableModel>> Get(int id)
+        public async Task<ProcessReponseModel<LossLevel3Model>> Get(int id)
         {
-            var output = new ProcessReponseModel<LossLevel3EditableModel>();
+            var output = new ProcessReponseModel<LossLevel3Model>();
             try
             {
                 output.Data = await _service.Get(id);
