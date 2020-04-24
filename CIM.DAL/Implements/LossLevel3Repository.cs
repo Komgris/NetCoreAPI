@@ -51,7 +51,15 @@ namespace CIM.DAL.Implements
                                             { "@howmany", howmany}
                                         };
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListLossLevel3", parameterList);
-                var totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+                int totalCount;
+                if (dt.Rows.Count == 0)
+                {
+                    totalCount = 0;
+                }
+                else
+                {
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"]);
+                }
                 return ToPagingModel(dt.ToModel<LossLevel3ListModel>(), totalCount, page, howmany);
             });
         }
