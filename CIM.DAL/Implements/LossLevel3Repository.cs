@@ -48,18 +48,9 @@ namespace CIM.DAL.Implements
                 { "@page", page},
                 { "@howmany", howmany}
             };
+            
 
             List<SpListLossLevel3> result = await ExecStoreProcedure<SpListLossLevel3>(sql, dictParameter);
-            if (result.Count == 0)
-            {
-                return new PagingModel<SpListLossLevel3>
-                {
-                    HowMany = total,
-                    Data = null
-                };
-            }
-
-            total = Convert.ToInt16(result[0].TotalCount);
             return new PagingModel<SpListLossLevel3>
             {
                 HowMany = total,
