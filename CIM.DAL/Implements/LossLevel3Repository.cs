@@ -36,7 +36,7 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword)
         {
 
             int total = 0;
@@ -44,11 +44,9 @@ namespace CIM.DAL.Implements
             Dictionary<string, object> dictParameter = new Dictionary<string, object>
             {
                 { "@keyword", keyword },
-                { "@is_active", isActive},
                 { "@page", page},
                 { "@howmany", howmany}
             };
-
 
             List<Domain.Models.LossLevel3ListModel> result = await ExecStoreProcedure<Domain.Models.LossLevel3ListModel>(sql, dictParameter);
             return new PagingModel<Domain.Models.LossLevel3ListModel>

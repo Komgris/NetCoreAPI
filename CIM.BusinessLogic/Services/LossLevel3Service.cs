@@ -30,8 +30,6 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = MapperHelper.AsModel(model, new LossLevel3());
             _repository.Add(dbModel);
-            dbModel.Id = 0;
-            dbModel.IsActive = true;
             dbModel.IsDelete = false;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
@@ -52,8 +50,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<Model.LossLevel3ListModel>> List(string keyword, int page, int howmany)
         {
-            bool isActive = true;
-            var result = await _repository.List(page, howmany, keyword, isActive);
+            var result = await _repository.List(page, howmany, keyword);
             var output = new List<Model.LossLevel3ListModel>();
             foreach (var item in result.Data)
             {
