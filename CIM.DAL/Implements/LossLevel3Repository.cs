@@ -55,24 +55,5 @@ namespace CIM.DAL.Implements
                 Data = result
             };
         }
-
-        public async Task<LossLevel3> Get(int id)
-        {
-            string sql = @" SELECT TOP 1 *
-                            FROM          dbo.LossLevel3
-                            WHERE		  dbo.LossLevel3.Id = @id;";
-
-            Dictionary<string, object> dictParameter = new Dictionary<string, object>
-            {
-                { "@id", id }
-            };
-            List<LossLevel3> result = await Sql<LossLevel3>(sql, dictParameter);
-
-            if (result.Count == 0)
-            {
-                return null;
-            }
-            return result[0];
-        }
     }
 }
