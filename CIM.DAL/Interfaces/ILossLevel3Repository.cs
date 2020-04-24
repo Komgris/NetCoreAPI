@@ -12,6 +12,5 @@ namespace CIM.DAL.Interfaces
         Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync();
         Task<IList<LossLevelMachineMappingModel>> ListMachineMappingAsync();
         Task<PagingModel<Domain.Models.LossLevel3ListModel>> List(int page, int howmany, string keyword);
-        Task<LossLevel3> Get(int Id);
     }
 }
