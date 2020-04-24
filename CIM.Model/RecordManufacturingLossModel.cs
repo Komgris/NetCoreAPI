@@ -20,5 +20,7 @@ namespace CIM.Model
         public bool IsAuto { get; set; }
         public int LossLevel3Id { get; set; }
         public DateTime StartedAt { get; set; }
+
+        public List<RecordProductionPlanWasteModel> WasteList { get; set; } = new List<RecordProductionPlanWasteModel>();
     }
 }
