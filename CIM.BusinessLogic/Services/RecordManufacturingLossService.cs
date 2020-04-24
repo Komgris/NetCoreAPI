@@ -61,10 +61,8 @@ namespace CIM.BusinessLogic.Services
             foreach (var waste in lossWaste)
             {
                 var updateModel = updateWasteList[waste.Id];
-                waste.Amount = updateModel.Amount;
                 waste.CauseMachineId = updateModel.CauseMachineId;
                 waste.IsDelete = updateModel.IsDelete;
-                waste.MaterialId = updateModel.MaterialId;
                 waste.Reason = updateModel.Reason;
                 waste.RouteId = updateModel.RouteId;
                 waste.UpdatedBy = CurrentUser.UserId;
