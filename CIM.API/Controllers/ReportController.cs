@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
+using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -26,16 +27,22 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
-        public string GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
+        public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
+
+            var output = new ProcessReponseModel<object>();
             try
             {
-                return JsonConvert.SerializeObject(_service.GetProductionSummary(planId, routeId, from, to), JsonsSetting);
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionSummary(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
             }
             catch (Exception e)
             {
-                throw e;
+                output.Message = e.Message;
             }
+
+            return output;
+
         }
 
         [HttpGet]
