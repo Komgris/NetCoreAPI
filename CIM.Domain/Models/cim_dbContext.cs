@@ -56,6 +56,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
         public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
+        public virtual DbSet<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -1405,8 +1406,6 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Waste");
 
-                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.CauseMachineId).HasColumnName("CauseMachine_Id");
 
                 entity.Property(e => e.CreatedAt)
@@ -1417,8 +1416,6 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
-
-                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
                 entity.Property(e => e.ProductionPlanId)
                     .IsRequired()
@@ -1441,6 +1438,23 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordProductionPlanWaste)
                     .HasForeignKey(d => d.RecordManufacturingLossId)
                     .HasConstraintName("FK_Record_ProductionPlan_Waste_Record_Manufacturing_Loss");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste_Materials");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
+
+                entity.HasOne(d => d.Waste)
+                    .WithMany(p => p.RecordProductionPlanWasteMaterials)
+                    .HasForeignKey(d => d.WasteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_Materials_Record_ProductionPlan_Waste");
             });
 
             modelBuilder.Entity<Route>(entity =>
