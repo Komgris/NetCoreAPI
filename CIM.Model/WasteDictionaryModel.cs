@@ -14,6 +14,7 @@ namespace CIM.Model
         public int? ProductTypeId { get; set; }
 
         public int Level { get; set; }
+        public int ParentId { get; set; }
 
         public Dictionary<int, WasteDictionaryModel> Sub { get; set; } = new Dictionary<int, WasteDictionaryModel>();
 

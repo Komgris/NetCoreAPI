@@ -22,6 +22,8 @@ namespace CIM.BusinessLogic.Services
         private IProductRepository _productsRepository;
         private IProductionPlanRepository _productionPlanRepository;
         private IUnitsRepository _unitsRepository;
+        private IWasteLevel1Repository _wasteLevel1Repository;
+        private IWasteLevel2Repository _wasteLevel2Repository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -34,7 +36,9 @@ namespace CIM.BusinessLogic.Services
             IProductionStatusRepository productionStatusRepository,
             IProductRepository productRepository,
             IProductionPlanRepository productionPlanRepository,
-            IUnitsRepository unitsRepository
+            IUnitsRepository unitsRepository,
+            IWasteLevel1Repository wasteLevel1Repository,
+            IWasteLevel2Repository wasteLevel2Repository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -48,6 +52,8 @@ namespace CIM.BusinessLogic.Services
             _productsRepository = productRepository;
             _productionPlanRepository = productionPlanRepository;
             _unitsRepository = unitsRepository;
+            _wasteLevel1Repository = wasteLevel1Repository;
+            _wasteLevel2Repository = wasteLevel2Repository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -172,6 +178,8 @@ namespace CIM.BusinessLogic.Services
             _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
             _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
             _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3Model())).ToList();
+            _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
+            _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
 
             var masterData = new MasterDataModel();
             masterData.LossLevel3s = GetLossLevel3();
@@ -181,11 +189,10 @@ namespace CIM.BusinessLogic.Services
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
             masterData.ProductionPlan = await GetProductionPlan();
             masterData.ProductGroupRoutes = await GetProductGroupRoutes();
+            masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
 
             masterData.Dictionary.Products = await GetProductDictionary();
             masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
-            masterData.Dictionary.Lines.Add("Line001", "Line001");
-            masterData.Dictionary.ComponentAlerts.Add(1, new { Name = "Error", Description = "Some description" });
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
             masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
@@ -193,6 +200,27 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
+        }
+
+        private IDictionary<int, Dictionary<int, WasteDictionaryModel>> GetWastesByProductType(IList<WasteDictionaryModel> wastesLevel1, IList<WasteDictionaryModel> wastesLevel2)
+        {
+            var output = new Dictionary<int, Dictionary<int, WasteDictionaryModel>>();
+            var WasteDictionaryList = new Dictionary<int, WasteDictionaryModel>();
+
+            foreach (var item in wastesLevel1)
+            {
+                item.Sub = wastesLevel2.Where(x => x.ParentId == item.Id).ToDictionary(x => x.Id, x => x);
+                WasteDictionaryList.Add(item.Id, item);
+            }
+
+
+            var productTypeIds = wastesLevel1.Where(x=>x.ProductTypeId != null).Select(x => (int)x.ProductTypeId).Distinct().ToList();
+            foreach (var productTypeId in productTypeIds)
+            {
+                var wasteByProductType = wastesLevel1.Where(x => x.ProductTypeId == productTypeId).ToDictionary(x=>x.Id, x=>x);
+                output.Add(productTypeId, wasteByProductType);
+            }
+            return output;
         }
 
         public async Task Clear()
