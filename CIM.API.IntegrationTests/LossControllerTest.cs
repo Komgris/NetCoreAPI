@@ -20,7 +20,6 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task GetLossLevel1List_Test()
         {
-            //https://localhost:44365/api/LossLevel1/List?page=1&howmany=10&isActive=true
             // Act
             var response = await TestClient.GetAsync("/api/LossLevel1/List?page=1&howmany=10&isActive=true");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -33,7 +32,6 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task GetLossLevel2List_Test()
         {
-            //https://localhost:44365/api/LossLevel1/List?page=1&howmany=10&isActive=true
             // Act
             var response = await TestClient.GetAsync("/api/LossLevel2/List?page=1&howmany=10&isActive=true");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -46,7 +44,6 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task GetLossLevel3List_Test()
         {
-            //https://localhost:44365/api/LossLevel1/List?page=1&howmany=10&isActive=true
             // Act
             var response = await TestClient.GetAsync("/api/LossLevel3/List?page=1&howmany=10&isActive=true");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -56,7 +53,6 @@ namespace CIM.API.IntegrationTests
             result.IsSuccess.Should().BeTrue();
         }
 
-        //https://localhost:44365/api/LossLevel3/Update
         [Fact]
         public async Task UpdateLossLevel3_Test()
         {
@@ -65,13 +61,10 @@ namespace CIM.API.IntegrationTests
             var id = 300;
             var model = await CreateData(id,name);
             var token = string.Empty;
-
             model.Description = "Update Description";
-
             var updateByteContent = GetHttpContentForPost(model, token);
 
             // Act
-            //https://localhost:44365/api/LossLevel3/Get?id=300
             var updateResponse = await TestClient.PostAsync("/api/LossLevel3/Update", updateByteContent);
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var updateResponseModel = JsonConvert.DeserializeObject<ProcessReponseModel<LossLevel3Model>>((await updateResponse.Content.ReadAsStringAsync()));
