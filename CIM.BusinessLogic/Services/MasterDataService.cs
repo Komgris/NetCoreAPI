@@ -59,16 +59,16 @@ namespace CIM.BusinessLogic.Services
 
         private IList<LossLevelComponentMappingModel> _lossLevel3ComponentMapping;
         private IList<LossLevelMachineMappingModel> _lossLevel3MachineMapping;
-        private IList<LossLevel3Model> _lossLevel3s;
+        private IList<LossLevel3DictionaryModel> _lossLevel3s;
         private IList<WasteDictionaryModel> _wastesLevel1;
         private IList<WasteDictionaryModel> _wastesLevel2;
 
-        private IDictionary<int, LossLevel3Model> GetLossLevel3()
+        private IDictionary<int, LossLevel3DictionaryModel> GetLossLevel3()
         {
-            var output = new Dictionary<int, LossLevel3Model>();
+            var output = new Dictionary<int, LossLevel3DictionaryModel>();
             foreach (var item in _lossLevel3s)
             {
-                output[item.Id] = new LossLevel3Model
+                output[item.Id] = new LossLevel3DictionaryModel
                 {
                     Id = item.Id,
                     Name = item.Name,
@@ -134,22 +134,17 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<string, ProductionPlanModel>> GetProductionPlan()
+        private async Task<IDictionary<string, ProductionPlanDictionaryModel>> GetProductionPlan()
         {
-            var output = new Dictionary<string, ProductionPlanModel>();
+            var output = new Dictionary<string, ProductionPlanDictionaryModel>();
             var dbModel = await _productionPlanRepository.AllAsync();
             foreach (var item in dbModel)
             {
-                output[item.PlanId] = new ProductionPlanModel
+                output[item.PlanId] = new ProductionPlanDictionaryModel
                 {
                    PlanId = item.PlanId,
                    ProductId = item.ProductId,
-                   Target = item.Target,
-                   Unit = item.UnitId,
                    RouteId = item.RouteId,
-                   StatusId = item.StatusId,
-                   PlanStart = item.PlanStart,
-                   PlanFinish = item.PlanFinish
                 };
             }
             return output;
@@ -177,7 +172,7 @@ namespace CIM.BusinessLogic.Services
 
             _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
             _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
-            _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3Model())).ToList();
+            _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
             _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
             _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
 
