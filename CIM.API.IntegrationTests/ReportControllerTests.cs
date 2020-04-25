@@ -67,5 +67,17 @@ namespace CIM.API.IntegrationTests {
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
             result.IsSuccess.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task GetCapacityUtilisation_Test() {
+
+            // Act
+            var response = await TestClient.GetAsync("/api/Report/GetCapacityUtilisation?planid=1&routeid=1");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var loadResponseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
+        }
     }
 }
