@@ -17,6 +17,8 @@ namespace CIM.Model
         public IDictionary<int, IDictionary<int,string>> ProductGroupRoutes { get; set; }
 
         public DictionaryModel Dictionary { get; set; } = new DictionaryModel();
+
+        public IDictionary<int, Dictionary<int, WasteDictionaryModel>> WastesByProductType { get; set; }
     }
 
 }
