@@ -205,14 +205,11 @@ namespace CIM.BusinessLogic.Services
         private IDictionary<int, Dictionary<int, WasteDictionaryModel>> GetWastesByProductType(IList<WasteDictionaryModel> wastesLevel1, IList<WasteDictionaryModel> wastesLevel2)
         {
             var output = new Dictionary<int, Dictionary<int, WasteDictionaryModel>>();
-            var WasteDictionaryList = new Dictionary<int, WasteDictionaryModel>();
 
             foreach (var item in wastesLevel1)
             {
                 item.Sub = wastesLevel2.Where(x => x.ParentId == item.Id).ToDictionary(x => x.Id, x => x);
-                WasteDictionaryList.Add(item.Id, item);
             }
-
 
             var productTypeIds = wastesLevel1.Where(x=>x.ProductTypeId != null).Select(x => (int)x.ProductTypeId).Distinct().ToList();
             foreach (var productTypeId in productTypeIds)
