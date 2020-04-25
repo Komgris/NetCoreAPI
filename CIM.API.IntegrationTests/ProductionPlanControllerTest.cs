@@ -201,7 +201,6 @@ namespace CIM.API.IntegrationTests
             createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = Get(productionPlan.PlanId, scenario);
             result.PlanId.Should().Be(productionPlan.PlanId);
-            
         }
 
     }
