@@ -56,25 +56,43 @@ namespace CIM.API.IntegrationTests
             result.IsSuccess.Should().BeTrue();
         }
 
+        //https://localhost:44365/api/LossLevel3/Update
         [Fact]
-        public async Task Create_Test()
+        public async Task UpdateLossLevel3_Test()
         {
             // Arrange
-            var code = "TestCreate001";
-            //var model = await CreateData(code);
-            var expectedCount = 1;
+            var name = "Test";
+            var id = 300;
+            var model = await CreateData(id,name);
+            var token = string.Empty;
+
+            model.Description = "Update Description";
+
+            var updateByteContent = GetHttpContentForPost(model, token);
 
             // Act
-            var listResponse = (await TestClient.GetAsync("/api/Material/List?page=1&howmany=10"));
+            //https://localhost:44365/api/LossLevel3/Get?id=300
+            var updateResponse = await TestClient.PostAsync("/api/LossLevel3/Update", updateByteContent);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updateResponseModel = JsonConvert.DeserializeObject<ProcessReponseModel<LossLevel3Model>>((await updateResponse.Content.ReadAsStringAsync()));
 
-            listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var listResponseModel = JsonConvert.DeserializeObject<PagingModel<MaterialModel>>((await listResponse.Content.ReadAsStringAsync()));
+            var response = await TestClient.GetAsync("/api/LossLevel3/Get?id=" + model.Id);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getresponseModel   = JsonConvert.DeserializeObject<ProcessReponseModel<LossLevel3Model>>((await response.Content.ReadAsStringAsync()));
 
-            // Assert       
-            listResponseModel.Data.Count(x => x.Code == code).Should().Be(expectedCount);
-            var responseModel = listResponseModel.Data.First(x => x.Code == code);
+            // Assert
+            LossTestHelper.CompareLevel3Model(getresponseModel.Data, updateResponseModel.Data);
+        }
 
-            // MaterialTestHelper.CompareModel(responseModel, model);
+        public async Task<LossLevel3Model> CreateData(int id, string name)
+        {
+            var model = LossTestHelper.GetMockLevel3(id,name);
+            var token = string.Empty;
+            var content = GetHttpContentForPost(model, token);
+            var response = await TestClient.PostAsync("/api/LossLevel3/Create", content);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseModel = JsonConvert.DeserializeObject<LossLevel3Model>((await response.Content.ReadAsStringAsync()));
+            return responseModel;
         }
     }
 }
