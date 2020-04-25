@@ -19,30 +19,6 @@ namespace CIM.BusinessLogic.Services {
 
         #region  Cim-Oper Production overview
 
-        public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
-        }
-
-        public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", paramsList);
-        }
-
         public DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to) {
 
             var paramsList = new Dictionary<string, object>() {
@@ -74,9 +50,44 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", paramsList);
         }
 
+        public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", paramsList);
+        }
+
+        public DataTable GetCapacityUtilisation(string planId, int routeId, DateTime? from, DateTime? to) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_capacity_ultilisation", paramsList);
+        }
         #endregion
 
         #region  Cim-Oper Mc-Loss
+
+        public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+        }
         public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId, DateTime? from, DateTime? to) {
 
             var paramsList = new Dictionary<string, object>() {
