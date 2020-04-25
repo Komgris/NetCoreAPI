@@ -24,7 +24,7 @@ namespace CIM.DAL.Implements
         private readonly IConfiguration _configuration;
 
         public Repository(
-            cim_dbContext context, 
+            cim_dbContext context,
             IConfiguration configuration
         )
         {
@@ -165,7 +165,7 @@ namespace CIM.DAL.Implements
             var skip = (page - 1) * howmany;
             output.Data = data;
             return output;
-        }        
+        }
 
     }
 
