@@ -4,6 +4,7 @@ using System.Net;
 using Xunit;
 using Newtonsoft.Json;
 using System.Data;
+using CIM.Model;
 
 namespace CIM.API.IntegrationTests {
     public class ReportControllerTests : IntegrationTest {
@@ -15,8 +16,8 @@ namespace CIM.API.IntegrationTests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DataTable>(loadResponseString);
-            result.Should().NotBeNull();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
@@ -27,8 +28,8 @@ namespace CIM.API.IntegrationTests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DataTable>(loadResponseString);
-            result.Should().NotBeNull();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
@@ -39,8 +40,8 @@ namespace CIM.API.IntegrationTests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DataTable>(loadResponseString);
-            result.Should().NotBeNull();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
@@ -51,8 +52,8 @@ namespace CIM.API.IntegrationTests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DataTable>(loadResponseString);
-            result.Should().NotBeNull();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
@@ -63,8 +64,8 @@ namespace CIM.API.IntegrationTests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DataTable>(loadResponseString);
-            result.Should().NotBeNull();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
         }
     }
 }
