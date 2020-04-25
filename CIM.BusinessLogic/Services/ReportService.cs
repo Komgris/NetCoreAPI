@@ -132,7 +132,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@to", to }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_materials", paramsList);
         }
 
         public DataTable GetWasteByCases(string planId, int routeId, DateTime? from, DateTime? to) {
@@ -144,7 +144,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@to", to }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cases", paramsList);
         }
 
         public DataTable GetWasteByMachines(string planId, int routeId, DateTime? from, DateTime? to) {
@@ -156,7 +156,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@to", to }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_machines", paramsList);
         }
 
         public DataTable GetWasteCostByTime(string planId, int routeId, DateTime? from, DateTime? to) {
@@ -168,7 +168,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@to", to }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cost_time", paramsList);
         }
 
         public DataTable GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to) {
@@ -180,7 +180,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@to", to }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
         }
 
         #endregion
