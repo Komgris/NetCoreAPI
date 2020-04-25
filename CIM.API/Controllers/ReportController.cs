@@ -157,7 +157,7 @@ namespace CIM.API.Controllers
         
         #endregion
 
-        #region MyRegion  Cim-Oper dashboard
+        #region Cim-Oper dashboard
 
         [HttpGet]
         [Route("api/[controller]/GetProductionDasboard")]
@@ -173,7 +173,85 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-        
+
+        #endregion
+
+        #region Cim-oper waste
+
+        [HttpGet]
+        [Route("api/[controller]/GetWasteByMaterials")]
+        public async Task<ProcessReponseModel<object>> GetWasteByMaterials(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByMaterials(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetWasteByCases")]
+        public async Task<ProcessReponseModel<object>> GetWasteByCases(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByCases(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetWasteByMachines")]
+        public async Task<ProcessReponseModel<object>> GetWasteByMachines(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByMachines(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetWasteCostByTime")]
+        public async Task<ProcessReponseModel<object>> GetWasteCostByTime(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteCostByTime(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetWasteHistory")]
+        public async Task<ProcessReponseModel<object>> GetWasteHistory(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
         #endregion
     }
 }
