@@ -54,6 +54,8 @@ namespace CIM.BusinessLogic.Services
         private IList<LossLevelComponentMappingModel> _lossLevel3ComponentMapping;
         private IList<LossLevelMachineMappingModel> _lossLevel3MachineMapping;
         private IList<LossLevel3Model> _lossLevel3s;
+        private IList<WasteDictionaryModel> _wastesLevel1;
+        private IList<WasteDictionaryModel> _wastesLevel2;
 
         private IDictionary<int, LossLevel3Model> GetLossLevel3()
         {
