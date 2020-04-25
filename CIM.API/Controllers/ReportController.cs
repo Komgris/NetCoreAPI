@@ -92,12 +92,12 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/GetMachineSpeed")]
-        public async Task<ProcessReponseModel<object>> GetMachineSpeed(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+        [Route("api/[controller]/GetCapacityUtilisation")]
+        public async Task<ProcessReponseModel<object>> GetCapacityUtilisation(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
 
             var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineSpeed(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetCapacityUtilisation(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e) {
@@ -109,6 +109,7 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Cim-Oper Mc-Loss
+
         [HttpGet]
         [Route("api/[controller]/GetProductionLoss")]
         public async Task<ProcessReponseModel<object>> GetProductionLoss(string planId, int routeId, int lossLv, int? machineId) {
@@ -138,6 +139,22 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/GetMachineSpeed")]
+        public async Task<ProcessReponseModel<object>> GetMachineSpeed(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineSpeed(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+        
         #endregion
 
         #region MyRegion  Cim-Oper dashboard
@@ -156,6 +173,7 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+        
         #endregion
     }
 }
