@@ -116,8 +116,10 @@ namespace CIM.BusinessLogic.Services {
 
             var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
             var totalcnt = dt.Rows[0].Field<int>("totalcount");
-            var objectlist = dt.AsEnumerable().ToList<object>();
-            return ToPagingModel<object>(objectlist, totalcnt, page, 15);
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
         }
 
         #endregion
