@@ -25,7 +25,7 @@ namespace CIM.Domain.Models
 
         public virtual Users CreatedByNavigation { get; set; }
         public virtual LossLevel3 LossLevel3 { get; set; }
-        public virtual MachineComponent MachineComponent { get; set; }
+        public virtual Component MachineComponent { get; set; }
         public virtual ProductionPlan ProductionPlan { get; set; }
         public virtual RecordMachineStatus RecordMachineComponentStatus { get; set; }
         public virtual Users UpdatedByNavigation { get; set; }
