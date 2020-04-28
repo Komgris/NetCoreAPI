@@ -1,6 +1,7 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
+using CIM.Model;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -88,6 +89,7 @@ namespace CIM.BusinessLogic.Services {
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
         }
+
         public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId, DateTime? from, DateTime? to) {
 
             var paramsList = new Dictionary<string, object>() {
@@ -100,6 +102,22 @@ namespace CIM.BusinessLogic.Services {
             };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
+        }
+
+        public PagingModel<object> GetProductionWCMLossHistory(string planId, int routeId, DateTime? from, DateTime? to, int page) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page }
+            };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var objectlist = dt.AsEnumerable().ToList<object>();
+            return ToPagingModel<object>(objectlist, totalcnt, page, 15);
         }
 
         #endregion
