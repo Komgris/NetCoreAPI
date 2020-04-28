@@ -28,7 +28,7 @@ namespace CIM.Domain.Models
         public bool IsAuto { get; set; }
         public string Guid { get; set; }
 
-        public virtual MachineComponentType ComponentType { get; set; }
+        public virtual ComponentType ComponentType { get; set; }
         public virtual Users CreatedByNavigation { get; set; }
         public virtual LossLevel3 LossLevel3 { get; set; }
         public virtual Machine Machine { get; set; }

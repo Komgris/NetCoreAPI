@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public Machine()
         {
-            MachineComponent = new HashSet<MachineComponent>();
+            Component = new HashSet<Component>();
             RecordMachineStatus = new HashSet<RecordMachineStatus>();
             RecordManufacturingLoss = new HashSet<RecordManufacturingLoss>();
             RouteMachine = new HashSet<RouteMachine>();
@@ -31,7 +31,7 @@ namespace CIM.Domain.Models
 
         public virtual MachineType MachineType { get; set; }
         public virtual MachineStatus Status { get; set; }
-        public virtual ICollection<MachineComponent> MachineComponent { get; set; }
+        public virtual ICollection<Component> Component { get; set; }
         public virtual ICollection<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual ICollection<RouteMachine> RouteMachine { get; set; }
