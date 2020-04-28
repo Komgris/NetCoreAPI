@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace CIM.API
 {
@@ -36,6 +37,10 @@ namespace CIM.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+            });
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 

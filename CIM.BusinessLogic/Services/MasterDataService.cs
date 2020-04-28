@@ -24,6 +24,7 @@ namespace CIM.BusinessLogic.Services
         private IUnitsRepository _unitsRepository;
         private IWasteLevel1Repository _wasteLevel1Repository;
         private IWasteLevel2Repository _wasteLevel2Repository;
+        private IMaterialRepository _materialRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -38,7 +39,8 @@ namespace CIM.BusinessLogic.Services
             IProductionPlanRepository productionPlanRepository,
             IUnitsRepository unitsRepository,
             IWasteLevel1Repository wasteLevel1Repository,
-            IWasteLevel2Repository wasteLevel2Repository
+            IWasteLevel2Repository wasteLevel2Repository,
+            IMaterialRepository materialRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -54,6 +56,7 @@ namespace CIM.BusinessLogic.Services
             _unitsRepository = unitsRepository;
             _wasteLevel1Repository = wasteLevel1Repository;
             _wasteLevel2Repository = wasteLevel2Repository;
+            _materialRepository = materialRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -62,6 +65,7 @@ namespace CIM.BusinessLogic.Services
         private IList<LossLevel3DictionaryModel> _lossLevel3s;
         private IList<WasteDictionaryModel> _wastesLevel1;
         private IList<WasteDictionaryModel> _wastesLevel2;
+        private IList<MaterialDictionaryModel> _productBOM;
 
         private IDictionary<int, LossLevel3DictionaryModel> GetLossLevel3()
         {
@@ -134,7 +138,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<string, ProductionPlanDictionaryModel>> GetProductionPlan()
+        private async Task<IDictionary<string, ProductionPlanDictionaryModel>> GetProductionPlan(IDictionary<int, ProductDictionaryModel> products)
         {
             var output = new Dictionary<string, ProductionPlanDictionaryModel>();
             var dbModel = await _productionPlanRepository.AllAsync();
@@ -143,7 +147,7 @@ namespace CIM.BusinessLogic.Services
                 output[item.PlanId] = new ProductionPlanDictionaryModel
                 {
                    PlanId = item.PlanId,
-                   ProductId = item.ProductId,
+                   Product = products[item.ProductId],
                    RouteId = item.RouteId,
                 };
             }
@@ -175,6 +179,7 @@ namespace CIM.BusinessLogic.Services
             _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
             _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
             _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
+            _productBOM = await _materialRepository.ListProductBOM();
 
             var masterData = new MasterDataModel();
             masterData.LossLevel3s = GetLossLevel3();
@@ -182,11 +187,12 @@ namespace CIM.BusinessLogic.Services
             masterData.Components = await GetComponents();
             masterData.Machines = await GetMachines(masterData.Components);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
-            masterData.ProductionPlan = await GetProductionPlan();
+            masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
+            masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
             masterData.ProductGroupRoutes = await GetProductGroupRoutes();
             masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
 
-            masterData.Dictionary.Products = await GetProductDictionary();
+            masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
             masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
@@ -243,14 +249,13 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, string>> GetProductDictionary()
+        private IDictionary<int, string> GetProductDictionary(IDictionary<int, ProductDictionaryModel> products)
         {
-            var db = (await _productsRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x=> x.Id);
             var output = new Dictionary<int, string>();
-            foreach (var item in db)
+            foreach (var item in products)
             {
-                if (!output.ContainsValue(item.Code))
-                    output.Add(item.Id, item.Code);
+                if (!output.ContainsValue(item.Value.Code))
+                    output.Add(item.Key, item.Value.Code);
             }
             return output;
         }
