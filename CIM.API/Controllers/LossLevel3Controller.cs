@@ -44,33 +44,44 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<LossLevel3Model> Create([FromBody]LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]LossLevel3Model model)
         {
+            var output = new ProcessReponseModel<object>();
             try
             {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                return await _service.Create(model);
+                output.Data = await _service.Create(model);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<LossLevel3Model> Update([FromBody]LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]LossLevel3Model model)
         {
+            var output = new ProcessReponseModel<object>();
             try
             {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                return await _service.Update(model);
+
+                output.Data = await _service.Update(model);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [HttpGet]

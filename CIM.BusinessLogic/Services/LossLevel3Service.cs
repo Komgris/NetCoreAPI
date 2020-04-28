@@ -39,8 +39,11 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<LossLevel3Model> Update(LossLevel3Model model)
         {
-            var dbModel = await _lossLevel3Repository.FirstOrDefaultAsync(x => x.Id == model.Id);
-            dbModel = MapperHelper.AsModel(model, dbModel);
+            LossLevel3 dbModel = await _lossLevel3Repository.FirstOrDefaultAsync(x => x.Id == model.Id);
+            dbModel.Name = model.Name;
+            dbModel.Description = model.Description;
+            dbModel.LossLevel2Id = Convert.ToInt16(model.LossLevel2Id);
+            dbModel.IsActive = model.IsActive;
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
             _lossLevel3Repository.Edit(dbModel);
