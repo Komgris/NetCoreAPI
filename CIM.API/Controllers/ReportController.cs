@@ -127,11 +127,11 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductionLossHistory")]
-        public async Task<ProcessReponseModel<object>> GetProductionLossHistory(string planId, int routeId) {
+        public async Task<ProcessReponseModel<object>> GetProductionLossHistory(string planId, int routeId, int page) {
 
             var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, null, null, null, null), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLossHistory(planId, routeId, null, null, page), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e) {
