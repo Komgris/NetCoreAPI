@@ -207,5 +207,27 @@ namespace CIM.BusinessLogic.Services {
         }
 
         #endregion
+
+        #region Cim-oper mc status
+        
+        public DataTable GetActiveMachineInfo(string planId, int routeId) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineinfo", paramsList);
+        }
+        public DataTable GetActiveMachineEvents(string planId, int routeId) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
+        }
+        #endregion
     }
 }
