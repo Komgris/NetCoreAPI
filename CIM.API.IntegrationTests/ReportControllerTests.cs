@@ -144,7 +144,7 @@ namespace CIM.API.IntegrationTests {
         public async Task GetWasteHistory_Test() {
 
             // Act
-            var response = await TestClient.GetAsync("/api/Report/GetWasteHistory?planid=1&routeid=1");
+            var response = await TestClient.GetAsync("/api/Report/GetWasteHistory?planid=1&routeid=1&page=1");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var loadResponseString = await response.Content.ReadAsStringAsync();

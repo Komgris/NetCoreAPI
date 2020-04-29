@@ -191,16 +191,22 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cost_time", paramsList);
         }
 
-        public DataTable GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to) {
+        public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to,int page) {
 
             var paramsList = new Dictionary<string, object>() {
                 {"@planid", planId },
                 {"@routeid", routeId },
                 {"@from", from },
-                {"@to", to }
+                {"@to", to },
+                {"@page", page }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
         }
 
         #endregion
