@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IMaterialRepository : IRepository<Material>
+    public interface ILossLevel2Repository : IRepository<LossLevel2>
     {
-        Task<IList<MaterialDictionaryModel>> ListProductBOM();
+        Task<PagingModel<LossLevel2ListModel>> List(int page, int howmany, string keyword, bool isActive);
     }
 }

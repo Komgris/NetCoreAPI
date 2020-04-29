@@ -127,11 +127,11 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductionLossHistory")]
-        public async Task<ProcessReponseModel<object>> GetProductionLossHistory(string planId, int routeId) {
+        public async Task<ProcessReponseModel<object>> GetProductionLossHistory(string planId, int routeId, int page) {
 
             var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, null, null, null, null), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLossHistory(planId, routeId, null, null, page), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e) {
@@ -240,11 +240,11 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetWasteHistory")]
-        public async Task<ProcessReponseModel<object>> GetWasteHistory(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
+        public async Task<ProcessReponseModel<object>> GetWasteHistory(string planId, int routeId, int page, DateTime? from = null, DateTime? to = null) {
 
             var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to, page), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e) {
