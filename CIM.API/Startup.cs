@@ -54,6 +54,8 @@ namespace CIM.API
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
             services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ILossLevel1Repository, LossLevel1Repository>();
+            services.AddTransient<ILossLevel2Repository, LossLevel2Repository>();
             services.AddTransient<ILossLevel3Repository, LossLevel3Repository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
             services.AddTransient<IMachineComponentRepository, MachineComponentRepository>();
@@ -86,6 +88,9 @@ namespace CIM.API
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<ILossLevel1Service, LossLevel1Service>();
+            services.AddTransient<ILossLevel2Service, LossLevel2Service>();
+            services.AddTransient<ILossLevel3Service, LossLevel3Service>();
 
             services.AddControllers();
             services.AddSignalR();

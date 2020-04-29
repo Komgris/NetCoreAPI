@@ -12,6 +12,7 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string Code { get; set; }
+        public string Image { get; set; }
         public string Description { get; set; }
         public string BriteItemPerUpcitem { get; set; }
         public int ProductFamilyId { get; set; }
