@@ -203,7 +203,7 @@ namespace CIM.BusinessLogic.Services {
 
             var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
             var totalcnt = dt.Rows[0].Field<int>("totalcount");
-            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 15);
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
             pagingmodel.DataObject = dt;
 
             return pagingmodel;
