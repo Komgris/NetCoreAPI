@@ -72,5 +72,25 @@ namespace CIM.DAL.Implements
                 }).ToListAsync();
             return data;
         }
+
+        public async Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM)
+        {
+
+            var output = await _dbset.Where(x => x.IsActive == true && x.IsDelete == false)
+            .Select(x => new ProductDictionaryModel
+            {
+                Id = x.Id,
+                Code = x.Code,
+                GroupId = x.ProductGroupId,
+                TypeId = x.ProductTypeId,
+            }).ToListAsync();
+            foreach (var item in output)
+            {
+                item.Materials = productBOM.Where(x => x.ProductId == item.Id).ToDictionary(x => x.Id, x => x);
+            }
+            
+            return output.ToDictionary(x => x.Id, x => x);
+        }
+
     }
 }

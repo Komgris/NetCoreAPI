@@ -15,7 +15,12 @@ namespace CIM.DAL.Implements
     {
         public MaterialRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
-        }        
+        }
 
+        public async Task<IList<MaterialDictionaryModel>> ListProductBOM()
+        {
+            return await ExecStoreProcedure<MaterialDictionaryModel>("sp_ListProductBOM", new Dictionary<string, object>());
+
+        }
     }
 }
