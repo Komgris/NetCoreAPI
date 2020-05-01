@@ -42,10 +42,19 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task<RecordManufacturingLossModel> GetByGuid(Guid guid)
+        {
+            var dbModel = await _recordManufacturingLossRepository.GetByGuid(guid);
+            var output = MapperHelper.AsModel(dbModel, new RecordManufacturingLossModel());
+            output.WasteList = await _recordProductionPlanWasteService.ListByLoss(output.Id);
+            return output;
+        }
+
         public async Task Update(RecordManufacturingLossModel model)
         {
             var masterData = await _masterDataService.GetData();
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
+            var now = DateTime.Now;
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
             if (model.ComponentId > 0)
@@ -54,29 +63,25 @@ namespace CIM.BusinessLogic.Services
             }
             dbModel.LossLevel3Id = model.LossLevelId;
             _recordManufacturingLossRepository.Edit(dbModel);
-            var updateWasteList = _recordProductionPlanWasteService.ToDictiony(model.WasteList.Where(x => x.Id != 0));
-            var createWasteList = model.WasteList.Where(x => x.Id == 0);
-            var lossWaste = await _recordProductionPlanWasteRepository.ListByLoss(model.Id);
-            var now = DateTime.Now;
-            foreach (var waste in lossWaste)
+            await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
+            foreach (var item in model.WasteList)
             {
-                var updateModel = updateWasteList[waste.Id];
-                waste.CauseMachineId = updateModel.CauseMachineId;
-                waste.IsDelete = updateModel.IsDelete;
-                waste.Reason = updateModel.Reason;
-                waste.RouteId = updateModel.RouteId;
-                waste.UpdatedBy = CurrentUser.UserId;
-                waste.UpdatedAt = now;
-                _recordProductionPlanWasteRepository.Edit(waste);
-            }
 
-            foreach (var item in createWasteList)
-            {
-                var createModel = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
-                createModel.CreatedAt = now;
-                createModel.CreatedBy = CurrentUser.UserId;
-                _recordProductionPlanWasteRepository.Add(createModel);
+                var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
+                foreach (var material in item.Materials)
+                {
+                    var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+                    waste.RecordProductionPlanWasteMaterials.Add(mat);
+                }
+
+                waste.CreatedAt = now;
+                waste.CreatedBy = CurrentUser.UserId;
+                waste.ProductionPlanId = model.ProductionPlanId;
+                waste.CauseMachineId = model.MachineId;
+                _recordProductionPlanWasteRepository.Add(waste);
+
             }
+            
             await _unitOfWork.CommitAsync();
         }
 
