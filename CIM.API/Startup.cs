@@ -58,12 +58,10 @@ namespace CIM.API
             services.AddTransient<ILossLevel2Repository, LossLevel2Repository>();
             services.AddTransient<ILossLevel3Repository, LossLevel3Repository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
-            services.AddTransient<IMachineComponentRepository, MachineComponentRepository>();
+            services.AddTransient<IComponentRepository, ComponentRepository>();
             services.AddTransient<IRouteMachineRepository, RouteMachineRepository>();
             services.AddTransient<IRouteRepository, RouteRepository>();
-            services.AddTransient<IMachineComponentLossRepository, RecordMachineComponentLossRepository>();
-            services.AddTransient<IMachineComponentStatusRepository, RecordMachineComponentStatusRepository>();
-            services.AddTransient<IProductionOutputRepository, RecordProductionOutputRepository>();
+            services.AddTransient<IRecordProductionPlanOutputRepository, RecordProductionPlanOutputRepository>();
             services.AddTransient<IProductionStatusRepository, ProductionStatusRepository>();
             services.AddTransient<IUnitsRepository, UnitsRepository>();
             services.AddTransient<IRouteProductGroupRepository, RouteProductGroupRepository>();

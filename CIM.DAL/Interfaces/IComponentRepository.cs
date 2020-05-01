@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductionOutputRepository : IRepository<RecordProductionOutput>
+    public interface IComponentRepository : IRepository<Component>
     {
     }
 }

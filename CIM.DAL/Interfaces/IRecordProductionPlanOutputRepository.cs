@@ -5,9 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IMachineComponentStatusRepository : IRepository<RecordMachineComponentStatus>
+    public interface IRecordProductionPlanOutputRepository : IRepository<RecordProductionPlanOutput>
     {
-
     }
-
 }
