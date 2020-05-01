@@ -16,7 +16,7 @@ namespace CIM.BusinessLogic.Services
         private IRouteRepository _routeRepository;
         private IRouteMachineRepository _routeMachineRepository;
         private IRouteProductGroupRepository _routeProductGroupRepository;
-        private IMachineComponentRepository _machineComponentRepository;
+        private IComponentRepository _machineComponentRepository;
         private IMachineRepository _machineRepository;
         private IProductionStatusRepository _productionStatusRepository;
         private IProductRepository _productsRepository;
@@ -33,7 +33,7 @@ namespace CIM.BusinessLogic.Services
             IRouteMachineRepository routeMachineRepository,
             IRouteProductGroupRepository routeProductGroupRepository,
             IMachineRepository machineRepository,
-            IMachineComponentRepository machineComponentRepository,
+            IComponentRepository machineComponentRepository,
             IProductionStatusRepository productionStatusRepository,
             IProductRepository productRepository,
             IProductionPlanRepository productionPlanRepository,
