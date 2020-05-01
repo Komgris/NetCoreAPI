@@ -497,21 +497,21 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("ComponentType_LossLevel3");
 
+                entity.Property(e => e.ComponentTypeId).HasColumnName("ComponentType_Id");
+
                 entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
 
-                entity.Property(e => e.MachineComponentTypeId).HasColumnName("MachineComponentType_Id");
+                entity.HasOne(d => d.ComponentType)
+                    .WithMany(p => p.ComponentTypeLossLevel3)
+                    .HasForeignKey(d => d.ComponentTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_MachineTypeComponent_LossLevel3_MachineTypeComponent");
 
                 entity.HasOne(d => d.LossLevel3)
                     .WithMany(p => p.ComponentTypeLossLevel3)
                     .HasForeignKey(d => d.LossLevel3Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LossLevel3_MachineTypeComponent_LossLevel3");
-
-                entity.HasOne(d => d.MachineComponentType)
-                    .WithMany(p => p.ComponentTypeLossLevel3)
-                    .HasForeignKey(d => d.MachineComponentTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MachineTypeComponent_LossLevel3_MachineTypeComponent");
             });
 
             modelBuilder.Entity<Employees>(entity =>
