@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CIM.Model
+namespace CIM.Domain.Models
 {
-    public class MachineTypeComponentLossLevel3Model
+    public partial class MachineTypeComponentLossLevel3Model
     {
         public int Id { get; set; }
         public int MachineTypeComponentId { get; set; }
