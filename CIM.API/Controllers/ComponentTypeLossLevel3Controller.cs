@@ -16,5 +16,22 @@ namespace CIM.API.Controllers
         {
             _service = service;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/List")]
+        public async Task<ProcessReponseModel<PagingModel<ComponentTypeLossLevel3ListModel>>> List(int id = 0, string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<ComponentTypeLossLevel3ListModel>>();
+            try
+            {
+                //output.Data = await _service.List(keyword, page, howmany, isActive);
+                //output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
     }
 }
