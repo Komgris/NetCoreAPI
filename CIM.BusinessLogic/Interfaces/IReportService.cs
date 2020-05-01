@@ -20,6 +20,8 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetWasteByMachines(string planId, int routeId, DateTime? from, DateTime? to);
         DataTable GetWasteCostByTime(string planId, int routeId, DateTime? from, DateTime? to);
         PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page);
+        DataTable GetActiveMachineInfo(string planId, int routeId); 
+        DataTable GetActiveMachineEvents(string planId, int routeId); 
         Dictionary<string, int> GetActiveProductionPlanOutput();
     }
 }
