@@ -70,7 +70,9 @@ namespace CIM.DAL.Implements
                                         };
 
                                         var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan", parameterList);
-                                        var totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+                                        var totalCount = 0;
+                                        if (dt.Rows.Count > 0)
+                                            totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
                                         return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
                                     });
