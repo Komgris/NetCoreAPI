@@ -197,6 +197,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
             masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
+            masterData.Dictionary.Routes = await GetRouteDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -298,6 +299,17 @@ namespace CIM.BusinessLogic.Services
             planCompare.Add(Constans.CompareMapping.NoProduct, "No Product ID");
             planCompare.Add(Constans.CompareMapping.Inprocess, "Inprocess");
             return planCompare;
+        }
+
+        private async Task<IDictionary<int, string>> GetRouteDictionary()
+        {
+            var db = (await _routeRepository.WhereAsync(x => x.IsActive == true));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                output.Add(item.Id, item.Name);
+            }
+            return output;
         }
     }
 }
