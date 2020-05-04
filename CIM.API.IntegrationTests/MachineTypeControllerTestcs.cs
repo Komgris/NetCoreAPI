@@ -35,7 +35,8 @@ namespace CIM.API.IntegrationTests
         public async Task Create_test()
         {
             var machineType = new MachineTypeModel
-            { 
+            {
+                Id = 1,
                 Name = "Machine1"
             };
 
@@ -52,6 +53,7 @@ namespace CIM.API.IntegrationTests
             // Arrange
             var machineType = new MachineType
             {
+                Id= 2,
                 Name = "Machine_test",
                 IsActive = true
             };
@@ -82,6 +84,14 @@ namespace CIM.API.IntegrationTests
             // Arrange
             var machineType = new MachineType
             {
+                Id = 3,
+                Name = "Machine",
+                IsActive = true
+            };
+
+            var machineTypeEdit = new MachineType
+            {
+                Id = 3,
                 Name = "Machine_edit",
                 IsActive = true
             };
@@ -93,16 +103,11 @@ namespace CIM.API.IntegrationTests
                 context.SaveChanges();
             }
 
-            var resultId = Get(machineType.Name, scenario);
-
-
-            var loadResponse = await scenario.TestClient.GetAsync($"api/MachineType/Get?id={resultId.Id}");
-            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ProcessReponseModel<MachineTypeModel>>(loadResponseString);
-
-            result.Data.Should().NotBeNull();
-            result.Data.Name.Should().Be(machineType.Name);
+            var content = GetHttpContentForPost(machineTypeEdit, scenario.AdminToken);
+            var updateResponse = await scenario.TestClient.PutAsync("/api/MachineType/Update", content);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = Get(machineTypeEdit.Name, scenario);
+            result.Name.Should().Be(machineTypeEdit.Name);
         }
 
 
