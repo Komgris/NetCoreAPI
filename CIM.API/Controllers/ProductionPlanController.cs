@@ -254,8 +254,8 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId),JsonsSetting));
-                //output.Data = await _planService.FilterLoadProductionPlan(productId, routeId, statusId);
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting));
+                //output.Data = await Task.Run(() => _planService.FilterLoadProductionPlan(productId, routeId, statusId));
                 output.IsSuccess = true;
             }
             catch (Exception ex)

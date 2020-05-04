@@ -6,8 +6,8 @@ namespace CIM.Model
 {
     public class FilterLoadProductionPlanListModel
     {
-        public Dictionary<int,string> Products { get; set; }
-        public Dictionary<int,string> Routes { get; set; }
-        public Dictionary<int,string> Status { get; set; }
+        public IDictionary<int, string> Products { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> Routes { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> Status { get; set; } = new Dictionary<int, string>();
     }
 }

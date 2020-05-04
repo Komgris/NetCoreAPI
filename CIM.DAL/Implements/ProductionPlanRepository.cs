@@ -142,7 +142,13 @@ namespace CIM.DAL.Implements
         public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
         {
             var output = new FilterLoadProductionPlanListModel();
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", null);
+            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@routeid", routeId},
+                    {"@productid", productId},
+                    {"@statusid", statusId}
+                };
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", parameterList);
             if (dt != null)
             {
                 output.Products = dt.AsEnumerable().Select(x => new { id = x.Field<int>("productid"), name = x.Field<string>("productcode") }).Distinct().ToDictionary(x => x.id, y => y.name);
