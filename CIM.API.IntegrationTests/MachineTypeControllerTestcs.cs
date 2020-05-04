@@ -17,9 +17,7 @@ namespace CIM.API.IntegrationTests
 
         public MachineTypeControllerTestcs()
         {
-            //Run on each test
             scenario = CreateWebApplication();
-            //Setup(scenario);
         }
 
         public MachineType Get(string name, TestScenario scenario)
