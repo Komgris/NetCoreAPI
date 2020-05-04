@@ -25,5 +25,12 @@ namespace CIM.BusinessLogic.Services
             _componentTypeLossLevel3Repository = componentTypeLossLevel3Repository;
             _unitOfWork = unitOfWork;
         }
+
+        public async Task<PagingModel<ComponentTypeLossLevel3ListModel>> List(int? componentTypeId, int? lossLevel3Id, int page, int howmany)
+        {
+            var output = await _componentTypeLossLevel3Repository.List( componentTypeId, lossLevel3Id, page,  howmany);
+            return output;
+            //throw new NotImplementedException();
+        }
     }
 }
