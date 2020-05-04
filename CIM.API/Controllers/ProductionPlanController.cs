@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
 using CIM.BusinessLogic.Utility;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
@@ -237,6 +238,24 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _planService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/FilterLoadProductionPlan")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> FilterLoadProductionPlan(int? productId,int? routeId,int?statusId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId),JsonsSetting));
+                //output.Data = await _planService.FilterLoadProductionPlan(productId, routeId, statusId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -138,6 +138,20 @@ namespace CIM.DAL.Implements
                 _entities.SaveChanges();
             }
         }
-    }
 
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        {
+            var output = new FilterLoadProductionPlanListModel();
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", null);
+            if (dt != null)
+            {
+                output.Products = dt.AsEnumerable().Select(x => new { id = x.Field<int>("productid"), name = x.Field<string>("productcode") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Routes = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Status = dt.AsEnumerable().Select(x => new { id = x.Field<int>("statusid"), name = x.Field<string>("statusname") }).Distinct().ToDictionary(x => x.id, y => y.name);
+            }
+            return output;
+
+        }
+
+    }
 }
