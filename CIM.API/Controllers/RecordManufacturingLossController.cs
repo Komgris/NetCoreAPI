@@ -56,5 +56,22 @@ namespace CIM.API.Controllers
 
             return output;
         }
+
+        public async Task<ProcessReponseModel<RecordManufacturingLossModel>> GetByGuid(Guid guid)
+        {
+            var output = new ProcessReponseModel<RecordManufacturingLossModel>();
+            try
+            {
+                await _recordManufacturingLossService.GetByGuid(guid);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
     }
 }
