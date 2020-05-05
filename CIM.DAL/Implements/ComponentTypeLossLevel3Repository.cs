@@ -23,7 +23,6 @@ namespace CIM.DAL.Implements
 
         public async Task<PagingModel<ComponentTypeLossLevel3ListModel>> List(int? componentTypeId, int? lossLevel3Id, int page, int howmany)
         {
-            //throw new NotImplementedException();
             return await Task.Run(() =>
             {
                 Dictionary<string, object> parameterList = new Dictionary<string, object>()

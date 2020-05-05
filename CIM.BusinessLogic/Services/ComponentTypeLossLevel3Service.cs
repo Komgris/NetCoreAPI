@@ -30,7 +30,6 @@ namespace CIM.BusinessLogic.Services
         {
             var output = await _componentTypeLossLevel3Repository.List( componentTypeId, lossLevel3Id, page,  howmany);
             return output;
-            //throw new NotImplementedException();
         }
     }
 }
