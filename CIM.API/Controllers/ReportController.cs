@@ -9,17 +9,14 @@ using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace CIM.API.Controllers
-{
+namespace CIM.API.Controllers {
 
     [ApiController]
-    public class ReportController : BaseController
-    {
+    public class ReportController : BaseController {
 
         private IReportService _service;
 
-        public ReportController(IReportService reportService)
-        {
+        public ReportController(IReportService reportService) {
             _service = reportService;
         }
 
@@ -27,17 +24,14 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
-        public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
-        {
+        public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null) {
 
             var output = new ProcessReponseModel<object>();
-            try
-            {
+            try {
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionSummary(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 output.Message = e.Message;
             }
 
@@ -47,15 +41,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductionPlanInfomation")]
-        public async Task<ProcessReponseModel<object>> GetProductionPlanInfomation(string planId, int routeId)
-        {
+        public async Task<ProcessReponseModel<object>> GetProductionPlanInfomation(string planId, int routeId) {
             var output = new ProcessReponseModel<object>();
             try {
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planId, routeId), JsonsSetting));
                 output.IsSuccess = true;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 output.Message = e.Message;
             }
             return output;
@@ -64,7 +56,7 @@ namespace CIM.API.Controllers
         [HttpGet]
         [Route("api/[controller]/GetProductionOperators")]
         public async Task<ProcessReponseModel<object>> GetProductionOperators(string planId, int routeId) {
-  
+
             var output = new ProcessReponseModel<object>();
             try {
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionOperators(planId, routeId), JsonsSetting));
@@ -122,7 +114,7 @@ namespace CIM.API.Controllers
             catch (Exception e) {
                 output.Message = e.Message;
             }
-            return output; 
+            return output;
         }
 
         [HttpGet]
@@ -154,7 +146,7 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-        
+
         #endregion
 
         #region Cim-Oper dashboard
@@ -252,6 +244,40 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+        #endregion
+
+        #region Cim-oper mc status
+
+        [HttpGet]
+        [Route("api/[controller]/GetActiveMachineInfo")]
+        public async Task<ProcessReponseModel<object>> GetActiveMachineInfo(string planId, int routeId) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActiveMachineInfo(planId, routeId), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetActiveMachineEvents")]
+        public async Task<ProcessReponseModel<object>> GetActiveMachineEvents(string planId, int routeId) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActiveMachineEvents(planId, routeId), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         #endregion
     }
 }

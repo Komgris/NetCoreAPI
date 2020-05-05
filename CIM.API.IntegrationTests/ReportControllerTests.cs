@@ -151,5 +151,29 @@ namespace CIM.API.IntegrationTests {
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
             result.IsSuccess.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task GetActiveMachineInfo_Test() {
+
+            // Act
+            var response = await TestClient.GetAsync("/api/Report/GetActiveMachineInfo?planid=1&routeid=1");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var loadResponseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetActiveMachineEvents_Test() {
+
+            // Act
+            var response = await TestClient.GetAsync("/api/Report/GetActiveMachineEvents?planid=1&routeid=1");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var loadResponseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<object>>(loadResponseString);
+            result.IsSuccess.Should().BeTrue();
+        }
     }
 }
