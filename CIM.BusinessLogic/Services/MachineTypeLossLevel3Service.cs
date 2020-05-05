@@ -25,5 +25,11 @@ namespace CIM.BusinessLogic.Services
             _machineTypeLossLevel3Repository = machineTypeLossLevel3Repository;
             _unitOfWork = unitOfWork;
         }
+
+        public async Task<PagingModel<MachineTypeLossLevel3ListModel>> List(int? machineTypeId, int? lossLevel3Id, int page, int howmany)
+        {
+            var output = await _machineTypeLossLevel3Repository.List(machineTypeId, lossLevel3Id, page, howmany);
+            return output;
+        }
     }
 }
