@@ -1,4 +1,5 @@
 ﻿using CIM.Domain.Models;
+using CIM.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IRecordProductionPlanWasteRepository : IRepository<RecordProductionPlanWaste>
     {
-        void DeleteByLoss(int id);
-        Task<List<RecordProductionPlanWaste>> ListByLoss(int id);
+        Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);
+        Task DeleteByLoss(int id);
     }
 }
