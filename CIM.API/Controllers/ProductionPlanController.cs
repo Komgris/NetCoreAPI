@@ -212,7 +212,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id,int routeId)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -220,7 +220,7 @@ namespace CIM.API.Controllers
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                output.Data = await _planService.Load(id);
+                output.Data = await _planService.Load(id, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
