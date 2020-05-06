@@ -71,6 +71,7 @@ namespace CIM.API
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
             services.AddTransient<IMachineTypeRepository, MachineTypeRepository>();
             services.AddTransient<IRecordProductionPlanWasteMaterialRepository, RecordProductionPlanWasteMaterialRepository>();
+            services.AddTransient<IComponentTypeRepository, ComponentTypeRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
