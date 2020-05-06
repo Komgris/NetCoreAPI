@@ -57,6 +57,8 @@ namespace CIM.API
             services.AddTransient<ILossLevel1Repository, LossLevel1Repository>();
             services.AddTransient<ILossLevel2Repository, LossLevel2Repository>();
             services.AddTransient<ILossLevel3Repository, LossLevel3Repository>();
+            services.AddTransient<IComponentTypeLossLevel3Repository, ComponentTypeLossLevel3Repository>();
+            services.AddTransient<IMachineTypeLossLevel3Repository, MachineTypeLossLevel3Repository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
             services.AddTransient<IComponentRepository, ComponentRepository>();
             services.AddTransient<IRouteMachineRepository, RouteMachineRepository>();
@@ -67,6 +69,7 @@ namespace CIM.API
             services.AddTransient<IRouteProductGroupRepository, RouteProductGroupRepository>();
             services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
             services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
+
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
             services.AddTransient<IMachineTypeRepository, MachineTypeRepository>();
@@ -92,6 +95,8 @@ namespace CIM.API
             services.AddTransient<ILossLevel1Service, LossLevel1Service>();
             services.AddTransient<ILossLevel2Service, LossLevel2Service>();
             services.AddTransient<ILossLevel3Service, LossLevel3Service>();
+            services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
+            services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
 
             services.AddControllers();
             services.AddSignalR();
