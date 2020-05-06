@@ -7,6 +7,7 @@ namespace CIM.Domain.Models
     {
         public int Id { get; set; }
         public string Code { get; set; }
+        public string Image { get; set; }
         public string Description { get; set; }
         public string ProductCategory { get; set; }
         public string Icsgroup { get; set; }

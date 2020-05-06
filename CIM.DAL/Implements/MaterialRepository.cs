@@ -7,14 +7,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class MaterialRepository : Repository<Material>, IMaterialRepository
     {
-        public MaterialRepository(cim_dbContext context) : base(context)
+        public MaterialRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
-        }        
+        }
 
+        public async Task<IList<MaterialDictionaryModel>> ListProductBOM()
+        {
+            return await ExecStoreProcedure<MaterialDictionaryModel>("sp_ListProductBOM", new Dictionary<string, object>());
+
+        }
     }
 }

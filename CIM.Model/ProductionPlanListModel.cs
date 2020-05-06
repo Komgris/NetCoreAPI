@@ -31,4 +31,5 @@ namespace CIM.Model
         public DateTime? ActualFinish { get; set; }
 
     }
+
 }

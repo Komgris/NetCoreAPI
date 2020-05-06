@@ -6,21 +6,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using StoredProcedureEFCore;
 using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using CIM.DAL.Interfaces;
-using CIM.Domain.Models;
-using CIM.Model;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using StoredProcedureEFCore;
+using Dapper;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace CIM.DAL.Implements
 {
@@ -29,13 +21,67 @@ namespace CIM.DAL.Implements
     {
         protected cim_dbContext _entities;
         protected readonly DbSet<T> _dbset;
+        private readonly IConfiguration _configuration;
 
-        public Repository(cim_dbContext context)
+        public Repository(
+            cim_dbContext context,
+            IConfiguration configuration
+        )
         {
-
             _entities = context;
             _dbset = context.Set<T>();
+            _configuration = configuration;
         }
+
+        public async Task<List<T>> Sql<T>(string sql, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new DynamicParameters();
+            foreach (var item in parameterDic)
+            {
+                parameters.Add(item.Key, item.Value);
+            }
+
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var output = await connection.QueryAsync<T>(sql, parameters);
+                return output.ToList();
+            }
+        }
+
+        public async Task<List<T>> ExecStoreProcedure<T>(string storeProcedureName, Dictionary<string, object> parameterDic)
+        {
+            var parameters = new DynamicParameters();
+            foreach (var item in parameterDic)
+            {
+                parameters.Add(item.Key, item.Value);
+            }
+
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var output = await connection.QueryAsync<T>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+                return output.ToList();
+            }
+        }
+
+        //to do it not complete need to p'ton fix for output data table
+        //public async Task<IEnumerable<DataTable>> execStoreProcedureDataTable(string storeProcedureName, Dictionary<string, object> parameterDic)
+        //{
+        //    var parameters = new List<DynamicParameters>();
+        //    foreach (var item in parameterDic)
+        //    {
+        //        var p = new DynamicParameters();
+        //        p.Add(item.Key, item.Value);
+        //        parameters.Add(p);
+        //    }
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        var output = await connection.QueryAsync<DataTable>(storeProcedureName, parameters, null, null, CommandType.StoredProcedure);
+        //        return output;
+        //    }
+        //}
 
         public virtual IQueryable<T> All()
         {
@@ -65,7 +111,6 @@ namespace CIM.DAL.Implements
             IList<T> query = await _dbset.Where(predicate).ToListAsync();
             return query;
         }
-
 
         public virtual void Add(T entity)
         {
@@ -121,5 +166,7 @@ namespace CIM.DAL.Implements
             output.Data = data;
             return output;
         }
+
     }
+
 }

@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace CIM.API
 {
@@ -36,6 +37,10 @@ namespace CIM.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+            });
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
 
@@ -49,17 +54,26 @@ namespace CIM.API
             services.AddTransient<IProductionPlanRepository, ProductionPlanRepository>();
             services.AddTransient<IMaterialRepository, MaterialRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ILossLevel1Repository, LossLevel1Repository>();
+            services.AddTransient<ILossLevel2Repository, LossLevel2Repository>();
             services.AddTransient<ILossLevel3Repository, LossLevel3Repository>();
+            services.AddTransient<IComponentTypeLossLevel3Repository, ComponentTypeLossLevel3Repository>();
+            services.AddTransient<IMachineTypeLossLevel3Repository, MachineTypeLossLevel3Repository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
-            services.AddTransient<IMachineComponentRepository, MachineComponentRepository>();
+            services.AddTransient<IComponentRepository, ComponentRepository>();
             services.AddTransient<IRouteMachineRepository, RouteMachineRepository>();
             services.AddTransient<IRouteRepository, RouteRepository>();
-            services.AddTransient<IMachineComponentLossRepository, RecordMachineComponentLossRepository>();
-            services.AddTransient<IMachineComponentStatusRepository, RecordMachineComponentStatusRepository>();
-            services.AddTransient<IProductionOutputRepository, RecordProductionOutputRepository>();
+            services.AddTransient<IRecordProductionPlanOutputRepository, RecordProductionPlanOutputRepository>();
             services.AddTransient<IProductionStatusRepository, ProductionStatusRepository>();
+            services.AddTransient<IUnitsRepository, UnitsRepository>();
             services.AddTransient<IRouteProductGroupRepository, RouteProductGroupRepository>();
             services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
+            services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
+
+            services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
+            services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
+            services.AddTransient<IMachineTypeRepository, MachineTypeRepository>();
+            services.AddTransient<IRecordProductionPlanWasteMaterialRepository, RecordProductionPlanWasteMaterialRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -73,9 +87,16 @@ namespace CIM.API
             services.AddTransient<IMachineAlertService, MachineAlertService>();
             services.AddTransient<IActiveProductionPlanService, ActiveProductionPlanService>();
             services.AddTransient<IRecordManufacturingLossService, RecordManufacturingLossService>();
+            services.AddTransient< IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
+            services.AddTransient<IMachineTypeService, MachineTypeService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<ILossLevel1Service, LossLevel1Service>();
+            services.AddTransient<ILossLevel2Service, LossLevel2Service>();
+            services.AddTransient<ILossLevel3Service, LossLevel3Service>();
+            services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
+            services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
 
             services.AddControllers();
             services.AddSignalR();

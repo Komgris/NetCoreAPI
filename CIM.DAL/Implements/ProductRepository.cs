@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(cim_dbContext context) : base(context)
+        public ProductRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }
@@ -71,5 +72,25 @@ namespace CIM.DAL.Implements
                 }).ToListAsync();
             return data;
         }
+
+        public async Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM)
+        {
+
+            var output = await _dbset.Where(x => x.IsActive == true && x.IsDelete == false)
+            .Select(x => new ProductDictionaryModel
+            {
+                Id = x.Id,
+                Code = x.Code,
+                GroupId = x.ProductGroupId,
+                TypeId = x.ProductTypeId,
+            }).ToListAsync();
+            foreach (var item in output)
+            {
+                item.Materials = productBOM.Where(x => x.ProductId == item.Id).ToDictionary(x => x.Id, x => x);
+            }
+            
+            return output.ToDictionary(x => x.Id, x => x);
+        }
+
     }
 }

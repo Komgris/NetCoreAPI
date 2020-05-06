@@ -13,7 +13,7 @@ namespace CIM.DAL.Interfaces
 
         string ExecuteReader(string sql, object[] parameters);
 
-        DataTable ExecuteSPWithQuery(string sql, List<SqlParameter> parameters);
+        DataTable ExecuteSPWithQuery(string sql, Dictionary<string, object> parameters);
         DataTable ExecuteWithQuery(string sql);
     }
 }
