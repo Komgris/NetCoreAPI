@@ -56,6 +56,7 @@ namespace CIM.API.Controllers
 
             return output;
         }
+        
 
         public async Task<ProcessReponseModel<RecordManufacturingLossModel>> GetByGuid(Guid guid)
         {
