@@ -168,8 +168,6 @@ namespace CIM.DAL.Implements
                 }
             }
             return output;
-
         }
-
     }
 }
