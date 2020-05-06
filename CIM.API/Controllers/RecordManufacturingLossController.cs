@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class RecordManufacturingLossController : BaseController
     {
