@@ -10,5 +10,6 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task Create(RecordManufacturingLossModel model);
         Task Update(RecordManufacturingLossModel model);
+        Task<RecordManufacturingLossModel> GetByGuid(Guid guid);
     }
 }

@@ -103,7 +103,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<IDictionary<int, MachineModel>> GetMachines(IDictionary<int, MachineComponentModel> components)
+        private async Task<IDictionary<int, MachineModel>> GetMachines(IDictionary<int, MachineComponentModel> components, IDictionary<int, int[]> routeMachines)
         {
             var output = new Dictionary<int, MachineModel>();
             var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
@@ -117,6 +117,7 @@ namespace CIM.BusinessLogic.Services
                     Name = item.Name,
                     ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
+                    routeList = routeMachines.Where(x=>x.Value.Contains(item.Id)).Select(x=>x.Key).ToArray()
                 };
             }
             return output;
@@ -185,7 +186,7 @@ namespace CIM.BusinessLogic.Services
             masterData.LossLevel3s = GetLossLevel3();
             masterData.RouteMachines = await GetRouteMachine();
             masterData.Components = await GetComponents();
-            masterData.Machines = await GetMachines(masterData.Components);
+            masterData.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
             masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
             masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
             masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
@@ -197,7 +198,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
             masterData.Dictionary.Units = await GetUnitsDictionary();
             masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
-            masterData.Dictionary.Routes = await GetRouteDictionary();
+            masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -299,17 +300,6 @@ namespace CIM.BusinessLogic.Services
             planCompare.Add(Constans.CompareMapping.NoProduct, "No Product ID");
             planCompare.Add(Constans.CompareMapping.Inprocess, "Inprocess");
             return planCompare;
-        }
-
-        private async Task<IDictionary<int, string>> GetRouteDictionary()
-        {
-            var db = (await _routeRepository.WhereAsync(x => x.IsActive == true));
-            var output = new Dictionary<int, string>();
-            foreach (var item in db)
-            {
-                output.Add(item.Id, item.Name);
-            }
-            return output;
         }
     }
 }

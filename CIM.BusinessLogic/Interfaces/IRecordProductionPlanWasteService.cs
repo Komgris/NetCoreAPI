@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
     public interface IRecordProductionPlanWasteService
     {
-        Dictionary<int, RecordProductionPlanWasteModel> ToDictiony(IEnumerable<RecordProductionPlanWasteModel> enumerable);
+        Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);
     }
 }

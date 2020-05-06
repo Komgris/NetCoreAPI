@@ -5,6 +5,8 @@ namespace CIM.Model
 {
     public class MachineModel
     {
+        public int[] routeList;
+
         public int Id { get; set; }
 
         public string Name { get; set; }
