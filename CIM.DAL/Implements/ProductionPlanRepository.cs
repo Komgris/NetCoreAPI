@@ -154,6 +154,18 @@ namespace CIM.DAL.Implements
                 output.Products = dt.AsEnumerable().Select(x => new { id = x.Field<int>("productid"), name = x.Field<string>("productcode") }).Distinct().ToDictionary(x => x.id, y => y.name);
                 output.Routes = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename") }).Distinct().ToDictionary(x => x.id, y => y.name);
                 output.Status = dt.AsEnumerable().Select(x => new { id = x.Field<int>("statusid"), name = x.Field<string>("statusname") }).Distinct().ToDictionary(x => x.id, y => y.name);
+
+                var routeList = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename"), inProcess = Convert.ToBoolean(x.Field<Int32>("inprocess")) }).Distinct().ToList();
+                output.Route = new List<RouteModel>();
+                foreach (var item in routeList)
+                {
+                    output.Route.Add(new RouteModel
+                    {
+                        Id = item.id,
+                        Name = item.name,
+                        InProcess = item.inProcess
+                    });
+                }
             }
             return output;
 
