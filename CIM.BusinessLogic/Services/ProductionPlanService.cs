@@ -521,9 +521,9 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<FilterLoadProductionPlanListModel> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
         {
-            var output = await _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId);
+            var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId);
             return output;
         }
     }

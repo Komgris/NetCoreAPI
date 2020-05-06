@@ -249,12 +249,12 @@ namespace CIM.API.Controllers
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> FilterLoadProductionPlan(int? productId,int? routeId,int?statusId)
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId,int? routeId,int?statusId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting));
+                output.Data =JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
