@@ -78,24 +78,26 @@ namespace CIM.API.IntegrationTests
         public async Task Update_Test()
         {
             // Arrange
-            var componentType = new MachineType
+            var componentType = new ComponentType
             {
-                Name = "Machine",
-                IsActive = true
-            };
-
-            var componentTypeEdit = new MachineTypeModel
-            {
-                Name = "Machine_edit",
+                Name = "Component3",
                 IsActive = true
             };
 
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                context.MachineType.Add(componentType);
+                context.ComponentType.Add(componentType);
                 context.SaveChanges();
             }
+            var getId = Get(componentType.Name, scenario);
+
+            var componentTypeEdit = new ComponentTypeModel
+            {
+                Id = getId.Id,
+                Name = "ComponentEdit",
+                IsActive = true
+            };
 
             var content = GetHttpContentForPost(componentTypeEdit, scenario.AdminToken);
             var updateResponse = await scenario.TestClient.PutAsync("/api/ComponentType/Update", content);

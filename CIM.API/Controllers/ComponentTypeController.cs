@@ -114,5 +114,24 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/Get")]
+        public async Task<ProcessReponseModel<ComponentTypeModel>> Get(int id)
+        {
+            var output = new ProcessReponseModel<ComponentTypeModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                output.Data = await _componentTypeService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
     }
 }

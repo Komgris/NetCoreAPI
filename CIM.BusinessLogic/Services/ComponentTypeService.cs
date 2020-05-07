@@ -49,9 +49,19 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public Task InsertByMachineId(MappingMachineTypeComponentTypeModel<List<ComponentTypeModel>> data)
+        public async Task InsertByMachineId(MappingMachineTypeComponentTypeModel<List<ComponentTypeModel>> data)
         {
-            throw new NotImplementedException();
+            await DeleteMapping(data.MachineId);
+            foreach (var model in data.Component)
+            {
+                var db = new MachineTypeComponentType();
+                db.MachineTypeId = data.MachineId;
+                db.ComponentTypeId = model.Id;
+                db.CreatedAt = DateTime.Now;
+                db.CreatedBy = CurrentUser.UserId;
+                _machineTypeComponentTypeRepository.Add(db);
+            }
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany)
@@ -88,6 +98,33 @@ namespace CIM.BusinessLogic.Services
             db_model.IsDelete = false;
             _componentTypeRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task DeleteMapping(int mc_id)
+        {
+            var list = _machineTypeComponentTypeRepository.Where(x => x.MachineTypeId == mc_id);
+            foreach (var model in list)
+            {
+                _machineTypeComponentTypeRepository.Delete(model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<ComponentTypeModel> Get(int id)
+        {
+            return await _componentTypeRepository.All().Select(
+                        x => new ComponentTypeModel
+                        {
+                            Id = x.Id,
+                            Image = x.Image,
+                            Name = x.Name,
+                            IsActive = x.IsActive,
+                            IsDelete = x.IsDelete,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy
+                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
         }
     }
 }
