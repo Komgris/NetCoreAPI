@@ -313,18 +313,16 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var item in lossLevel2Db)
             {
-                if (!output.ContainsKey(item.Id))
+                var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete))
+                    .ToDictionary(x => x.Id, y => y.Description);
+
+                output.Add(item.Id, new ProcessDrivenModel()
                 {
-                    var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete))
-                        .ToDictionary(x => x.Id, y => y.Name);
-
-                    var model = new ProcessDrivenModel();
-                    model.Id = item.Id;
-                    model.Name = item.Name;
-                    model.LossLevel3 = lossLevel3;
-
-                    output.Add(item.Id, model);
-                }
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    LossLevel3 = lossLevel3
+                });
             }
             return output;
         }
