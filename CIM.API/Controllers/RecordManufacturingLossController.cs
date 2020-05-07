@@ -56,8 +56,7 @@ namespace CIM.API.Controllers
             }
 
             return output;
-        }
-        
+        }       
 
         [HttpGet]
         [Route("api/[controller]/GetByGuid")]
