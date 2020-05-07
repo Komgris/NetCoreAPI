@@ -14,6 +14,7 @@ namespace CIM.BusinessLogic.Services
         public PagingModel<T> ToPagingModel<T>(List<T> data, int total, int page, int howmany)
         where T : new() {
             var output = new PagingModel<T>();
+            howmany = howmany <= 0 ? 1000000 : howmany;
             output.Total = total;
             output.HowMany = howmany;
             output.Page = page;
