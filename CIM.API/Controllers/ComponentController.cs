@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class ComponentController : BaseController
     {
