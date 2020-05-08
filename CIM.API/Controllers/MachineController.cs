@@ -106,6 +106,25 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetMachineByRoute")]
+        public async Task<ProcessReponseModel<List<MachineModel>>> GetMachineByRoute(int routeId)
+        {
+            var output = new ProcessReponseModel<List<MachineModel>>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                output.Data = await _service.GetMachineByRoute(routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.ToString();
+            }
+            return output;
+        }
+
 
     }
 }

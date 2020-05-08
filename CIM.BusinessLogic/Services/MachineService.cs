@@ -162,5 +162,10 @@ namespace CIM.BusinessLogic.Services
 
         }
 
+        public async Task<List<MachineModel>> GetMachineByRoute(int routeId)
+        {
+            var output = await _machineRepository.ListMachineByRoute(routeId);
+            return output;
+        }
     }
 }
