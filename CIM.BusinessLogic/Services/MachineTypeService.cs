@@ -51,6 +51,9 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany)
         {
+            int skipRec = (page - 1) * howmany;
+            int takeRec = howmany;
+
             var dbModel = await _machineTypeRepository.Where(x => x.IsActive && x.IsDelete == false &
                 string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
                 .Select(
@@ -67,6 +70,7 @@ namespace CIM.BusinessLogic.Services
                         UpdatedBy = x.UpdatedBy
                     }).ToListAsync();
             var totalCount = dbModel.Count();
+            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
             return ToPagingModel(dbModel, totalCount, page, howmany);
         }
 
