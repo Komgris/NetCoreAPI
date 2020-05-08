@@ -93,6 +93,7 @@ namespace CIM.API
             services.AddTransient<IMachineTypeService, MachineTypeService>();
             services.AddTransient<IComponentTypeService, ComponentTypeService>();
             services.AddTransient<IComponentService, ComponentService>();
+            services.AddTransient<IRouteService, RouteService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
