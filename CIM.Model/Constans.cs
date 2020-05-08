@@ -35,13 +35,13 @@ namespace CIM.Model
             Cancel = 9
         }
 
-        public enum MACHINE_STATUS : int
+        public static class MACHINE_STATUS 
         {
-            Idle = 1,
-            Running = 2,
-            Stop = 3,
-            Error = 4,
-            NA = 5,
+            public const int Idle = 1;
+            public const int Running = 2;
+            public const int Stop = 3;
+            public const int Error = 4;
+            public const int NA = 5;
         }
 
         public enum AlertType : int

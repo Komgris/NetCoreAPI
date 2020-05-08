@@ -40,7 +40,7 @@ namespace CIM.BusinessLogic.Services
         public async Task Create(MachineModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Machine());
-            dbModel.StatusId = (int)Constans.MACHINE_STATUS.Idle;
+            dbModel.StatusId = Constans.MACHINE_STATUS.Idle;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             _machineRepository.Add(dbModel);
