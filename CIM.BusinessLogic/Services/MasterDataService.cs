@@ -25,6 +25,7 @@ namespace CIM.BusinessLogic.Services
         private IWasteLevel1Repository _wasteLevel1Repository;
         private IWasteLevel2Repository _wasteLevel2Repository;
         private IMaterialRepository _materialRepository;
+        private IMachineTypeRepository _machineTypeRepository;
 
         public MasterDataService(
             ILossLevel3Repository lossLevel3Repository,
@@ -40,7 +41,8 @@ namespace CIM.BusinessLogic.Services
             IUnitsRepository unitsRepository,
             IWasteLevel1Repository wasteLevel1Repository,
             IWasteLevel2Repository wasteLevel2Repository,
-            IMaterialRepository materialRepository
+            IMaterialRepository materialRepository,
+            IMachineTypeRepository machineTypeRepository
             )
         {
             _lossLevel3Repository = lossLevel3Repository;
@@ -57,6 +59,7 @@ namespace CIM.BusinessLogic.Services
             _wasteLevel1Repository = wasteLevel1Repository;
             _wasteLevel2Repository = wasteLevel2Repository;
             _materialRepository = materialRepository;
+            _machineTypeRepository = machineTypeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -199,6 +202,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Units = await GetUnitsDictionary();
             masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
             masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
+            masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -300,6 +304,18 @@ namespace CIM.BusinessLogic.Services
             planCompare.Add(Constans.CompareMapping.NoProduct, "No Product ID");
             planCompare.Add(Constans.CompareMapping.Inprocess, "Inprocess");
             return planCompare;
+        }
+
+        private async Task<IDictionary<int, string>> GetMachineTypeDictionary()
+        {
+            var db = (await _machineTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
         }
     }
 }
