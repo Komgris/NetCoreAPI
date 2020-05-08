@@ -31,7 +31,6 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Create(MachineTypeModel data)
         {
-            //var list = new List<MachineTypeModel>();
             var db_model = MapperHelper.AsModel(data, new MachineType());
             db_model.CreatedAt = DateTime.Now;
             db_model.CreatedBy = CurrentUser.UserId;
