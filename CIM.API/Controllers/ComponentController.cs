@@ -111,5 +111,22 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [Route("api/[controller]/InsertMappingMachineComponent")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> InsertMappingMachineComponent([FromBody] MappingMachineComponent<List<ComponentModel>> data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _componentService.InsertMappingMachineComponent(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
     }
 }
