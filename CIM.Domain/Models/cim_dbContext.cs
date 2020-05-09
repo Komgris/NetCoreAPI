@@ -739,8 +739,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<MachineType>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -1268,6 +1266,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(128);
 
+                entity.Property(e => e.EstimateFinish).HasColumnType("datetime");
+
                 entity.Property(e => e.Finish).HasColumnType("datetime");
 
                 entity.Property(e => e.OperatorSetId).HasColumnName("OperatorSet_Id");
@@ -1279,7 +1279,9 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
-                entity.Property(e => e.Start).HasColumnType("datetime");
+                entity.Property(e => e.Start)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
@@ -1395,6 +1397,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
 
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.RecordMachineStatus)
                     .HasForeignKey(d => d.CreatedBy)
@@ -1437,6 +1443,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.ProductionPlanId)
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
                 entity.Property(e => e.StartedAt)
                     .HasColumnType("datetime")
@@ -1506,23 +1514,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
-
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.RecordProductionPlanOutputCreatedByNavigation)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Output_Users2");
-
-                entity.HasOne(d => d.ProductionPlan)
-                    .WithMany(p => p.RecordProductionPlanOutput)
-                    .HasForeignKey(d => d.ProductionPlanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Output_Production_Plan");
-
-                entity.HasOne(d => d.UpdatedByNavigation)
-                    .WithMany(p => p.RecordProductionPlanOutputUpdatedByNavigation)
-                    .HasForeignKey(d => d.UpdatedBy)
-                    .HasConstraintName("FK_Record_Production_Output_Users");
             });
 
             modelBuilder.Entity<RecordProductionPlanWaste>(entity =>

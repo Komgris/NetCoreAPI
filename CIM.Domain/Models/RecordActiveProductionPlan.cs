@@ -10,6 +10,7 @@ namespace CIM.Domain.Models
         public int RouteId { get; set; }
         public DateTime Start { get; set; }
         public DateTime? Finish { get; set; }
+        public DateTime? EstimateFinish { get; set; }
         public int? StatusId { get; set; }
         public int Target { get; set; }
         public string CreatedBy { get; set; }
