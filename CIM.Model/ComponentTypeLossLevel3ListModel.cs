@@ -8,6 +8,7 @@ namespace CIM.Model
     {
         public string ComponentTypeName { get; set; }
         public string LossLevel3Name { get; set; }
+        public string LossLevel3Description { get; set; }
     }
 }
 
