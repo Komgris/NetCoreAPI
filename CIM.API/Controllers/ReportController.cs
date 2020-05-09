@@ -278,6 +278,21 @@ namespace CIM.API.Controllers {
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetMachineStatusHistory")]
+        public async Task<ProcessReponseModel<object>> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null) {
+
+            var output = new ProcessReponseModel<object>();
+            try {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineStatusHistory(howMany, page,  planId, routeId, machineId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e) {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         #endregion
     }
 }

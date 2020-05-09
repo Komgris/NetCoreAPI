@@ -125,6 +125,23 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/InsertMappingRouteMachine")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> InsertMappingRouteMachine([FromBody] List<RouteMachineModel> data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _service.InsertMappingRouteMachine(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
 
     }
 }

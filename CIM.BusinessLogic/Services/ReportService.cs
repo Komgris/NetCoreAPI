@@ -228,6 +228,25 @@ namespace CIM.BusinessLogic.Services {
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
         }
+
+        public PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null) {
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@mcid", machineId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page },
+                {"@howmany", howMany }
+            };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Status", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, howMany);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
+        }
         #endregion
     }
 }
