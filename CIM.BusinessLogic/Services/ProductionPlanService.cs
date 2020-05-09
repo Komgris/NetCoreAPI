@@ -12,6 +12,7 @@ using CIM.Domain.Models;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -25,6 +26,8 @@ namespace CIM.BusinessLogic.Services
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordActiveProductionPlanRepository _recordActiveProductionPlanRepository;
+        private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IReportService _reportService;
 
         public ProductionPlanService(
@@ -36,6 +39,8 @@ namespace CIM.BusinessLogic.Services
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordActiveProductionPlanRepository recordActiveProductionPlanRepository,
+            IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IReportService reportService
             )
         {
@@ -47,6 +52,8 @@ namespace CIM.BusinessLogic.Services
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _recordActiveProductionPlanRepository = recordActiveProductionPlanRepository;
+            _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _reportService = reportService;
         }
 
@@ -338,6 +345,18 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedBy = CurrentUser.UserId;
             _productionPlanRepository.Edit(dbModel);
 
+            ValidateMachineLoss(masterData.Routes[model.RouteId.Value].MachineList);
+
+            _recordActiveProductionPlanRepository.Add(new RecordActiveProductionPlan
+            {
+                CreatedBy = CurrentUser.UserId,
+                ProductionPlanPlanId = model.PlanId,
+                RouteId = (int)model.RouteId,
+                Start = now,
+                StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
+                Target = !model.Target.HasValue ? (int)dbModel.Target : CalculateTarget(model),
+            });
+
             output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
             {
                 ProductionPlanId = model.PlanId,
@@ -355,38 +374,107 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Stop(string id, int[] routeIds)
+        private void ValidateMachineLoss(Dictionary<int, MachineModel> machineList)
+        {
+            //todo
+            // validate mchine loss finish time stamp
+
+            //check if machine of current route has finish = null
+            //Yes-> stamp finish = now
+
+            throw new NotImplementedException();
+        }
+
+        private int CalculateTarget(ProductionPlanModel model)
+        {
+            // todo calculate target, need final business logic
+            return (int)model.Target;
+        }
+
+        public async Task Resume(string id, int routeId)
+        {
+            var masterData = await _masterDataService.GetData();
+            ValidateMachineLoss(masterData.Routes[routeId].MachineList);
+            //todo
+
+            await _unitOfWork.CommitAsync();
+
+        }
+
+        public async Task Pause(string id, int routeId)
         {
 
             var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
             var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
+            // todo
+            // If productionstatus = Production && loss record with same planId and routeId or machineId exist, which has finsih != null  
 
-            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
-            dbModel.UpdatedAt = now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            _productionPlanRepository.Edit(dbModel);
+            _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
+            {
+                Guid = Guid.NewGuid().ToString(),
+                CreatedBy = CurrentUser.UserId,
+                LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                RouteId = routeId,
+            });
 
             var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
-
             if (activeProductionPlan != null)
             {
-                foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
+                var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                if (activeProcess == null)
+                    throw new Exception($"Route {routeId} is not active in PlanId {id}.");
+
+                foreach (var machine in activeProcess.Route.MachineList)
                 {
-                    if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
-                    {
-                        foreach (var machine in activeProcess.Value.Route.MachineList)
-                        {
-                            await _machineService.RemoveCached(machine.Key, null);
-                        }
-                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
-                    }
+                    machine.Value.RouteList.Remove(routeId);
+                    // todo
+                    // if machine is no long in any route -> insert record_manufactoring_loss
+                    await _machineService.RemoveCached(machine.Key, null);
                 }
-                await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
+                activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
             }
             await _unitOfWork.CommitAsync();
 
         }
+
+        public async Task Finish(ProductionPlanModel model)
+        {
+
+            var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
+            await _recordManufacturingLossService.Create(new RecordManufacturingLossModel
+            {
+                Guid = Guid.NewGuid().ToString(),
+                CreatedBy = CurrentUser.UserId,
+                LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+
+            });
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            _productionPlanRepository.Edit(dbModel);
+
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.PlanId);
+
+            if (activeProductionPlan != null)
+            {
+                var activeProcess = activeProductionPlan.ActiveProcesses[(int)model.RouteId];
+                if (activeProcess == null)
+                    throw new Exception($"Route {model.RouteId} is not active in PlanId {model.PlanId}. ");
+
+
+                foreach (var machine in activeProcess.Route.MachineList)
+                {
+                    await _machineService.RemoveCached(machine.Key, null);
+                }
+                activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
+                if (activeProductionPlan.ActiveProcesses.Count() == 0)
+                    await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
+            }
+            await _unitOfWork.CommitAsync();
+
+        }
+
 
         public async Task<ProductionPlanModel> Load(string id)
         {

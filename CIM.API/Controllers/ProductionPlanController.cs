@@ -89,10 +89,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 output.Data = await _planService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
@@ -111,10 +107,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _planService.Create(data);
                 output.IsSuccess = true;
             }
@@ -133,10 +125,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _planService.Update(data);
                 output.IsSuccess = true;
             }
@@ -155,10 +143,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _planService.Delete(id);
                 output.IsSuccess = true;
             }
@@ -176,9 +160,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 await _planService.Start(model);
                 output.IsSuccess = true;
             }
@@ -189,9 +170,26 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/ProductionPlanStop")]
+        [Route("api/ProductionPlanFinish")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                await _planService.Finish(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id, string routeIds = "")
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -199,7 +197,27 @@ namespace CIM.API.Controllers
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Stop(id, HelperUtility.StringToArray(routeIds));
+                await _planService.Pause(id, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanResume")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                await _planService.Resume(id, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

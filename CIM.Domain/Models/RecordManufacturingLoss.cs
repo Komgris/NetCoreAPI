@@ -35,5 +35,6 @@ namespace CIM.Domain.Models
         public virtual ProductionPlan ProductionPlan { get; set; }
         public virtual Users UpdatedByNavigation { get; set; }
         public virtual ICollection<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
+        public int RouteId { get; set; }
     }
 }
