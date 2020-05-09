@@ -354,7 +354,7 @@ namespace CIM.BusinessLogic.Services
                 RouteId = (int)model.RouteId,
                 Start = now,
                 StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
-                Target = !model.Target.HasValue ? (int)dbModel.Target : CalculateTarget(model),
+                Target = CalculateTarget(model),
             });
 
             output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
