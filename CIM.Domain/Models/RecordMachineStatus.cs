@@ -13,6 +13,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public int MachineId { get; set; }
         public int MachineStatusId { get; set; }
+        public string ProductionPlanId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
 
