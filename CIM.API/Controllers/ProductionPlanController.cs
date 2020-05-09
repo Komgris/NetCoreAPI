@@ -19,11 +19,14 @@ namespace CIM.API.Controllers
     public class ProductionPlanController : BaseController
     {
         private IProductionPlanService _planService;
+        private IActiveProductionPlanService _activePlanService;
         public ProductionPlanController(
-            IProductionPlanService planService
+            IProductionPlanService planService,
+            IActiveProductionPlanService activePlanService
             )
         {
             _planService = planService;
+            _activePlanService = activePlanService;
         }
 
         [Route("api/[controller]/Compare")]
@@ -153,80 +156,6 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/ProductionPlanStart")]
-        [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Start(ProductionPlanModel model)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                await _planService.Start(model);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [Route("api/ProductionPlanFinish")]
-        [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                await _planService.Finish(model);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [Route("api/ProductionPlanPause")]
-        [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Pause(id, routeId);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [Route("api/ProductionPlanResume")]
-        [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Resume(id, routeId);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
         [Route("api/[controller]/Load")]
         [HttpGet]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
@@ -263,6 +192,70 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+        #region Production Process
 
+        [Route("api/ProductionPlanStart")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Start(ProductionPlanModel model) {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try {
+                await _activePlanService.Start(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex) {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanFinish")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model) {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try {
+                await _activePlanService.Finish(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex) {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanPause")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId) {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                await _activePlanService.Pause(id, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex) {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanResume")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId) {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try {
+                // todo
+                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                await _activePlanService.Resume(id, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex) {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        #endregion
     }
 }
