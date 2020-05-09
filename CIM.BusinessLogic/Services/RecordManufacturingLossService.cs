@@ -37,9 +37,13 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Create(RecordManufacturingLossModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
-            _recordManufacturingLossRepository.Add(dbModel);
-            await _unitOfWork.CommitAsync();
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId);
+            if (dbModel == null || dbModel.EndAt.HasValue)
+            {
+                dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
+                _recordManufacturingLossRepository.Add(dbModel);
+                await _unitOfWork.CommitAsync();
+            }
         }
 
         public async Task<RecordManufacturingLossModel> GetByGuid(Guid guid)
