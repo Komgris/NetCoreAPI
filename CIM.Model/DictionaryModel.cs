@@ -13,5 +13,6 @@ namespace CIM.Model
         public IDictionary<int, string> Units { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> CompareResult { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> WastesLevel2 { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> MachineType { get; set; } = new Dictionary<int, string>();
     }
 }
