@@ -115,10 +115,10 @@ namespace CIM.BusinessLogic.Services
                 _componentRepository.Edit(model);
             }
 
-            var componentId = data.ComponentList.Select(x => x.Id);
-            var component = await _componentRepository.WhereAsync(x => componentId.Contains(x.Id)  );
+            var componentIds = data.ComponentList.Select(x => x.Id);
+            var components = await _componentRepository.WhereAsync(x => componentIds.Contains(x.Id)  );
 
-            foreach (var model in component)
+            foreach (var model in components)
             {
                 model.MachineId = data.MachineId;
                 _componentRepository.Edit(model);
