@@ -194,5 +194,9 @@ namespace CIM.BusinessLogic.Services
             }
             await _unitOfWork.CommitAsync();
         }
+        public async Task<List<MachineTagsModel>> GetMachineTags()
+        {
+            return await _machineRepository.GetMachineTags();
+        }
     }
 }
