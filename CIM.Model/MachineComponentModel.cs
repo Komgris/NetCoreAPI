@@ -11,7 +11,7 @@ namespace CIM.Model
         public int TypeId { get; set; }
 
         public int Status { get; set; }
-        public int MachineId { get; set; }
+        public int? MachineId { get; set; }
 
         public int[] LossList { get; set; }
     }
