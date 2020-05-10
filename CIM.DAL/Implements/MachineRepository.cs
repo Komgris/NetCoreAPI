@@ -14,7 +14,7 @@ namespace CIM.DAL.Implements
         {
         }
 
-        public async Task<List<MachineTagsModel>> Get()
+        public async Task<List<MachineTagsModel>> GetMachineTags()
         {
             return await Task.Run(() =>
             {

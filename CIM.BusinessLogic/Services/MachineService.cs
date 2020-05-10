@@ -164,7 +164,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {
-            return await _machineRepository.Get();
+            return await _machineRepository.GetMachineTags();
         }
     }
 }
