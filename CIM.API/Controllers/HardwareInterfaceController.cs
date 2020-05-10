@@ -3,19 +3,20 @@ using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class HardwareInterfaceController : ControllerBase
+    public class HardwareInterfaceController : BaseController
     {
-        private IMachineTagsService _callMachineTagsService;
+        private IMachineService _machineService;
 
         public HardwareInterfaceController(
-            IMachineTagsService callMachineTagsService
+            IMachineService machineService
             )
         {
-            _callMachineTagsService = callMachineTagsService;
+            _machineService = machineService;
         }
 
         [HttpPut]
@@ -45,10 +46,9 @@ namespace CIM.API.Controllers
         public async Task<string> GetMachineTags()
         {
             string output;
-            //FoCusDev
             try
             {
-                output = await _callMachineTagsService.Get();
+                output = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
             }
             catch (Exception ex)
             {

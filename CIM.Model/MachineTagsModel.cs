@@ -6,27 +6,42 @@ namespace CIM.Model
 {
     public class MachineTagsModel
     {
+        public MachineTagsModel()
+        {
+
+        }
+
+        public MachineTagsModel(int id, string name, string runningStatus="", string counterIn="", string counterOut="", string counterReset="")
+        {
+            this.Id = id;
+            this.Name = name;
+            this.RunningStatus = new KepwareTagModel<bool>(runningStatus, false);
+            this.CounterIn = new KepwareTagModel<int>(counterIn, 0);
+            this.CounterOut = new KepwareTagModel<int>(counterOut, 0);
+            this.CounterReset = new KepwareTagModel<bool>(counterReset, false);
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
-        public MachineTagsSup<bool> RunningStatus { get; set; } = new MachineTagsSup<bool>();
-        public MachineTagsSup<int> CounterIn { get; set; } = new MachineTagsSup<int>();
-        public MachineTagsSup<int> CounterOut { get; set; } = new MachineTagsSup<int>();
-        public MachineTagsSup<bool> CounterReset { get; set; } = new MachineTagsSup<bool>();
+        public KepwareTagModel<bool> RunningStatus { get; set; }
+        public KepwareTagModel<int> CounterIn { get; set; }
+        public KepwareTagModel<int> CounterOut { get; set; }
+        public KepwareTagModel<bool> CounterReset { get; set; }
     }
 
-    public class MachineTagsSup<T>
+    public class KepwareTagModel<T>
     {
         public string Name { get; set; }
         public T Value { get; set; }
 
-        public MachineTagsSup (string tn, T tv)
+        public KepwareTagModel()
+        {
+        }
+
+        public KepwareTagModel (string tn, T tv)
         {
             this.Name = tn;
             this.Value = tv;
-        }
-
-        public MachineTagsSup()
-        {
         }
 
         public void Init(string tn, T tv)
