@@ -52,7 +52,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output = ex.ToString();
+                output = ex.Message;
             }
             return output;
         }
