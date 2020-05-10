@@ -11,6 +11,7 @@ namespace CIM.BusinessLogic.Services
 {
     public class MasterDataService : IMasterDataService
     {
+        private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
         private IResponseCacheService _responseCacheService;
         private IRouteRepository _routeRepository;
@@ -28,6 +29,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineTypeRepository _machineTypeRepository;
 
         public MasterDataService(
+            ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
             IResponseCacheService responseCacheService,
             IRouteRepository routeRepository,
@@ -45,6 +47,7 @@ namespace CIM.BusinessLogic.Services
             IMachineTypeRepository machineTypeRepository
             )
         {
+            _lossLevel2Repository = lossLevel2Repository;
             _lossLevel3Repository = lossLevel3Repository;
             _responseCacheService = responseCacheService;
             _routeRepository = routeRepository;
@@ -120,7 +123,7 @@ namespace CIM.BusinessLogic.Services
                     Name = item.Name,
                     ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
-                    routeList = routeMachines.Where(x=>x.Value.Contains(item.Id)).Select(x=>x.Key).ToArray()
+                    routeList = routeMachines.Where(x => x.Value.Contains(item.Id)).Select(x => x.Key).ToArray()
                 };
             }
             return output;
@@ -150,9 +153,9 @@ namespace CIM.BusinessLogic.Services
             {
                 output[item.PlanId] = new ProductionPlanDictionaryModel
                 {
-                   PlanId = item.PlanId,
-                   Product = products[item.ProductId],
-                   RouteId = item.RouteId,
+                    PlanId = item.PlanId,
+                    Product = products[item.ProductId],
+                    RouteId = item.RouteId,
                 };
             }
             return output;
@@ -195,6 +198,7 @@ namespace CIM.BusinessLogic.Services
             masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
             masterData.ProductGroupRoutes = await GetProductGroupRoutes();
             masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
+            masterData.ProcessDriven = await GetProcessDriven();
 
             masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
             masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
@@ -218,10 +222,10 @@ namespace CIM.BusinessLogic.Services
                 item.Sub = wastesLevel2.Where(x => x.ParentId == item.Id).ToDictionary(x => x.Id, x => x);
             }
 
-            var productTypeIds = wastesLevel1.Where(x=>x.ProductTypeId != null).Select(x => (int)x.ProductTypeId).Distinct().ToList();
+            var productTypeIds = wastesLevel1.Where(x => x.ProductTypeId != null).Select(x => (int)x.ProductTypeId).Distinct().ToList();
             foreach (var productTypeId in productTypeIds)
             {
-                var wasteByProductType = wastesLevel1.Where(x => x.ProductTypeId == productTypeId).ToDictionary(x=>x.Id, x=>x);
+                var wasteByProductType = wastesLevel1.Where(x => x.ProductTypeId == productTypeId).ToDictionary(x => x.Id, x => x);
                 output.Add(productTypeId, wasteByProductType);
             }
             return output;
@@ -317,5 +321,27 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
+        private async Task<IDictionary<int, ProcessDrivenModel>> GetProcessDriven()
+        {
+            var output = new Dictionary<int, ProcessDrivenModel>();
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => x.LossLevel1Id == 2 && x.IsActive && !x.IsDelete));
+
+            foreach (var item in lossLevel2Db)
+            {
+                var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete))
+                    .ToDictionary(x => x.Id, y => y.Description);
+
+                output.Add(item.Id, new ProcessDrivenModel()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    LossLevel3 = lossLevel3
+                });
+            }
+            return output;
+        }
+
     }
 }

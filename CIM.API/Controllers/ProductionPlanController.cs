@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
 using CIM.BusinessLogic.Utility;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
@@ -211,7 +212,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id,int routeId)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
@@ -219,7 +220,7 @@ namespace CIM.API.Controllers
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                output.Data = await _planService.Load(id);
+                output.Data = await _planService.Load(id, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -237,6 +238,23 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _planService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/FilterLoadProductionPlan")]
+        [HttpGet]
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId,int? routeId,int?statusId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data =JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
