@@ -9,6 +9,14 @@ namespace CIM.API.Controllers
     [ApiController]
     public class HardwareInterfaceController : ControllerBase
     {
+        private IMachineTagsService _callMachineTagsService;
+
+        public HardwareInterfaceController(
+            IMachineTagsService callMachineTagsService
+            )
+        {
+            _callMachineTagsService = callMachineTagsService;
+        }
 
         [HttpPut]
         [Route("api/[controller]/UpdateLoss")]
@@ -30,6 +38,23 @@ namespace CIM.API.Controllers
         public async Task<bool> UpdateOutput([FromBody]RecordOutputModel model)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetMachineTags")]
+        public async Task<string> GetMachineTags()
+        {
+            string output;
+            //FoCusDev
+            try
+            {
+                output = await _callMachineTagsService.Get();
+            }
+            catch (Exception ex)
+            {
+                output = ex.ToString();
+            }
+            return output;
         }
     }
 }
