@@ -16,17 +16,20 @@ namespace CIM.BusinessLogic.Services
     {
         private readonly IResponseCacheService _responseCacheService;
         private readonly IMachineRepository _machineRepository;
+        private readonly IRouteMachineRepository _routeMachineRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
-            IResponseCacheService responseCacheService
+            IResponseCacheService responseCacheService,
+            IRouteMachineRepository routeMachineRepository
             )
         {
             _machineRepository = machineRepository;
             _unitOfWork = unitOfWork;
             _responseCacheService = responseCacheService;
+            _routeMachineRepository = routeMachineRepository;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -37,9 +40,10 @@ namespace CIM.BusinessLogic.Services
         public async Task Create(MachineModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Machine());
-            _machineRepository.Add(dbModel);
+            dbModel.StatusId = Constans.MACHINE_STATUS.Idle;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
+            _machineRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
         }
 
@@ -162,6 +166,34 @@ namespace CIM.BusinessLogic.Services
 
         }
 
+        public async Task InsertMappingRouteMachine( List<RouteMachineModel> data)
+        {
+            await DeleteMapping(data[0].RouteId);
+            int sequence = 1;
+            foreach (var model in data)
+            {
+
+                var db_model = MapperHelper.AsModel(model, new RouteMachine());
+                db_model.IsActive = true;
+                db_model.IsDelete = false;
+                db_model.CreatedAt = DateTime.Now;
+                db_model.CreatedBy = CurrentUser.UserId;
+                db_model.Sequence = sequence;
+                _routeMachineRepository.Add(db_model);
+                sequence++;
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task DeleteMapping(int routeid)
+        {
+            var list = _routeMachineRepository.Where(x => x.RouteId == routeid);
+            foreach (var model in list)
+            {
+                _routeMachineRepository.Delete(model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {
             return await _machineRepository.GetMachineTags();
