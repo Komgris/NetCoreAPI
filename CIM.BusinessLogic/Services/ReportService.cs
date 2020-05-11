@@ -1,12 +1,10 @@
 ﻿using CIM.BusinessLogic.Interfaces;
-using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace CIM.BusinessLogic.Services {
@@ -134,8 +132,7 @@ namespace CIM.BusinessLogic.Services {
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Dashboard", paramsList);
         }
-        public Dictionary<string,int> GetActiveProductionPlanOutput()
-        {
+        public Dictionary<string, int> GetActiveProductionPlanOutput() {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
         }
 
@@ -191,7 +188,7 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cost_time", paramsList);
         }
 
-        public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to,int page) {
+        public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page) {
 
             var paramsList = new Dictionary<string, object>() {
                 {"@planid", planId },
@@ -209,6 +206,47 @@ namespace CIM.BusinessLogic.Services {
             return pagingmodel;
         }
 
+        #endregion
+
+        #region Cim-oper mc status
+        
+        public DataTable GetActiveMachineInfo(string planId, int routeId) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineinfo", paramsList);
+        }
+        public DataTable GetActiveMachineEvents(string planId, int routeId) {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
+        }
+
+        public PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null) {
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@mcid", machineId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page },
+                {"@howmany", howMany }
+            };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Status", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, howMany);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
+        }
         #endregion
     }
 }

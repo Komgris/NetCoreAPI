@@ -8,6 +8,7 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.0
 pipelines:
   default:
     - step:
+        deployment: Test
         caches:
           - dotnetcore
         script:
