@@ -106,7 +106,7 @@ namespace CIM.BusinessLogic.Services
                         }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive.Value && x.IsDelete == false);
         }
 
-        public async Task InsertMappingMachineComponent(MappingMachineComponent<List<ComponentModel>> data)
+        public async Task InsertMappingMachineComponent(MappingMachineComponent data)
         {
             var dbModels = await _componentRepository.Where(x=> x.MachineId == data.MachineId).ToListAsync();
             foreach(var model in dbModels)

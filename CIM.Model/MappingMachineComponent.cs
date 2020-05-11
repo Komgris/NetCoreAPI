@@ -4,9 +4,9 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class MappingMachineComponent<ComponentModel>
+    public class MappingMachineComponent
     {
-        public ComponentModel ComponentList { get; set; }
+        public List<ComponentModel> ComponentList { get; set; }
         public int MachineId { get; set; }
     }
 }

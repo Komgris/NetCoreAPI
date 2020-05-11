@@ -92,7 +92,7 @@ namespace CIM.API.IntegrationTests
                     context.SaveChanges();
                 }
             }
-            var mapping = new MappingMachineComponent<List<ComponentModel>>()
+            var mapping = new MappingMachineComponent()
             {
                 MachineId = 3,
                 ComponentList = new List<ComponentModel>()

@@ -114,7 +114,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/InsertMappingMachineComponent")]
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> InsertMappingMachineComponent([FromBody] MappingMachineComponent<List<ComponentModel>> data)
+        public async Task<ProcessReponseModel<object>> InsertMappingMachineComponent([FromBody] MappingMachineComponent data)
         {
             var output = new ProcessReponseModel<object>();
             try
