@@ -51,6 +51,7 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _recordManufacturingLossRepository.GetByGuid(guid);
             var output = MapperHelper.AsModel(dbModel, new RecordManufacturingLossModel());
             output.WasteList = await _recordProductionPlanWasteService.ListByLoss(output.Id);
+            output.LossLevelId = output.LossLevel3Id;
             return output;
         }
 
@@ -78,6 +79,7 @@ namespace CIM.BusinessLogic.Services
                     waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
+                waste.RecordManufacturingLossId = dbModel.Id;
                 waste.CreatedAt = now;
                 waste.CreatedBy = CurrentUser.UserId;
                 waste.ProductionPlanId = model.ProductionPlanId;

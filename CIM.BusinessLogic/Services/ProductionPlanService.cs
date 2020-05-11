@@ -621,19 +621,19 @@ namespace CIM.BusinessLogic.Services
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, bool isAuto)
         {
             var now = DateTime.Now;
-            var alert = new AlertModel
-            {
-                StatusId = (int)Constans.AlertStatus.New,
-                ItemStatusId = statusId,
-                CreatedAt = now,
-                Id = Guid.NewGuid(),
-                ItemId = machineId,
-                ItemType = (int)Constans.AlertType.MACHINE
-            };
-            activeProductionPlan.Alerts.Add(alert);
-            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == machineId && x.EndAt == null);
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId.HasValue && x.MachineId.Value  == machineId && x.EndAt.HasValue == false);
             if (dbModel == null)
             {
+                var alert = new AlertModel
+                {
+                    StatusId = (int)Constans.AlertStatus.New,
+                    ItemStatusId = statusId,
+                    CreatedAt = now,
+                    Id = Guid.NewGuid(),
+                    ItemId = machineId,
+                    ItemType = (int)Constans.AlertType.MACHINE
+                };
+                activeProductionPlan.Alerts.Add(alert);
                 _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
                 {
                     CreatedBy = CurrentUser.UserId,

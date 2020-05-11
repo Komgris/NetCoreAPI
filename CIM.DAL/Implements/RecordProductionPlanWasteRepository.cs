@@ -36,9 +36,17 @@ namespace CIM.DAL.Implements
             }
         }
 
-        public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id)
+        public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int recordManufacturingLossId)
         {
-            throw new NotImplementedException();
+            return await _dbset.Where(x => x.RecordManufacturingLossId == recordManufacturingLossId)
+                .Select(x => new RecordProductionPlanWasteModel
+                {
+                    CauseMachineId = x.CauseMachineId,
+                    Reason = x.Reason,
+                    RouteId = x.RouteId,
+                    WasteLevel2Id = x.WasteLevel2Id,
+                    Id = x.Id
+                }).ToListAsync();
         }
 
     }
