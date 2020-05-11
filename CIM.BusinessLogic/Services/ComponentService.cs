@@ -125,5 +125,26 @@ namespace CIM.BusinessLogic.Services
             }
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<List<ComponentModel>> GetComponentNoMachineId(string keyword)
+        {
+            var dbModels = await _componentRepository.WhereAsync(x => x.MachineId == null);
+            var components = dbModels.Where(x=> string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
+                .Select(
+                    x => new ComponentModel
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        MachineId = x.MachineId,
+                        TypeId = x.TypeId,
+                        IsActive = x.IsActive,
+                        IsDelete = x.IsDelete,
+                        CreatedAt = x.CreatedAt,
+                        CreatedBy = x.CreatedBy,
+                        UpdatedAt = x.UpdatedAt,
+                        UpdateBy = x.UpdateBy
+                    }).ToList();
+            return components;
+        }
     }
 }
