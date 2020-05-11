@@ -4,10 +4,9 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class MappingMachineComponent<T>
-        where T : new()
+    public class MappingMachineComponent<ComponentModel>
     {
-        public T ComponentList { get; set; } = new T();
+        public ComponentModel ComponentList { get; set; }
         public int MachineId { get; set; }
     }
 }

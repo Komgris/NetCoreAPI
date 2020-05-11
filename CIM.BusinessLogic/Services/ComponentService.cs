@@ -108,8 +108,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task InsertMappingMachineComponent(MappingMachineComponent<List<ComponentModel>> data)
         {
-            var dbModel = await _componentRepository.Where(x=> x.MachineId == data.MachineId).ToListAsync();
-            foreach(var model in dbModel)
+            var dbModels = await _componentRepository.Where(x=> x.MachineId == data.MachineId).ToListAsync();
+            foreach(var model in dbModels)
             {
                 model.MachineId = null;
                 _componentRepository.Edit(model);
