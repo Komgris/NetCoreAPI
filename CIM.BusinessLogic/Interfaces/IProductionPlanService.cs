@@ -25,8 +25,9 @@ namespace CIM.BusinessLogic.Interfaces
         Task Pause(string id, int routeId);
         Task Resume(string id, int routeId);
         Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
-        Task<ProductionPlanModel> Load(string id);
+        Task<ProductionPlanModel> Load(string id,int routeId);
         Task<ActiveProductionPlanModel> TakeAction(string id);
         Task<ActiveProductionPlanModel> UpdateByMachine(int id, int statusId, bool isAuto);
+        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId);
     }
 }
