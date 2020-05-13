@@ -95,11 +95,11 @@ namespace CIM.BusinessLogic.Services
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
                 if (affect > 0) {
 
-                    await _machineService.BulkCacheMachines(planId, routeId, output.ActiveProcesses[routeId].Route.MachineList);
-                    await SetCached(output);
-                    await _unitOfWork.CommitAsync();
+                    //await _machineService.BulkCacheMachines(planId, routeId, output.ActiveProcesses[routeId].Route.MachineList);
+                    //await SetCached(output);
+                    //await _unitOfWork.CommitAsync();
 
-                    ValidateMachineLoss(masterData.Routes[routeId].MachineList);
+                    //ValidateMachineLoss(masterData.Routes[routeId].MachineList);
 
                     return true;
                 }

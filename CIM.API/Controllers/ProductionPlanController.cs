@@ -31,20 +31,24 @@ namespace CIM.API.Controllers
         }
 
         #region Production plan mng 
-        
+
         [Route("api/[controller]/Compare")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Compare() {
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Compare()
+        {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
-            try {
+            try
+            {
                 var file = Request.Form.Files[0];
                 var folderName = Path.Combine("ProductionPlan");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                if (file.Length > 0) {
+                if (file.Length > 0)
+                {
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create)) {
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
                         file.CopyTo(stream);
                     }
 
@@ -54,11 +58,13 @@ namespace CIM.API.Controllers
                     output.Data = result;
                     output.IsSuccess = true;
                 }
-                else {
+                else
+                {
                     output.IsSuccess = false;
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -66,13 +72,16 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null) {
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null)
+        {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
-            try {
+            try
+            {
                 output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -81,13 +90,16 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data) {
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
+        {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
-            try {
+            try
+            {
                 output.Data = await _planService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.IsSuccess = false;
                 output.Message = ex.Message;
             }
@@ -96,13 +108,16 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 await _planService.Create(data);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.IsSuccess = false;
                 output.Message = ex.Message;
             }
@@ -111,13 +126,16 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPut]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody] ProductionPlanModel data) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody] ProductionPlanModel data)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 await _planService.Update(data);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.IsSuccess = false;
                 output.Message = ex.Message;
             }
@@ -126,13 +144,16 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Delete/{id}")]
         [HttpDelete]
-        public async Task<ProcessReponseModel<ProductionPlanListModel>> Delete(string id) {
+        public async Task<ProcessReponseModel<ProductionPlanListModel>> Delete(string id)
+        {
             var output = new ProcessReponseModel<ProductionPlanListModel>();
-            try {
+            try
+            {
                 await _planService.Delete(id);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -140,16 +161,19 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id, int routeId) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id, int routeId)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 output.Data = await _planService.Load(id, routeId);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -157,13 +181,16 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Detail(string id) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Detail(string id)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 output.Data = await _planService.Get(id);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -175,27 +202,30 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanStart")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Start(string planId, int route, int? target) {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
-                await _activePlanService.Start(planId, route, target);
-                output.IsSuccess = true;
+        public async Task<bool> Start(string planId, int route, int? target)
+        {
+            try
+            {
+                return await _activePlanService.Start(planId, route, target);
             }
-            catch (Exception ex) {
-                output.Message = ex.Message;
+            catch (Exception ex)
+            {
+                return false;
             }
-            return output;
         }
 
         [Route("api/ProductionPlanFinish")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 await _activePlanService.Finish(model);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -203,16 +233,19 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 await _activePlanService.Pause(id, routeId);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -220,16 +253,19 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanResume")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId) {
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId)
+        {
             var output = new ProcessReponseModel<ProductionPlanModel>();
-            try {
+            try
+            {
                 // todo
                 //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 await _activePlanService.Resume(id, routeId);
                 output.IsSuccess = true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -237,12 +273,12 @@ namespace CIM.API.Controllers
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId,int? routeId,int?statusId)
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data =JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
