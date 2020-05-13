@@ -201,7 +201,7 @@ namespace CIM.API.Controllers
         #region Production Process
 
         [Route("api/ProductionPlanStart")]
-        [HttpPost]
+        [HttpGet]
         public async Task<bool> Start(string planId, int route, int? target)
         {
             try

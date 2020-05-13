@@ -113,7 +113,7 @@ namespace CIM.DAL.Implements
             var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
 
-                var pars = string.Join(",",parameters.Select(p=>p.Value??"default"));
+                var pars = string.Join(",",parameters.Select(p=>$"'{p.Value}'"??"default"));
                 sql = $"select {sql} ({pars})";
 
                 using (SqlCommand command = new SqlCommand(sql, connection)) {

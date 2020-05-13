@@ -85,13 +85,12 @@ namespace CIM.BusinessLogic.Services
             var paramsList = new Dictionary<string, object>() {
                 {"@planid", planId },
                 {"@routeid", routeId },
-                {"@target", target },
-                {"@user", CurrentUser.UserId }
+                {"@target", target }               
             };
             var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_start", paramsList);
 
             if (isvalidatePass) {
-
+                paramsList.Add("@user", CurrentUser.UserId);
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
                 if (affect > 0) {
 
