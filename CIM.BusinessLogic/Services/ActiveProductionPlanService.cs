@@ -86,7 +86,7 @@ namespace CIM.BusinessLogic.Services
                 {"@planid", planId },
                 {"@routeid", routeId },
                 {"@target", target },
-                {"@createby", CurrentUser.UserId }
+                {"@user", CurrentUser.UserId }
             };
             var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_start", paramsList);
 
