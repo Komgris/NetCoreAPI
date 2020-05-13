@@ -312,28 +312,23 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(productionPlanKey, null);
         }
 
-        //public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model)
-        //{
-        //    if (!model.RouteId.HasValue)
-        //    {
+        //public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model) {
+        //    if (!model.RouteId.HasValue) {
         //        throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
         //    }
 
         //    var now = DateTime.Now;
         //    var masterData = await _masterDataService.GetData();
-        //    if (masterData.Routes[model.RouteId.Value] == null)
-        //    {
+        //    if (masterData.Routes[model.RouteId.Value] == null) {
         //        throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
         //    }
 
-        //    var output = (await _activeProductionPlanService.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel
-        //    {
+        //    var output = (await _activeProductionPlanService.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel {
         //        ProductionPlanId = model.PlanId,
         //    };
 
         //    var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
-        //    if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production)
-        //    {
+        //    if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production) {
         //        if (output.ActiveProcesses[model.RouteId.Value] != null)
         //            throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
         //    }
@@ -347,8 +342,7 @@ namespace CIM.BusinessLogic.Services
 
         //    ValidateMachineLoss(masterData.Routes[model.RouteId.Value].MachineList);
 
-        //    _recordActiveProductionPlanRepository.Add(new RecordActiveProductionPlan
-        //    {
+        //    _recordActiveProductionPlanRepository.Add(new RecordActiveProductionPlan {
         //        CreatedBy = CurrentUser.UserId,
         //        ProductionPlanPlanId = model.PlanId,
         //        RouteId = (int)model.RouteId,
@@ -357,12 +351,10 @@ namespace CIM.BusinessLogic.Services
         //        Target = CalculateTarget(model),
         //    });
 
-        //    output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
-        //    {
+        //    output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel {
         //        ProductionPlanId = model.PlanId,
         //        ProductId = model.ProductId,
-        //        Route = new ActiveRouteModel
-        //        {
+        //        Route = new ActiveRouteModel {
         //            Id = model.RouteId.Value,
         //            MachineList = masterData.Routes[model.RouteId.Value].MachineList,
         //        }

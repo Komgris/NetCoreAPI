@@ -1,5 +1,6 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Interfaces;
+using CIM.Domain.Models;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
@@ -8,21 +9,29 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class ActiveProductionPlanService : IActiveProductionPlanService
-    {
+    public class ActiveProductionPlanService : BaseService,IActiveProductionPlanService {
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IUnitOfWorkCIM _unitOfWork;
+        private IDirectSqlRepository _directSqlRepository;
+        private IMachineService _machineService;
+        private IRecordActiveProductionPlanRepository _recordActiveProductionPlanRepository;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IDirectSqlRepository directSqlRepository,
+            IRecordActiveProductionPlanRepository recordActiveProductionPlanRepository,
+            IMachineService machineService
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _unitOfWork = unitOfWork;
+            _directSqlRepository = directSqlRepository;
+            _machineService = machineService;
+            _recordActiveProductionPlanRepository = recordActiveProductionPlanRepository;
         }
 
         public string GetKey(string productionPLanId)
@@ -61,58 +70,41 @@ namespace CIM.BusinessLogic.Services
             // todo calculate target, need final business logic
             return (int)model.Target;
         }
-        public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model) {
-            //if (!model.RouteId.HasValue) {
-            //    throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
-            //}
 
-            //var now = DateTime.Now;
-            //var masterData = await _masterDataService.GetData();
-            //if (masterData.Routes[model.RouteId.Value] == null) {
-            //    throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
-            //}
+        public async Task<bool> Start(string planId,int routeId, int? target) {
 
-            var output = (await this.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel {
-                ProductionPlanId = model.PlanId,
+            var now = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+
+            //already start?
+            var output = (await this.GetCached(planId)) ?? new ActiveProductionPlanModel {
+                ProductionPlanId = planId,
             };
 
-            //var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
-            //if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production) {
-            //    if (output.ActiveProcesses[model.RouteId.Value] != null)
-            //        throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
-            //}
+            //validation
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@target", target },
+                {"@createby", CurrentUser.UserId }
+            };
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_start", paramsList);
 
-            //dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
-            //dbModel.PlanStart = now;
-            //dbModel.ActualStart = now;
-            //dbModel.UpdatedAt = now;
-            //dbModel.UpdatedBy = CurrentUser.UserId;
-            //_productionPlanRepository.Edit(dbModel);
+            if (isvalidatePass) {
 
-            //ValidateMachineLoss(masterData.Routes[model.RouteId.Value].MachineList);
+                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
+                if (affect > 0) {
+                    await _machineService.BulkCacheMachines(planId, routeId, output.ActiveProcesses[routeId].Route.MachineList);
+                    await SetCached(output);
+                    await _unitOfWork.CommitAsync();
 
-            //_recordActiveProductionPlanRepository.Add(new RecordActiveProductionPlan {
-            //    CreatedBy = CurrentUser.UserId,
-            //    ProductionPlanPlanId = model.PlanId,
-            //    RouteId = (int)model.RouteId,
-            //    Start = now,
-            //    StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production,
-            //    Target = CalculateTarget(model),
-            //});
+                    ValidateMachineLoss(masterData.Routes[routeId].MachineList);
 
-            //output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel {
-            //    ProductionPlanId = model.PlanId,
-            //    ProductId = model.ProductId,
-            //    Route = new ActiveRouteModel {
-            //        Id = model.RouteId.Value,
-            //        MachineList = masterData.Routes[model.RouteId.Value].MachineList,
-            //    }
-            //};
+                    return true;
+                }
+            }
 
-            //await _machineService.BulkCacheMachines(model.PlanId, model.RouteId.Value, output.ActiveProcesses[model.RouteId.Value].Route.MachineList);
-            //await _activeProductionPlanService.SetCached(output);
-            //await _unitOfWork.CommitAsync();
-            return output;
+            return false;
         }
 
         public async Task Resume(string id, int routeId) {
