@@ -13,5 +13,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ComponentModel> Get(int id);
         Task Update(ComponentModel data);
         Task Create(ComponentModel data);
+        Task InsertMappingMachineComponent(MappingMachineComponent data);
     }
 }

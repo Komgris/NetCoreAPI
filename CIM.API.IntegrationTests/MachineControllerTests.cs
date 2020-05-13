@@ -14,6 +14,8 @@ using System.Linq;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using CIM.BusinessLogic.Utility;
+using System.ComponentModel;
+using System.Configuration;
 
 namespace CIM.API.IntegrationTests
 {
@@ -160,6 +162,34 @@ namespace CIM.API.IntegrationTests
             listResponseModel.Data.Count().Should().Be(expectedKCount);
             foreach (var model in listResponseModel.Data)
                 model.Name.Should().Contain(expectedKeyword);
+        }
+
+        [Fact]
+        public async Task GetMachineTags_Test()
+        {
+            var machine = new Machine
+            {
+                Id = 2,
+                Name = "Machine_test",
+                IsActive = true
+            };
+
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                context.Machine.Add(machine);
+                context.SaveChanges();
+            }
+
+            // Act
+            var response = await TestClient.GetAsync("/api/HardwareInterface/GetMachineTags");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var loadResponseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<MachineTagsModel>>(loadResponseString);
+
+            // Assert      
+            result.Count.Should().BeGreaterThan(0);
         }
 
         #endregion

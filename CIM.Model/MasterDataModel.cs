@@ -20,6 +20,7 @@ namespace CIM.Model
         public DictionaryModel Dictionary { get; set; } = new DictionaryModel();
 
         public IDictionary<int, Dictionary<int, WasteDictionaryModel>> WastesByProductType { get; set; }
+        public IDictionary<int, ProcessDrivenModel> ProcessDriven { get; set; }
     }
 
 }

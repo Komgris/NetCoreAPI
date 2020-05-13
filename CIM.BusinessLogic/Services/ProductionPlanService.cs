@@ -467,14 +467,10 @@ namespace CIM.BusinessLogic.Services
 
         //}
 
-        public async Task<ProductionPlanModel> Load(string id)
+        public async Task<ProductionPlanModel> Load(string id,int routeId)
         {
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
-            var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
-            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new[] { "Product" });
-            model.Product = MapperHelper.AsModel(productDb, new ProductModel());
-            return model;
+            var output = await _productionPlanRepository.Load(id, routeId);
+            return output;            
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
@@ -594,6 +590,12 @@ namespace CIM.BusinessLogic.Services
 
             }
 
+            return output;
+        }
+
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        {
+            var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId);
             return output;
         }
     }
