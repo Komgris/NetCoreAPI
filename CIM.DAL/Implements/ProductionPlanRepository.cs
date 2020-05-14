@@ -70,7 +70,9 @@ namespace CIM.DAL.Implements
                                         };
 
                                         var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan", parameterList);
-                                        var totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+                                        var totalCount = 0;
+                                        if (dt.Rows.Count > 0)
+                                            totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
                                         return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
                                     });
@@ -136,6 +138,54 @@ namespace CIM.DAL.Implements
                 _entities.SaveChanges();
             }
         }
-    }
 
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        {
+            var output = new FilterLoadProductionPlanListModel();
+            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@routeid", routeId},
+                    {"@productid", productId},
+                    {"@statusid", statusId}
+                };
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", parameterList);
+            if (dt.Rows.Count > 0)
+            {
+                output.Products = dt.AsEnumerable().Select(x => new { id = x.Field<int>("productid"), name = x.Field<string>("productcode") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Routes = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Status = dt.AsEnumerable().Select(x => new { id = x.Field<int>("statusid"), name = x.Field<string>("statusname") }).Distinct().ToDictionary(x => x.id, y => y.name);
+
+                var routeList = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename"), inProcess = Convert.ToBoolean(x.Field<Int32>("inprocess")) }).Distinct().ToList();
+                output.Route = new List<RouteModel>();
+                foreach (var item in routeList)
+                {
+                    output.Route.Add(new RouteModel
+                    {
+                        Id = item.id,
+                        Name = item.name,
+                        InProcess = item.inProcess
+                    });
+                }
+            }
+            return output;
+        }
+
+        public async Task<ProductionPlanModel> Load(string id, int routeId)
+        {
+            return await Task.Run(() =>
+            {
+                var output = new ProductionPlanModel();
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@planid", id},
+                    {"@routeid", routeId}
+                };
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_ActiveProductionPlan_Info", parameterList);
+                if (dt.Rows.Count > 0)
+                    output = dt.ToModel<ProductionPlanModel>()[0];
+                return output;
+            });
+        }
+
+    }
 }

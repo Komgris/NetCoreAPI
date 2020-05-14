@@ -105,5 +105,25 @@ namespace CIM.BusinessLogic.Services
                             UpdatedAt = x.UpdatedAt,
                         }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive.Value && x.IsDelete == false);
         }
+
+        public async Task InsertMappingMachineComponent(MappingMachineComponent data)
+        {
+            var dbModels = await _componentRepository.Where(x=> x.MachineId == data.MachineId).ToListAsync();
+            foreach(var model in dbModels)
+            {
+                model.MachineId = null;
+                _componentRepository.Edit(model);
+            }
+
+            var componentIds = data.ComponentList.Select(x => x.Id);
+            var components = await _componentRepository.WhereAsync(x => componentIds.Contains(x.Id)  );
+
+            foreach (var model in components)
+            {
+                model.MachineId = data.MachineId;
+                _componentRepository.Edit(model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
     }
 }
