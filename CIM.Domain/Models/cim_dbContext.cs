@@ -1569,6 +1569,12 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordProductionPlanWaste)
                     .HasForeignKey(d => d.RecordManufacturingLossId)
                     .HasConstraintName("FK_Record_ProductionPlan_Waste_Record_Manufacturing_Loss");
+
+                entity.HasOne(d => d.WasteLevel2)
+                    .WithMany(p => p.RecordProductionPlanWaste)
+                    .HasForeignKey(d => d.WasteLevel2Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_WasteLevel2");
             });
 
             modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>
