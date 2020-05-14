@@ -49,6 +49,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<ProductDetail> ProductDetail { get; set; }
         public virtual DbSet<ProductFamily> ProductFamily { get; set; }
         public virtual DbSet<ProductGroup> ProductGroup { get; set; }
+        public virtual DbSet<ProductMaterial> ProductMaterial { get; set; }
         public virtual DbSet<ProductType> ProductType { get; set; }
         public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
         public virtual DbSet<ProductionStatus> ProductionStatus { get; set; }
@@ -461,7 +462,6 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.Machine)
                     .WithMany(p => p.Component)
                     .HasForeignKey(d => d.MachineId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Machine_Component_Machine");
 
                 entity.HasOne(d => d.Type)
@@ -1167,6 +1167,23 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
+            modelBuilder.Entity<ProductMaterial>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("Product_Material");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_Id");
+            });
+
             modelBuilder.Entity<ProductType>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -1552,6 +1569,12 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordProductionPlanWaste)
                     .HasForeignKey(d => d.RecordManufacturingLossId)
                     .HasConstraintName("FK_Record_ProductionPlan_Waste_Record_Manufacturing_Loss");
+
+                entity.HasOne(d => d.WasteLevel2)
+                    .WithMany(p => p.RecordProductionPlanWaste)
+                    .HasForeignKey(d => d.WasteLevel2Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_WasteLevel2");
             });
 
             modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>

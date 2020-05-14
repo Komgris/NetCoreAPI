@@ -11,6 +11,7 @@ namespace CIM.Domain.Models
         public bool? IsCounterOut { get; set; }
         public int Count { get; set; }
         public int Total { get; set; }
+        public bool IsChecker { get; set; }
         public string Remark { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
