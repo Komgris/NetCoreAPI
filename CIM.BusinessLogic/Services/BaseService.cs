@@ -21,7 +21,7 @@ namespace CIM.BusinessLogic.Services
             output.NextPage = page + 1;
             output.PreviousPage = page - 1;
             output.PreviousPage = output.PreviousPage < 0 ? 0 : output.PreviousPage;
-            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((output.Total / howmany))));
+            var lastPage = Convert.ToInt32(Math.Ceiling((output.Total / Convert.ToDouble(howmany))));
             output.NextPage = output.NextPage > lastPage ? lastPage : output.NextPage;
             var skip = (page - 1) * howmany;
             output.Data = data;
