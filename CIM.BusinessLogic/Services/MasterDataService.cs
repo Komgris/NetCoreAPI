@@ -27,6 +27,7 @@ namespace CIM.BusinessLogic.Services
         private IWasteLevel2Repository _wasteLevel2Repository;
         private IMaterialRepository _materialRepository;
         private IMachineTypeRepository _machineTypeRepository;
+        private IComponentTypeRepository _componentTypeRepository;
 
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
@@ -44,7 +45,8 @@ namespace CIM.BusinessLogic.Services
             IWasteLevel1Repository wasteLevel1Repository,
             IWasteLevel2Repository wasteLevel2Repository,
             IMaterialRepository materialRepository,
-            IMachineTypeRepository machineTypeRepository
+            IMachineTypeRepository machineTypeRepository,
+            IComponentTypeRepository componentTypeRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -63,6 +65,7 @@ namespace CIM.BusinessLogic.Services
             _wasteLevel2Repository = wasteLevel2Repository;
             _materialRepository = materialRepository;
             _machineTypeRepository = machineTypeRepository;
+            _componentTypeRepository = componentTypeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -207,6 +210,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
             masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
             masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
+            masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -339,6 +343,18 @@ namespace CIM.BusinessLogic.Services
                     Description = item.Description,
                     LossLevel3 = lossLevel3
                 });
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
+        {
+            var db = (await _componentTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }

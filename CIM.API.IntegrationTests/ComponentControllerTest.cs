@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using CIM.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
+using System.Collections.Generic;
 
 namespace CIM.API.IntegrationTests
 {
@@ -71,6 +72,52 @@ namespace CIM.API.IntegrationTests
 
             result.Data.Should().NotBeNull();
             result.Data.Name.Should().Be(component.Name);
+        }
+        [Fact]
+        public async Task Insert_Mapping()
+        {
+            var componentList = new List<Component>()
+            {
+                new Component{ Name="testA",MachineId=3},
+                new Component{ Name="testB",MachineId=3},
+                new Component{ Name="testC",MachineId=3},
+                new Component{ Name="testD",MachineId=5},
+            };
+            foreach (var model in componentList)
+            {
+                using (var scope = scenario.ServiceScopeFactory.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                    context.Component.Add(model);
+                    context.SaveChanges();
+                }
+            }
+            var mapping = new MappingMachineComponent()
+            {
+                MachineId = 3,
+                ComponentList = new List<ComponentModel>()
+                {
+                    new ComponentModel{ Name="testA"},
+                    new ComponentModel{ Name="testC"},
+                    new ComponentModel{ Name="testD"},
+                }
+            };
+            foreach(var model in mapping.ComponentList)
+            {
+                model.Id = Get(model.Name, scenario).Id;
+            }
+
+            var content = GetHttpContentForPost(mapping, scenario.AdminToken);
+            var updateResponse = await scenario.TestClient.PostAsync("/api/Component/InsertMappingMachineComponent", content);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            foreach(var model in mapping.ComponentList)
+            {
+                var result = Get(model.Name, scenario);
+                result.MachineId.Should().Be(mapping.MachineId);
+            }
+            var testNull = Get("testB", scenario).MachineId;
+            testNull.Should().BeNull();
         }
 
         [Fact]
