@@ -27,6 +27,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual RecordManufacturingLoss RecordManufacturingLoss { get; set; }
+        public virtual WasteLevel2 WasteLevel2 { get; set; }
         public virtual ICollection<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
     }
 }
