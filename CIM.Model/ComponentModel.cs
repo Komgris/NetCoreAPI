@@ -11,7 +11,7 @@ namespace CIM.Model
         public int? MachineId { get; set; }
         public string? MachineName { get; set; }
         public int TypeId { get; set; }
-        public int TypeName { get; set; }
+        public string TypeName { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public string CreatedBy { get; set; }
