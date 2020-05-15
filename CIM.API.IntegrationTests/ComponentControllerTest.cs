@@ -153,7 +153,7 @@ namespace CIM.API.IntegrationTests
         }
 
         [Fact]
-        public async Task Get_No_MachineId()
+        public async Task GetNoMachineId_Test()
         {
             var componentList = new List<Component>()
             {
