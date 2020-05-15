@@ -10,5 +10,8 @@ namespace CIM.Domain.Models
         public int? MaterialId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string CreatedBy { get; set; }
+
+        public virtual BomTemp Bom { get; set; }
+        public virtual Material Material { get; set; }
     }
 }

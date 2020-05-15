@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class Material
     {
+        public Material()
+        {
+            BomMaterial = new HashSet<BomMaterial>();
+        }
+
         public int Id { get; set; }
         public string Code { get; set; }
         public string Image { get; set; }
@@ -23,5 +28,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual MaterialType MaterialType { get; set; }
+        public virtual ICollection<BomMaterial> BomMaterial { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<Bom> Bom { get; set; }
         public virtual DbSet<BomDole> BomDole { get; set; }
         public virtual DbSet<BomMaterial> BomMaterial { get; set; }
-        public virtual DbSet<Bomx> Bomx { get; set; }
+        public virtual DbSet<BomTemp> BomTemp { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
@@ -377,8 +377,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<BomMaterial>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("BOM_Material");
 
                 entity.Property(e => e.BomId).HasColumnName("BOM_Id");
@@ -387,24 +385,28 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.HasOne(d => d.Bom)
+                    .WithMany(p => p.BomMaterial)
+                    .HasForeignKey(d => d.BomId)
+                    .HasConstraintName("FK_BOM_Material_BOM_temp");
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.BomMaterial)
+                    .HasForeignKey(d => d.MaterialId)
+                    .HasConstraintName("FK_BOM_Material_Material");
             });
 
-            modelBuilder.Entity<Bomx>(entity =>
+            modelBuilder.Entity<BomTemp>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.ToTable("BOMx");
+                entity.ToTable("BOM_temp");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
                     .HasMaxLength(128);
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
                     .IsRequired()
