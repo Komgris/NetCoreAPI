@@ -387,6 +387,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(128);
 
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
             });
 
