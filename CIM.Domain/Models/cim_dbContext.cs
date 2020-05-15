@@ -21,6 +21,8 @@ namespace CIM.Domain.Models
         public virtual DbSet<Areas> Areas { get; set; }
         public virtual DbSet<Bom> Bom { get; set; }
         public virtual DbSet<BomDole> BomDole { get; set; }
+        public virtual DbSet<BomMaterial> BomMaterial { get; set; }
+        public virtual DbSet<Bomx> Bomx { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
@@ -371,6 +373,44 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Sysdate).HasColumnName("sysdate");
 
                 entity.Property(e => e.TodayJdate).HasColumnName("today_jdate");
+            });
+
+            modelBuilder.Entity<BomMaterial>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("BOM_Material");
+
+                entity.Property(e => e.BomId).HasColumnName("BOM_Id");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+            });
+
+            modelBuilder.Entity<Bomx>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("BOMx");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
             modelBuilder.Entity<Companies>(entity =>
