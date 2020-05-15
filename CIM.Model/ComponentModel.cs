@@ -9,7 +9,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public int? MachineId { get; set; }
-        public string? MachineName { get; set; }
+        public string MachineName { get; set; }
         public int TypeId { get; set; }
         public string TypeName { get; set; }
         public bool? IsActive { get; set; }
