@@ -15,14 +15,17 @@ namespace CIM.BusinessLogic.Services
     {
         private readonly IMaterialRepository _materialRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IProductMaterialRepository _productMaterialRepository;
 
         public MaterialService(
             IUnitOfWorkCIM unitOfWork,
-            IMaterialRepository materialRepository
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productMaterialRepository
             )
         {
             _materialRepository = materialRepository;
             _unitOfWork = unitOfWork;
+            _productMaterialRepository = productMaterialRepository;
         }
 
         public async Task<MaterialModel> Create(MaterialModel model)
@@ -77,6 +80,12 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
             return MapperHelper.AsModel(dbModel, new MaterialModel());
+        }
+
+        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
+        {
+            var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            return output;
         }
 
     }

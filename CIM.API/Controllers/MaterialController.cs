@@ -85,5 +85,22 @@ namespace CIM.API.Controllers
             }
         }
 
+        [Route("api/[controller]/ListByProduct")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ProductMaterialModel>>> ListByProduct(int productId)
+        {
+            var output = new ProcessReponseModel<List<ProductMaterialModel>>();
+            try
+            {
+                output.Data = await _service.ListMaterialByProduct(productId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
     }
 }
