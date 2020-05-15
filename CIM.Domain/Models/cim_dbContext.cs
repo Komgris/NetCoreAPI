@@ -390,11 +390,13 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.Bom)
                     .WithMany(p => p.BomMaterial)
                     .HasForeignKey(d => d.BomId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_BOM_Material_BOM_temp");
 
                 entity.HasOne(d => d.Material)
                     .WithMany(p => p.BomMaterial)
                     .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_BOM_Material_Material");
             });
 
