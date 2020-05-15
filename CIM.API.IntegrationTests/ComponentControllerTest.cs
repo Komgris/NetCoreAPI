@@ -151,5 +151,35 @@ namespace CIM.API.IntegrationTests
             var result = Get(componentEdit.Name, scenario);
             result.Name.Should().Be(componentEdit.Name);
         }
+
+        [Fact]
+        public async Task GetNoMachineId_Test()
+        {
+            var componentList = new List<Component>()
+            {
+                new Component{ Name="testA",MachineId=3},
+                new Component{ Name="testB",MachineId=3},
+                new Component{ Name="testC",MachineId=null},
+                new Component{ Name="testD",MachineId=null},
+            };
+
+            foreach (var model in componentList)
+            {
+                using (var scope = scenario.ServiceScopeFactory.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                    context.Component.Add(model);
+                    context.SaveChanges();
+                }
+            }
+
+            var loadResponse = await scenario.TestClient.GetAsync($"api/Component/GetComponentNoMachineId");
+            loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<List<ComponentModel>>>(loadResponseString);
+
+            result.Data.Should().NotBeNull();
+            result.Data.Count.Should().Be(2);
+        }
     }
 }

@@ -128,5 +128,22 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [Route("api/[controller]/GetComponentNoMachineId")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ComponentModel>>> GetComponentNoMachineId(string keyword = "")
+        {
+            var output = new ProcessReponseModel<List<ComponentModel>> ();
+            try
+            {
+                output.Data = await _componentService.GetComponentNoMachineId(keyword);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
     }
 }
