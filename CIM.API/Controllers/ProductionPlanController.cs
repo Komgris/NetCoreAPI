@@ -15,6 +15,7 @@ using CIM.BusinessLogic.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using CIM.API.HubConfig;
+using System.Reflection.Metadata;
 
 namespace CIM.API.Controllers
 {
@@ -208,12 +209,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ActiveProductionPlanModel>();
             try {
                 output.Data = await _activeProductionPlanService.Start(planId, route, target);
-                if (output.Data != null)
-                {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{planId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
-                    output.IsSuccess = true;
-                }
+                output = await HandleResult(output);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -227,12 +223,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ActiveProductionPlanModel>();
             try {
                 output.Data = await _activeProductionPlanService.Finish(planId, route);
-                if (output.Data != null)
-                {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{planId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
-                    output.IsSuccess = true;
-                }
+                output = await HandleResult(output);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -248,12 +239,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _activeProductionPlanService.Pause(id, routeId);
-                if (output.Data != null)
-                {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
-                    output.IsSuccess = true;
-                }
+                output = await HandleResult(output);
             }
             catch (Exception ex)
             {
@@ -270,12 +256,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _activeProductionPlanService.Resume(id, routeId);
-                if (output.Data != null)
-                {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{id}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
-                    output.IsSuccess = true;
-                }
+                output = await HandleResult(output);
             }
             catch (Exception ex)
             {
@@ -297,6 +278,18 @@ namespace CIM.API.Controllers
             catch (Exception ex)
             {
                 output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        private async Task<ProcessReponseModel<ActiveProductionPlanModel>> HandleResult(ProcessReponseModel<ActiveProductionPlanModel> output)
+        {
+
+            if (output.Data != null)
+            {
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{output.Data.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
+                output.IsSuccess = true;
             }
             return output;
         }
