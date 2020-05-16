@@ -205,11 +205,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanStart")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ActiveProductionPlanModel>> Start(string planId, int route, int? target) {
-            var output = new ProcessReponseModel<ActiveProductionPlanModel>();
+        public async Task<ProcessReponseModel<object>> Start(string planId, int route, int? target) 
+        {
+            var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await _activeProductionPlanService.Start(planId, route, target);
-                output = await HandleResult(output);
+                var result = await _activeProductionPlanService.Start(planId, route, target);
+                output = HandleResult(result);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -219,11 +220,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanFinish")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ActiveProductionPlanModel>> Finish(string planId, int route) {
-            var output = new ProcessReponseModel<ActiveProductionPlanModel>();
+        public async Task<ProcessReponseModel<object>> Finish(string planId, int route) 
+        {
+            var output = new ProcessReponseModel<object>();
             try {
-                output.Data = await _activeProductionPlanService.Finish(planId, route);
-                output = await HandleResult(output);
+                var result = await _activeProductionPlanService.Finish(planId, route);
+                output = HandleResult(result);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -233,13 +235,13 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ActiveProductionPlanModel>> Pause(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Pause(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ActiveProductionPlanModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await _activeProductionPlanService.Pause(id, routeId);
-                output = await HandleResult(output);
+                var result = await _activeProductionPlanService.Pause(id, routeId);
+                output = HandleResult(result);
             }
             catch (Exception ex)
             {
@@ -250,13 +252,13 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanResume")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ActiveProductionPlanModel>> Resume(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Resume(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ActiveProductionPlanModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await _activeProductionPlanService.Resume(id, routeId);
-                output = await HandleResult(output);
+                var result = await _activeProductionPlanService.Resume(id, routeId);
+                output = HandleResult(result);
             }
             catch (Exception ex)
             {
@@ -282,13 +284,15 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        private async Task<ProcessReponseModel<ActiveProductionPlanModel>> HandleResult(ProcessReponseModel<ActiveProductionPlanModel> output)
+        private ProcessReponseModel<object> HandleResult(ActiveProductionPlanModel model)
         {
-
+            var output = new ProcessReponseModel<object>();
             if (output.Data != null)
             {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{output.Data.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(output.Data, JsonsSetting));
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{model.ProductionPlanId}";
+                var dataString = JsonConvert.SerializeObject(output.Data, JsonsSetting);
+                _hub.Clients.All.SendAsync(channelKey, dataString);
+                output.Data = dataString;
                 output.IsSuccess = true;
             }
             return output;
