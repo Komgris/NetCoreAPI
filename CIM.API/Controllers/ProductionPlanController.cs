@@ -166,9 +166,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
                 output.Data = await _planService.Load(id, routeId);
                 output.IsSuccess = true;
             }
@@ -202,30 +199,25 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanStart")]
         [HttpGet]
-        public async Task<bool> Start(string planId, int route, int? target)
-        {
-            try
-            {
-                return await _activePlanService.Start(planId, route, target);
+        public async Task<ProcessReponseModel<bool>> Start(string planId, int route, int? target) {
+            var output = new ProcessReponseModel<bool>();
+            try {
+                output.IsSuccess = await _activePlanService.Start(planId, route, target);
             }
-            catch (Exception ex)
-            {
-                return false;
+            catch (Exception ex) {
+                output.Message = ex.Message;
             }
+            return output;
         }
 
         [Route("api/ProductionPlanFinish")]
-        [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Finish(ProductionPlanModel model)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                await _activePlanService.Finish(model);
-                output.IsSuccess = true;
+        [HttpGet]
+        public async Task<ProcessReponseModel<bool>> Finish(string planId, int route) {
+            var output = new ProcessReponseModel<bool>();
+            try {
+                output.IsSuccess = await _activePlanService.Finish(planId, route);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 output.Message = ex.Message;
             }
             return output;
@@ -233,16 +225,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Pause(string id, int routeId)
+        public async Task<ProcessReponseModel<bool>> Pause(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
+            var output = new ProcessReponseModel<bool>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _activePlanService.Pause(id, routeId);
-                output.IsSuccess = true;
+                output.IsSuccess = await _activePlanService.Pause(id, routeId);
             }
             catch (Exception ex)
             {
@@ -253,16 +241,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanResume")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Resume(string id, int routeId)
+        public async Task<ProcessReponseModel<bool>> Resume(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
+            var output = new ProcessReponseModel<bool>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _activePlanService.Resume(id, routeId);
-                output.IsSuccess = true;
+                output.IsSuccess = await _activePlanService.Resume(id, routeId);
             }
             catch (Exception ex)
             {
