@@ -24,7 +24,6 @@ namespace CIM.BusinessLogicTests.Services
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
@@ -35,7 +34,6 @@ namespace CIM.BusinessLogicTests.Services
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
                 recordManufacturingLossService.Object,
@@ -53,7 +51,6 @@ namespace CIM.BusinessLogicTests.Services
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
@@ -64,7 +61,6 @@ namespace CIM.BusinessLogicTests.Services
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
                 recordManufacturingLossService.Object,
@@ -98,7 +94,6 @@ namespace CIM.BusinessLogicTests.Services
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
@@ -110,7 +105,6 @@ namespace CIM.BusinessLogicTests.Services
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
                 recordManufacturingLossService.Object,
@@ -133,7 +127,6 @@ namespace CIM.BusinessLogicTests.Services
             var responseCacheService = new Mock<IResponseCacheService>().Object;
             var masterDataService = new Mock<IMasterDataService>().Object;
             var planRepository = new Mock<IProductionPlanRepository>().Object;
-            var productRepository = new Mock<IProductRepository>();
             var machineService = new Mock<IMachineService>();
             var activeProcessService = new Mock<IActiveProductionPlanService>();
             var recordManufacturingLossService = new Mock<IRecordManufacturingLossService>();
@@ -144,7 +137,6 @@ namespace CIM.BusinessLogicTests.Services
                 masterDataService,
                 unitOfWork,
                 planRepository,
-                productRepository.Object,
                 machineService.Object,
                 activeProcessService.Object,
                 recordManufacturingLossService.Object,

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace CIM.DAL.Implements
 {
@@ -19,7 +20,8 @@ namespace CIM.DAL.Implements
         {
             _configuration = configuration;
         }
-        public void ExecuteNonQuery(string sql, object[] parameters)
+
+        public int ExecuteNonQuery(string sql)
         {
             var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -28,8 +30,7 @@ namespace CIM.DAL.Implements
                 {
                     command.CommandType = CommandType.Text;
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    connection.Close();
+                    return command.ExecuteNonQuery();
                 }
             }
         }
@@ -54,9 +55,23 @@ namespace CIM.DAL.Implements
                         output = Convert.ToString(dataReader["result"]);
                     }
                 }
-                connection.Close();
             }
             return output;
+        }
+
+        public int ExecuteSPNonQuery(string sql, Dictionary<string, object> parameters) {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+                using (SqlCommand command = new SqlCommand(sql, connection)) {
+                    if (parameters != null)
+                        foreach (var p in parameters)
+                            if (p.Value != null) command.Parameters.AddWithValue(p.Key, p.Value);
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    return command.ExecuteNonQuery();
+                }
+            }
         }
 
         public DataTable ExecuteSPWithQuery(string sql, Dictionary<string,object> parameters) {
@@ -90,6 +105,21 @@ namespace CIM.DAL.Implements
                     dt.Load(command.ExecuteReader());
 
                     return dt;
+                }
+            }
+        }
+
+        public T ExecuteFunction<T>(string sql, Dictionary<string, object> parameters) {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+
+                var pars = string.Join(",",parameters.Select(p=>$"'{p.Value}'"??"default"));
+                sql = $"select {sql} ({pars})";
+
+                using (SqlCommand command = new SqlCommand(sql, connection)) {
+
+                    connection.Open();
+                    return (T)command.ExecuteScalar();
                 }
             }
         }
