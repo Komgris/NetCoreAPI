@@ -19,15 +19,15 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductionPlanController : BaseController
     {
-        private IProductionPlanService _planService;
-        private IActiveProductionPlanService _activePlanService;
+        private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
-            IProductionPlanService planService,
-            IActiveProductionPlanService activePlanService
+            IProductionPlanService productionPlanService,
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
-            _planService = planService;
-            _activePlanService = activePlanService;
+            _productionPlanService = productionPlanService;
+            _activeProductionPlanService = activeProductionPlanService;
         }
 
         #region Production plan mng 
@@ -53,8 +53,8 @@ namespace CIM.API.Controllers
                     }
 
 
-                    var fromExcel = _planService.ReadImport(fullPath);
-                    var result = await _planService.Compare(fromExcel);
+                    var fromExcel = _productionPlanService.ReadImport(fullPath);
+                    var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
                 }
@@ -77,7 +77,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true, statusIds);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
-                output.Data = await _planService.CheckDuplicate(data);
+                output.Data = await _productionPlanService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -113,7 +113,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _planService.Create(data);
+                await _productionPlanService.Create(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -131,7 +131,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _planService.Update(data);
+                await _productionPlanService.Update(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -149,7 +149,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                await _planService.Delete(id);
+                await _productionPlanService.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -166,7 +166,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = await _planService.Load(id, routeId);
+                output.Data = await _productionPlanService.Load(id, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -183,7 +183,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = await _planService.Get(id);
+                output.Data = await _productionPlanService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -202,7 +202,7 @@ namespace CIM.API.Controllers
         public async Task<ProcessReponseModel<bool>> Start(string planId, int route, int? target) {
             var output = new ProcessReponseModel<bool>();
             try {
-                output.IsSuccess = await _activePlanService.Start(planId, route, target);
+                output.IsSuccess = await _activeProductionPlanService.Start(planId, route, target);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -215,7 +215,7 @@ namespace CIM.API.Controllers
         public async Task<ProcessReponseModel<bool>> Finish(string planId, int route) {
             var output = new ProcessReponseModel<bool>();
             try {
-                output.IsSuccess = await _activePlanService.Finish(planId, route);
+                output.IsSuccess = await _activeProductionPlanService.Finish(planId, route);
             }
             catch (Exception ex) {
                 output.Message = ex.Message;
@@ -230,7 +230,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<bool>();
             try
             {
-                output.IsSuccess = await _activePlanService.Pause(id, routeId);
+                output.IsSuccess = await _activeProductionPlanService.Pause(id, routeId);
             }
             catch (Exception ex)
             {
@@ -246,7 +246,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<bool>();
             try
             {
-                output.IsSuccess = await _activePlanService.Resume(id, routeId);
+                output.IsSuccess = await _activeProductionPlanService.Resume(id, routeId);
             }
             catch (Exception ex)
             {
@@ -262,7 +262,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_planService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
