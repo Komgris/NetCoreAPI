@@ -290,7 +290,7 @@ namespace CIM.API.Controllers
             if (output.Data != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{model.ProductionPlanId}";
-                var dataString = JsonConvert.SerializeObject(output.Data, JsonsSetting);
+                var dataString = JsonConvert.SerializeObject(model, JsonsSetting);
                 _hub.Clients.All.SendAsync(channelKey, dataString);
                 output.Data = dataString;
                 output.IsSuccess = true;
