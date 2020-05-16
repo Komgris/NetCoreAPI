@@ -15,7 +15,6 @@ namespace CIM.Domain.Models
         public int? ComponentTypeId { get; set; }
         public int LossLevel3Id { get; set; }
         public string ProductionPlanId { get; set; }
-        public int? RouteId { get; set; }
         public DateTime StartedAt { get; set; }
         public DateTime? EndAt { get; set; }
         public long? Timespan { get; set; }
@@ -36,5 +35,6 @@ namespace CIM.Domain.Models
         public virtual ProductionPlan ProductionPlan { get; set; }
         public virtual Users UpdatedByNavigation { get; set; }
         public virtual ICollection<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
+        public int RouteId { get; set; }
     }
 }

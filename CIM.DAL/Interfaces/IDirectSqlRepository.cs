@@ -9,11 +9,16 @@ namespace CIM.DAL.Interfaces
     public interface IDirectSqlRepository
     {
 
-        void ExecuteNonQuery(string sql, object[] parameters);
+        int ExecuteNonQuery(string sql);
 
         string ExecuteReader(string sql, object[] parameters);
 
         DataTable ExecuteSPWithQuery(string sql, Dictionary<string, object> parameters);
+
+        int ExecuteSPNonQuery(string sql, Dictionary<string, object> parameters);
+
+        T ExecuteFunction<T>(string sql, Dictionary<string, object> parameters);
+
         DataTable ExecuteWithQuery(string sql);
     }
 }

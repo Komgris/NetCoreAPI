@@ -12,6 +12,7 @@ using CIM.Domain.Models;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -20,7 +21,6 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
-        private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
@@ -32,7 +32,6 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository,
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
@@ -42,7 +41,6 @@ namespace CIM.BusinessLogic.Services
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
-            _productRepository = productRepository;
             _unitOfWork = unitOfWork;
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
@@ -305,89 +303,6 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(productionPlanKey, null);
         }
 
-        public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model)
-        {
-            if (!model.RouteId.HasValue)
-            {
-                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
-            }
-
-            var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
-            if (masterData.Routes[model.RouteId.Value] == null)
-            {
-                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
-            }
-
-            var output = (await _activeProductionPlanService.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel
-            {
-                ProductionPlanId = model.PlanId,
-            };
-
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
-            if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production)
-            {
-                if (output.ActiveProcesses[model.RouteId.Value] != null)
-                    throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
-            }
-
-            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
-            dbModel.PlanStart = now;
-            dbModel.ActualStart = now;
-            dbModel.UpdatedAt = now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            _productionPlanRepository.Edit(dbModel);
-
-            output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
-            {
-                ProductionPlanId = model.PlanId,
-                ProductId = model.ProductId,
-                Route = new ActiveRouteModel
-                {
-                    Id = model.RouteId.Value,
-                    MachineList = masterData.Routes[model.RouteId.Value].MachineList,
-                }
-            };
-
-            await _machineService.BulkCacheMachines(model.PlanId, model.RouteId.Value, output.ActiveProcesses[model.RouteId.Value].Route.MachineList);
-            await _activeProductionPlanService.SetCached(output);
-            await _unitOfWork.CommitAsync();
-            return output;
-        }
-
-        public async Task Stop(string id, int[] routeIds)
-        {
-
-            var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
-
-            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
-            dbModel.UpdatedAt = now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            _productionPlanRepository.Edit(dbModel);
-
-            var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
-
-            if (activeProductionPlan != null)
-            {
-                foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
-                {
-                    if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
-                    {
-                        foreach (var machine in activeProcess.Value.Route.MachineList)
-                        {
-                            await _machineService.RemoveCached(machine.Key, null);
-                        }
-                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
-                    }
-                }
-                await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
-            }
-            await _unitOfWork.CommitAsync();
-
-        }
-
         public async Task<ProductionPlanModel> Load(string id,int routeId)
         {
             var output = await _productionPlanRepository.Load(id, routeId);
@@ -467,7 +382,6 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
             ActiveProductionPlanModel output = null;
-            //ActiveProcessModel activeProcess = null;
             // If Production Plan doesn't start but machine just start to send status
             if (cachedMachine == null)
             {
@@ -508,9 +422,7 @@ namespace CIM.BusinessLogic.Services
                     });
                 }
                 await _activeProductionPlanService.SetCached(output);
-
             }
-
             return output;
         }
 
