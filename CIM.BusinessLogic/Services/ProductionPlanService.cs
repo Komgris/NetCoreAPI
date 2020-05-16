@@ -21,13 +21,10 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
-        private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
-        //private IRecordActiveProductionPlanRepository _recordActiveProductionPlanRepository;
-        private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IReportService _reportService;
 
         public ProductionPlanService(
@@ -35,25 +32,19 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository,
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
-            //IRecordActiveProductionPlanRepository recordActiveProductionPlanRepository,
-            //IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
-            _productRepository = productRepository;
             _unitOfWork = unitOfWork;
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
-            //_recordActiveProductionPlanRepository = recordActiveProductionPlanRepository;
-            //_recordManufacturingLossRepository = recordManufacturingLossRepository;
             _reportService = reportService;
         }
 
@@ -391,7 +382,6 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
             ActiveProductionPlanModel output = null;
-            //ActiveProcessModel activeProcess = null;
             // If Production Plan doesn't start but machine just start to send status
             if (cachedMachine == null)
             {

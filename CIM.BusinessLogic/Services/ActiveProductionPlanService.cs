@@ -31,8 +31,6 @@ namespace CIM.BusinessLogic.Services
             _directSqlRepository = directSqlRepository;
             _machineService = machineService;
             _productionPlanRepository = productionPlanRepository;
-
-
         }
 
         public string GetKey(string productionPLanId)
