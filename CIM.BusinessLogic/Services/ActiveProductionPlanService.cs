@@ -116,29 +116,6 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId) 
-        {
-            ActiveProductionPlanModel output = null;
-
-            //validation
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId }
-            };
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Pause", paramsList);
-            if (isvalidatePass)
-            {
-                output = new ActiveProductionPlanModel();
-            }
-            return output;
-        }
-
-        public async Task<ActiveProductionPlanModel> Resume(string planId, int routeId) {
-
-            ActiveProductionPlanModel output = null;
-            return output;
-        }
-
         /// <summary>
         /// Change Production Plan status
         /// 
@@ -154,30 +131,53 @@ namespace CIM.BusinessLogic.Services
                     {"@routeid", routeId }
                 };
 
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Finish", paramsList);
-            if (isvalidatePass)
-            {
-                var activeProductionPlan = await GetCached(planId);
-                if (activeProductionPlan != null)
-                {
-                    var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                    foreach (var machine in activeProcess.Route.MachineList)
-                    {
-                        machine.Value.RouteIds.Remove(routeId);
-                        
-                        await _machineService.SetCached(machine.Key, machine.Value);
-                    }
-                    activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_finish", paramsList);
+            if (isvalidatePass) {
 
-                    if (activeProductionPlan.ActiveProcesses.Count == 0)
-                    {
-                        await RemoveCached(activeProductionPlan.ProductionPlanId);
-                    }
+                paramsList.Add("@user", CurrentUser.UserId);
+                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
+                if (affect > 0) {
 
+                    var activeProductionPlan = await GetCached(planId);
+                    if (activeProductionPlan != null) {
+                        var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                        foreach (var machine in activeProcess.Route.MachineList) {
+                            machine.Value.RouteIds.Remove(routeId);
+
+                            await _machineService.SetCached(machine.Key, machine.Value);
+                        }
+                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
+
+                        if (activeProductionPlan.ActiveProcesses.Count == 0) {
+                            await RemoveCached(activeProductionPlan.ProductionPlanId);
+                        }
+
+                    }
                 }
             }
 
             return output;
         }
+        public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId) {
+            ActiveProductionPlanModel output = null;
+
+            //validation
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Pause", paramsList);
+            if (isvalidatePass) {
+                output = new ActiveProductionPlanModel();
+            }
+            return output;
+        }
+
+        public async Task<ActiveProductionPlanModel> Resume(string planId, int routeId) {
+
+            ActiveProductionPlanModel output = null;
+            return output;
+        }
+
     }
 }
