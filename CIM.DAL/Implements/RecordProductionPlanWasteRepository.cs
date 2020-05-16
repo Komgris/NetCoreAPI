@@ -28,17 +28,23 @@ namespace CIM.DAL.Implements
 
             foreach (var item in model)
             {
-                foreach (var material in item.Masterials)
-                {
-                    _entities.Remove(item);
-                }
-                _entities.Remove(item);
+                _entities.RemoveRange(item.Masterials);
+                _entities.Remove(item.Waste);
             }
         }
 
-        public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id)
+        public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int recordManufacturingLossId)
         {
-            throw new NotImplementedException();
+            return await _dbset.Where(x => x.RecordManufacturingLossId == recordManufacturingLossId)
+                .Select(x => new RecordProductionPlanWasteModel
+                {
+                    CauseMachineId = x.CauseMachineId,
+                    Reason = x.Reason,
+                    RouteId = x.RouteId,
+                    WasteLevel2Id = x.WasteLevel2Id,
+                    WasteLevel1Id = x.WasteLevel2.WasteLevel1Id,
+                    Id = x.Id
+                }).ToListAsync();
         }
 
     }

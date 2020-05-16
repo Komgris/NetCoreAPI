@@ -25,6 +25,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IReportService _reportService;
 
         public ProductionPlanService(
@@ -35,6 +36,7 @@ namespace CIM.BusinessLogic.Services
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IReportService reportService
             )
         {
@@ -45,6 +47,7 @@ namespace CIM.BusinessLogic.Services
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _reportService = reportService;
         }
 
@@ -376,7 +379,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<ActiveProductionPlanModel> UpdateByMachine(int machineId, int statusId)
+        public async Task<ActiveProductionPlanModel> UpdateByMachine(int machineId, int statusId, bool isAuto)
         {
             var cachedMachine = await _machineService.GetCached(machineId);
             var masterData = await _masterDataService.GetData();
@@ -400,30 +403,66 @@ namespace CIM.BusinessLogic.Services
                 foreach (var routeId in cachedMachine.RouteIds)
                 {
                     output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
-                    var alert = new AlertModel
-                    {
-                        StatusId = (int)Constans.AlertStatus.New,
-                        ItemStatusId = statusId,
-                        CreatedAt = DateTime.Now,
-                        Id = Guid.NewGuid(),
-                        ItemId = machineId,
-                        ItemType = (int)Constans.AlertType.MACHINE
-                    };
-                    output.Alerts.Add(alert);
-                    await _recordManufacturingLossService.Create(new RecordManufacturingLossModel
-                    {
-                        CreatedBy = CurrentUser.UserId,
-                        Guid = alert.Id.ToString(),
-                        IsAuto = false,
-                        LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
-                        MachineId = machineId,
-                        ProductionPlanId = cachedMachine.ProductionPlanId,
-                        StartedAt = DateTime.Now,
-                    });
+
+                    output = await HandleMachineByStatus(machineId, statusId, output, isAuto);
+
                 }
                 await _activeProductionPlanService.SetCached(output);
             }
             return output;
+        }
+
+        private async Task<ActiveProductionPlanModel> HandleMachineByStatus(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, bool isAuto)
+        {
+            switch (statusId)
+            {
+                case Constans.MACHINE_STATUS.Stop: activeProductionPlan = await HandleMachineStop(machineId, statusId, activeProductionPlan, isAuto); break;
+                case Constans.MACHINE_STATUS.Running: activeProductionPlan = await HandleMachineRunning(machineId, statusId, activeProductionPlan, isAuto); break;
+                default: break;
+            }
+            return activeProductionPlan;
+        }
+
+        private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, bool isAuto)
+        {
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == machineId && x.EndAt == null && x.IsAuto == isAuto);
+            if (dbModel == null)
+                throw new Exception("Machine has no stop record");
+
+            dbModel.EndAt = DateTime.Now;
+            dbModel.EndBy = CurrentUser.UserId;
+            _recordManufacturingLossRepository.Edit(dbModel);
+            return activeProductionPlan;
+        }
+
+        private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, bool isAuto)
+        {
+            var now = DateTime.Now;
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId.HasValue && x.MachineId.Value  == machineId && x.EndAt.HasValue == false);
+            if (dbModel == null)
+            {
+                var alert = new AlertModel
+                {
+                    StatusId = (int)Constans.AlertStatus.New,
+                    ItemStatusId = statusId,
+                    CreatedAt = now,
+                    Id = Guid.NewGuid(),
+                    ItemId = machineId,
+                    ItemType = (int)Constans.AlertType.MACHINE
+                };
+                activeProductionPlan.Alerts.Add(alert);
+                _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
+                {
+                    CreatedBy = CurrentUser.UserId,
+                    Guid = alert.Id.ToString(),
+                    IsAuto = isAuto,
+                    LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                    MachineId = machineId,
+                    ProductionPlanId = activeProductionPlan.ProductionPlanId,
+                    StartedAt = now,
+                });
+            }
+            return activeProductionPlan;
         }
 
         public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
@@ -431,5 +470,6 @@ namespace CIM.BusinessLogic.Services
             var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId);
             return output;
         }
+        
     }
 }

@@ -3,6 +3,7 @@ using CIM.DAL.Interfaces;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +30,10 @@ namespace CIM.BusinessLogic.Services
         {
             var wasteMaterials = await _recordProductionPlanWasteMaterialRepository.ListByLoss(lossId);
             var output = await _recordProductionPlanWasteRepository.ListByLoss(lossId);
+            foreach (var item in output)
+            {
+                item.Materials = wasteMaterials.Where(x => x.WasteId == item.Id).ToList();
+            }
             return output;
         }
 
