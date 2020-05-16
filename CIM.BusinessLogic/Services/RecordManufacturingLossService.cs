@@ -66,7 +66,6 @@ namespace CIM.BusinessLogic.Services
             {
                 dbModel.ComponentTypeId = masterData.Components[model.ComponentId.Value].TypeId;
             }
-            dbModel.LossLevel3Id = model.LossLevelId;
             _recordManufacturingLossRepository.Edit(dbModel);
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
             foreach (var item in model.WasteList)

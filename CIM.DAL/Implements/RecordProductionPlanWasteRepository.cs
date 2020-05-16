@@ -28,11 +28,8 @@ namespace CIM.DAL.Implements
 
             foreach (var item in model)
             {
-                foreach (var material in item.Masterials)
-                {
-                    _entities.Remove(item);
-                }
-                _entities.Remove(item);
+                _entities.RemoveRange(item.Masterials);
+                _entities.Remove(item.Waste);
             }
         }
 
@@ -45,6 +42,7 @@ namespace CIM.DAL.Implements
                     Reason = x.Reason,
                     RouteId = x.RouteId,
                     WasteLevel2Id = x.WasteLevel2Id,
+                    WasteLevel1Id = x.WasteLevel2.WasteLevel1Id,
                     Id = x.Id
                 }).ToListAsync();
         }

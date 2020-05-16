@@ -25,7 +25,7 @@ namespace CIM.DAL.Implements
                     Amount = x.Amount,
                     Id = x.Id,
                     MaterialId = x.MaterialId,
-                    WasteId = x.WasteId
+                    WasteId = x.WasteId,
                 }).ToListAsync();
 
         }
