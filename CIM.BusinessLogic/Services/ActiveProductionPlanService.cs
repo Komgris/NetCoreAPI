@@ -153,6 +153,7 @@ namespace CIM.BusinessLogic.Services
                         }
 
                     }
+                    output = activeProductionPlan;
                 }
             }
 
