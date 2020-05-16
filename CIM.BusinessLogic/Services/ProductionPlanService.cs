@@ -25,6 +25,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IReportService _reportService;
 
         public ProductionPlanService(
@@ -35,6 +36,7 @@ namespace CIM.BusinessLogic.Services
             IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IReportService reportService
             )
         {
@@ -45,6 +47,7 @@ namespace CIM.BusinessLogic.Services
             _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _reportService = reportService;
         }
 
