@@ -55,21 +55,6 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(key, null);
         }
 
-        private void ValidateMachineLoss(Dictionary<int, MachineModel> machineList) {
-            //todo
-            // validate mchine loss finish time stamp
-
-            //check if machine of current route has finish = null
-            //Yes-> stamp finish = now
-
-            throw new NotImplementedException();
-        }
-
-        private int CalculateTarget(ProductionPlanModel model) {
-            // todo calculate target, need final business logic
-            return (int)model.Target;
-        }
-
         /// <summary>
         /// Check if RouteId has value and is valid
         /// Get from cache, if cache is null create new object
