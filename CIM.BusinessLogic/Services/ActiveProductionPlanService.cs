@@ -16,6 +16,8 @@ namespace CIM.BusinessLogic.Services
         private IDirectSqlRepository _directSqlRepository;
         private IMachineService _machineService;
         private IRecordActiveProductionPlanRepository _recordActiveProductionPlanRepository;
+        private IActiveProductionPlanService _activeProductionPlanService;
+        private IProductionPlanRepository _productionPlanRepository;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -23,7 +25,9 @@ namespace CIM.BusinessLogic.Services
             IUnitOfWorkCIM unitOfWork,
             IDirectSqlRepository directSqlRepository,
             IRecordActiveProductionPlanRepository recordActiveProductionPlanRepository,
-            IMachineService machineService
+            IMachineService machineService,
+            IActiveProductionPlanService activeProductionPlanService,
+            IProductionPlanRepository productionPlanRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -32,6 +36,10 @@ namespace CIM.BusinessLogic.Services
             _directSqlRepository = directSqlRepository;
             _machineService = machineService;
             _recordActiveProductionPlanRepository = recordActiveProductionPlanRepository;
+            _activeProductionPlanService = activeProductionPlanService;
+            _productionPlanRepository = productionPlanRepository;
+
+
         }
 
         public string GetKey(string productionPLanId)
@@ -71,6 +79,19 @@ namespace CIM.BusinessLogic.Services
             return (int)model.Target;
         }
 
+        /// <summary>
+        /// Check if RouteId has value and is valid
+        /// Get from cache, if cache is null create new object
+        /// Get Db object to change StatusId
+        /// Create ActiveProcesses with RouteId as key
+        /// Create MachineList in ActiveProcesses
+        /// BulkCacheMachines
+        /// Store data to cache
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="routeId"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public async Task<bool> Start(string planId,int routeId, int? target) {
 
             //var now = DateTime.Now;
@@ -80,7 +101,7 @@ namespace CIM.BusinessLogic.Services
             //var output = (await this.GetCached(planId)) ?? new ActiveProductionPlanModel {
             //    ProductionPlanId = planId,
             //};
-            return await Task.Run(() => {
+            return await Task.Run(async () => {
 
                 //validation
                 var paramsList = new Dictionary<string, object>() {
@@ -94,11 +115,25 @@ namespace CIM.BusinessLogic.Services
                     var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
                     if (affect > 0) {
 
-                        //await _machineService.BulkCacheMachines(planId, routeId, output.ActiveProcesses[routeId].Route.MachineList);
-                        //await SetCached(output);
-                        //await _unitOfWork.CommitAsync();
+                        var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+                        var masterData = await _masterDataService.GetData();
+                        var activeProductionPlan = (await _activeProductionPlanService.GetCached(planId)) ?? new ActiveProductionPlanModel
+                        {
+                            ProductionPlanId = planId,
+                        };
 
-                        //ValidateMachineLoss(masterData.Routes[routeId].MachineList);
+                        activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
+                        {
+                            ProductionPlanId = planId,
+                            ProductId = dbModel.ProductId,
+                            Route = new ActiveRouteModel
+                            {
+                                Id = routeId,
+                                MachineList = masterData.Routes[routeId].MachineList,
+                            }
+                        };
+                        await _machineService.BulkCacheMachines(planId, routeId, activeProductionPlan.ActiveProcesses[routeId].Route.MachineList);
+                        await _activeProductionPlanService.SetCached(activeProductionPlan);
 
                         return true;
                     }
