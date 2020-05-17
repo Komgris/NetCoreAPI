@@ -88,5 +88,28 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        public async Task InsertByProduct(List<ProductMaterialModel> data)
+        {
+            await DeleteMapping(data[0].ProductId);
+            foreach (var model in data)
+            {
+                var db_model = MapperHelper.AsModel(data, new ProductMaterial());
+                db_model.CreatedAt = DateTime.Now;
+                db_model.CreatedBy = CurrentUser.UserId;
+                _productMaterialRepository.Add(db_model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task DeleteMapping(int productId)
+        {
+            var list = _productMaterialRepository.Where(x => x.ProductId == productId);
+            foreach (var model in list)
+            {
+                _productMaterialRepository.Delete(model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
     }
 }
