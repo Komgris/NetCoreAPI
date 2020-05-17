@@ -89,7 +89,6 @@ namespace CIM.BusinessLogic.Services
                 //Transaction success
                 if (affect > 0)
                 {
-
                     var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
                     var masterData = await _masterDataService.GetData();
                     var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel
