@@ -205,14 +205,16 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanStart")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Start(string planId, int route, int? target) 
+        public async Task<ProcessReponseModel<object>> Start(string planId, int routeId, int? target)
         {
             var output = new ProcessReponseModel<object>();
-            try {
-                var result = await _activeProductionPlanService.Start(planId, route, target);
+            try
+            {
+                var result = await _activeProductionPlanService.Start(planId, routeId, target);
                 output = HandleResult(result);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -220,14 +222,16 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanFinish")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Finish(string planId, int route) 
+        public async Task<ProcessReponseModel<object>> Finish(string planId, int routeId)
         {
             var output = new ProcessReponseModel<object>();
-            try {
-                var result = await _activeProductionPlanService.Finish(planId, route);
+            try
+            {
+                var result = await _activeProductionPlanService.Finish(planId, routeId);
                 output = HandleResult(result);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 output.Message = ex.Message;
             }
             return output;
@@ -235,12 +239,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Pause(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Pause(string planId, int routeId, int lossLevel3)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Pause(id, routeId);
+                var result = await _activeProductionPlanService.Pause(planId, routeId);
                 output = HandleResult(result);
             }
             catch (Exception ex)
@@ -252,12 +256,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanResume")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Resume(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Resume(string planId, int routeId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Resume(id, routeId);
+                var result = await _activeProductionPlanService.Resume(planId, routeId);
                 output = HandleResult(result);
             }
             catch (Exception ex)
