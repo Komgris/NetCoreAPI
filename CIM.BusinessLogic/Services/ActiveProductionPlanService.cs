@@ -94,7 +94,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         ProductionPlanId = planId,
                         ProductId = dbModel.ProductId,
-                        StatusId = Constans.PRODUCTION_PLAN_STATUS.Production,
+                        Status = Constans.PRODUCTION_PLAN_STATUS.Production,
                         Route = new ActiveRouteModel
                         {
                             Id = routeId,
