@@ -239,12 +239,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanPause")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Pause(string planId, int routeId, int lossLevel3)
+        public async Task<ProcessReponseModel<object>> Pause(string planId, int routeId, int lossLevel3Id)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Pause(planId, routeId);
+                var result = await _activeProductionPlanService.Pause(planId, routeId, lossLevel3Id);
                 output = HandleResult(result);
             }
             catch (Exception ex)
