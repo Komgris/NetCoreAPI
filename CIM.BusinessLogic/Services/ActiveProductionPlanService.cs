@@ -153,6 +153,7 @@ namespace CIM.BusinessLogic.Services
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
                         }
                     }
+                    output = activeProductionPlan;
                 }
             }
 
