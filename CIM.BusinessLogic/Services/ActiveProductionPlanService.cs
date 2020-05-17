@@ -94,6 +94,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         ProductionPlanId = planId,
                         ProductId = dbModel.ProductId,
+                        Status = Constans.PRODUCTION_PLAN_STATUS.Production,
                         Route = new ActiveRouteModel
                         {
                             Id = routeId,
@@ -151,13 +152,13 @@ namespace CIM.BusinessLogic.Services
                         if (activeProductionPlan.ActiveProcesses.Count == 0) {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
                         }
-
                     }
                 }
             }
 
             return output;
         }
+
         public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId) {
             ActiveProductionPlanModel output = null;
 
@@ -166,7 +167,7 @@ namespace CIM.BusinessLogic.Services
                 {"@planid", planId },
                 {"@routeid", routeId }
             };
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Pause", paramsList);
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_pause", paramsList);
             if (isvalidatePass) {
                 output = new ActiveProductionPlanModel();
             }
@@ -176,8 +177,17 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveProductionPlanModel> Resume(string planId, int routeId) {
 
             ActiveProductionPlanModel output = null;
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@user", CurrentUser.UserId}
+            };
+
+            var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_resume", paramsList);
+            if (affect > 0) {
+
+            }
             return output;
         }
-
     }
 }
