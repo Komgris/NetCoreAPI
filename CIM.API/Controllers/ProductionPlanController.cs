@@ -273,12 +273,12 @@ namespace CIM.API.Controllers
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId="")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

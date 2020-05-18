@@ -467,9 +467,9 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
-        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId)
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId)
         {
-            var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId);
+            var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId, planId);
             return output;
         }
         

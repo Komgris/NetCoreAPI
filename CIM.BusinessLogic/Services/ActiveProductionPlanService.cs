@@ -158,9 +158,11 @@ namespace CIM.BusinessLogic.Services
 
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
-                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
-
-                        if (activeProductionPlan.ActiveProcesses.Count == 0)
+                        activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                        if (activeProductionPlan.ActiveProcesses.Count(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0)
+                        {
+                            await SetCached(activeProductionPlan);
+                        } else
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
                             activeProductionPlan.Status = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
