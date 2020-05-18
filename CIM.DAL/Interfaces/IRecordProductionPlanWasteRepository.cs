@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IRecordProductionPlanWasteRepository : IRepository<RecordProductionPlanWaste>
     {
-        Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);
+        Task<List<RecordProductionPlanWasteModel>> ListByLoss(int recordManufacturingLossId);
         Task DeleteByLoss(int id);
     }
 }

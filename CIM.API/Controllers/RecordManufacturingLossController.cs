@@ -65,7 +65,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordManufacturingLossModel>();
             try
             {
-                await _recordManufacturingLossService.GetByGuid(guid);
+                output.Data = await _recordManufacturingLossService.GetByGuid(guid);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -37,9 +37,13 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Create(RecordManufacturingLossModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
-            _recordManufacturingLossRepository.Add(dbModel);
-            await _unitOfWork.CommitAsync();
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId);
+            if (dbModel == null || dbModel.EndAt.HasValue)
+            {
+                dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
+                _recordManufacturingLossRepository.Add(dbModel);
+                await _unitOfWork.CommitAsync();
+            }
         }
 
         public async Task<RecordManufacturingLossModel> GetByGuid(Guid guid)
@@ -47,6 +51,7 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _recordManufacturingLossRepository.GetByGuid(guid);
             var output = MapperHelper.AsModel(dbModel, new RecordManufacturingLossModel());
             output.WasteList = await _recordProductionPlanWasteService.ListByLoss(output.Id);
+            output.LossLevelId = output.LossLevel3Id;
             return output;
         }
 
@@ -61,7 +66,6 @@ namespace CIM.BusinessLogic.Services
             {
                 dbModel.ComponentTypeId = masterData.Components[model.ComponentId.Value].TypeId;
             }
-            dbModel.LossLevel3Id = model.LossLevelId;
             _recordManufacturingLossRepository.Edit(dbModel);
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
             foreach (var item in model.WasteList)
@@ -74,6 +78,7 @@ namespace CIM.BusinessLogic.Services
                     waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
+                waste.RecordManufacturingLossId = dbModel.Id;
                 waste.CreatedAt = now;
                 waste.CreatedBy = CurrentUser.UserId;
                 waste.ProductionPlanId = model.ProductionPlanId;

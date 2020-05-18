@@ -9,6 +9,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int RouteId { get; set; }
+        public int WasteLevel1Id { get; set; }
         public int WasteLevel2Id { get; set; }
         public int? CauseMachineId { get; set; }
         public string Reason { get; set; }

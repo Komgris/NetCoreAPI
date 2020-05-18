@@ -136,7 +136,7 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(CachedKey(id), model);
         }
 
-        public async Task BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, MachineModel> machineList)
+        public async Task BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
         {
             foreach (var machine in machineList)
             {

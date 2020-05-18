@@ -32,9 +32,9 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<string> SetStatus(int id, int statusId)
+        public async Task<string> SetStatus(int id, int statusId, bool isAuto = true)
         {
-            var productionPlan = await _productionPlanService.UpdateByMachine(id, statusId);
+            var productionPlan = await _productionPlanService.UpdateByMachine(id, statusId, isAuto);
 
             // Production plan of this component doesn't started yet
             if (productionPlan != null)
