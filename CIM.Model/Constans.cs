@@ -32,7 +32,9 @@ namespace CIM.Model
             CleaningAndSanitation = 6,
             MealTeaBreak = 7,
             Hold = 8,
-            Cancel = 9
+            Cancel = 9,
+            DownTime = 10,
+            Pause = 11
         }
 
         public static class MACHINE_STATUS 
