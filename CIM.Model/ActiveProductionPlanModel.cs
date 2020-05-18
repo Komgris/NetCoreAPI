@@ -14,5 +14,6 @@ namespace CIM.Model
         public Dictionary<int,ActiveProcessModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcessModel>();
 
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
+        public int Status { get; set; }
     }
 }
