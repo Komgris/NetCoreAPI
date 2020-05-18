@@ -163,6 +163,7 @@ namespace CIM.BusinessLogic.Services
                         if (activeProductionPlan.ActiveProcesses.Count == 0)
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
+                            activeProductionPlan.Status = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
                         }
                     }
                     output = activeProductionPlan;
