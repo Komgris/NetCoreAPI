@@ -12,14 +12,11 @@ namespace CIM.API.Controllers
     [ApiController]
     public class BomController : BaseController
     {
-        private IResponseCacheService _responseCacheService;
         private IBomService _bomService;
         public BomController(
-            IResponseCacheService responseCacheService,
             IBomService bomService
         )
         {
-            _responseCacheService = responseCacheService;
             _bomService = bomService;
         }
 

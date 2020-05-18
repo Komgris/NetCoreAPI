@@ -108,7 +108,6 @@ namespace CIM.BusinessLogic.Services
             {
                 _productMaterialRepository.Delete(model);
             }
-            await _unitOfWork.CommitAsync();
         }
 
     }
