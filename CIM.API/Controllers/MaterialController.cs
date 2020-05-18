@@ -102,5 +102,22 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/InsertByProduct")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductMaterialModel>> InsertByProduct([FromBody] List<ProductMaterialModel> data)
+        {
+            var output = new ProcessReponseModel<ProductMaterialModel>();
+            try
+            {
+                await _service.InsertByProduct(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
     }
 }

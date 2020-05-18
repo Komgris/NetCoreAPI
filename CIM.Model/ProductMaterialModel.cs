@@ -6,6 +6,7 @@ namespace CIM.Model
 {
     public class ProductMaterialModel
     {
+        public int Id { get; set; }
         public int ProductId { get; set; }
         public string ProductCode { get; set; }
         public string ProductDescription { get; set; }

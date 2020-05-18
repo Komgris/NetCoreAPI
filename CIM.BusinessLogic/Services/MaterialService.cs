@@ -91,9 +91,9 @@ namespace CIM.BusinessLogic.Services
         public async Task InsertByProduct(List<ProductMaterialModel> data)
         {
             await DeleteMapping(data[0].ProductId);
-            foreach (var model in data)
+            foreach (var model in data) 
             {
-                var db_model = MapperHelper.AsModel(data, new ProductMaterial());
+                var db_model = MapperHelper.AsModel(model, new ProductMaterial());
                 db_model.CreatedAt = DateTime.Now;
                 db_model.CreatedBy = CurrentUser.UserId;
                 _productMaterialRepository.Add(db_model);

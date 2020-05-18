@@ -13,5 +13,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<MaterialModel> Update(MaterialModel model);
         Task<MaterialModel> Get(int id);
         Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId);
+        Task InsertByProduct(List<ProductMaterialModel> data);
     }
 }
