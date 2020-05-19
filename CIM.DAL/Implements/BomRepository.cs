@@ -33,5 +33,25 @@ namespace CIM.DAL.Implements
                 return (dt.ToModel<BomMaterialModel>());
             });
         }
+
+        public async Task<PagingModel<BomModel>> ListBom(int page, int howmany, string keyword)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@keyword", keyword},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListBom", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<BomModel>(), totalCount, page, howmany);
+            });
+        }
     }
 }

@@ -29,28 +29,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<BomModel>> List(string keyword, int page, int howmany)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = await _bomRepository.Where(x => x.IsActive && x.IsDelete == false &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
-                .Select(
-                    x => new BomModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-
-            int totalCount = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-            return ToPagingModel(dbModel, totalCount, page, howmany);
-
+            var output = await _bomRepository.ListBom(page, howmany, keyword);
+            return output;
         }
 
         public async Task<List<BomMaterialModel>> ListBomMapping(int bomId)
@@ -58,5 +38,7 @@ namespace CIM.BusinessLogic.Services
             var output = await _bomRepository.ListMaterialByBom(bomId);
             return output;
         }
+
+
     }
 }
