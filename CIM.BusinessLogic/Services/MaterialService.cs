@@ -15,14 +15,17 @@ namespace CIM.BusinessLogic.Services
     {
         private readonly IMaterialRepository _materialRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IProductMaterialRepository _productMaterialRepository;
 
         public MaterialService(
             IUnitOfWorkCIM unitOfWork,
-            IMaterialRepository materialRepository
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productMaterialRepository
             )
         {
             _materialRepository = materialRepository;
             _unitOfWork = unitOfWork;
+            _productMaterialRepository = productMaterialRepository;
         }
 
         public async Task<MaterialModel> Create(MaterialModel model)
@@ -77,6 +80,34 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
             return MapperHelper.AsModel(dbModel, new MaterialModel());
+        }
+
+        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
+        {
+            var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            return output;
+        }
+
+        public async Task InsertByProduct(List<ProductMaterialModel> data)
+        {
+            await DeleteMapping(data[0].ProductId);
+            foreach (var model in data) 
+            {
+                var db_model = MapperHelper.AsModel(model, new ProductMaterial());
+                db_model.CreatedAt = DateTime.Now;
+                db_model.CreatedBy = CurrentUser.UserId;
+                _productMaterialRepository.Add(db_model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task DeleteMapping(int productId)
+        {
+            var list = _productMaterialRepository.Where(x => x.ProductId == productId);
+            foreach (var model in list)
+            {
+                _productMaterialRepository.Delete(model);
+            }
         }
 
     }

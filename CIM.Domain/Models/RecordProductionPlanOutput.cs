@@ -13,6 +13,7 @@ namespace CIM.Domain.Models
         public int Total { get; set; }
         public bool IsChecker { get; set; }
         public string Remark { get; set; }
+        public int Hour { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }

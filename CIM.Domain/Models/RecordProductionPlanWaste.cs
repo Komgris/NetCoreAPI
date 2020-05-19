@@ -17,6 +17,7 @@ namespace CIM.Domain.Models
         public int? CauseMachineId { get; set; }
         public string Reason { get; set; }
         public int? RecordManufacturingLossId { get; set; }
+        public int Hour { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
