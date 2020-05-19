@@ -1215,6 +1215,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<ProductMaterial>(entity =>
             {
+
                 entity.ToTable("Product_Material");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
