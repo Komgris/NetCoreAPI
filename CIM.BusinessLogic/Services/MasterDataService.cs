@@ -84,7 +84,7 @@ namespace CIM.BusinessLogic.Services
                 output[item.Id] = new LossLevel3DictionaryModel
                 {
                     Id = item.Id,
-                    Name = item.Name,
+                    Name = $"{item.Name} - {item.Description}",
                     Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }

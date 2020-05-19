@@ -19,13 +19,17 @@ namespace CIM.BusinessLogic.Services
         private IDirectSqlRepository _directSqlRepository;
         private IMachineService _machineService;
         private IProductionPlanRepository _productionPlanRepository;
+        private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
+        private IUnitOfWorkCIM _unitOfWork;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
             IDirectSqlRepository directSqlRepository,
             IMachineService machineService,
-            IProductionPlanRepository productionPlanRepository
+            IProductionPlanRepository productionPlanRepository,
+            IRecordManufacturingLossRepository recordManufacturingLossRepository,
+            IUnitOfWorkCIM unitOfWork
             )
         {
             _responseCacheService = responseCacheService;
@@ -33,6 +37,8 @@ namespace CIM.BusinessLogic.Services
             _directSqlRepository = directSqlRepository;
             _machineService = machineService;
             _productionPlanRepository = productionPlanRepository;
+            _recordManufacturingLossRepository = recordManufacturingLossRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public string GetKey(string productionPLanId)
@@ -114,12 +120,28 @@ namespace CIM.BusinessLogic.Services
                             }),
                         }
                     };
-                    await _machineService.BulkCacheMachines(planId, routeId, activeProductionPlan.ActiveProcesses[routeId].Route.MachineList);
+                    var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, activeProductionPlan.ActiveProcesses[routeId].Route.MachineList);
+                    var notExistingStoppedMachineRecordIds = await _recordManufacturingLossRepository.GetNotExistingStoppedMachineRecord(activeMachines);
+                    foreach (var machineId in notExistingStoppedMachineRecordIds)
+                    {
+                        var machine = activeMachines[machineId];
+                        _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
+                        {
+                            CreatedBy = machine.UserId,
+                            StartedAt = machine.StartedAt,
+                            IsAuto = true,
+                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            MachineId = machineId,
+                            ProductionPlanId = planId,
+                            RouteId = routeId,
+                        });
+                    }
                     await SetCached(activeProductionPlan);
 
                     output = activeProductionPlan;
                 }
             }
+            await _unitOfWork.CommitAsync();
             return output;
 
         }
@@ -152,14 +174,18 @@ namespace CIM.BusinessLogic.Services
                     if (activeProductionPlan != null)
                     {
                         var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                        activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                        var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
                         foreach (var machine in activeProcess.Route.MachineList)
                         {
                             machine.Value.RouteIds.Remove(routeId);
-
+                            if (!isPlanActive)
+                            {
+                                machine.Value.ProductionPlanId = null;
+                            }
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
-                        activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
-                        if (activeProductionPlan.ActiveProcesses.Count(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0)
+                        if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
                         } else

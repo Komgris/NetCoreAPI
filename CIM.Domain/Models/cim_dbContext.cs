@@ -1215,8 +1215,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<ProductMaterial>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("Product_Material");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -1452,22 +1450,21 @@ namespace CIM.Domain.Models
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.CreatedBy)
-                    .HasMaxLength(128)
-                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
 
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
                 entity.Property(e => e.ProductionPlanId)
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
 
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.RecordMachineStatus)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .HasConstraintName("FK_Record_Machine_Component_Status_Users");
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
 
                 entity.HasOne(d => d.Machine)
                     .WithMany(p => p.RecordMachineStatus)
@@ -1503,7 +1500,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
                 entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
 
@@ -1516,6 +1516,10 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
 
                 entity.HasOne(d => d.ComponentType)
                     .WithMany(p => p.RecordManufacturingLoss)
@@ -1542,6 +1546,7 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.ProductionPlan)
                     .WithMany(p => p.RecordManufacturingLoss)
                     .HasForeignKey(d => d.ProductionPlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_ProductionPLan_Loss_Production_Plan");
 
                 entity.HasOne(d => d.UpdatedByNavigation)
@@ -1563,9 +1568,13 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
                 entity.Property(e => e.IsCounterOut).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
 
                 entity.Property(e => e.ProductionPlanId)
                     .IsRequired()
@@ -1577,6 +1586,10 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
             });
 
             modelBuilder.Entity<RecordProductionPlanWaste>(entity =>
@@ -1594,6 +1607,10 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
                 entity.Property(e => e.ProductionPlanId)
                     .IsRequired()
                     .HasColumnName("Production_Plan_Id")
@@ -1610,6 +1627,10 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
                 entity.Property(e => e.WasteLevel2Id).HasColumnName("WasteLevel2_Id");
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
 
                 entity.HasOne(d => d.RecordManufacturingLoss)
                     .WithMany(p => p.RecordProductionPlanWaste)

@@ -15,13 +15,13 @@ namespace CIM.Domain.Models
         public int? ComponentTypeId { get; set; }
         public int LossLevel3Id { get; set; }
         public string ProductionPlanId { get; set; }
-        public int? RouteId { get; set; }
+        public int RouteId { get; set; }
         public DateTime StartedAt { get; set; }
         public DateTime? EndAt { get; set; }
         public long? Timespan { get; set; }
-        public int WeekNumber { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
+        public int? WeekNumber { get; set; }
+        public int? Month { get; set; }
+        public int? Year { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }

@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.EntityFrameworkCore.Internal;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
+using OfficeOpenXml.ConditionalFormatting;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -26,6 +28,7 @@ namespace CIM.BusinessLogic.Services
         private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordManufacturingLossService _recordManufacturingLossService;
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
+        private IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IReportService _reportService;
 
         public ProductionPlanService(
@@ -37,6 +40,7 @@ namespace CIM.BusinessLogic.Services
             IActiveProductionPlanService activeProductionPlanService,
             IRecordManufacturingLossService recordManufacturingLossService,
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
+            IRecordMachineStatusRepository recordMachineStatusRepository,
             IReportService reportService
             )
         {
@@ -48,6 +52,7 @@ namespace CIM.BusinessLogic.Services
             _activeProductionPlanService = activeProductionPlanService;
             _recordManufacturingLossService = recordManufacturingLossService;
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
+            _recordMachineStatusRepository = recordMachineStatusRepository;
             _reportService = reportService;
         }
 
@@ -409,7 +414,9 @@ namespace CIM.BusinessLogic.Services
                 cachedMachine = new ActiveMachineModel
                 {
                     Id = machine.Id,
-                    StatusId = statusId
+                    StatusId = statusId,
+                    UserId = CurrentUser.UserId,
+                    StartedAt = DateTime.Now
                 };
                 await _machineService.SetCached(machineId, cachedMachine);
             }
@@ -418,15 +425,42 @@ namespace CIM.BusinessLogic.Services
             if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && cachedMachine.RouteIds != null)
             {
                 output = await _activeProductionPlanService.GetCached(cachedMachine.ProductionPlanId);
-                foreach (var routeId in cachedMachine.RouteIds)
+                if (output != null)
                 {
-                    output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
-
-                    output = await HandleMachineByStatus(machineId, statusId, output, routeId, isAuto);
-
+                    foreach (var routeId in cachedMachine.RouteIds)
+                    {
+                        if (output.ActiveProcesses.ContainsKey(routeId))
+                        {
+                            output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
+                            output = await HandleMachineByStatus(machineId, statusId, output, routeId, isAuto);
+                        }
+                    }
+                    await _activeProductionPlanService.SetCached(output);
                 }
-                await _activeProductionPlanService.SetCached(output);
             }
+
+            var recordMachineStatusId = statusId;
+            if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
+            {
+                recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
+            }
+            var lastRecordMachineStatus = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId)
+                .OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
+
+            if (lastRecordMachineStatus == null || lastRecordMachineStatus.MachineStatusId != recordMachineStatusId)
+            {
+                var recordMachineStatus = new RecordMachineStatus
+                {
+                    CreatedAt = DateTime.Now,
+                    MachineId = machineId,
+                    ProductionPlanId = cachedMachine.ProductionPlanId,
+                    MachineStatusId = recordMachineStatusId
+                };
+
+                _recordMachineStatusRepository.Add(recordMachineStatus);
+            }
+
+            await _unitOfWork.CommitAsync();
             return output;
         }
 

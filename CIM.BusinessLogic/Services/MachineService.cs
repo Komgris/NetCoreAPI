@@ -136,8 +136,9 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(CachedKey(id), model);
         }
 
-        public async Task BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
+        public async Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
         {
+            var output = new List<ActiveMachineModel>();
             foreach (var machine in machineList)
             {
                 var key = CachedKey(machine.Key);
@@ -148,6 +149,8 @@ namespace CIM.BusinessLogic.Services
                     {
                         Id = machine.Key,
                         RouteIds = new List<int> { routeId },
+                        UserId = CurrentUser.UserId,
+                        StartedAt = DateTime.Now
                     };
                 }
                 else
@@ -160,9 +163,9 @@ namespace CIM.BusinessLogic.Services
                 }
                 cachedMachine.ProductionPlanId = productionPlanId;
                 await SetCached(machine.Key, cachedMachine);
-
-
+                output.Add(cachedMachine);
             }
+            return output.ToDictionary( x=>x.Id, x => x);
 
         }
 

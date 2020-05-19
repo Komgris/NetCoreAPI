@@ -10,5 +10,6 @@ namespace CIM.DAL.Interfaces
     public interface IRecordManufacturingLossRepository : IRepository<RecordManufacturingLoss>
     {
         Task<RecordManufacturingLoss> GetByGuid(Guid guid);
+        Task<int[]> GetNotExistingStoppedMachineRecord(Dictionary<int, ActiveMachineModel> activeMachines);
     }
 }
