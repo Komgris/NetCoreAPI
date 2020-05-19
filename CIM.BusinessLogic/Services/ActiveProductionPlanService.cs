@@ -165,7 +165,7 @@ namespace CIM.BusinessLogic.Services
                         } else
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
-                            activeProductionPlan.Status = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                         }
                     }
                     output = activeProductionPlan;
@@ -198,6 +198,7 @@ namespace CIM.BusinessLogic.Services
                     var activeProductionPlan = await GetCached(planId);
                     activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Pause;
                     output = activeProductionPlan;
+                    await SetCached(activeProductionPlan);
                 }
             }
             return output;
@@ -224,6 +225,7 @@ namespace CIM.BusinessLogic.Services
                     var activeProductionPlan = await GetCached(planId);
                     activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Production;
                     output = activeProductionPlan;
+                    await SetCached(activeProductionPlan);
                 }
             }
             return output;
