@@ -31,12 +31,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<ComponentModel>> GetComponentByMachine(int machineId)
         {
-            var output = new List<ComponentModel>();
-            var db = await _componentRepository.Where(x => x.IsActive.Value && x.IsDelete == false && x.MachineId == machineId).ToListAsync();
-            foreach (var model in db)
-            {
-                output.Add(MapperHelper.AsModel(model, new ComponentModel()));
-            }
+            var output = await _componentRepository.ListComponentByMachine(machineId);
             return output;
         }
 
