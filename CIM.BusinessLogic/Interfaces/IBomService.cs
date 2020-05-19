@@ -10,5 +10,10 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task<PagingModel<BomModel>> List(string keyword, int page, int howmany);
         Task<List<BomMaterialModel>> ListBomMapping(int bomId);
+        Task InsertMapping(List<BomMaterialModel> data);
+        Task Create(BomModel data);
+        Task Update(BomModel data);
+        Task Delete(int id);
+        BomModel Get(int id);
     }
 }

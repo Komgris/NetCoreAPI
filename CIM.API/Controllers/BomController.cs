@@ -53,5 +53,93 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [Route("api/[controller]/InsertMapping")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<BomMaterialModel>> InsertMapping(List<BomMaterialModel> data)
+        {
+            var output = new ProcessReponseModel<BomMaterialModel>();
+            try
+            {
+                await _bomService.InsertMapping(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Create")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> Create([FromBody] BomModel data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _bomService.Create(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Update")]
+        [HttpPut]
+        public async Task<ProcessReponseModel<object>> Update([FromBody] BomModel data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _bomService.Update(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Delete")]
+        [HttpDelete]
+        public async Task<ProcessReponseModel<object>> Delete(int id)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _bomService.Delete(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Get")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<BomModel>> Get(int Id)
+        {
+            var output = new ProcessReponseModel<BomModel>();
+            try
+            {
+                output.Data =  _bomService.Get(Id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
     }
 }

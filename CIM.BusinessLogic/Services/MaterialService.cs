@@ -90,7 +90,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task InsertByProduct(List<ProductMaterialModel> data)
         {
-            await DeleteMapping(data[0].ProductId);
+            DeleteMapping(data[0].ProductId);
             foreach (var model in data) 
             {
                 var db_model = MapperHelper.AsModel(model, new ProductMaterial());
@@ -101,7 +101,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteMapping(int productId)
+        public void DeleteMapping(int productId)
         {
             var list = _productMaterialRepository.Where(x => x.ProductId == productId);
             foreach (var model in list)
