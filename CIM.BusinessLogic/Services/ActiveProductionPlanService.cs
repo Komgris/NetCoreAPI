@@ -8,10 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class ActiveProductionPlanService : BaseService,IActiveProductionPlanService {
+    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
+    {
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IDirectSqlRepository _directSqlRepository;
@@ -68,7 +70,8 @@ namespace CIM.BusinessLogic.Services
         /// <param name="routeId"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Start(string planId,int routeId, int? target) {
+        public async Task<ActiveProductionPlanModel> Start(string planId, int routeId, int? target)
+        {
 
             ActiveProductionPlanModel output = null;
             //validation
@@ -78,11 +81,14 @@ namespace CIM.BusinessLogic.Services
                 {"@target", target }
             };
             var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_start", paramsList);
-            if (isvalidatePass) {
+            if (isvalidatePass)
+            {
                 paramsList.Add("@user", CurrentUser.UserId);
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
-                if (affect > 0) {
 
+                //Transaction success
+                if (affect > 0)
+                {
                     var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
                     var masterData = await _masterDataService.GetData();
                     var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel
@@ -94,11 +100,13 @@ namespace CIM.BusinessLogic.Services
                     {
                         ProductionPlanId = planId,
                         ProductId = dbModel.ProductId,
+                        Status = Constans.PRODUCTION_PLAN_STATUS.Production,
                         Route = new ActiveRouteModel
                         {
                             Id = routeId,
-                            MachineList = masterData.Routes[routeId].MachineList.ToDictionary( x=>x.Key, x=>new ActiveMachineModel { 
-                                ComponentList = x.Value.ComponentList.ToDictionary(x=>x.Id, x=>x),
+                            MachineList = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
+                            {
+                                ComponentList = x.Value.ComponentList.ToDictionary(x => x.Id, x => x),
                                 Id = x.Key,
                                 ProductionPlanId = planId,
                                 StatusId = x.Value.StatusId,
@@ -116,7 +124,58 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId) 
+        /// <summary>
+        /// Change Production Plan status
+        /// 
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="routeId"></param>
+        /// <returns></returns>
+        public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
+        {
+            ActiveProductionPlanModel output = null;
+            var paramsList = new Dictionary<string, object>() {
+                    {"@planid", planId },
+                    {"@routeid", routeId }
+                };
+
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_finish", paramsList);
+            if (isvalidatePass)
+            {
+                paramsList.Add("@user", CurrentUser.UserId);
+                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
+
+                //Transaction success
+                if (affect > 0)
+                {
+                    var activeProductionPlan = await GetCached(planId);
+                    if (activeProductionPlan != null)
+                    {
+                        var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                        foreach (var machine in activeProcess.Route.MachineList)
+                        {
+                            machine.Value.RouteIds.Remove(routeId);
+
+                            await _machineService.SetCached(machine.Key, machine.Value);
+                        }
+                        activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                        if (activeProductionPlan.ActiveProcesses.Count(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0)
+                        {
+                            await SetCached(activeProductionPlan);
+                        } else
+                        {
+                            await RemoveCached(activeProductionPlan.ProductionPlanId);
+                            activeProductionPlan.Status = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
+                        }
+                    }
+                    output = activeProductionPlan;
+                }
+            }
+
+            return output;
+        }
+
+        public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId, int lossLevel3Id)
         {
             ActiveProductionPlanModel output = null;
 
@@ -125,58 +184,48 @@ namespace CIM.BusinessLogic.Services
                 {"@planid", planId },
                 {"@routeid", routeId }
             };
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Pause", paramsList);
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_pause", paramsList);
+
             if (isvalidatePass)
             {
-                output = new ActiveProductionPlanModel();
-            }
-            return output;
-        }
+                paramsList.Add("@user", CurrentUser.UserId);
+                paramsList.Add("@losslv3", lossLevel3Id);
+                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_pause", paramsList);
 
-        public async Task<ActiveProductionPlanModel> Resume(string planId, int routeId) {
-
-            ActiveProductionPlanModel output = null;
-            return output;
-        }
-
-        /// <summary>
-        /// Change Production Plan status
-        /// 
-        /// </summary>
-        /// <param name="planId"></param>
-        /// <param name="routeId"></param>
-        /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId) 
-        {
-            ActiveProductionPlanModel output = null;
-            var paramsList = new Dictionary<string, object>() {
-                    {"@planid", planId },
-                    {"@routeid", routeId }
-                };
-
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_Validation_Plan_Finish", paramsList);
-            if (isvalidatePass)
-            {
-                var activeProductionPlan = await GetCached(planId);
-                if (activeProductionPlan != null)
+                //Transaction success
+                if (affect > 0)
                 {
-                    var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                    foreach (var machine in activeProcess.Route.MachineList)
-                    {
-                        machine.Value.RouteIds.Remove(routeId);
-                        
-                        await _machineService.SetCached(machine.Key, machine.Value);
-                    }
-                    activeProductionPlan.ActiveProcesses.Remove(activeProcess.Route.Id);
-
-                    if (activeProductionPlan.ActiveProcesses.Count == 0)
-                    {
-                        await RemoveCached(activeProductionPlan.ProductionPlanId);
-                    }
-
+                    var activeProductionPlan = await GetCached(planId);
+                    activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Pause;
+                    output = activeProductionPlan;
                 }
             }
+            return output;
+        }
 
+        public async Task<ActiveProductionPlanModel> Resume(string planId, int routeId)
+        {
+
+            ActiveProductionPlanModel output = null;
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId }
+            };
+
+            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_resume", paramsList);
+            if (isvalidatePass)
+            {
+                paramsList.Add("@user", CurrentUser.UserId);
+                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_resume", paramsList);
+
+                //Transaction success
+                if (affect > 0)
+                {
+                    var activeProductionPlan = await GetCached(planId);
+                    activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Production;
+                    output = activeProductionPlan;
+                }
+            }
             return output;
         }
     }

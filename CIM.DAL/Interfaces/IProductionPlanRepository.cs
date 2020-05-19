@@ -10,7 +10,7 @@ namespace CIM.DAL.Interfaces
     public interface IProductionPlanRepository : IRepository<ProductionPlan>
     {
         Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
-        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId);
+        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId);
         Task<ProductionPlanModel> Load(string id, int routeId);
     }
 
