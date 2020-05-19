@@ -29,5 +29,6 @@ namespace CIM.Model
         public string UpdatedBy { get; set; }
         public ProductModel Product { get; set; }
         public int CompareResult { get; set; }
+
     }
 }
