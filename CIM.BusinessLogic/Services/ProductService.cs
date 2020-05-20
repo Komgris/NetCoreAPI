@@ -45,18 +45,22 @@ namespace CIM.BusinessLogic.Services
         public async Task Delete(int id)
         {
             var existingItem = _productRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
-            _productRepository.Delete(existingItem);
+            existingItem.IsActive = false;
+            existingItem.IsDelete = true;
             await _unitOfWork.CommitAsync();
         }
 
         public async Task<ProductModel> Create(ProductModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Product());
-            _productRepository.Add(dbModel);
+            dbModel.ProductTypeId = model.ProductType_Id;
+            dbModel.ProductFamilyId = model.ProductFamily_Id;
+            dbModel.ProductGroupId = model.ProductGroup_Id;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.IsActive = true;
             dbModel.IsDelete = false;
+            _productRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
             var response = MapperHelper.AsModel(dbModel, new ProductModel());
 

@@ -306,10 +306,28 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(productionPlanKey, null);
         }
 
-        public async Task<ProductionPlanModel> Load(string id,int routeId)
+        public async Task<ProductionPlanOverviewModel> Load(string id,int routeId)
         {
-            var output = await _productionPlanRepository.Load(id, routeId);
-            return output;            
+            var productionPlan = await _productionPlanRepository.Load(id, routeId);
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
+            var route = new ActiveProcessModel();
+            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
+            {
+                route = activeProductionPlan?.ActiveProcesses[routeId];
+            } 
+            else
+            {
+                route = new ActiveProcessModel
+                {
+                    Route = new ActiveRouteModel { Id = routeId },
+                    Status = Constans.PRODUCTION_PLAN_STATUS.New
+                };
+            }
+            return new ProductionPlanOverviewModel
+            {
+                ProductionPlan = productionPlan,
+                Route = route
+            };            
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
