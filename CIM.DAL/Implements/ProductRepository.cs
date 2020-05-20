@@ -23,8 +23,8 @@ namespace CIM.DAL.Implements
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = _entities.Product.Where(x => x.IsActive == true &
-           string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
+            var dbModel = _entities.Product.Where(x => x.IsActive == true &&
+           (string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword) || x.Description.Contains(keyword))))
                                 .Select(
                     x => new ProductModel
                     {
