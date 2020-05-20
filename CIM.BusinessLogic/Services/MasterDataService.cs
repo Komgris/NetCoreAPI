@@ -379,7 +379,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Description.Replace("\r\n", string.Empty));
+                    output.Add(item.Id, item.Description);
             }
             return output;
         }
@@ -391,7 +391,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Description.Replace("\r\n", string.Empty));
+                    output.Add(item.Id, item.Description);
             }
             return output;
         }
@@ -403,7 +403,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Name.Replace("\r\n", string.Empty));
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }
