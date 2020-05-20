@@ -10,6 +10,6 @@ namespace CIM.DAL.Interfaces
     public interface IComponentRepository : IRepository<Component>
     {
         Task<PagingModel<ComponentModel>> ListComponent(int page, int howmany, string keyword);
-
+        Task<List<ComponentModel>> ListComponentByMachine(int machineId);
     }
 }
