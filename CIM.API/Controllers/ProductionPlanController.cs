@@ -167,12 +167,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Load(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await _productionPlanService.Load(id, routeId);
+                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -291,7 +291,7 @@ namespace CIM.API.Controllers
         private ProcessReponseModel<object> HandleResult(ActiveProductionPlanModel model)
         {
             var output = new ProcessReponseModel<object>();
-            if (output.Data != null)
+            if (model != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{model.ProductionPlanId}";
                 var dataString = JsonConvert.SerializeObject(model, JsonsSetting);

@@ -71,6 +71,7 @@ namespace CIM.API
             services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
             services.AddTransient<IRecordMachineStatusRepository, RecordMachineStatusRepository>();
 
+
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
             services.AddTransient<IMachineTypeRepository, MachineTypeRepository>();
@@ -78,6 +79,12 @@ namespace CIM.API
             services.AddTransient<IComponentTypeRepository, ComponentTypeRepository>();
             services.AddTransient<IMachineTypeComponentTypeRepository, MachineTypeComponentTypeRepository>();
             services.AddTransient<IRecordActiveProductionPlanRepository, RecordActiveProductionPlanRepository>();
+            services.AddTransient<IProductMaterialRepository, ProductMaterialRepository>();
+            services.AddTransient<IBomMaterialRepository, BomMaterialRepository>();
+            services.AddTransient<IBomRepository, BomRepository>();
+            services.AddTransient<IProductFamilyRepository, ProductFamilyRepository>();
+            services.AddTransient<IProductGroupRepository, ProductGroupRepository>();
+            services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -104,6 +111,7 @@ namespace CIM.API
             services.AddTransient<ILossLevel3Service, LossLevel3Service>();
             services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
             services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
+            services.AddTransient<IBomService, BomService>();
 
             services.AddControllers();
             services.AddSignalR();

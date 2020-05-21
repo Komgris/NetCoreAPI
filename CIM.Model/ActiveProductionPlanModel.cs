@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static CIM.Model.Constans;
 
 namespace CIM.Model
 {
@@ -14,6 +15,6 @@ namespace CIM.Model
         public Dictionary<int,ActiveProcessModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcessModel>();
 
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
-        public int Status { get; set; }
+        public PRODUCTION_PLAN_STATUS Status { get; set; }
     }
 }

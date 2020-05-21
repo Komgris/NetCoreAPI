@@ -1215,7 +1215,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<ProductMaterial>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("Product_Material");
 
