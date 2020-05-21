@@ -8,7 +8,9 @@ namespace CIM.Model
     {
         public int Id { get; set; }
         public int RouteId { get; set; }
+        public string RouteName { get; set; }
         public int ProductGroupId { get; set; }
+        public string ProductGroupName { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
