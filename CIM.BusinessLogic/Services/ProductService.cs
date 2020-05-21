@@ -53,9 +53,9 @@ namespace CIM.BusinessLogic.Services
         public async Task<ProductModel> Create(ProductModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Product());
-            dbModel.ProductTypeId = model.ProductType_Id;
-            dbModel.ProductFamilyId = model.ProductFamily_Id;
-            dbModel.ProductGroupId = model.ProductGroup_Id;
+            dbModel.ProductTypeId = model.ProductTypeId;
+            dbModel.ProductFamilyId = model.ProductFamilyId;
+            dbModel.ProductGroupId = model.ProductGroupId;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.IsActive = true;
@@ -83,9 +83,9 @@ namespace CIM.BusinessLogic.Services
                             Code = x.Code,
                             Description = x.Description,
                             BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                            ProductFamily_Id = x.ProductFamilyId,
-                            ProductGroup_Id = x.ProductGroupId,
-                            ProductType_Id = x.ProductTypeId,
+                            ProductFamilyId = x.ProductFamilyId,
+                            ProductGroupId = x.ProductGroupId,
+                            ProductTypeId = x.ProductTypeId,
                             PackingMedium = x.PackingMedium,
                             NetWeight = x.NetWeight,
                             Igweight = x.Igweight,
