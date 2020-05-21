@@ -9,7 +9,6 @@ namespace CIM.Domain.Models
         {
             Component = new HashSet<Component>();
             ComponentTypeLossLevel3 = new HashSet<ComponentTypeLossLevel3>();
-            RecordManufacturingLoss = new HashSet<RecordManufacturingLoss>();
         }
 
         public int Id { get; set; }
@@ -24,6 +23,5 @@ namespace CIM.Domain.Models
 
         public virtual ICollection<Component> Component { get; set; }
         public virtual ICollection<ComponentTypeLossLevel3> ComponentTypeLossLevel3 { get; set; }
-        public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
     }
 }

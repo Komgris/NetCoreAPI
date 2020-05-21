@@ -1215,7 +1215,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<ProductMaterial>(entity =>
             {
-
                 entity.ToTable("Product_Material");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -1484,7 +1483,7 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_Manufacturing_Loss");
 
-                entity.Property(e => e.ComponentTypeId).HasColumnName("ComponentType_Id");
+                entity.Property(e => e.ComponentId).HasColumnName("Component_Id");
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
@@ -1522,10 +1521,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
 
-                entity.HasOne(d => d.ComponentType)
+                entity.HasOne(d => d.Component)
                     .WithMany(p => p.RecordManufacturingLoss)
-                    .HasForeignKey(d => d.ComponentTypeId)
-                    .HasConstraintName("FK_Record_Manufacturing_Loss_Machine_ComponentType");
+                    .HasForeignKey(d => d.ComponentId)
+                    .HasConstraintName("FK_Record_Manufacturing_Loss_Component");
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.RecordManufacturingLossCreatedByNavigation)
