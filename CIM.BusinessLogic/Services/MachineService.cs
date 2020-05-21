@@ -185,6 +185,11 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task<List<MachineModel>> GetMachineByRoute(int routeId)
+        {
+            var output = await _machineRepository.ListMachineByRoute(routeId);
+            return output;
+        }
         public async Task DeleteMapping(int routeid)
         {
             var list = _routeMachineRepository.Where(x => x.RouteId == routeid);
