@@ -55,7 +55,8 @@ namespace CIM.Model
         public enum AlertStatus : int
         {
             New = 0,
-            Processing = 1
+            Processing = 1,
+            Edited = 2
         }
 
         public enum ComponentStatus : int

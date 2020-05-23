@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CIM.DAL.Implements
 {
@@ -17,9 +18,19 @@ namespace CIM.DAL.Implements
 
         }
 
+        public async Task<int[]> GetNotExistingStoppedMachineRecord(Dictionary<int, ActiveMachineModel> activeMachines)
+        {
+            var stoppedMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Stop).Select(x => x.Key).ToArray();
+            var stoppedDbIds = await _dbset.Where(x => x.MachineId.HasValue && stoppedMachineIds.Contains(x.MachineId.Value) && x.EndAt == null)
+                .Select(x=>x.MachineId.Value)
+                .ToListAsync();
+            return stoppedMachineIds.Except(stoppedDbIds).ToArray();
+        }
+
         public async Task<RecordManufacturingLoss> GetByGuid(Guid guid)
         {
-            return await _dbset.FirstAsync(x => x.Guid == guid.ToString());
+            var models = await _entities.RecordManufacturingLoss.Where(x => x.Guid == guid.ToString()).ToListAsync();
+            return models.First(x => x.Guid == guid.ToString());
         }
     }
 }

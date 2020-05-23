@@ -14,14 +14,12 @@ namespace CIM.Domain.Models
         public int MachineId { get; set; }
         public int MachineStatusId { get; set; }
         public string ProductionPlanId { get; set; }
-        public int Hour { get; set; }
-        public int WeekNumber { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
+        public int? Hour { get; set; }
+        public int? WeekNumber { get; set; }
+        public int? Month { get; set; }
+        public int? Year { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string CreatedBy { get; set; }
 
-        public virtual Users CreatedByNavigation { get; set; }
         public virtual Machine Machine { get; set; }
         public virtual MachineStatus MachineStatus { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }

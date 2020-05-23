@@ -18,23 +18,23 @@ namespace CIM.API.Controllers
     {
         private IResponseCacheService _responseCacheService;
         private IHubContext<MachineHub> _hub;
-        private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
             IResponseCacheService responseCacheService,
             IHubContext<MachineHub> hub,
-            IProductionPlanService productionPlanService
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
-            _productionPlanService = productionPlanService;
+            _activeProductionPlanService = activeProductionPlanService;
         }
 
         [HttpGet]
         public async Task<string> SetStatus(int id, int statusId, bool isAuto = true)
         {
-            var productionPlan = await _productionPlanService.UpdateByMachine(id, statusId, isAuto);
+            var productionPlan = await _activeProductionPlanService.UpdateByMachine(id, statusId, isAuto);
 
             // Production plan of this component doesn't started yet
             if (productionPlan != null)
