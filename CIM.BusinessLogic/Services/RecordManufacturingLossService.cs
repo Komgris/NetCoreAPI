@@ -93,7 +93,7 @@ namespace CIM.BusinessLogic.Services
                 _recordProductionPlanWasteRepository.Add(waste);
 
             }
-            
+            activeProductionPlan.Alerts.First(x => x.Id.ToString() == model.Guid).StatusId = (int)Constans.AlertStatus.Edited;
             await _unitOfWork.CommitAsync();
             await _activeProductionPlanService.SetCached(activeProductionPlan);
             return activeProductionPlan;
