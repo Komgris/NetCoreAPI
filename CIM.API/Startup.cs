@@ -95,7 +95,7 @@ namespace CIM.API
             services.AddTransient<IMachineAlertService, MachineAlertService>();
             services.AddTransient<IActiveProductionPlanService, ActiveProductionPlanService>();
             services.AddTransient<IRecordManufacturingLossService, RecordManufacturingLossService>();
-            services.AddTransient< IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
+            services.AddTransient<IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
             services.AddTransient<IMachineTypeService, MachineTypeService>();
             services.AddTransient<IComponentTypeService, ComponentTypeService>();
             services.AddTransient<IComponentService, ComponentService>();

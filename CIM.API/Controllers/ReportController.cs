@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,8 +17,13 @@ namespace CIM.API.Controllers {
     public class ReportController : BaseController {
 
         private IReportService _service;
+        private IHubContext<DashboardHub> _hub;
 
-        public ReportController(IReportService reportService) {
+        public ReportController(
+            IHubContext<DashboardHub> hub, 
+            IReportService reportService)
+        {
+            _hub = hub;
             _service = reportService;
         }
 
