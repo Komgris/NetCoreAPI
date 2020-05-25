@@ -33,6 +33,7 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task List_Test()
         {
+            var expectedCount = 3;
             var bomList = new List<BomTemp>()
             {
                 new BomTemp{ Name="testA",IsActive=true},
@@ -52,13 +53,13 @@ namespace CIM.API.IntegrationTests
             }
 
             // Act
-            var loadResponse = await scenario.TestClient.GetAsync($"api/Bom/List?page=1&howmany={bomList.Count()}");
+            var loadResponse = await scenario.TestClient.GetAsync($"api/Bom/List?page=1&howmany={expectedCount}");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<BomModel>>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
-            result.Data.Data.Count().Should().Be(4);
+            result.Data.Data.Count().Should().Be(expectedCount);
             result.Data.Data.Where(x => x.Name == bomList[0].Name);
         }
 
