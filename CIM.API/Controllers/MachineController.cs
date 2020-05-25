@@ -33,8 +33,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 await _service.Create(model);
@@ -42,7 +41,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -54,8 +53,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 await _service.Update(model);
@@ -63,7 +61,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -75,14 +73,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+
                 output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -94,14 +91,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineListModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -113,14 +109,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<MachineModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
+
                 output.Data = await _service.GetMachineByRoute(routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
