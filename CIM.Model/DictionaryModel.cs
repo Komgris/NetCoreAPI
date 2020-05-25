@@ -15,6 +15,9 @@ namespace CIM.Model
         public IDictionary<int, string> WastesLevel2 { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> MachineType { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> ComponentType { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> ProductType { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> ProductGroup { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> ProductFamily { get; set; } = new Dictionary<int, string>();
 
     }
 }

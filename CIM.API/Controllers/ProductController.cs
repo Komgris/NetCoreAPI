@@ -48,7 +48,7 @@ namespace CIM.API.Controllers
         }
 
         [Route("api/[controller]/Delete")]
-        [HttpGet]
+        [HttpDelete]
         public async Task<ProcessReponseModel<object>> Delete(int id)
         {
             var output = new ProcessReponseModel<object>();

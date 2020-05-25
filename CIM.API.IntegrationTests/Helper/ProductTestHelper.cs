@@ -17,9 +17,9 @@ namespace CIM.API.IntegrationTests.Helper
                 Code = code,
                 Description = "Test description",
                 BriteItemPerUpcitem = "Ingredient",
-                ProductFamily_Id = 1,
-                ProductGroup_Id = 2,
-                ProductType_Id = 3,
+                ProductFamilyId = 1,
+                ProductGroupId = 2,
+                ProductTypeId = 3,
                 PackingMedium = "pack",
                 NetWeight = 10,
                 IsActive = true,
@@ -37,9 +37,9 @@ namespace CIM.API.IntegrationTests.Helper
             model.Code.Should().Be(expected.Code);
             model.Description.Should().Be(expected.Description);
             model.BriteItemPerUpcitem.Should().Be(expected.BriteItemPerUpcitem);
-            model.ProductFamily_Id.Should().Be(expected.ProductFamily_Id);
-            model.ProductGroup_Id.Should().Be(expected.ProductGroup_Id);
-            model.ProductType_Id.Should().Be(expected.ProductType_Id);
+            model.ProductFamilyId.Should().Be(expected.ProductFamilyId);
+            model.ProductGroupId.Should().Be(expected.ProductGroupId);
+            model.ProductTypeId.Should().Be(expected.ProductTypeId);
             model.NetWeight.Should().Be(expected.NetWeight);
             model.IsDelete.Should().Be(expected.IsDelete);
             model.CreatedAt.Should().Be(expected.CreatedAt);

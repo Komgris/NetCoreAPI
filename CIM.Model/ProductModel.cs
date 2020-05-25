@@ -12,11 +12,11 @@ namespace CIM.Model
         public string Code { get; set; }
         public string Description { get; set; }
         public string BriteItemPerUpcitem { get; set; }
-        public int ProductFamily_Id { get; set; }
+        public int ProductFamilyId { get; set; }
         public string ProductFamily { get; set; }
-        public int ProductGroup_Id { get; set; }
+        public int ProductGroupId { get; set; }
         public string ProductGroup { get; set; }
-        public int ProductType_Id { get; set; }
+        public int ProductTypeId { get; set; }
         public string ProductType { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
