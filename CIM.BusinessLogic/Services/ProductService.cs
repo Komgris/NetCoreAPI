@@ -45,18 +45,22 @@ namespace CIM.BusinessLogic.Services
         public async Task Delete(int id)
         {
             var existingItem = _productRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
-            _productRepository.Delete(existingItem);
+            existingItem.IsActive = false;
+            existingItem.IsDelete = true;
             await _unitOfWork.CommitAsync();
         }
 
         public async Task<ProductModel> Create(ProductModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Product());
-            _productRepository.Add(dbModel);
+            dbModel.ProductTypeId = model.ProductTypeId;
+            dbModel.ProductFamilyId = model.ProductFamilyId;
+            dbModel.ProductGroupId = model.ProductGroupId;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.IsActive = true;
             dbModel.IsDelete = false;
+            _productRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
             var response = MapperHelper.AsModel(dbModel, new ProductModel());
 
@@ -79,9 +83,9 @@ namespace CIM.BusinessLogic.Services
                             Code = x.Code,
                             Description = x.Description,
                             BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                            ProductFamily_Id = x.ProductFamilyId,
-                            ProductGroup_Id = x.ProductGroupId,
-                            ProductType_Id = x.ProductTypeId,
+                            ProductFamilyId = x.ProductFamilyId,
+                            ProductGroupId = x.ProductGroupId,
+                            ProductTypeId = x.ProductTypeId,
                             PackingMedium = x.PackingMedium,
                             NetWeight = x.NetWeight,
                             Igweight = x.Igweight,

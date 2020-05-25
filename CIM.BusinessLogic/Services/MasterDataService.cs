@@ -28,6 +28,9 @@ namespace CIM.BusinessLogic.Services
         private IMaterialRepository _materialRepository;
         private IMachineTypeRepository _machineTypeRepository;
         private IComponentTypeRepository _componentTypeRepository;
+        private IProductTypeRepository _productTypeRepository;
+        private IProductGroupRepository _productGroupRepository;
+        private IProductFamilyRepository _productFamilyRepository;
 
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
@@ -46,7 +49,11 @@ namespace CIM.BusinessLogic.Services
             IWasteLevel2Repository wasteLevel2Repository,
             IMaterialRepository materialRepository,
             IMachineTypeRepository machineTypeRepository,
-            IComponentTypeRepository componentTypeRepository
+            IComponentTypeRepository componentTypeRepository,
+            IProductTypeRepository productTypeRepository,
+            IProductGroupRepository productGroupRepository,
+            IProductFamilyRepository productFamilyRepository
+
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -66,6 +73,9 @@ namespace CIM.BusinessLogic.Services
             _materialRepository = materialRepository;
             _machineTypeRepository = machineTypeRepository;
             _componentTypeRepository = componentTypeRepository;
+            _productFamilyRepository = productFamilyRepository;
+            _productGroupRepository = productGroupRepository;
+            _productTypeRepository = productTypeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -84,7 +94,7 @@ namespace CIM.BusinessLogic.Services
                 output[item.Id] = new LossLevel3DictionaryModel
                 {
                     Id = item.Id,
-                    Name = item.Name,
+                    Name = $"{item.Name} - {item.Description}",
                     Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }
@@ -211,6 +221,9 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
             masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
             masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
+            masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
+            masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
+            masterData.Dictionary.ProductType = await GetProductTypeDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -350,6 +363,42 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
         {
             var db = (await _componentTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProductTypeDictionary()
+        {
+            var db = (await _productTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Description);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProductFamilyDictionary()
+        {
+            var db = (await _productFamilyRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Description);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetProductGroupDictionary()
+        {
+            var db = (await _productGroupRepository.AllAsync()).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {

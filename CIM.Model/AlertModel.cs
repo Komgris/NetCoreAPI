@@ -11,6 +11,6 @@ namespace CIM.Model
         public int ItemStatusId { get; set; }
 
         public int StatusId { get; set; }
-
+        public int LossLevel3Id { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace CIM.BusinessLogic.Services
         private IMasterDataService _masterDataService;
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
+        private IActiveProductionPlanService _activeProductionPlanService;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordManufacturingLossService(
@@ -24,6 +25,7 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IRecordProductionPlanWasteService recordProductionPlanWasteService,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
+            IActiveProductionPlanService activeProductionPlanService,
             IUnitOfWorkCIM unitOfWork
             )
         {
@@ -31,6 +33,7 @@ namespace CIM.BusinessLogic.Services
             _masterDataService = masterDataService;
             _recordProductionPlanWasteService = recordProductionPlanWasteService;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
+            _activeProductionPlanService = activeProductionPlanService;
             _unitOfWork = unitOfWork;
 
         }
@@ -55,16 +58,20 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Update(RecordManufacturingLossModel model)
+        public async Task<ActiveProductionPlanModel> Update(RecordManufacturingLossModel model)
         {
             var masterData = await _masterDataService.GetData();
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
             var now = DateTime.Now;
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var alert = activeProductionPlan.Alerts.First(x => x.Id == Guid.Parse(model.Guid));
+            alert.LossLevel3Id = model.LossLevelId;
+            alert.StatusId = (int)Constans.AlertStatus.Edited;
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
             if (model.ComponentId > 0)
             {
-                dbModel.ComponentTypeId = masterData.Components[model.ComponentId.Value].TypeId;
+                dbModel.ComponentId = model.ComponentId;
             }
             _recordManufacturingLossRepository.Edit(dbModel);
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
@@ -88,6 +95,8 @@ namespace CIM.BusinessLogic.Services
             }
             
             await _unitOfWork.CommitAsync();
+            await _activeProductionPlanService.SetCached(activeProductionPlan);
+            return activeProductionPlan;
         }
 
     }
