@@ -32,7 +32,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Update(int machineTypeId, List<int> lossLevel3Ids)
+        public async Task Update(List<int> lossLevel3Ids, int machineTypeId)
         {
             var list = _machineTypeLossLevel3Repository.Where(x => x.MachineTypeId == machineTypeId);
             foreach (var model in list)
@@ -46,28 +46,6 @@ namespace CIM.BusinessLogic.Services
                 db_model.LossLevel3Id = lossLevel3Id;
                 db_model.MachineTypeId = machineTypeId;
                 _machineTypeLossLevel3Repository.Add(db_model);
-            }
-            await _unitOfWork.CommitAsync();
-        }
-
-        public async Task Insert(List<MachineTypeLossLevel3Model> data)
-        {
-            foreach (var model in data)
-            {
-                var db_model = new MachineTypeLossLevel3();
-                db_model.LossLevel3Id = model.LossLevel3Id;
-                db_model.MachineTypeId = model.MachineTypeId;
-                _machineTypeLossLevel3Repository.Add(db_model);
-            }
-            await _unitOfWork.CommitAsync();
-        }
-
-        public async Task DeleteByMachineTypeId(int machineTypeId)
-        {
-            var list = _machineTypeLossLevel3Repository.Where(x => x.MachineTypeId == machineTypeId);
-            foreach (var model in list)
-            {
-                _machineTypeLossLevel3Repository.Delete(model);
             }
             await _unitOfWork.CommitAsync();
         }
