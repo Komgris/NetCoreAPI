@@ -49,13 +49,15 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool? isActive=true)
         {
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = await _machineTypeRepository.Where(x => x.IsActive && x.IsDelete == false &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
+            var dbModel = await _machineTypeRepository.Where(x => x.IsDelete == false
+                && (string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
+                && (isActive == null ? true : (x.IsActive == isActive))
+                )
                 .Select(
                     x => new MachineTypeModel
                     {
