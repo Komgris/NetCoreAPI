@@ -37,12 +37,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> Update([FromBody] List<MachineTypeLossLevel3Model> data, int machineTypeId)
+        public async Task<ProcessReponseModel<object>> Update([FromBody] List<int> machineTypeLossLevel3Ids, int machineTypeId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _service.Update(machineTypeId, data);
+                await _service.Update(machineTypeId, machineTypeLossLevel3Ids);
 
                 output.IsSuccess = true;
             }
