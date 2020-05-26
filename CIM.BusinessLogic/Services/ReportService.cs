@@ -2,17 +2,20 @@
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services {
     public class ReportService : BaseService, IReportService {
 
         private IDirectSqlRepository _directSqlRepository;
 
-        public ReportService(IDirectSqlRepository directSqlRepository) {
+        public ReportService(IDirectSqlRepository directSqlRepository)
+        {
             _directSqlRepository = directSqlRepository;
         }
 
@@ -248,5 +251,6 @@ namespace CIM.BusinessLogic.Services {
             return pagingmodel;
         }
         #endregion
+
     }
 }

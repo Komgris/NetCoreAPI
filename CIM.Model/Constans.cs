@@ -9,6 +9,7 @@ namespace CIM.Model
         public const string CURRENT_USER = "CurrentUser";
 
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
+        public const string SIGNAL_R_CHANNEL_DASHBOARD = "dashboard";
 
         public static int DEFAULT_LOSS_LV3 = 1;
 
@@ -87,6 +88,14 @@ namespace CIM.Model
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
 
+        }
+
+        public enum DashboardType {
+            Default,
+            Daily,
+            Weekly,
+            Monthly,
+            Yearly
         }
     } 
 }

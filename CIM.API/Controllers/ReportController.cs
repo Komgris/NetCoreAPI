@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
@@ -8,6 +6,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,7 +19,7 @@ namespace CIM.API.Controllers {
         private IHubContext<DashboardHub> _hub;
 
         public ReportController(
-            IHubContext<DashboardHub> hub, 
+            IHubContext<DashboardHub> hub,
             IReportService reportService)
         {
             _hub = hub;
@@ -298,6 +297,32 @@ namespace CIM.API.Controllers {
                 output.Message = e.Message;
             }
             return output;
+        }
+
+        #endregion
+
+
+        #region Cim-Mng dashboard
+        public void BoardcastTrigger(DashboardType type)
+        {
+            try
+            {
+                //todo -> generating boardcast data 
+
+
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        private void BoardcastData(BoardcastDashboardModel model, string channel)
+        {
+            if (model != null)
+            {
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
+                var dataString = JsonConvert.SerializeObject(model, JsonsSetting);
+                _hub.Clients.All.SendAsync(channel, dataString);
+            }
         }
 
         #endregion
