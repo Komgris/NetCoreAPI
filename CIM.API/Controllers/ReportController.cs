@@ -303,19 +303,39 @@ namespace CIM.API.Controllers {
 
 
         #region Cim-Mng dashboard
-        public void BoardcastTrigger(DashboardType type)
+        public void BoardcastTrigger(DashboardType type,string channel)
         {
+            var boardcastData = new BoardcastDashboardModel(type);
             try
             {
-                //todo -> generating boardcast data 
+                //generating boardcast data 
+                //oee
+                boardcastData.Dashboard.Add(_service.GetDashboardOEE(type));
+                //avr
+                boardcastData.Dashboard.Add(_service.GetDashboardAvailability(type));
+                //qcr
+                boardcastData.Dashboard.Add(_service.GetDashboardQuality(type));
+                //mpr
+                boardcastData.Dashboard.Add(_service.GetDashboardPerformance(type));
+                //output
+                boardcastData.Dashboard.Add(_service.GetDashboardOutput(type));
+                //waste
+                boardcastData.Dashboard.Add(_service.GetDashboardWaste(type));
+                //mcloss
+                boardcastData.Dashboard.Add(_service.GetDashboardMachineLoss(type));
+                //utilization
+                boardcastData.Dashboard.Add(_service.GetDashboardUtilizationTime(type));
 
-
+                HandleBoardcastData(boardcastData, channel);//channel: management, operation
             }
             catch (Exception ex)
             {
+                boardcastData.IsSuccess = false;
+                boardcastData.Message = ex.Message;
+                boardcastData.Dashboard = null;
             }
         }
-        private void BoardcastData(BoardcastDashboardModel model, string channel)
+        private void HandleBoardcastData(BoardcastDashboardModel model, string channel)
         {
             if (model != null)
             {

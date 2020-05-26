@@ -252,5 +252,92 @@ namespace CIM.BusinessLogic.Services {
         }
         #endregion
 
+        #region Cim-Mng dashboard
+
+        public DashboardModel GetDashboardOEE(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "OEE";
+            //to query data
+            //var paramsList = new Dictionary<string, object>() {
+            //    {"@planid", planId },
+            //    {"@routeid", routeId }
+            //};
+
+            //return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
+            return data;
+        }
+
+        public DashboardModel GetDashboardAvailability(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Availability";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardQuality(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Quality";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardPerformance(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Performance";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardOutput(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Output";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardWaste(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Availability";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardMachineLoss(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "MachineLoss";
+
+            //to query data
+
+            return data;
+        }
+
+        public DashboardModel GetDashboardUtilizationTime(DashboardType type)
+        {
+            var data = new DashboardModel();
+            data.Name = "Utilization";
+
+            //to query data
+
+            return data;
+        }
+
+        #endregion
     }
 }
