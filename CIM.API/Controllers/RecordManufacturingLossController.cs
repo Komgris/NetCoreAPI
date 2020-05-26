@@ -34,7 +34,9 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _recordManufacturingLossService.Create(model);
+                var productionPlan = await _recordManufacturingLossService.Create(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
