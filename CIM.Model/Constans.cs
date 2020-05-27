@@ -90,12 +90,19 @@ namespace CIM.Model
 
         }
 
-        public enum DashboardType {
+        public enum DashboardTimeFrame {
             Default,
             Daily,
             Weekly,
             Monthly,
             Yearly
+        }
+        public enum DashboardUpdateType {
+            All,
+            KPI,
+            Output,
+            Time,
+            Waste
         }
     } 
 }

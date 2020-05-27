@@ -254,90 +254,97 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Mng dashboard
 
-        public DashboardModel GetDashboardOEE(DashboardType type)
+        public DashboardModel GetDashboardKPI(DashboardTimeFrame type)
         {
-            var data = new DashboardModel();
-            data.Name = "OEE";
-            //to query data
-            //var paramsList = new Dictionary<string, object>() {
-            //    {"@planid", planId },
-            //    {"@routeid", routeId }
-            //};
-
-            //return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
-            return data;
+            var dashboard = new DashboardModel();
+            try
+            {
+                dashboard.Name = "KPI";
+                var paramsList = new Dictionary<string, object>() {{"@type", type }};
+                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_kpi", paramsList);
+            }
+            catch (Exception ex)
+            {
+                dashboard.Data = null;
+                dashboard.IsSuccess = false;
+                dashboard.Message = ex.Message;
+            }
+            return dashboard;
         }
 
-        public DashboardModel GetDashboardAvailability(DashboardType type)
+        public DashboardModel GetDashboardOutput(DashboardTimeFrame type)
         {
-            var data = new DashboardModel();
-            data.Name = "Availability";
-
-            //to query data
-
-            return data;
+            var dashboard = new DashboardModel();
+            try
+            {
+                dashboard.Name = "Output";
+                var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_output", paramsList);
+            }
+            catch (Exception ex)
+            {
+                dashboard.Data = null;
+                dashboard.IsSuccess = false;
+                dashboard.Message = ex.Message;
+            }
+            return dashboard;
         }
 
-        public DashboardModel GetDashboardQuality(DashboardType type)
+        public DashboardModel GetDashboardWaste(DashboardTimeFrame type)
         {
-            var data = new DashboardModel();
-            data.Name = "Quality";
-
-            //to query data
-
-            return data;
+            var dashboard = new DashboardModel();
+            try
+            {
+                dashboard.Name = "Waste";
+                var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_waste", paramsList);
+            }
+            catch (Exception ex)
+            {
+                dashboard.Data = null;
+                dashboard.IsSuccess = false;
+                dashboard.Message = ex.Message;
+            }
+            return dashboard;
         }
 
-        public DashboardModel GetDashboardPerformance(DashboardType type)
+        public DashboardModel GetDashboardMachineLoss(DashboardTimeFrame type)
         {
-            var data = new DashboardModel();
-            data.Name = "Performance";
-
-            //to query data
-
-            return data;
+            var dashboard = new DashboardModel();
+            try
+            {
+                dashboard.Name = "MachineLoss";
+                var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_machineLoss", paramsList);
+            }
+            catch (Exception ex)
+            {
+                dashboard.Data = null;
+                dashboard.IsSuccess = false;
+                dashboard.Message = ex.Message;
+            }
+            return dashboard;
         }
 
-        public DashboardModel GetDashboardOutput(DashboardType type)
+        public DashboardModel GetDashboardUtilizationTime(DashboardTimeFrame type)
         {
-            var data = new DashboardModel();
-            data.Name = "Output";
-
-            //to query data
-
-            return data;
-        }
-
-        public DashboardModel GetDashboardWaste(DashboardType type)
-        {
-            var data = new DashboardModel();
-            data.Name = "Availability";
-
-            //to query data
-
-            return data;
-        }
-
-        public DashboardModel GetDashboardMachineLoss(DashboardType type)
-        {
-            var data = new DashboardModel();
-            data.Name = "MachineLoss";
-
-            //to query data
-
-            return data;
-        }
-
-        public DashboardModel GetDashboardUtilizationTime(DashboardType type)
-        {
-            var data = new DashboardModel();
-            data.Name = "Utilization";
-
-            //to query data
-
-            return data;
+            var dashboard = new DashboardModel();
+            try
+            {
+                dashboard.Name = "Utilization";
+                var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_utilization", paramsList);
+            }
+            catch (Exception ex)
+            {
+                dashboard.Data = null;
+                dashboard.IsSuccess = false;
+                dashboard.Message = ex.Message;
+            }
+            return dashboard;
         }
 
         #endregion
+    
     }
 }

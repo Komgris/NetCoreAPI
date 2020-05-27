@@ -6,6 +6,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using static CIM.Model.Constans;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,13 +17,16 @@ namespace CIM.API.Controllers {
     public class ReportController : BaseController {
 
         private IReportService _service;
+        private IResponseCacheService _responseCacheService;
         private IHubContext<DashboardHub> _hub;
 
         public ReportController(
+            IResponseCacheService responseCacheService,
             IHubContext<DashboardHub> hub,
             IReportService reportService)
         {
             _hub = hub;
+            _responseCacheService = responseCacheService;
             _service = reportService;
         }
 
@@ -303,46 +307,101 @@ namespace CIM.API.Controllers {
 
 
         #region Cim-Mng dashboard
-        public void BoardcastTrigger(DashboardType type,string channel)
-        {
-            var boardcastData = new BoardcastDashboardModel(type);
-            try
-            {
-                //generating boardcast data 
-                //oee
-                boardcastData.Dashboard.Add(_service.GetDashboardOEE(type));
-                //avr
-                boardcastData.Dashboard.Add(_service.GetDashboardAvailability(type));
-                //qcr
-                boardcastData.Dashboard.Add(_service.GetDashboardQuality(type));
-                //mpr
-                boardcastData.Dashboard.Add(_service.GetDashboardPerformance(type));
-                //output
-                boardcastData.Dashboard.Add(_service.GetDashboardOutput(type));
-                //waste
-                boardcastData.Dashboard.Add(_service.GetDashboardWaste(type));
-                //mcloss
-                boardcastData.Dashboard.Add(_service.GetDashboardMachineLoss(type));
-                //utilization
-                boardcastData.Dashboard.Add(_service.GetDashboardUtilizationTime(type));
 
-                HandleBoardcastData(boardcastData, channel);//channel: management, operation
-            }
-            catch (Exception ex)
+        [Route("api/GetBoardcastingDashboard")]
+        [HttpGet]
+        public async Task<string> GetBoardcastingDashboard(string channel)
+        {
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
+            var cache = await GetCached(channelKey);
+            if(cache is null)
             {
-                boardcastData.IsSuccess = false;
-                boardcastData.Message = ex.Message;
-                boardcastData.Dashboard = null;
+                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardUpdateType.All, channelKey);
             }
+
+            return cache;
         }
-        private void HandleBoardcastData(BoardcastDashboardModel model, string channel)
+
+        [Route("api/BoardcastingDashboard")]
+        [HttpGet]
+        public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardUpdateType updateType, string channel)
+        {
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
+            var boardcastData = new BoardcastDashboardModel(type);
+            await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case DashboardUpdateType.All:
+                            boardcastData.SetDashboard(_service.GetDashboardKPI(type));
+                            boardcastData.SetDashboard(_service.GetDashboardOutput(type));
+                            boardcastData.SetDashboard(_service.GetDashboardWaste(type));
+                            boardcastData.SetDashboard(_service.GetDashboardMachineLoss(type));
+                            boardcastData.SetDashboard(_service.GetDashboardUtilizationTime(type));
+                            break;
+                        case DashboardUpdateType.KPI:
+                            boardcastData.SetDashboard(_service.GetDashboardKPI(type));
+                            break;
+                        case DashboardUpdateType.Output:
+                            boardcastData.SetDashboard(_service.GetDashboardOutput(type));
+                            break;
+                        case DashboardUpdateType.Time:
+                            boardcastData.SetDashboard(_service.GetDashboardMachineLoss(type));
+                            boardcastData.SetDashboard(_service.GetDashboardUtilizationTime(type));
+                            break;
+                        case DashboardUpdateType.Waste:
+                            boardcastData.SetDashboard(_service.GetDashboardWaste(type));
+                            break;
+                    }
+
+                    if(boardcastData.Dashboards.Count > 0)
+                        HandleBoardcastData(channelKey, boardcastData);//channel: management, operation
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+            });
+        }
+
+        private async Task HandleBoardcastData(string channelKey, BoardcastDashboardModel model)
         {
             if (model != null)
             {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-                var dataString = JsonConvert.SerializeObject(model, JsonsSetting);
-                _hub.Clients.All.SendAsync(channel, dataString);
+                var dataString = JsonConvert.SerializeObject(model);
+
+                await SetCached(channelKey, model);
+                await _hub.Clients.All.SendAsync(channelKey, dataString);
             }
+        }
+
+        private async Task SetCached(string channelKey, BoardcastDashboardModel model)
+        {
+            var cache = await GetCached<BoardcastDashboardModel>(channelKey);
+            if (cache == null)
+            {
+                await _responseCacheService.SetAsync(channelKey, model);
+            }
+            else
+            {
+                foreach (DashboardModel dashboard in model.Dashboards)
+                {
+                    cache.SetDashboard(dashboard);
+                }
+                await _responseCacheService.SetAsync(channelKey, cache);
+            }
+        }
+
+        private async Task<string> GetCached(string channelKey)
+        {
+            return await _responseCacheService.GetAsync(channelKey);
+        }
+        private async Task<T> GetCached<T>(string channelKey)
+        {
+            return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
         }
 
         #endregion

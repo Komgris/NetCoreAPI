@@ -25,14 +25,11 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetActiveMachineEvents(string planId, int routeId); 
         Dictionary<string, int> GetActiveProductionPlanOutput();
         PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null);
-        DashboardModel GetDashboardOEE(DashboardType type);
-        DashboardModel GetDashboardAvailability(DashboardType type);
-        DashboardModel GetDashboardQuality(DashboardType type);
-        DashboardModel GetDashboardPerformance(DashboardType type);
-        DashboardModel GetDashboardOutput(DashboardType type);
-        DashboardModel GetDashboardWaste(DashboardType type);
-        DashboardModel GetDashboardMachineLoss(DashboardType type);
-        DashboardModel GetDashboardUtilizationTime(DashboardType type);
+        DashboardModel GetDashboardKPI(DashboardTimeFrame type);
+        DashboardModel GetDashboardOutput(DashboardTimeFrame type);
+        DashboardModel GetDashboardWaste(DashboardTimeFrame type);
+        DashboardModel GetDashboardMachineLoss(DashboardTimeFrame type);
+        DashboardModel GetDashboardUtilizationTime(DashboardTimeFrame type);
 
     }
 }
