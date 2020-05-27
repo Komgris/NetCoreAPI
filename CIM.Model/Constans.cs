@@ -12,6 +12,10 @@ namespace CIM.Model
 
         public static int DEFAULT_LOSS_LV3 = 1;
 
+        public const string SERVER_PATH = "http://localhost/Image/Image/";
+
+        public const string SAVE_PATH = @"C:\Image";
+
         public class RedisKey {
 
             public const string MACHINE = "machine";

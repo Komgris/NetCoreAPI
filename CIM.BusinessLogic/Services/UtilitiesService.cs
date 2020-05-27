@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net.Http.Headers;
 using CIM.DAL.Interfaces;
+using CIM.Model;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -27,9 +28,9 @@ namespace CIM.BusinessLogic.Services
             {
                 if (image.Length > 0)
                 {
-                    var savePath = @"C:\Image";
+                    var savePath = Constans.SAVE_PATH;
                     var folderName = Path.Combine(savePath, pathName);
-                    var serverPath = Path.Combine("http://localhost/Image/Image/", pathName);
+                    var serverPath = Path.Combine(Constans.SERVER_PATH, pathName);
                     var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"');
                     var pathToSave = Path.Combine(folderName, fileName);
                     toDbPath = Path.Combine(serverPath, fileName);
