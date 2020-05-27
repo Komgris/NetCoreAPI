@@ -6,6 +6,7 @@ using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,7 +65,6 @@ namespace CIM.BusinessLogic.Services
             {
                 _routeProductGroupRepository.Delete(model);
             }
-            await _unitOfWork.CommitAsync();
         }
 
         public async Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany)
@@ -77,6 +77,14 @@ namespace CIM.BusinessLogic.Services
         {
             var output = await _productGroupRepository.ListRouteByProductGroup(productGroupId);
             return output;
+        }
+
+        public async Task Delete(int id)
+        {
+            var existingItem = _productGroupRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
+            existingItem.IsActive = false;
+            existingItem.IsDelete = true;
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task Update(ProductGroupModel data)

@@ -91,6 +91,23 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/Delete")]
+        [HttpDelete]
+        public async Task<ProcessReponseModel<ProductGroupModel>> Delete(int id)
+        {
+            var output = new ProcessReponseModel<ProductGroupModel>();
+            try
+            {
+                await _productGroupService.Delete(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
         [Route("api/[controller]/InsertMappingByProductGroup")]
         [HttpPost]
         public async Task<ProcessReponseModel<RouteProductGroupModel>> InsertMappingByMachineId([FromBody] List<RouteProductGroupModel> data)
