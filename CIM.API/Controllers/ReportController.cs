@@ -318,7 +318,6 @@ namespace CIM.API.Controllers {
             {
                 await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardUpdateType.All, channel);
             }
-
             return cache;
         }
 
@@ -327,7 +326,7 @@ namespace CIM.API.Controllers {
         public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardUpdateType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = new BoardcastDashboardModel(type);
+            var boardcastData = new BoardcastModel(type);
             await Task.Run(() =>
             {
                 try
@@ -367,7 +366,7 @@ namespace CIM.API.Controllers {
             });
         }
 
-        private async Task HandleBoardcastData(string channelKey, BoardcastDashboardModel model)
+        private async Task HandleBoardcastData(string channelKey, BoardcastModel model)
         {
             if (model != null)
             {
@@ -378,16 +377,16 @@ namespace CIM.API.Controllers {
             }
         }
 
-        private async Task SetCached(string channelKey, BoardcastDashboardModel model)
+        private async Task SetCached(string channelKey, BoardcastModel model)
         {
-            var cache = await GetCached<BoardcastDashboardModel>(channelKey);
+            var cache = await GetCached<BoardcastModel>(channelKey);
             if (cache == null)
             {
                 await _responseCacheService.SetAsync(channelKey, model);
             }
             else
             {
-                foreach (DashboardModel dashboard in model.Dashboards)
+                foreach (BoardcastDataModel dashboard in model.Dashboards)
                 {
                     cache.SetDashboard(dashboard);
                 }

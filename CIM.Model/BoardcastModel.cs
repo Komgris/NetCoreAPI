@@ -5,19 +5,19 @@ using System.Text;
 using static CIM.Model.Constans;
 
 namespace CIM.Model {
-    public class BoardcastDashboardModel {
-        public BoardcastDashboardModel()
+    public class BoardcastModel {
+        public BoardcastModel()
         {}
-        public BoardcastDashboardModel(DashboardTimeFrame type)
+        public BoardcastModel(DashboardTimeFrame type)
         {
             Type = type;
         }
         public DashboardTimeFrame Type { get; set; }
-        public List<DashboardModel> Dashboards { get; private set; } = new List<DashboardModel>();
+        public List<BoardcastDataModel> Dashboards { get; private set; } = new List<BoardcastDataModel>();
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
 
-        public void SetDashboard(DashboardModel dashboard)
+        public void SetDashboard(BoardcastDataModel dashboard)
         {
             if (dashboard == null) return;
             Dashboards.Remove(Dashboards.Where(x => x.Name == dashboard.Name).FirstOrDefault());
@@ -25,7 +25,7 @@ namespace CIM.Model {
         }
     }
 
-    public class DashboardModel {
+    public class BoardcastDataModel {
         public string Name { get; set; }
         public DateTime LastUpdate { get; set; } = DateTime.Now;
         public object Data { get; set; }

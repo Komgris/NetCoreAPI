@@ -254,9 +254,9 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Mng dashboard
 
-        public DashboardModel GetDashboardKPI(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardKPI(DashboardTimeFrame type)
         {
-            var dashboard = new DashboardModel();
+            var dashboard = new BoardcastDataModel();
             try
             {
                 dashboard.Name = "KPI";
@@ -272,9 +272,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        public DashboardModel GetDashboardOutput(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardOutput(DashboardTimeFrame type)
         {
-            var dashboard = new DashboardModel();
+            var dashboard = new BoardcastDataModel();
             try
             {
                 dashboard.Name = "Output";
@@ -290,9 +290,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        public DashboardModel GetDashboardWaste(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardWaste(DashboardTimeFrame type)
         {
-            var dashboard = new DashboardModel();
+            var dashboard = new BoardcastDataModel();
             try
             {
                 dashboard.Name = "Waste";
@@ -308,9 +308,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        public DashboardModel GetDashboardMachineLoss(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardMachineLoss(DashboardTimeFrame type)
         {
-            var dashboard = new DashboardModel();
+            var dashboard = new BoardcastDataModel();
             try
             {
                 dashboard.Name = "MachineLoss";
@@ -326,9 +326,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        public DashboardModel GetDashboardUtilizationTime(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardUtilizationTime(DashboardTimeFrame type)
         {
-            var dashboard = new DashboardModel();
+            var dashboard = new BoardcastDataModel();
             try
             {
                 dashboard.Name = "Utilization";
