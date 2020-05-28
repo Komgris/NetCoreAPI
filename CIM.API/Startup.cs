@@ -153,7 +153,9 @@ namespace CIM.API
                 endpoints.MapControllers();
                 endpoints.MapHub<ChartHub>("/chart");
                 endpoints.MapHub<MachineHub>("/activeprocess");
+                endpoints.MapHub<DashboardHub>("/report");
             });
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
