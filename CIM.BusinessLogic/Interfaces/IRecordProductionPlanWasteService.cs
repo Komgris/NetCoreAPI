@@ -9,5 +9,6 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IRecordProductionPlanWasteService
     {
         Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);
+        Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model);
     }
 }
