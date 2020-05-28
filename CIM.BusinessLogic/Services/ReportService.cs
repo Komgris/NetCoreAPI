@@ -254,94 +254,21 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Mng dashboard
 
-        public BoardcastDataModel GetDashboardKPI(DashboardTimeFrame type)
+        public BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardTimeFrame type, Dictionary<string, object> paramsList)
         {
-            var dashboard = new BoardcastDataModel();
+            var dashboarddata = new BoardcastDataModel();
             try
             {
-                dashboard.Name = "KPI";
-                var paramsList = new Dictionary<string, object>() {{"@type", type }};
-                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_kpi", paramsList);
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.Data = _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList);
             }
             catch (Exception ex)
             {
-                dashboard.Data = null;
-                dashboard.IsSuccess = false;
-                dashboard.Message = ex.Message;
+                dashboarddata.Data = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
             }
-            return dashboard;
-        }
-
-        public BoardcastDataModel GetDashboardOutput(DashboardTimeFrame type)
-        {
-            var dashboard = new BoardcastDataModel();
-            try
-            {
-                dashboard.Name = "Output";
-                var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_output", paramsList);
-            }
-            catch (Exception ex)
-            {
-                dashboard.Data = null;
-                dashboard.IsSuccess = false;
-                dashboard.Message = ex.Message;
-            }
-            return dashboard;
-        }
-
-        public BoardcastDataModel GetDashboardWaste(DashboardTimeFrame type)
-        {
-            var dashboard = new BoardcastDataModel();
-            try
-            {
-                dashboard.Name = "Waste";
-                var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_waste", paramsList);
-            }
-            catch (Exception ex)
-            {
-                dashboard.Data = null;
-                dashboard.IsSuccess = false;
-                dashboard.Message = ex.Message;
-            }
-            return dashboard;
-        }
-
-        public BoardcastDataModel GetDashboardMachineLoss(DashboardTimeFrame type)
-        {
-            var dashboard = new BoardcastDataModel();
-            try
-            {
-                dashboard.Name = "MachineLoss";
-                var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_machineLoss", paramsList);
-            }
-            catch (Exception ex)
-            {
-                dashboard.Data = null;
-                dashboard.IsSuccess = false;
-                dashboard.Message = ex.Message;
-            }
-            return dashboard;
-        }
-
-        public BoardcastDataModel GetDashboardUtilizationTime(DashboardTimeFrame type)
-        {
-            var dashboard = new BoardcastDataModel();
-            try
-            {
-                dashboard.Name = "Utilization";
-                var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                dashboard.Data = _directSqlRepository.ExecuteSPWithQuery("sp_dashboard_utilization", paramsList);
-            }
-            catch (Exception ex)
-            {
-                dashboard.Data = null;
-                dashboard.IsSuccess = false;
-                dashboard.Message = ex.Message;
-            }
-            return dashboard;
+            return dashboarddata;
         }
 
         #endregion

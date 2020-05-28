@@ -316,14 +316,14 @@ namespace CIM.API.Controllers {
             var cache = await GetCached(channelKey);
             if(cache is null)
             {
-                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardUpdateType.All, channel);
+                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardType.All, channel);
             }
             return cache;
         }
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardUpdateType updateType, string channel)
+        public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
             var boardcastData = new BoardcastModel(type);
@@ -331,27 +331,29 @@ namespace CIM.API.Controllers {
             {
                 try
                 {
+                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
                     switch (updateType)
                     {
-                        case DashboardUpdateType.All:
-                            boardcastData.SetDashboard(_service.GetDashboardKPI(type));
-                            boardcastData.SetDashboard(_service.GetDashboardOutput(type));
-                            boardcastData.SetDashboard(_service.GetDashboardWaste(type));
-                            boardcastData.SetDashboard(_service.GetDashboardMachineLoss(type));
-                            boardcastData.SetDashboard(_service.GetDashboardUtilizationTime(type));
+                        case DashboardType.All:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
                             break;
-                        case DashboardUpdateType.KPI:
-                            boardcastData.SetDashboard(_service.GetDashboardKPI(type));
+                        case DashboardType.KPI:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
                             break;
-                        case DashboardUpdateType.Output:
-                            boardcastData.SetDashboard(_service.GetDashboardOutput(type));
+                        case DashboardType.Output:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
                             break;
-                        case DashboardUpdateType.Time:
-                            boardcastData.SetDashboard(_service.GetDashboardMachineLoss(type));
-                            boardcastData.SetDashboard(_service.GetDashboardUtilizationTime(type));
+                        case DashboardType.Loss:
+                        case DashboardType.TimeUtilisation:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
                             break;
-                        case DashboardUpdateType.Waste:
-                            boardcastData.SetDashboard(_service.GetDashboardWaste(type));
+                        case DashboardType.Waste:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
                             break;
                     }
 
