@@ -3,6 +3,7 @@ using CIM.DAL.Utility;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,25 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
+        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@keyword", keyword},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachine", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<MachineListModel>(), totalCount, page, howmany);
+            });
+        }
         public async Task<List<MachineModel>> ListMachineByRoute(int routeId)
         {
             return await Task.Run(() =>
