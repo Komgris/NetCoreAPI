@@ -308,7 +308,7 @@ namespace CIM.API.Controllers {
 
         #region Cim-Mng dashboard
 
-        [Route("api/GetBoardcastingDashboard")]
+        [Route("api/[controller]/GetBoardcastingDashboard")]
         [HttpGet]
         public async Task<string> GetBoardcastingDashboard(string channel)
         {
@@ -316,13 +316,13 @@ namespace CIM.API.Controllers {
             var cache = await GetCached(channelKey);
             if(cache is null)
             {
-                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardUpdateType.All, channelKey);
+                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardUpdateType.All, channel);
             }
 
             return cache;
         }
 
-        [Route("api/BoardcastingDashboard")]
+        [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
         public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardUpdateType updateType, string channel)
         {
