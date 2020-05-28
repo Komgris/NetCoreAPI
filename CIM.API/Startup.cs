@@ -98,7 +98,7 @@ namespace CIM.API
             services.AddTransient<IMachineAlertService, MachineAlertService>();
             services.AddTransient<IActiveProductionPlanService, ActiveProductionPlanService>();
             services.AddTransient<IRecordManufacturingLossService, RecordManufacturingLossService>();
-            services.AddTransient< IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
+            services.AddTransient<IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
             services.AddTransient<IMachineTypeService, MachineTypeService>();
             services.AddTransient<IComponentTypeService, ComponentTypeService>();
             services.AddTransient<IComponentService, ComponentService>();
@@ -153,7 +153,9 @@ namespace CIM.API
                 endpoints.MapControllers();
                 endpoints.MapHub<ChartHub>("/chart");
                 endpoints.MapHub<MachineHub>("/activeprocess");
+                endpoints.MapHub<DashboardHub>("/report");
             });
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
