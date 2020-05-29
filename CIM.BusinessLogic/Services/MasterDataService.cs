@@ -94,7 +94,7 @@ namespace CIM.BusinessLogic.Services
                 output[item.Id] = new LossLevel3DictionaryModel
                 {
                     Id = item.Id,
-                    Name = item.Name,
+                    Name = $"{item.Name} - {item.Description}",
                     Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }
@@ -152,7 +152,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    MachineList = routeMachines[item.Id].ToDictionary(x => x, x => machines[x])
+                    MachineList = routeMachines[item.Id].Distinct().ToDictionary(x => x, x => machines[x])
                 };
             }
             return output;
@@ -161,7 +161,7 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<string, ProductionPlanDictionaryModel>> GetProductionPlan(IDictionary<int, ProductDictionaryModel> products)
         {
             var output = new Dictionary<string, ProductionPlanDictionaryModel>();
-            var dbModel = await _productionPlanRepository.AllAsync();
+            var dbModel = await _productionPlanRepository.WhereAsync(x=>x.IsActive == true && x.Product.IsActive == true);
             foreach (var item in dbModel)
             {
                 output[item.PlanId] = new ProductionPlanDictionaryModel

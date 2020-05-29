@@ -20,8 +20,8 @@ namespace CIM.Domain.Models
         public int ProductTypeId { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
-        public decimal? Igweight { get; set; }
-        public decimal? Pmweight { get; set; }
+        public decimal? IGweight { get; set; }
+        public decimal? PMweight { get; set; }
         public decimal? WeightPerUom { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }

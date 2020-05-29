@@ -273,12 +273,29 @@ namespace CIM.API.Controllers
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId="")
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId = "")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
                 output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlan/GetActiveRoutes")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<int>>> GetActiveRoutes(string planId)
+        {
+            var output = new ProcessReponseModel<List<int>>();
+            try
+            {
+                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select( x=>x.Key).ToList();
                 output.IsSuccess = true;
             }
             catch (Exception ex)

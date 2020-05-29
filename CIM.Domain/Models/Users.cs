@@ -12,7 +12,6 @@ namespace CIM.Domain.Models
             RecordActiveProductionPlan = new HashSet<RecordActiveProductionPlan>();
             RecordMachineComponentLossCreatedByNavigation = new HashSet<RecordMachineComponentLoss>();
             RecordMachineComponentLossUpdatedByNavigation = new HashSet<RecordMachineComponentLoss>();
-            RecordMachineStatus = new HashSet<RecordMachineStatus>();
             RecordManufacturingLossCreatedByNavigation = new HashSet<RecordManufacturingLoss>();
             RecordManufacturingLossUpdatedByNavigation = new HashSet<RecordManufacturingLoss>();
             SitesUsers = new HashSet<SitesUsers>();
@@ -40,7 +39,6 @@ namespace CIM.Domain.Models
         public virtual ICollection<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLossCreatedByNavigation { get; set; }
         public virtual ICollection<RecordMachineComponentLoss> RecordMachineComponentLossUpdatedByNavigation { get; set; }
-        public virtual ICollection<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLossCreatedByNavigation { get; set; }
         public virtual ICollection<RecordManufacturingLoss> RecordManufacturingLossUpdatedByNavigation { get; set; }
         public virtual ICollection<SitesUsers> SitesUsers { get; set; }

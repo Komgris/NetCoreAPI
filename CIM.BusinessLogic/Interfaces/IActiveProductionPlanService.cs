@@ -16,6 +16,8 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlanModel> Finish(string planId, int route);
         Task<ActiveProductionPlanModel> Pause(string planId, int route,int lossLevel3);
         Task<ActiveProductionPlanModel> Resume(string planId, int route);
+        Task<ActiveProductionPlanModel> UpdateByMachine(int id, int statusId, bool isAuto);
+
     }
 
 }

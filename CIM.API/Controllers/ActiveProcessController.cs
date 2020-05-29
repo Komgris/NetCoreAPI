@@ -32,7 +32,6 @@ namespace CIM.API.Controllers
             _hub = hub;
             _productionPlanService = productionPlanService;
             _activeProductionPlanService = activeProductionPlanService;
-
         }
 
         public IActionResult Get()
@@ -49,7 +48,7 @@ namespace CIM.API.Controllers
 
             try
             {
-                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); ;
+                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); 
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
             }
