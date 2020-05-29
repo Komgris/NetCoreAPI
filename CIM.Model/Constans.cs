@@ -90,11 +90,11 @@ namespace CIM.Model
         }
         public enum DashboardType {
             All,
-            KPI,
-            Output,
-            Waste,
-            Loss,
-            TimeUtilisation
+            mngKPI,
+            mngOutput,
+            mngWaste,
+            mngLoss,
+            mngTimeUtilisation
         }
 
         public class DashboardConfig {
@@ -105,11 +105,11 @@ namespace CIM.Model
         public static Dictionary<DashboardType, DashboardConfig> Dashboard
             = new Dictionary<DashboardType, DashboardConfig>()
             {
-                { DashboardType.KPI, new DashboardConfig(){Name="KPI",StoreName="sp_dashboard_kpi"} },
-                { DashboardType.Output, new DashboardConfig(){Name="Output",StoreName="sp_dashboard_output"} },
-                { DashboardType.Waste, new DashboardConfig(){Name="Waste",StoreName="sp_dashboard_waste"} },
-                { DashboardType.Loss, new DashboardConfig(){Name="MachineLoss",StoreName="sp_dashboard_machineLoss"} },
-                { DashboardType.TimeUtilisation, new DashboardConfig(){Name="Utilization",StoreName="sp_dashboard_utilization"} },
+                { DashboardType.mngKPI, new DashboardConfig(){Name="Mng-KPI",StoreName="sp_dashboard_kpi"} },
+                { DashboardType.mngOutput, new DashboardConfig(){Name="Mng-Output",StoreName="sp_dashboard_output"} },
+                { DashboardType.mngWaste, new DashboardConfig(){Name="Mng-Waste",StoreName="sp_dashboard_waste"} },
+                { DashboardType.mngLoss, new DashboardConfig(){Name="Mng-MachineLoss",StoreName="sp_dashboard_machineLoss"} },
+                { DashboardType.mngTimeUtilisation, new DashboardConfig(){Name="Mng-Utilization",StoreName="sp_dashboard_utilization"} },
             };
     }
 }

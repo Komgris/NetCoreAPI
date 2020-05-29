@@ -305,7 +305,6 @@ namespace CIM.API.Controllers {
 
         #endregion
 
-
         #region Cim-Mng dashboard
 
         [Route("api/[controller]/GetBoardcastingDashboard")]
@@ -335,25 +334,25 @@ namespace CIM.API.Controllers {
                     switch (updateType)
                     {
                         case DashboardType.All:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngKPI], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngOutput], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngLoss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngTimeUtilisation], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngWaste], type, paramsList));
                             break;
-                        case DashboardType.KPI:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                        case DashboardType.mngKPI:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngKPI], type, paramsList));
                             break;
-                        case DashboardType.Output:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                        case DashboardType.mngOutput:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngOutput], type, paramsList));
                             break;
-                        case DashboardType.Loss:
-                        case DashboardType.TimeUtilisation:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                        case DashboardType.mngLoss:
+                        case DashboardType.mngTimeUtilisation:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngLoss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngTimeUtilisation], type, paramsList));
                             break;
-                        case DashboardType.Waste:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                        case DashboardType.mngWaste:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngWaste], type, paramsList));
                             break;
                     }
 
@@ -395,11 +394,12 @@ namespace CIM.API.Controllers {
                 await _responseCacheService.SetAsync(channelKey, cache);
             }
         }
-
+        
         private async Task<string> GetCached(string channelKey)
         {
             return await _responseCacheService.GetAsync(channelKey);
         }
+        
         private async Task<T> GetCached<T>(string channelKey)
         {
             return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
