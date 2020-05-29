@@ -38,15 +38,61 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task Create(RecordManufacturingLossModel model)
+        public async Task<ActiveProductionPlanModel> Create(RecordManufacturingLossModel model)
         {
+
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId);
-            if (dbModel == null || dbModel.EndAt.HasValue)
+            var now = DateTime.Now;
+            var guid = Guid.NewGuid();
+            // doesn't exist
+            if (dbModel  == null)
             {
                 dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
                 _recordManufacturingLossRepository.Add(dbModel);
-                await _unitOfWork.CommitAsync();
+
             }
+
+            // already exist and created by machine
+            if (dbModel != null && model.IsAuto == false)
+            {
+                //End current loss
+                dbModel.EndAt = now;
+                dbModel.EndBy = CurrentUser.UserId;
+                dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                _recordManufacturingLossRepository.Edit(dbModel);
+
+                //Create new
+                var newDbModel =new RecordManufacturingLoss();
+                newDbModel.Guid = guid.ToString();
+                newDbModel.CreatedBy = CurrentUser.UserId;
+                newDbModel.StartedAt = now;
+                newDbModel.IsAuto = false;
+                newDbModel.MachineId = model.MachineId;
+                newDbModel.ProductionPlanId = model.ProductionPlanId;
+                newDbModel.RouteId = 0;
+                newDbModel.LossLevel3Id = model.LossLevelId;
+                newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
+                newDbModel = await HandleWaste(newDbModel, model, now);
+                _recordManufacturingLossRepository.Add(newDbModel);
+            }
+
+            await _unitOfWork.CommitAsync();
+
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var alert = new AlertModel
+            {
+                CreatedAt = now,
+                ItemId = model.MachineId,
+                ItemStatusId = (int)Constans.AlertStatus.Edited,
+                ItemType = (int)Constans.AlertType.MACHINE,
+                LossLevel3Id = model.LossLevelId,
+                StatusId = Constans.MACHINE_STATUS.Stop,
+                Id = guid,
+            };
+            activeProductionPlan.Alerts.Add(alert);
+            await _activeProductionPlanService.SetCached(activeProductionPlan);
+
+            return activeProductionPlan;
         }
 
         public async Task<RecordManufacturingLossModel> GetByGuid(Guid guid)
@@ -74,6 +120,17 @@ namespace CIM.BusinessLogic.Services
                 dbModel.ComponentId = model.ComponentId;
             }
             _recordManufacturingLossRepository.Edit(dbModel);
+
+            dbModel = await HandleWaste(dbModel, model, now);
+
+            activeProductionPlan.Alerts.First(x => x.Id.ToString() == model.Guid).StatusId = (int)Constans.AlertStatus.Edited;
+            await _unitOfWork.CommitAsync();
+            await _activeProductionPlanService.SetCached(activeProductionPlan);
+            return activeProductionPlan;
+        }
+
+        private async Task<RecordManufacturingLoss> HandleWaste(RecordManufacturingLoss dbModel, RecordManufacturingLossModel model, DateTime now)
+        {
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
             foreach (var item in model.WasteList)
             {
@@ -85,18 +142,15 @@ namespace CIM.BusinessLogic.Services
                     waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
-                waste.RecordManufacturingLossId = dbModel.Id;
+                dbModel.RecordProductionPlanWaste.Add(waste);
                 waste.CreatedAt = now;
                 waste.CreatedBy = CurrentUser.UserId;
                 waste.ProductionPlanId = model.ProductionPlanId;
                 waste.CauseMachineId = model.MachineId;
-                _recordProductionPlanWasteRepository.Add(waste);
 
             }
-            
-            await _unitOfWork.CommitAsync();
-            await _activeProductionPlanService.SetCached(activeProductionPlan);
-            return activeProductionPlan;
+            return dbModel;
+
         }
 
     }

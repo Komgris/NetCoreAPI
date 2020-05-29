@@ -69,41 +69,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            //to do optimize
-            var dbModel = await _machineRepository.Where(x => x.IsActive && x.IsDelete == false &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword) || x.Status.Name.Contains(keyword) || x.MachineType.Name.Contains(keyword)))
-                .Select(
-                    x => new MachineListModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        StatusId = x.StatusId,
-                        Status = x.Status.Name,
-                        MachineTypeId = x.MachineTypeId,
-                        Type = x.MachineType.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-
-            int total = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<MachineListModel>();
-            foreach (var item in dbModel)
-                output.Add(MapperHelper.AsModel(item, new MachineListModel()));
-
-            return new PagingModel<MachineListModel>
-            {
-                HowMany = total,
-                Data = output
-            };
+            var output = await _machineRepository.List(keyword, page, howmany);
+            return output;
         }
 
         public async Task Update(MachineModel model)
