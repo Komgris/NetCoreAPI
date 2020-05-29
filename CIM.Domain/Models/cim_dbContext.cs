@@ -1099,7 +1099,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.Igweight)
+                entity.Property(e => e.IGweight)
                     .HasColumnName("IGWeight")
                     .HasColumnType("decimal(18, 2)");
 
@@ -1109,7 +1109,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
-                entity.Property(e => e.Pmweight)
+                entity.Property(e => e.PMweight)
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 2)");
 
