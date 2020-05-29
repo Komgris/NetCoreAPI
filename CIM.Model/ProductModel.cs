@@ -29,5 +29,6 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public bool IsPlanActive { get; set; }
     }
 }
