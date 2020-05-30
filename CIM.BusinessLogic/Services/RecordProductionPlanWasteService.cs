@@ -1,5 +1,7 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
+using CIM.Domain.Models;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,23 @@ namespace CIM.BusinessLogic.Services
             _recordProductionPlanWasteMaterialRepository = recordProductionPlanWasteMaterialRepository;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
             _unitOfWork = unitOfWork;
+        }
+
+        public async Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model)
+        {
+            var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWaste());
+            dbModel.CreatedAt = DateTime.Now;
+            dbModel.CreatedBy = CurrentUser.UserId;
+
+            foreach (var material in model.Materials)
+            {
+                var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+                dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            }
+
+            _recordProductionPlanWasteRepository.Add(dbModel);
+            await _unitOfWork.CommitAsync();
+            return model;
         }
 
         public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int lossId)
