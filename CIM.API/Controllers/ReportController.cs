@@ -318,6 +318,9 @@ namespace CIM.API.Controllers {
             {
                 await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardType.All, channel);
             }
+
+            var model = JsonConvert.DeserializeObject<BoardcastModel>(cache);
+            cache = JsonConvert.SerializeObject(model, JsonsSetting);
             return cache;
         }
 
@@ -358,7 +361,12 @@ namespace CIM.API.Controllers {
                     }
 
                     if(boardcastData.Dashboards.Count > 0)
-                        HandleBoardcastData(channelKey, boardcastData);//channel: management, operation
+                    {
+                        var cache = JsonConvert.SerializeObject(boardcastData, JsonsSetting);
+                        var model = JsonConvert.DeserializeObject<BoardcastModel>(cache);
+                        SetCached(channelKey, boardcastData);
+                        _hub.Clients.All.SendAsync(channelKey, model);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -375,7 +383,7 @@ namespace CIM.API.Controllers {
                 var dataString = JsonConvert.SerializeObject(model);
 
                 await SetCached(channelKey, model);
-                await _hub.Clients.All.SendAsync(channelKey, dataString);
+                await _hub.Clients.All.SendAsync(channelKey, model);
             }
         }
 
