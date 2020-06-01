@@ -17,19 +17,22 @@ namespace CIM.BusinessLogic.Services
         private readonly IResponseCacheService _responseCacheService;
         private readonly IMachineRepository _machineRepository;
         private readonly IRouteMachineRepository _routeMachineRepository;
+        private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
             IResponseCacheService responseCacheService,
-            IRouteMachineRepository routeMachineRepository
+            IRouteMachineRepository routeMachineRepository,
+            IRecordMachineStatusRepository recordMachineStatusRepository
             )
         {
             _machineRepository = machineRepository;
             _unitOfWork = unitOfWork;
             _responseCacheService = responseCacheService;
             _routeMachineRepository = routeMachineRepository;
+            _recordMachineStatusRepository = recordMachineStatusRepository;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -117,7 +120,8 @@ namespace CIM.BusinessLogic.Services
                         Id = machine.Key,
                         RouteIds = new List<int> { routeId },
                         UserId = CurrentUser.UserId,
-                        StartedAt = DateTime.Now
+                        StartedAt = DateTime.Now,
+                        StatusId = Constans.MACHINE_STATUS.Unknown,
                     };
                 }
                 else
@@ -128,7 +132,15 @@ namespace CIM.BusinessLogic.Services
                     }
                     cachedMachine.RouteIds.Add(routeId);
                 }
+                
+                if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
+                {
+                    var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machine.Key).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+                    if (dbModel != null)
+                        cachedMachine.StatusId = dbModel.MachineStatusId;
+                }
                 cachedMachine.ProductionPlanId = productionPlanId;
+
                 await SetCached(machine.Key, cachedMachine);
                 output.Add(cachedMachine);
             }
