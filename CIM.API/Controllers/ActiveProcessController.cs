@@ -20,7 +20,7 @@ namespace CIM.API.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ActiveProcessController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
+        //private IHubContext<MachineHub> _hub;
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
 
@@ -29,7 +29,7 @@ namespace CIM.API.Controllers
             IActiveProductionPlanService activeProductionPlanService
             )
         {
-            _hub = hub;
+            _hubMachine = hub;
             _productionPlanService = productionPlanService;
             _activeProductionPlanService = activeProductionPlanService;
         }
@@ -75,7 +75,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                    await _hubMachine.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 }
 
                 output.IsSuccess = true;

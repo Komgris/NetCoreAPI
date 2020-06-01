@@ -16,7 +16,7 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ActiveMachineController : BaseController
     {
-        private IResponseCacheService _responseCacheService;
+        //private IResponseCacheService _responseCacheService;
         private IHubContext<MachineHub> _hub;
         private IActiveProductionPlanService _activeProductionPlanService;
 
