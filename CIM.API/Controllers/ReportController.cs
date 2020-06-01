@@ -318,9 +318,7 @@ namespace CIM.API.Controllers {
                 await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardType.All, channel);
             }
 
-            var model = JsonConvert.DeserializeObject<BoardcastModel>(cache);
-            cache = JsonConvert.SerializeObject(model, JsonsSetting);
-            return cache;
+            return CacheForBoardcaste<BoardcastModel>(cache);
         }
 
         [Route("api/[controller]/BoardcastingDashboard")]
@@ -361,10 +359,7 @@ namespace CIM.API.Controllers {
 
                     if(boardcastData.Dashboards.Count > 0)
                     {
-                        var cache = JsonConvert.SerializeObject(boardcastData, JsonsSetting);
-                        var model = JsonConvert.DeserializeObject<BoardcastModel>(cache);
-                        SetCached(channelKey, boardcastData);
-                        _hub.Clients.All.SendAsync(channelKey, model);
+                        HandleBoardcastData(channelKey, boardcastData);
                     }
                 }
                 catch (Exception ex)
@@ -375,14 +370,12 @@ namespace CIM.API.Controllers {
             });
         }
 
-        private async Task HandleBoardcastData(string channelKey, BoardcastModel model)
+        private async Task HandleBoardcastData(string channelKey, BoardcastModel boardcastData)
         {
-            if (model != null)
+            if (boardcastData != null)
             {
-                var dataString = JsonConvert.SerializeObject(model);
-
-                await SetCached(channelKey, model);
-                await _hub.Clients.All.SendAsync(channelKey, model);
+                await SetCached(channelKey, boardcastData);
+                await _hub.Clients.All.SendAsync(channelKey, ObjectForBoardcast<BoardcastModel>(boardcastData));
             }
         }
 
@@ -411,6 +404,18 @@ namespace CIM.API.Controllers {
         private async Task<T> GetCached<T>(string channelKey)
         {
             return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
+        }
+
+        private T ObjectForBoardcast<T>(object obj)
+        {
+            var dataString = JsonConvert.SerializeObject(obj, JsonsSetting);
+            return JsonConvert.DeserializeObject<T>(dataString);
+        }
+
+        private string CacheForBoardcaste<T>(string cache)
+        {
+            var model = JsonConvert.DeserializeObject<T>(cache);
+            return JsonConvert.SerializeObject(model, JsonsSetting);
         }
 
         #endregion
