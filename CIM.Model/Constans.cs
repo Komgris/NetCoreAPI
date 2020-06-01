@@ -37,6 +37,7 @@ namespace CIM.Model
         }
 
         public static class MACHINE_STATUS {
+            public const int Unknown = 0;
             public const int Idle = 1;
             public const int Running = 2;
             public const int Stop = 3;

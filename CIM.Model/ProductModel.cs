@@ -20,8 +20,8 @@ namespace CIM.Model
         public string ProductType { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
-        public decimal? Igweight { get; set; }
-        public decimal? Pmweight { get; set; }
+        public decimal? IGWeight { get; set; }
+        public decimal? PMWeight { get; set; }
         public decimal? WeightPerUom { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
@@ -29,5 +29,6 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public bool IsPlanActive { get; set; }
     }
 }

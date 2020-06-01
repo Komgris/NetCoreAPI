@@ -6,6 +6,7 @@ namespace CIM.Model
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? EndAt { get; set; }
         public int ItemType { get; set; }
         public int ItemId { get; set; }
         public int ItemStatusId { get; set; }

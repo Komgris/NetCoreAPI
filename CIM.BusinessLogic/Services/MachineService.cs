@@ -17,19 +17,22 @@ namespace CIM.BusinessLogic.Services
         private readonly IResponseCacheService _responseCacheService;
         private readonly IMachineRepository _machineRepository;
         private readonly IRouteMachineRepository _routeMachineRepository;
+        private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
             IResponseCacheService responseCacheService,
-            IRouteMachineRepository routeMachineRepository
+            IRouteMachineRepository routeMachineRepository,
+            IRecordMachineStatusRepository recordMachineStatusRepository
             )
         {
             _machineRepository = machineRepository;
             _unitOfWork = unitOfWork;
             _responseCacheService = responseCacheService;
             _routeMachineRepository = routeMachineRepository;
+            _recordMachineStatusRepository = recordMachineStatusRepository;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -69,41 +72,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            //to do optimize
-            var dbModel = await _machineRepository.Where(x => x.IsActive && x.IsDelete == false &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword) || x.Status.Name.Contains(keyword) || x.MachineType.Name.Contains(keyword)))
-                .Select(
-                    x => new MachineListModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        StatusId = x.StatusId,
-                        Status = x.Status.Name,
-                        MachineTypeId = x.MachineTypeId,
-                        Type = x.MachineType.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-
-            int total = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<MachineListModel>();
-            foreach (var item in dbModel)
-                output.Add(MapperHelper.AsModel(item, new MachineListModel()));
-
-            return new PagingModel<MachineListModel>
-            {
-                HowMany = total,
-                Data = output
-            };
+            var output = await _machineRepository.List(keyword, page, howmany);
+            return output;
         }
 
         public async Task Update(MachineModel model)
@@ -150,7 +120,8 @@ namespace CIM.BusinessLogic.Services
                         Id = machine.Key,
                         RouteIds = new List<int> { routeId },
                         UserId = CurrentUser.UserId,
-                        StartedAt = DateTime.Now
+                        StartedAt = DateTime.Now,
+                        StatusId = Constans.MACHINE_STATUS.Unknown,
                     };
                 }
                 else
@@ -161,7 +132,15 @@ namespace CIM.BusinessLogic.Services
                     }
                     cachedMachine.RouteIds.Add(routeId);
                 }
+                
+                if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
+                {
+                    var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machine.Key).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+                    if (dbModel != null)
+                        cachedMachine.StatusId = dbModel.MachineStatusId;
+                }
                 cachedMachine.ProductionPlanId = productionPlanId;
+
                 await SetCached(machine.Key, cachedMachine);
                 output.Add(cachedMachine);
             }
