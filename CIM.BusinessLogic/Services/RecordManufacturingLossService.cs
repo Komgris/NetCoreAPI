@@ -44,7 +44,6 @@ namespace CIM.BusinessLogic.Services
 
         private async Task NewRecordManufacturingLoss(RecordManufacturingLossModel model, DateTime now, string guid)
         {
-
             var newDbModel = new RecordManufacturingLoss();
             newDbModel.Guid = guid;
             newDbModel.CreatedBy = CurrentUser.UserId;
@@ -119,6 +118,12 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
 
             var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var alert = activeProductionPlan.Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+            if (alert != null)
+            {
+                alert.EndAt = now;
+                alert.StatusId = (int)Constans.AlertStatus.Edited;
+            }
             return await UpdateActiveProductionPlanMachine(dbModel.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
 
         }
