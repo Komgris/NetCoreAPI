@@ -47,6 +47,26 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpPost]
+        [Route("api/[controller]/End")]
+        public async Task<ProcessReponseModel<object>> End(RecordManufacturingLossModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _recordManufacturingLossService.End(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
         [HttpPut]
         [Route("api/[controller]/Update")]
         public async Task<ProcessReponseModel<object>> Update(RecordManufacturingLossModel model)
