@@ -40,27 +40,6 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<List<ProductModel>> Get()
-        {
-            var query = _entities.Product;
-            var data = await query
-                .Select(x => new ProductModel
-                {
-                    Code = x.Code,
-                    Description = x.Description,
-                    BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                    ProductFamilyId = x.ProductFamilyId,
-                    ProductGroupId = x.ProductGroupId,
-                    ProductTypeId = x.ProductTypeId,
-                    PackingMedium = x.PackingMedium,
-                    Igweight = x.Igweight,
-                    Pmweight = x.Pmweight,
-                    WeightPerUom = x.WeightPerUom,
-
-                }).ToListAsync();
-            return data;
-        }
-
         public async Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM)
         {
 
