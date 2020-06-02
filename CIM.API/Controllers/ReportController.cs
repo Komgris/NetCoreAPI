@@ -17,7 +17,6 @@ namespace CIM.API.Controllers {
     public class ReportController : BaseController {
 
         private IReportService _service;
-        //private IResponseCacheService _responseCacheService;
 
         public ReportController(
             IResponseCacheService responseCacheService,
@@ -385,25 +384,25 @@ namespace CIM.API.Controllers {
                     switch (updateType)
                     {
                         case DashboardType.All:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngKPI], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngOutput], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngLoss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngTimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngWaste], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
                             break;
-                        case DashboardType.mngKPI:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngKPI], type, paramsList));
+                        case DashboardType.KPI:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
                             break;
-                        case DashboardType.mngOutput:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngOutput], type, paramsList));
+                        case DashboardType.Output:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
                             break;
-                        case DashboardType.mngLoss:
-                        case DashboardType.mngTimeUtilisation:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngLoss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngTimeUtilisation], type, paramsList));
+                        case DashboardType.Loss:
+                        case DashboardType.TimeUtilisation:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
                             break;
-                        case DashboardType.mngWaste:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.mngWaste], type, paramsList));
+                        case DashboardType.Waste:
+                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
                             break;
                     }
 
