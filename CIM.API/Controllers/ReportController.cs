@@ -21,10 +21,10 @@ namespace CIM.API.Controllers {
 
         public ReportController(
             IResponseCacheService responseCacheService,
-            IHubContext<DashboardHub> hub,
+            IHubContext<GlobalHub> hub,
             IReportService reportService) 
         {
-            _hubDashboard = hub;
+            _hub = hub;
             _responseCacheService = responseCacheService;
             _service = reportService;
         }

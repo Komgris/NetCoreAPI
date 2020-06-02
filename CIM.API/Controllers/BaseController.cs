@@ -11,8 +11,7 @@ namespace CIM.API.Controllers
 {
     public class BaseController : ControllerBase {
 
-        internal IHubContext<DashboardHub> _hubDashboard;
-        internal IHubContext<MachineHub> _hubMachine;
+        internal IHubContext<GlobalHub> _hub;
         internal IResponseCacheService _responseCacheService;
 
         public JsonSerializerSettings JsonsSetting = new JsonSerializerSettings
@@ -22,7 +21,7 @@ namespace CIM.API.Controllers
 
         internal async Task BoardcastingDashboard<T>(string channel,object data)
         {
-            await _hubDashboard.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
+            await _hub.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
         }
 
         internal T ObjectForBoardcast<T>(object obj)

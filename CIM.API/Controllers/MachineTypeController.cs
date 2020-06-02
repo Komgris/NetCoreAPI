@@ -14,12 +14,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineTypeController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
-        private IResponseCacheService _responseCacheService;
         private IMachineTypeService _machineTypeService;
 
         public MachineTypeController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IMachineTypeService machineTypeService
         )
