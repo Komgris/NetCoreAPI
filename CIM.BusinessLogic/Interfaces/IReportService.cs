@@ -26,8 +26,8 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetActiveMachineEvents(string planId, int routeId);
         Dictionary<string, int> GetActiveProductionPlanOutput();
         PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null);
-        BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardTimeFrame type, Dictionary<string, object> paramsList);
-        Task<BoardcastModel> GenerateBoardcastData(DashboardTimeFrame type, DashboardType updateType);
+        Task<BoardcastModel> GenerateBoardcastManagementData(DashboardDataFrame type, DashboardType updateType);
+        Task<BoardcastModel> GenerateBoardcastOperationData(DashboardDataFrame type, DashboardType updateType);
     }
 
 }

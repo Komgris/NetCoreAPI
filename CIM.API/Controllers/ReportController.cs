@@ -364,7 +364,7 @@ namespace CIM.API.Controllers {
             var cache = await GetCached(channelKey);
             if (cache is null)
             {
-                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardType.All, channel);
+                await BoardcastingDashboard(DashboardDataFrame.Default, DashboardType.All, channel);
             }
 
             return CacheForBoardcast<BoardcastModel>(cache);
@@ -372,10 +372,10 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardType updateType, string channel)
+        public async Task BoardcastingDashboard(DashboardDataFrame type, DashboardType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = await _service.GenerateBoardcastData(type, updateType);
+            var boardcastData = await _service.GenerateBoardcastManagementData(type, updateType);
             if (boardcastData.Dashboards.Count > 0)
             {
                 await HandleBoardcastData(channelKey, boardcastData);

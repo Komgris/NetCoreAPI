@@ -253,9 +253,55 @@ namespace CIM.BusinessLogic.Services {
         }
         #endregion
 
-        #region Cim-Mng dashboard
+        #region Cim-Oper boardcast data
+        public async Task<BoardcastModel> GenerateBoardcastOperationData(DashboardDataFrame type, DashboardType updateType, string productionPlan, int routeId)
+        {
+            var boardcastData = new BoardcastModel(type);
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                    switch (updateType)
+                    {
+                        case DashboardType.All:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            break;
+                        case DashboardType.KPI:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            break;
+                        case DashboardType.Output:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            break;
+                        case DashboardType.Loss:
+                        case DashboardType.TimeUtilisation:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            break;
+                        case DashboardType.Waste:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            break;
+                    }
 
-        public async Task<BoardcastModel> GenerateBoardcastData(DashboardTimeFrame type, DashboardType updateType)
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+
+                return boardcastData;
+            }
+
+        #endregion
+
+        #region Cim-Mng boardcast data
+
+        public async Task<BoardcastModel> GenerateBoardcastManagementData(DashboardDataFrame type, DashboardType updateType)
         {
             var boardcastData = new BoardcastModel(type);
             return await Task.Run(() =>
@@ -299,7 +345,7 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        public BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardTimeFrame type, Dictionary<string, object> paramsList)
+        private BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardDataFrame type, Dictionary<string, object> paramsList)
         {
             var dashboarddata = new BoardcastDataModel();
             try

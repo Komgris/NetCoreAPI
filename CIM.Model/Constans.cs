@@ -82,12 +82,13 @@ namespace CIM.Model
 
         }
 
-        public enum DashboardTimeFrame {
+        public enum DashboardDataFrame {
             Default,
             Daily,
             Weekly,
             Monthly,
-            Yearly
+            Yearly,
+            ProductionActive
         }
         public enum DashboardType {
             All,

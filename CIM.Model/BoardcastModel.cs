@@ -8,11 +8,11 @@ namespace CIM.Model {
     public class BoardcastModel {
         public BoardcastModel()
         {}
-        public BoardcastModel(DashboardTimeFrame type)
+        public BoardcastModel(DashboardDataFrame type)
         {
             Type = type;
         }
-        public DashboardTimeFrame Type { get; set; }
+        public DashboardDataFrame Type { get; set; }
         public List<BoardcastDataModel> Dashboards { get; private set; } = new List<BoardcastDataModel>();
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
