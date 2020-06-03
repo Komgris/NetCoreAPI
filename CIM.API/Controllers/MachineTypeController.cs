@@ -14,12 +14,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineTypeController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
-        private IResponseCacheService _responseCacheService;
         private IMachineTypeService _machineTypeService;
 
         public MachineTypeController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IMachineTypeService machineTypeService
         )
@@ -70,8 +68,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MachineTypeModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 output.Data = await _machineTypeService.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
@@ -89,8 +85,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTypeModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 output.Data = await _machineTypeService.Get(id);
                 output.IsSuccess = true;
             }

@@ -20,11 +20,10 @@ namespace CIM.API.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ActiveProcessController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
 
-        public ActiveProcessController(IHubContext<MachineHub> hub,
+        public ActiveProcessController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
             )
@@ -87,7 +86,6 @@ namespace CIM.API.Controllers
 
             return output;
         }
-
 
     }
 }
