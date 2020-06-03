@@ -64,12 +64,12 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany,bool isActive)
         {
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = await _componentTypeRepository.Where(x => x.IsActive && x.IsDelete == false &
+            var dbModel = await _componentTypeRepository.Where(x => x.IsActive == isActive &
                 string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
                 .Select(
                     x => new ComponentTypeModel
