@@ -351,11 +351,11 @@ namespace CIM.BusinessLogic.Services {
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.Data = _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList);
+                dashboarddata.JsonData = JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
             }
             catch (Exception ex)
             {
-                dashboarddata.Data = null;
+                dashboarddata.JsonData = null;
                 dashboarddata.IsSuccess = false;
                 dashboarddata.Message = ex.Message;
             }
