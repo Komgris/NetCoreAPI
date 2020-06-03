@@ -375,48 +375,11 @@ namespace CIM.API.Controllers {
         public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = new BoardcastModel(type);
-            await Task.Run(() =>
+            var boardcastData = await _service.GenerateBoardcastData(type, updateType);
+            if (boardcastData.Dashboards.Count > 0)
             {
-                try
-                {
-                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                    switch (updateType)
-                    {
-                        case DashboardType.All:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                        case DashboardType.KPI:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            break;
-                        case DashboardType.Output:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            break;
-                        case DashboardType.Loss:
-                        case DashboardType.TimeUtilisation:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            break;
-                        case DashboardType.Waste:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                    }
-
-                    if (boardcastData.Dashboards.Count > 0)
-                    {
-                        HandleBoardcastData(channelKey, boardcastData);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    boardcastData.IsSuccess = false;
-                    boardcastData.Message = ex.Message;
-                }
-            });
+                await HandleBoardcastData(channelKey, boardcastData);
+            }
         }
 
         private async Task HandleBoardcastData(string channelKey, BoardcastModel boardcastData)

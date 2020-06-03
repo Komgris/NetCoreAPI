@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services {
@@ -253,6 +254,50 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region Cim-Mng dashboard
+
+        public async Task<BoardcastModel> GenerateBoardcastData(DashboardTimeFrame type, DashboardType updateType)
+        {
+            var boardcastData = new BoardcastModel(type);
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
+                    switch (updateType)
+                    {
+                        case DashboardType.All:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            break;
+                        case DashboardType.KPI:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
+                            break;
+                        case DashboardType.Output:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
+                            break;
+                        case DashboardType.Loss:
+                        case DashboardType.TimeUtilisation:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
+                            break;
+                        case DashboardType.Waste:
+                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            break;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+
+                return boardcastData;
+            });
+        }
 
         public BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardTimeFrame type, Dictionary<string, object> paramsList)
         {
