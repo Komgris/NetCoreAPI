@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using static CIM.Model.Constans;
@@ -28,7 +29,7 @@ namespace CIM.Model {
     public class BoardcastDataModel {
         public string Name { get; set; }
         public DateTime LastUpdate { get; set; } = DateTime.Now;
-        public object Data { get; set; }
+        public string JsonData { get; set; }
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
     }
