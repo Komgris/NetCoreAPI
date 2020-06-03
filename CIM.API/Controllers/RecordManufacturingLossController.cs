@@ -15,11 +15,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordManufacturingLossController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public RecordManufacturingLossController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IRecordManufacturingLossService recordManufacturingLossService
             )
         {

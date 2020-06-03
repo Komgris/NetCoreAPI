@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.API.HubConfig
 {
-    public class DashboardHub : Hub
-    {
-        public async Task BroadcastDashboardHub(List<MachineCacheModel> data) => await Clients.All.SendAsync("broadcastdashboarddata", data);
-
-    }
+    //public class DashboardHub : Hub {
+    //    public async Task BroadcastDashboardHub(List<MachineCacheModel> data) => await Clients.All.SendAsync("broadcastdashboarddata", data);
+    //}
 }

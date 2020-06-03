@@ -22,11 +22,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductionPlanController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
             )
