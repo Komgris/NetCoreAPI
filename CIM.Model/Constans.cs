@@ -82,13 +82,12 @@ namespace CIM.Model
 
         }
 
-        public enum DashboardDataFrame {
+        public enum DataFrame {
             Default,
             Daily,
             Weekly,
             Monthly,
-            Yearly,
-            ProductionActive
+            Yearly
         }
         public enum DashboardType {
             All,
@@ -96,22 +95,31 @@ namespace CIM.Model
             Output,
             Waste,
             Loss,
-            TimeUtilisation
+            TimeUtilisation,
+            ProductionEvent,
+            Operator,
+            Machine
         }
 
         public class DashboardConfig {
             public string Name { get; set; }
             public string StoreName { get; set; }
+            public DashboardConfig(){}
+            public DashboardConfig(string name,string storeName)
+            {
+                Name = name;
+                StoreName = storeName;
+            }
         }
 
         public static Dictionary<DashboardType, DashboardConfig> Dashboard
             = new Dictionary<DashboardType, DashboardConfig>()
             {
-                { DashboardType.KPI, new DashboardConfig(){Name="KPI",StoreName="sp_dashboard_kpi"} },
-                { DashboardType.Output, new DashboardConfig(){Name="Output",StoreName="sp_dashboard_output"} },
-                { DashboardType.Waste, new DashboardConfig(){Name="Waste",StoreName="sp_dashboard_waste"} },
-                { DashboardType.Loss, new DashboardConfig(){Name="MachineLoss",StoreName="sp_dashboard_machineLoss"} },
-                { DashboardType.TimeUtilisation, new DashboardConfig(){Name="Utilization",StoreName="sp_dashboard_utilization"} },
+                { DashboardType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},
+                { DashboardType.Output, new DashboardConfig("Output","sp_dashboard_output")},
+                { DashboardType.Waste, new DashboardConfig("Waste","sp_dashboard_waste")},
+                { DashboardType.Loss, new DashboardConfig("MachineLoss","sp_dashboard_machineLoss")},
+                { DashboardType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
             };
     }
 }

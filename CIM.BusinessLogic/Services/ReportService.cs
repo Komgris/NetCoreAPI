@@ -213,7 +213,7 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region Cim-oper mc status
-        
+
         public DataTable GetActiveMachineInfo(string planId, int routeId) {
 
             var paramsList = new Dictionary<string, object>() {
@@ -223,6 +223,7 @@ namespace CIM.BusinessLogic.Services {
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineinfo", paramsList);
         }
+        
         public DataTable GetActiveMachineEvents(string planId, int routeId) {
 
             var paramsList = new Dictionary<string, object>() {
@@ -251,89 +252,38 @@ namespace CIM.BusinessLogic.Services {
 
             return pagingmodel;
         }
+        
         #endregion
 
         #region Cim-Oper boardcast data
-        public async Task<BoardcastModel> GenerateBoardcastOperationData(DashboardDataFrame type, DashboardType updateType, string productionPlan, int routeId)
+        public async Task<BoardcastModel> GenerateBoardcastOperationData(DashboardType updateType, string productionPlan, int routeId)
         {
-            var boardcastData = new BoardcastModel(type);
+            var boardcastData = new BoardcastModel();
+            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", productionPlan } };
             return await Task.Run(() =>
             {
                 try
                 {
-                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
                     switch (updateType)
                     {
                         case DashboardType.All:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
                             break;
                         case DashboardType.KPI:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
                             break;
                         case DashboardType.Output:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
                             break;
                         case DashboardType.Loss:
                         case DashboardType.TimeUtilisation:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
                             break;
                         case DashboardType.Waste:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
+                            break;
+                        case DashboardType.ProductionEvent:
+                            break;
+                        case DashboardType.Operator:
+                            break;
+                        case DashboardType.Machine:
                             break;
                     }
-
-                }
-                catch (Exception ex)
-                {
-                    boardcastData.IsSuccess = false;
-                    boardcastData.Message = ex.Message;
-                }
-
-                return boardcastData;
-            }
-
-        #endregion
-
-        #region Cim-Mng boardcast data
-
-        public async Task<BoardcastModel> GenerateBoardcastManagementData(DashboardDataFrame type, DashboardType updateType)
-        {
-            var boardcastData = new BoardcastModel(type);
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                    switch (updateType)
-                    {
-                        case DashboardType.All:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                        case DashboardType.KPI:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            break;
-                        case DashboardType.Output:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            break;
-                        case DashboardType.Loss:
-                        case DashboardType.TimeUtilisation:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            break;
-                        case DashboardType.Waste:
-                            boardcastData.SetDashboard(GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                    }
-
                 }
                 catch (Exception ex)
                 {
@@ -344,14 +294,84 @@ namespace CIM.BusinessLogic.Services {
                 return boardcastData;
             });
         }
+        #endregion
 
-        private BoardcastDataModel GetDashboardData(DashboardConfig dashboardConfig, DashboardDataFrame type, Dictionary<string, object> paramsList)
+        #region Cim-Mng boardcast data
+
+        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, DashboardType updateType)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case DashboardType.All:
+                                boardcastData = GenerateBoardcastData(
+                                                                new []{ DashboardType.KPI
+                                                                , DashboardType.Output
+                                                                , DashboardType.Loss
+                                                                , DashboardType.TimeUtilisation
+                                                                , DashboardType.Waste}
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                            case DashboardType.KPI:
+                                boardcastData = GenerateBoardcastData(
+                                                                new[]{ DashboardType.KPI}
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                            case DashboardType.Output:
+                                boardcastData = GenerateBoardcastData(
+                                                                new[] { DashboardType.Output }
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                            case DashboardType.Loss:
+                            case DashboardType.TimeUtilisation:
+                                boardcastData = GenerateBoardcastData(
+                                                                new[] { DashboardType.Loss
+                                                                , DashboardType.TimeUtilisation}
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                            case DashboardType.Waste:
+                                boardcastData = GenerateBoardcastData(
+                                                                new[] { DashboardType.Waste }
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        boardcastData.IsSuccess = false;
+                        boardcastData.Message = ex.Message;
+                    }
+
+                    return boardcastData;
+            });
+        }
+
+        private BoardcastModel GenerateBoardcastData(DashboardType[] dashboardType, DataFrame timeFrame, DashboardType updateType, Dictionary<string, object> paramsList)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            foreach (var db in dashboardType)
+            {
+                boardcastData.SetData(
+                                        GetData(Dashboard[DashboardType.Output]
+                                        , timeFrame, paramsList));
+            }
+            return boardcastData;
+        }
+
+        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
             var dashboarddata = new BoardcastDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
             }
             catch (Exception ex)
             {
@@ -363,6 +383,8 @@ namespace CIM.BusinessLogic.Services {
         }
 
         #endregion
-    
+
+        
+
     }
 }
