@@ -16,7 +16,7 @@ namespace CIM.API.IntegrationTests.Helper
             {
                 Code = code,
                 Description = "Test description",
-                BriteItemPerUpcitem = "Ingredient",
+                BriteItemPerUPCItem = "Ingredient",
                 ProductFamilyId = 1,
                 ProductGroupId = 2,
                 ProductTypeId = 3,
@@ -36,7 +36,7 @@ namespace CIM.API.IntegrationTests.Helper
             model.Id.Should().Be(expected.Id);
             model.Code.Should().Be(expected.Code);
             model.Description.Should().Be(expected.Description);
-            model.BriteItemPerUpcitem.Should().Be(expected.BriteItemPerUpcitem);
+            model.BriteItemPerUPCItem.Should().Be(expected.BriteItemPerUPCItem);
             model.ProductFamilyId.Should().Be(expected.ProductFamilyId);
             model.ProductGroupId.Should().Be(expected.ProductGroupId);
             model.ProductTypeId.Should().Be(expected.ProductTypeId);
