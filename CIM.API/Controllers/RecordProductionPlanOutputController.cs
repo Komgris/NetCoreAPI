@@ -34,7 +34,7 @@ namespace CIM.API.Controllers
         {
             var storeData = listData;
             var hour = DateTime.Now.Hour;
-            // Production plan of this component doesn't started yet
+
             if (storeData != null)
             {
                 var Status = await _recordProductionPlanOutputService.UpdateMachineProduceCounter(storeData, hour);

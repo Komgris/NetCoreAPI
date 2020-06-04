@@ -7,7 +7,7 @@ namespace CIM.Model
     public class MachineProduceCounterModel
     {
         public int MachineId { get; set; }
-        public double CounterIn { get; set; }
-        public double CounterOut { get; set; }
+        public int CounterIn { get; set; }
+        public int CounterOut { get; set; }
     }
 }

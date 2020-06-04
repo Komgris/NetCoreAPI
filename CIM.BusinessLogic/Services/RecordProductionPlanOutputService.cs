@@ -17,25 +17,16 @@ namespace CIM.BusinessLogic.Services
     public class RecordProductionPlanOutputService : BaseService, IRecordProductionPlanOutputService
     {
         private IResponseCacheService _responseCacheService;
-        private IMasterDataService _masterDataService;
-        private IDirectSqlRepository _directSqlRepository;
-        private IMachineService _machineService;
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordProductionPlanOutputService(
             IResponseCacheService responseCacheService,
-            IMasterDataService masterDataService,
-            IDirectSqlRepository directSqlRepository,
-            IMachineService machineService,
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
             _responseCacheService = responseCacheService;
-            _masterDataService = masterDataService;
-            _directSqlRepository = directSqlRepository;
-            _machineService = machineService;
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _unitOfWork = unitOfWork;
         }
