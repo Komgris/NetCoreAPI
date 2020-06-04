@@ -94,8 +94,6 @@ namespace CIM.BusinessLogic.Services
             var db_model = MapperHelper.AsModel(data, new ComponentType());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.IsDelete = false;
             _componentTypeRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }
@@ -124,7 +122,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id );
         }
     }
 }
