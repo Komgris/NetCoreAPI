@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IProductRepository: IRepository<Product>
     {
-        Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howmany);
+        Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howmany, bool isActive);
         Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM);
     }
 }
