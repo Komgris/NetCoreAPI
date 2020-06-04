@@ -32,9 +32,9 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagingModel<BomModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<BomModel>> List(string keyword, int page, int howmany,bool isActive)
         {
-            var output = await _bomRepository.ListBom(page, howmany, keyword);
+            var output = await _bomRepository.ListBom(page, howmany, keyword, isActive);
             return output;
         }
 
@@ -49,10 +49,13 @@ namespace CIM.BusinessLogic.Services
             DeleteMapping(data[0].BomId);
             foreach (var model in data)
             {
-                var db_model = MapperHelper.AsModel(model, new BomMaterial());
-                db_model.CreatedAt = DateTime.Now;
-                db_model.CreatedBy = CurrentUser.UserId;
-                _bomMaterialRepository.Add(db_model);
+                if (model.MaterialId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new BomMaterial());
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    _bomMaterialRepository.Add(db_model);
+                }
             }
             await _unitOfWork.CommitAsync();
         }
@@ -82,15 +85,13 @@ namespace CIM.BusinessLogic.Services
             var db_model = MapperHelper.AsModel(data, new BomTemp());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.IsDelete = false;
             _bomRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }
 
         public BomModel Get(int id)
         {
-            var db_model = _bomRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false).FirstOrDefault();
+            var db_model = _bomRepository.Where(x => x.Id == id ).FirstOrDefault();
             return MapperHelper.AsModel(db_model, new BomModel());
         }
 

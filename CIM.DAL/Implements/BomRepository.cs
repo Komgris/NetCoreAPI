@@ -34,7 +34,7 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<PagingModel<BomModel>> ListBom(int page, int howmany, string keyword)
+        public async Task<PagingModel<BomModel>> ListBom(int page, int howmany, string keyword, bool isActive)
         {
             return await Task.Run(() =>
             {
@@ -42,7 +42,8 @@ namespace CIM.DAL.Implements
                                         {
                                             {"@keyword", keyword},
                                             {"@howmany", howmany},
-                                            { "@page", page}
+                                            { "@page", page},
+                                            { "@is_active", isActive},
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListBom", parameterList);
