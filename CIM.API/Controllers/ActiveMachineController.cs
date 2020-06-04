@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ActiveMachineController : BaseController
     {
@@ -41,6 +41,20 @@ namespace CIM.API.Controllers
                 await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
             }
             return "OK";
+
+        }
+
+        [HttpPost]
+        public async Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData)
+        {
+            var storeData = listData;
+
+            // Production plan of this component doesn't started yet
+            if (storeData != null)
+            {
+                var Status = await _activeProductionPlanService.UpdateMachineProduceCounter(storeData);
+            }
+            return  new ProcessReponseModel<bool>();
 
         }
     }
