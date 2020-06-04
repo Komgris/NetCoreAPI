@@ -44,18 +44,5 @@ namespace CIM.API.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData)
-        {
-            var storeData = listData;
-
-            // Production plan of this component doesn't started yet
-            if (storeData != null)
-            {
-                var Status = await _activeProductionPlanService.UpdateMachineProduceCounter(storeData);
-            }
-            return  new ProcessReponseModel<bool>();
-
-        }
     }
 }

@@ -390,12 +390,5 @@ namespace CIM.BusinessLogic.Services
             }
             return activeProductionPlan;
         }
-
-        public async Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter(List<MachineProduceCounterModel> listData)
-        {
-
-            return null;
-        }
-
     }
 }
