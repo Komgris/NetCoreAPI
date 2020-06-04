@@ -18,7 +18,7 @@ namespace CIM.API.Controllers
     {
         private IMachineService _service;
         public MachineController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IMachineService service
         )

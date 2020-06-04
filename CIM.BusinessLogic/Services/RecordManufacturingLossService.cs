@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
         private IActiveProductionPlanService _activeProductionPlanService;
+        private IMachineService _machineService;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordManufacturingLossService(
@@ -26,6 +28,7 @@ namespace CIM.BusinessLogic.Services
             IRecordProductionPlanWasteService recordProductionPlanWasteService,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
             IActiveProductionPlanService activeProductionPlanService,
+            IMachineService machineService,
             IUnitOfWorkCIM unitOfWork
             )
         {
@@ -34,26 +37,41 @@ namespace CIM.BusinessLogic.Services
             _recordProductionPlanWasteService = recordProductionPlanWasteService;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
             _activeProductionPlanService = activeProductionPlanService;
+            _machineService = machineService;
             _unitOfWork = unitOfWork;
 
         }
 
+        private async Task NewRecordManufacturingLoss(RecordManufacturingLossModel model, DateTime now, string guid)
+        {
+            var newDbModel = new RecordManufacturingLoss();
+            newDbModel.Guid = guid;
+            newDbModel.CreatedBy = CurrentUser.UserId;
+            newDbModel.StartedAt = now;
+            newDbModel.IsAuto = false;
+            newDbModel.MachineId = model.MachineId;
+            newDbModel.ProductionPlanId = model.ProductionPlanId;
+            newDbModel.RouteId = model.RouteId;
+            newDbModel.LossLevel3Id = model.LossLevelId;
+            newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
+            newDbModel = await HandleWaste(newDbModel, model, now);
+            _recordManufacturingLossRepository.Add(newDbModel);
+        }
+
         public async Task<ActiveProductionPlanModel> Create(RecordManufacturingLossModel model)
         {
-
-            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId);
             var now = DateTime.Now;
             var guid = Guid.NewGuid();
+
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
             // doesn't exist
             if (dbModel  == null)
             {
-                dbModel = MapperHelper.AsModel(model, new RecordManufacturingLoss());
-                _recordManufacturingLossRepository.Add(dbModel);
-
+                await NewRecordManufacturingLoss(model, now, guid.ToString());
             }
 
-            // already exist and created by machine
-            if (dbModel != null && model.IsAuto == false)
+            // already exist and and processing manually
+            if (dbModel != null && model.IsAuto == false )
             {
                 //End current loss
                 dbModel.EndAt = now;
@@ -62,18 +80,7 @@ namespace CIM.BusinessLogic.Services
                 _recordManufacturingLossRepository.Edit(dbModel);
 
                 //Create new
-                var newDbModel =new RecordManufacturingLoss();
-                newDbModel.Guid = guid.ToString();
-                newDbModel.CreatedBy = CurrentUser.UserId;
-                newDbModel.StartedAt = now;
-                newDbModel.IsAuto = false;
-                newDbModel.MachineId = model.MachineId;
-                newDbModel.ProductionPlanId = model.ProductionPlanId;
-                newDbModel.RouteId = 0;
-                newDbModel.LossLevel3Id = model.LossLevelId;
-                newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
-                newDbModel = await HandleWaste(newDbModel, model, now);
-                _recordManufacturingLossRepository.Add(newDbModel);
+                await NewRecordManufacturingLoss(model, now, guid.ToString());
             }
 
             await _unitOfWork.CommitAsync();
@@ -90,8 +97,43 @@ namespace CIM.BusinessLogic.Services
                 Id = guid,
             };
             activeProductionPlan.Alerts.Add(alert);
-            await _activeProductionPlanService.SetCached(activeProductionPlan);
 
+            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); ;
+        }
+
+        public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
+        {
+
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
+            var now = DateTime.Now;
+            if (dbModel == null)
+            {
+                throw new Exception($"Unknow stop record for machine id {model.MachineId}");
+            }
+
+            dbModel.EndAt = now;
+            dbModel.EndBy = CurrentUser.UserId;
+            dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+            _recordManufacturingLossRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
+
+            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var alert = activeProductionPlan.Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+            if (alert != null)
+            {
+                alert.EndAt = now;
+                alert.StatusId = (int)Constans.AlertStatus.Edited;
+            }
+            return await UpdateActiveProductionPlanMachine(dbModel.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
+
+        }
+
+        private async Task<ActiveProductionPlanModel> UpdateActiveProductionPlanMachine(int routeId, int machineId, int status, ActiveProductionPlanModel activeProductionPlan)
+        {
+            var machine = activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId];
+            machine.StatusId = status;
+            await _machineService.SetCached(machineId, machine);
+            await _activeProductionPlanService.SetCached(activeProductionPlan);
             return activeProductionPlan;
         }
 

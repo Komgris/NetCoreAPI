@@ -107,6 +107,15 @@ namespace CIM.BusinessLogic.Services
                         ProductionPlanId = planId,
                     };
 
+                    var routeMachines = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
+                    {
+                        ComponentList = x.Value.ComponentList.ToDictionary(x => x.Id, x => x),
+                        Id = x.Key,
+                        ProductionPlanId = planId,
+                        RouteIds = x.Value.RouteList,
+                    });
+                    var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
+
                     activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
                     {
                         ProductionPlanId = planId,
@@ -115,17 +124,9 @@ namespace CIM.BusinessLogic.Services
                         Route = new ActiveRouteModel
                         {
                             Id = routeId,
-                            MachineList = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
-                            {
-                                ComponentList = x.Value.ComponentList.ToDictionary(x => x.Id, x => x),
-                                Id = x.Key,
-                                ProductionPlanId = planId,
-                                StatusId = x.Value.StatusId,
-                                RouteIds = x.Value.RouteList,
-                            }),
+                            MachineList = activeMachines,
                         }
                     };
-                    var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, activeProductionPlan.ActiveProcesses[routeId].Route.MachineList);
                     var notExistingStoppedMachineRecordIds = await _recordManufacturingLossRepository.GetNotExistingStoppedMachineRecord(activeMachines);
                     foreach (var machineId in notExistingStoppedMachineRecordIds)
                     {
@@ -338,16 +339,22 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
-            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == machineId && x.EndAt == null && x.IsAuto == isAuto && x.RouteId == routeId);
-            if (dbModel == null)
-                throw new Exception("Machine has no stop record");
-
+            var losses = await _recordManufacturingLossRepository.WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId);
             var now = DateTime.Now;
 
-            dbModel.EndAt = now;
-            dbModel.EndBy = CurrentUser.UserId;
-            dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
-            _recordManufacturingLossRepository.Edit(dbModel);
+            foreach (var dbModel in losses)
+            {
+                if (
+                    isAuto == false || //user update manually 
+                    isAuto && dbModel.IsAuto // machine automatic send status
+                    )
+                {
+                    dbModel.EndAt = now;
+                    dbModel.EndBy = CurrentUser.UserId;
+                    dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                    _recordManufacturingLossRepository.Edit(dbModel);
+                } 
+            }
             return activeProductionPlan;
         }
 
