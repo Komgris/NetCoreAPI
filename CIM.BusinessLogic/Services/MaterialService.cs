@@ -93,10 +93,13 @@ namespace CIM.BusinessLogic.Services
             DeleteMapping(data[0].ProductId);
             foreach (var model in data) 
             {
-                var db_model = MapperHelper.AsModel(model, new ProductMaterial());
-                db_model.CreatedAt = DateTime.Now;
-                db_model.CreatedBy = CurrentUser.UserId;
-                _productMaterialRepository.Add(db_model);
+                if (model.MaterialId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new ProductMaterial());
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    _productMaterialRepository.Add(db_model);
+                }
             }
             await _unitOfWork.CommitAsync();
         }
