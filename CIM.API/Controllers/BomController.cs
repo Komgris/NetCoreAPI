@@ -22,12 +22,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/List")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<BomModel>>> List(string keyword = "", int page = 1, int howmany = 10,bool isActive = true)
+        public async Task<ProcessReponseModel<PagingModel<BomModel>>> List(string keyword = "", int page = 1, int howMany = 10,bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<BomModel>>();
             try
             {
-                output.Data = await _bomService.List(keyword, page, howmany, isActive);
+                output.Data = await _bomService.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex) 
@@ -127,12 +127,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Get")]
         [HttpGet]
-        public async Task<ProcessReponseModel<BomModel>> Get(int Id)
+        public async Task<ProcessReponseModel<BomModel>> Get(int id)
         {
             var output = new ProcessReponseModel<BomModel>();
             try
             {
-                output.Data =  _bomService.Get(Id);
+                output.Data =   _bomService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

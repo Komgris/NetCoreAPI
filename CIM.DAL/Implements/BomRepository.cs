@@ -34,14 +34,14 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<PagingModel<BomModel>> ListBom(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<BomModel>> ListBom(int page, int howMany, string keyword, bool isActive)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, object> parameterList = new Dictionary<string, object>()
                                         {
                                             {"@keyword", keyword},
-                                            {"@howmany", howmany},
+                                            {"@howmany", howMany},
                                             { "@page", page},
                                             { "@is_active", isActive},
                                         };
@@ -51,7 +51,7 @@ namespace CIM.DAL.Implements
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                return ToPagingModel(dt.ToModel<BomModel>(), totalCount, page, howmany);
+                return ToPagingModel(dt.ToModel<BomModel>(), totalCount, page, howMany);
             });
         }
     }

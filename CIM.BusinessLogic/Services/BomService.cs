@@ -32,9 +32,9 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagingModel<BomModel>> List(string keyword, int page, int howmany,bool isActive)
+        public async Task<PagingModel<BomModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _bomRepository.ListBom(page, howmany, keyword, isActive);
+            var output = await _bomRepository.ListBom(page, howMany, keyword, isActive);
             return output;
         }
 
