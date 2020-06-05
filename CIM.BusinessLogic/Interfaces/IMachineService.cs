@@ -10,8 +10,8 @@ namespace CIM.BusinessLogic.Interfaces
     {
         List<MachineCacheModel> ListCached();
         Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive);
-        Task Create(MachineModel model);
-        Task Update(MachineModel model);
+        Task Create(MachineListModel model);
+        Task Update(MachineListModel model);
         Task<MachineListModel> Get(int id);
         string CachedKey(int id);
         Task<ActiveMachineModel> GetCached(int id);

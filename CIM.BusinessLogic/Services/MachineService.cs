@@ -40,9 +40,9 @@ namespace CIM.BusinessLogic.Services
             return new List<MachineCacheModel>();
         }
 
-        public async Task Create(MachineModel model)
+        public async Task Create(MachineListModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new Machine());
+            var dbModel = MapperHelper.AsModel(model, new Machine(), new[] { "Status" });
             dbModel.StatusId = Constans.MACHINE_STATUS.Idle;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
@@ -58,9 +58,12 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Name = x.Name,
                             StatusId = x.StatusId,
-                            Status = x.Status.Name,
                             MachineTypeId = x.MachineTypeId,
                             Type = x.MachineType.Name,
+                            StatusTag = x.StatusTag,
+                            CounterInTag = x.CounterInTag,
+                            CounterOutTag = x.CounterOutTag,
+                            CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,
@@ -76,7 +79,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Update(MachineModel model)
+        public async Task Update(MachineListModel model)
         {
             var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id );
             dbModel = MapperHelper.AsModel(model, dbModel);

@@ -28,7 +28,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -48,7 +48,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
