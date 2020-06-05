@@ -68,13 +68,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
 
-                output.Data = await _service.List(keyword, page, howmany);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

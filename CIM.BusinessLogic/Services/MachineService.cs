@@ -67,18 +67,18 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _machineRepository.List(keyword, page, howmany);
+            var output = await _machineRepository.List(keyword, page, howMany, isActive);
             return output;
         }
 
         public async Task Update(MachineModel model)
         {
-            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id );
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
