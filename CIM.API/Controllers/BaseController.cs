@@ -90,17 +90,28 @@ namespace CIM.API.Controllers
             var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, routeId);
             if (boardcastData.Data.Count > 0)
             {
+                await SetBoardcastActiveDataCached(channelKey, routeId, activeModel, boardcastData);
+
                 activeModel.ActiveProcesses[routeId].BoardcastData = boardcastData;
                 await BoardcastClientData<ActiveProductionPlanModel>(channelKey, activeModel);
-                await SetBoardcastActiveDataCached(channelKey, routeId, activeModel, boardcastData);
             }
         }
         internal async Task SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
         {
-            foreach (BoardcastDataModel dashboard in model.Data)
+            var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
+            if(cache is null)
             {
-                activeModel.ActiveProcesses[routeId].BoardcastData.SetData(dashboard);
+                activeModel.ActiveProcesses[routeId].BoardcastData = model;
             }
+            else
+            {
+                foreach (BoardcastDataModel dashboard in model.Data)
+                {
+                    cache.SetData(dashboard);
+                }
+                activeModel.ActiveProcesses[routeId].BoardcastData = cache;
+            }
+
             await _responseCacheService.SetAsync(channelKey, activeModel);
         }
 

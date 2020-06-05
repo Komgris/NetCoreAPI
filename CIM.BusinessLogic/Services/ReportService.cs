@@ -26,7 +26,10 @@ namespace CIM.BusinessLogic.Services {
 
                 { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
                 { BoardcastType.ActiveOutput, new DashboardConfig("Output","sp_report_productionsummary")},
-                { BoardcastType.ActiveWaste, new DashboardConfig("Waste","sp_dashboard_waste")},
+                { BoardcastType.ActiveWasteMat, new DashboardConfig("WastebyMat","sp_report_waste_materials")},
+                { BoardcastType.ActiveWasteCase, new DashboardConfig("WastebyCase","sp_report_waste_cases")},
+                { BoardcastType.ActiveWasteMC, new DashboardConfig("WastebyMC","sp_report_waste_machines")},
+                { BoardcastType.ActiveWasteTime, new DashboardConfig("WastebyTime","sp_report_waste_cost_time")},
                 { BoardcastType.ActiveLoss, new DashboardConfig("MachineLoss","sp_Report_WCMLosses")},
                 { BoardcastType.ActiveTimeUtilisation, new DashboardConfig("Utilization","sp_report_capacity_ultilisation")},
                 { BoardcastType.ActiveProductionEvent, new DashboardConfig("ProductionEvent","sp_report_productionevents")},
@@ -97,6 +100,7 @@ namespace CIM.BusinessLogic.Services {
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_capacity_ultilisation", paramsList);
         }
+        
         #endregion
 
         #region  Cim-Oper Mc-Loss
@@ -292,7 +296,7 @@ namespace CIM.BusinessLogic.Services {
         public async Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
-            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", productionPlan } };
+            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
             return await Task.Run(() =>
             {
                 try
@@ -303,7 +307,10 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveOutput
-                                                                , BoardcastType.ActiveWaste
+                                                                , BoardcastType.ActiveWasteMat
+                                                                , BoardcastType.ActiveWasteCase
+                                                                , BoardcastType.ActiveWasteMC
+                                                                , BoardcastType.ActiveWasteTime
                                                                 , BoardcastType.ActiveLoss
                                                                 , BoardcastType.ActiveTimeUtilisation
                                                                 , BoardcastType.ActiveProductionEvent
@@ -342,7 +349,10 @@ namespace CIM.BusinessLogic.Services {
                         case BoardcastType.ActiveWaste:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveWaste}
+                                                                , BoardcastType.ActiveWasteMat
+                                                                , BoardcastType.ActiveWasteCase
+                                                                , BoardcastType.ActiveWasteMC
+                                                                , BoardcastType.ActiveWasteTime}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
                         case BoardcastType.ActiveProductionEvent:
@@ -440,10 +450,10 @@ namespace CIM.BusinessLogic.Services {
         private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, BoardcastType updateType, Dictionary<string, object> paramsList)
         {
             var boardcastData = new BoardcastModel(timeFrame);
-            foreach (var db in dashboardType)
+            foreach (var dbtype in dashboardType)
             {
                 boardcastData.SetData(
-                                        GetData(DashboardConfig[BoardcastType.Output]
+                                        GetData(DashboardConfig[dbtype]
                                         , timeFrame, paramsList));
             }
             return boardcastData;
