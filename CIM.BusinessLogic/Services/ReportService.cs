@@ -15,6 +15,27 @@ namespace CIM.BusinessLogic.Services {
 
         private IDirectSqlRepository _directSqlRepository;
 
+        private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
+            = new Dictionary<BoardcastType, DashboardConfig>()
+            {
+                { BoardcastType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},
+                { BoardcastType.Output, new DashboardConfig("Output","sp_dashboard_output")},
+                { BoardcastType.Waste, new DashboardConfig("Waste","sp_dashboard_waste")},
+                { BoardcastType.Loss, new DashboardConfig("MachineLoss","sp_dashboard_machineLoss")},
+                { BoardcastType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
+
+                { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
+                { BoardcastType.ActiveOutput, new DashboardConfig("Output","sp_report_productionsummary")},
+                { BoardcastType.ActiveWaste, new DashboardConfig("Waste","sp_dashboard_waste")},
+                { BoardcastType.ActiveLoss, new DashboardConfig("MachineLoss","sp_Report_WCMLosses")},
+                { BoardcastType.ActiveTimeUtilisation, new DashboardConfig("Utilization","sp_report_capacity_ultilisation")},
+                { BoardcastType.ActiveProductionEvent, new DashboardConfig("ProductionEvent","sp_report_productionevents")},
+                { BoardcastType.ActiveOperator, new DashboardConfig("Operator","sp_report_productionoperators")},
+                { BoardcastType.ActiveMachineInfo, new DashboardConfig("MachineInfo","sp_report_active_machineinfo")},
+                { BoardcastType.ActiveMachineSpeed, new DashboardConfig("MachineSpeed","sp_report_machinespeed")},
+                { BoardcastType.ActiveMachineEvent, new DashboardConfig("MachineEvent","sp_report_active_machineevent")},
+            };
+
         public ReportService(IDirectSqlRepository directSqlRepository)
         {
             _directSqlRepository = directSqlRepository;
@@ -256,7 +277,13 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region Cim-Oper boardcast data
-        public async Task<BoardcastModel> GenerateBoardcastOperationData(DashboardType updateType, string productionPlan, int routeId)
+
+        public async Task<ActiveProductionPlanModel> GenerateActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            return null;
+        }
+
+        public async Task<BoardcastModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
             var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", productionPlan } };
@@ -266,22 +293,68 @@ namespace CIM.BusinessLogic.Services {
                 {
                     switch (updateType)
                     {
-                        case DashboardType.All:
+                        case BoardcastType.All:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveWaste
+                                                                , BoardcastType.ActiveLoss
+                                                                , BoardcastType.ActiveTimeUtilisation
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveOperator
+                                                                , BoardcastType.ActiveMachineInfo
+                                                                , BoardcastType.ActiveMachineSpeed
+                                                                , BoardcastType.ActiveMachineEvent}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.KPI:
+                        case BoardcastType.ActiveKPI:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.Output:
+                        case BoardcastType.ActiveOutput:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveMachineSpeed}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.Loss:
-                        case DashboardType.TimeUtilisation:
+                        case BoardcastType.ActiveLoss:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveLoss
+                                                                , BoardcastType.ActiveTimeUtilisation
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveMachineInfo}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.Waste:
+                        case BoardcastType.ActiveTimeUtilisation:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveTimeUtilisation}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.ProductionEvent:
+                        case BoardcastType.ActiveWaste:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveWaste}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.Operator:
+                        case BoardcastType.ActiveProductionEvent:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{BoardcastType.ActiveProductionEvent}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
-                        case DashboardType.Machine:
+                        case BoardcastType.ActiveOperator:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveOperator}
+                                                            , DataFrame.Default, updateType, paramsList);
+                            break;
+                        case BoardcastType.ActiveMachineInfo:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{BoardcastType.ActiveMachineInfo
+                                                                , BoardcastType.ActiveMachineSpeed
+                                                                , BoardcastType.ActiveMachineEvent}
+                                                            , DataFrame.Default, updateType, paramsList);
                             break;
                     }
                 }
@@ -298,7 +371,7 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Mng boardcast data
 
-        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, DashboardType updateType)
+        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
         {
             var boardcastData = new BoardcastModel(timeFrame);
             var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
@@ -308,35 +381,41 @@ namespace CIM.BusinessLogic.Services {
                 {
                     switch (updateType)
                     {
-                        case DashboardType.All:
+                        case BoardcastType.All:
                                 boardcastData = GenerateBoardcastData(
-                                                                new []{ DashboardType.KPI
-                                                                , DashboardType.Output
-                                                                , DashboardType.Loss
-                                                                , DashboardType.TimeUtilisation
-                                                                , DashboardType.Waste}
+                                                                new []{ BoardcastType.KPI
+                                                                , BoardcastType.Output
+                                                                , BoardcastType.Loss
+                                                                , BoardcastType.TimeUtilisation
+                                                                , BoardcastType.Waste}
                                                                 , timeFrame, updateType, paramsList);
                                 break;
-                            case DashboardType.KPI:
+                            case BoardcastType.KPI:
                                 boardcastData = GenerateBoardcastData(
-                                                                new[]{ DashboardType.KPI}
+                                                                new[]{ BoardcastType.KPI}
                                                                 , timeFrame, updateType, paramsList);
                                 break;
-                            case DashboardType.Output:
+                            case BoardcastType.Output:
                                 boardcastData = GenerateBoardcastData(
-                                                                new[] { DashboardType.Output }
+                                                                new[] { BoardcastType.Output
+                                                                    , BoardcastType.KPI}
                                                                 , timeFrame, updateType, paramsList);
                                 break;
-                            case DashboardType.Loss:
-                            case DashboardType.TimeUtilisation:
+                            case BoardcastType.Loss:
                                 boardcastData = GenerateBoardcastData(
-                                                                new[] { DashboardType.Loss
-                                                                , DashboardType.TimeUtilisation}
+                                                                new[] { BoardcastType.Loss
+                                                                    , BoardcastType.KPI
+                                                                    , BoardcastType.TimeUtilisation}
                                                                 , timeFrame, updateType, paramsList);
                                 break;
-                            case DashboardType.Waste:
+                        case BoardcastType.TimeUtilisation:
                                 boardcastData = GenerateBoardcastData(
-                                                                new[] { DashboardType.Waste }
+                                                                new[] { BoardcastType.TimeUtilisation}
+                                                                , timeFrame, updateType, paramsList);
+                                break;
+                            case BoardcastType.Waste:
+                                boardcastData = GenerateBoardcastData(
+                                                                new[] { BoardcastType.Waste }
                                                                 , timeFrame, updateType, paramsList);
                                 break;
                         }
@@ -352,13 +431,13 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        private BoardcastModel GenerateBoardcastData(DashboardType[] dashboardType, DataFrame timeFrame, DashboardType updateType, Dictionary<string, object> paramsList)
+        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, BoardcastType updateType, Dictionary<string, object> paramsList)
         {
             var boardcastData = new BoardcastModel(timeFrame);
             foreach (var db in dashboardType)
             {
                 boardcastData.SetData(
-                                        GetData(Dashboard[DashboardType.Output]
+                                        GetData(DashboardConfig[BoardcastType.Output]
                                         , timeFrame, paramsList));
             }
             return boardcastData;
@@ -384,7 +463,7 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        
+
 
     }
 }

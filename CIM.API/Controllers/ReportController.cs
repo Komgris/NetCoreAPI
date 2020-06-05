@@ -361,18 +361,12 @@ namespace CIM.API.Controllers {
         public async Task<string> GetBoardcastingDashboard(string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var cache = await GetCached(channelKey);
-            if (cache is null)
-            {
-                await BoardcastingDashboard(DataFrame.Default, DashboardType.All, channel);
-            }
-
-            return CacheForBoardcast<BoardcastModel>(cache);
+            return CacheForBoardcast<BoardcastModel>(await GetCached(channelKey));
         }
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DataFrame type, DashboardType updateType, string channel)
+        public async Task BoardcastingDashboard(DataFrame type, BoardcastType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
             var boardcastData = await _service.GenerateBoardcastManagementData(type, updateType);
@@ -382,35 +376,31 @@ namespace CIM.API.Controllers {
             }
         }
 
-        private async Task HandleBoardcastData(string channelKey, BoardcastModel boardcastData)
-        {
-            if (boardcastData != null)
-            {
-                await SetCached(channelKey, boardcastData);
-                await BoardcastingDashboard<BoardcastModel>(channelKey, boardcastData);
-            }
-        }
-
-        private async Task SetCached(string channelKey, BoardcastModel model)
-        {
-            var cache = await GetCached<BoardcastModel>(channelKey);
-            if (cache == null)
-            {
-                await _responseCacheService.SetAsync(channelKey, model);
-            }
-            else
-            {
-                foreach (BoardcastDataModel dashboard in model.Data)
-                {
-                    cache.SetData(dashboard);
-                }
-                await _responseCacheService.SetAsync(channelKey, cache);
-            }
-        }
-
         #endregion
 
         #region Cim-Oper realtime process
+
+        [Route("api/[controller]/GetBoardcastActiveOperationData")]
+        [HttpGet]
+        public async Task<string> GetBoardcastActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            return CacheForBoardcast<ActiveProductionPlanModel>(await GetCached(channelKey));
+        }
+
+        [Route("api/[controller]/BoardcastingDashboard")]
+        [HttpGet]
+        public async Task BoardcastingActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var boardcastData = await _service.GenerateBoardcastOperationData(updateType, productionPlan, routeId);
+            if (boardcastData.Data.Count > 0)
+            {
+                //to add data to activeproduction plan
+                var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
+                await HandleBoardcastData(channelKey, boardcastData);
+            }
+        }
 
         #endregion
     }

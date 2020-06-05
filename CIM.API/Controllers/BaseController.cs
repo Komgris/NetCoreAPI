@@ -19,7 +19,7 @@ namespace CIM.API.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        internal async Task BoardcastingDashboard<T>(string channel,object data)
+        internal async Task BoardcastClientData<T>(string channel,object data)
         {
             await _hub.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
         }
@@ -45,5 +45,32 @@ namespace CIM.API.Controllers
         {
             return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
         }
+
+        internal async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        {
+            var cache = await GetCached<BoardcastModel>(channelKey);
+            if (cache == null)
+            {
+                await _responseCacheService.SetAsync(channelKey, model);
+            }
+            else
+            {
+                foreach (BoardcastDataModel dashboard in model.Data)
+                {
+                    cache.SetData(dashboard);
+                }
+                await _responseCacheService.SetAsync(channelKey, cache);
+            }
+        }
+
+        internal async Task HandleBoardcastData(string channelKey, BoardcastModel boardcastData)
+        {
+            if (boardcastData != null)
+            {
+                await SetBoardcastDataCached(channelKey, boardcastData);
+                await BoardcastClientData<BoardcastModel>(channelKey, boardcastData);
+            }
+        }
+
     }
 }
