@@ -154,32 +154,33 @@ namespace CIM.BusinessLogic.Services
             int sequence = 1;
             foreach (var model in data)
             {
-
-                var db_model = MapperHelper.AsModel(model, new RouteMachine());
-                db_model.IsActive = true;
-                db_model.IsDelete = false;
-                db_model.CreatedAt = DateTime.Now;
-                db_model.CreatedBy = CurrentUser.UserId;
-                db_model.Sequence = sequence;
-                _routeMachineRepository.Add(db_model);
-                sequence++;
+                if (model.MachineId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new RouteMachine());
+                    db_model.IsActive = true;
+                    db_model.IsDelete = false;
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.Sequence = sequence;
+                    _routeMachineRepository.Add(db_model);
+                    sequence++;
+                }
             }
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<List<MachineModel>> GetMachineByRoute(int routeId)
+        public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
             var output = await _machineRepository.ListMachineByRoute(routeId);
             return output;
         }
         public async Task DeleteMapping(int routeid)
         {
-            var list = _routeMachineRepository.Where(x => x.RouteId == routeid);
+            var list = await _routeMachineRepository.WhereAsync(x => x.RouteId == routeid);
             foreach (var model in list)
             {
                 _routeMachineRepository.Delete(model);
             }
-            await _unitOfWork.CommitAsync();
         }
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {

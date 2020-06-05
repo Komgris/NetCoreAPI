@@ -104,9 +104,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetMachineByRoute")]
-        public async Task<ProcessReponseModel<List<MachineModel>>> GetMachineByRoute(int routeId)
+        public async Task<ProcessReponseModel<List<RouteMachineModel>>> GetMachineByRoute(int routeId)
         {
-            var output = new ProcessReponseModel<List<MachineModel>>();
+            var output = new ProcessReponseModel<List<RouteMachineModel>>();
             try
             {
 
