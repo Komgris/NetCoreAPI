@@ -46,7 +46,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task InsertMapping(List<BomMaterialModel> data)
         {
-            DeleteMapping(data[0].BomId);
+            await DeleteMapping(data[0].BomId);
             foreach (var model in data)
             {
                 if (model.MaterialId != 0)
@@ -60,9 +60,9 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public void DeleteMapping(int bomId)
+        public async Task DeleteMapping(int bomId)
         {
-            var list = _bomMaterialRepository.Where(x => x.BomId == bomId);
+            var list = await _bomMaterialRepository.WhereAsync(x => x.BomId == bomId);
             foreach (var model in list)
             {
                 _bomMaterialRepository.Delete(model);
@@ -89,15 +89,15 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public BomModel Get(int id)
+        public async Task<BomModel> Get(int id)
         {
-            var db_model = _bomRepository.Where(x => x.Id == id ).FirstOrDefault();
+            var db_model = await _bomRepository.Where(x => x.Id == id ).FirstOrDefaultAsync();
             return MapperHelper.AsModel(db_model, new BomModel());
         }
 
         public async Task Delete(int id)
         {
-            var existingItem = _bomRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
+            var existingItem = await _bomRepository.Where(x => x.Id == id).FirstOrDefaultAsync();
             existingItem.IsActive = false;
             existingItem.IsDelete = true;
             await _unitOfWork.CommitAsync();

@@ -132,7 +132,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<BomModel>();
             try
             {
-                output.Data =   _bomService.Get(id);
+                output.Data =   await _bomService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
