@@ -82,35 +82,45 @@ namespace CIM.Model
 
         }
 
-        public enum DashboardTimeFrame {
+        public enum DataFrame {
             Default,
             Daily,
             Weekly,
             Monthly,
             Yearly
         }
-        public enum DashboardType {
+        public enum BoardcastType {
             All,
             KPI,
             Output,
             Waste,
             Loss,
-            TimeUtilisation
+            TimeUtilisation,
+            ActiveKPI,
+            ActiveOutput,
+            ActiveWaste,
+            ActiveWasteMat,
+            ActiveWasteCase,
+            ActiveWasteMC,
+            ActiveWasteTime,
+            ActiveLoss,
+            ActiveTimeUtilisation,
+            ActiveProductionEvent,
+            ActiveOperator,
+            ActiveMachineInfo,
+            ActiveMachineSpeed,
+            ActiveMachineEvent,
         }
 
         public class DashboardConfig {
             public string Name { get; set; }
             public string StoreName { get; set; }
-        }
-
-        public static Dictionary<DashboardType, DashboardConfig> Dashboard
-            = new Dictionary<DashboardType, DashboardConfig>()
+            public DashboardConfig(){}
+            public DashboardConfig(string name,string storeName)
             {
-                { DashboardType.KPI, new DashboardConfig(){Name="KPI",StoreName="sp_dashboard_kpi"} },
-                { DashboardType.Output, new DashboardConfig(){Name="Output",StoreName="sp_dashboard_output"} },
-                { DashboardType.Waste, new DashboardConfig(){Name="Waste",StoreName="sp_dashboard_waste"} },
-                { DashboardType.Loss, new DashboardConfig(){Name="MachineLoss",StoreName="sp_dashboard_machineLoss"} },
-                { DashboardType.TimeUtilisation, new DashboardConfig(){Name="Utilization",StoreName="sp_dashboard_utilization"} },
-            };
+                Name = name;
+                StoreName = storeName;
+            }
+        }
     }
 }
