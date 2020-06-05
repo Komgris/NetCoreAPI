@@ -59,7 +59,7 @@ namespace CIM.API.Controllers
             var cache = await GetCached<BoardcastModel>(channelKey);
             if (cache == null)
             {
-                await _responseCacheService.SetAsync(channelKey, model);
+                cache = model;
             }
             else
             {
@@ -67,8 +67,8 @@ namespace CIM.API.Controllers
                 {
                     cache.SetData(dashboard);
                 }
-                await _responseCacheService.SetAsync(channelKey, cache);
             }
+            await _responseCacheService.SetAsync(channelKey, cache);
         }
 
         internal async Task HandleBoardcastingManagementData(string channelKey, BoardcastModel boardcastData)
@@ -96,6 +96,7 @@ namespace CIM.API.Controllers
                 await BoardcastClientData<ActiveProductionPlanModel>(channelKey, activeModel);
             }
         }
+
         internal async Task SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
