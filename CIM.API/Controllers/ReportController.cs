@@ -16,8 +16,6 @@ namespace CIM.API.Controllers {
     [ApiController]
     public class ReportController : BaseController {
 
-        private IReportService _service;
-
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
@@ -366,13 +364,13 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DataFrame type, BoardcastType updateType, string channel)
+        public async Task BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = await _service.GenerateBoardcastManagementData(type, updateType);
+            var boardcastData = await _service.GenerateBoardcastManagementData(dataFrame, updateType);
             if (boardcastData.Data.Count > 0)
             {
-                await HandleBoardcastData(channelKey, boardcastData);
+                await HandleBoardcastingManagementData(channelKey, boardcastData);
             }
         }
 
@@ -382,23 +380,21 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/GetBoardcastActiveOperationData")]
         [HttpGet]
-        public async Task<string> GetBoardcastActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<string> GetBoardcastActiveOperationData(string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             return CacheForBoardcast<ActiveProductionPlanModel>(await GetCached(channelKey));
         }
 
-        [Route("api/[controller]/BoardcastingDashboard")]
+        [Route("api/[controller]/BoardcastingActiveOperationData")]
         [HttpGet]
         public async Task BoardcastingActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            var boardcastData = await _service.GenerateBoardcastOperationData(updateType, productionPlan, routeId);
-            if (boardcastData.Data.Count > 0)
+            var activeProductionPlan = await GetCached<ActiveProductionPlanModel>(channelKey);
+            if (activeProductionPlan!.ActiveProcesses[routeId] != null)
             {
-                //to add data to activeproduction plan
-                var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
-                await HandleBoardcastData(channelKey, boardcastData);
+                await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan);
             }
         }
 

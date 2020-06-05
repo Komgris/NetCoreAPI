@@ -278,12 +278,18 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Oper boardcast data
 
-        public async Task<ActiveProductionPlanModel> GenerateActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
         {
+            var boardcastData = await GenerateBoardcastData(updateType, productionPlan, routeId);
+            if (boardcastData.Data.Count > 0)
+            {
+                //to add data to activeproduction plan
+                var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
+            }
             return null;
         }
 
-        public async Task<BoardcastModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
             var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", productionPlan } };
