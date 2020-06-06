@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public Material()
         {
-            BomMaterial = new HashSet<BomMaterial>();
+            MaterialGroupMaterial = new HashSet<MaterialGroupMaterial>();
         }
 
         public int Id { get; set; }
@@ -28,6 +28,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual MaterialType MaterialType { get; set; }
-        public virtual ICollection<BomMaterial> BomMaterial { get; set; }
+        public virtual ICollection<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
     }
 }

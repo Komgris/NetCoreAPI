@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class BomTemp
+    public partial class MaterialGroup
     {
-        public BomTemp()
+        public MaterialGroup()
         {
-            BomMaterial = new HashSet<BomMaterial>();
+            MaterialGroupMaterial = new HashSet<MaterialGroupMaterial>();
         }
 
         public int Id { get; set; }
@@ -19,6 +19,6 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<BomMaterial> BomMaterial { get; set; }
+        public virtual ICollection<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
     }
 }

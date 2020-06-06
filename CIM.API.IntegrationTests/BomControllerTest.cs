@@ -21,12 +21,12 @@ namespace CIM.API.IntegrationTests
             scenario = CreateWebApplication();
         }
 
-        public BomTemp Get(string name, TestScenario scenario)
+        public MaterialGroup Get(string name, TestScenario scenario)
         {
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                return context.BomTemp.First(x => x.Name == name);
+                return context.MaterialGroup.First(x => x.Name == name);
             }
         }
 
@@ -34,12 +34,12 @@ namespace CIM.API.IntegrationTests
         public async Task List_Test()
         {
             var expectedCount = 3;
-            var bomList = new List<BomTemp>()
+            var bomList = new List<MaterialGroup>()
             {
-                new BomTemp{ Name="testA",IsActive=true},
-                new BomTemp{ Name="testB",IsActive=true},
-                new BomTemp{ Name="testC",IsActive=true},
-                new BomTemp{ Name="testD",IsActive=true},
+                new MaterialGroup{ Name="testA",IsActive=true},
+                new MaterialGroup{ Name="testB",IsActive=true},
+                new MaterialGroup{ Name="testC",IsActive=true},
+                new MaterialGroup{ Name="testD",IsActive=true},
             };
 
             foreach (var model in bomList)
@@ -47,7 +47,7 @@ namespace CIM.API.IntegrationTests
                 using (var scope = scenario.ServiceScopeFactory.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                    context.BomTemp.Add(model);
+                    context.MaterialGroup.Add(model);
                     context.SaveChanges();
                 }
             }
