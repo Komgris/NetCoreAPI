@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class BomRepository : Repository<BomTemp>, IBomRepository
+    public class BomRepository : Repository<MaterialGroup>, IBomRepository
     {
         private IDirectSqlRepository _directSqlRepository;
 
@@ -28,7 +28,7 @@ namespace CIM.DAL.Implements
                                             {"@bom_id", bomId},
                                         };
 
-                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListBOMMaterial", parameterList);
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterialGroupMaterial", parameterList);
 
                 return (dt.ToModel<BomMaterialModel>());
             });
@@ -46,7 +46,7 @@ namespace CIM.DAL.Implements
                                             { "@is_active", isActive},
                                         };
 
-                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListBom", parameterList);
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterialGroup", parameterList);
                 var totalCount = 0;
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);

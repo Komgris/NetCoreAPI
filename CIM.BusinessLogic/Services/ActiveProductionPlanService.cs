@@ -102,10 +102,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
                     var masterData = await _masterDataService.GetData();
-                    var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel
-                    {
-                        ProductionPlanId = planId,
-                    };
+                    var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel(planId);
 
                     var routeMachines = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
                     {
