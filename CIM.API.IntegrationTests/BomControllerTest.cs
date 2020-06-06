@@ -56,7 +56,7 @@ namespace CIM.API.IntegrationTests
             var loadResponse = await scenario.TestClient.GetAsync($"api/Bom/List?page=1&howmany={expectedCount}");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<BomModel>>>(loadResponseString);
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<MaterialGroupModel>>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
             result.Data.Data.Count().Should().Be(expectedCount);

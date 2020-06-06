@@ -19,7 +19,7 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<List<BomMaterialModel>> ListMaterialByBom(int bomId)
+        public async Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId)
         {
             return await Task.Run(() =>
             {
@@ -30,11 +30,11 @@ namespace CIM.DAL.Implements
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterialGroupMaterial", parameterList);
 
-                return (dt.ToModel<BomMaterialModel>());
+                return (dt.ToModel<MaterialGroupMaterialModel>());
             });
         }
 
-        public async Task<PagingModel<BomModel>> ListBom(int page, int howMany, string keyword, bool isActive)
+        public async Task<PagingModel<MaterialGroupModel>> ListBom(int page, int howMany, string keyword, bool isActive)
         {
             return await Task.Run(() =>
             {
@@ -51,7 +51,7 @@ namespace CIM.DAL.Implements
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                return ToPagingModel(dt.ToModel<BomModel>(), totalCount, page, howMany);
+                return ToPagingModel(dt.ToModel<MaterialGroupModel>(), totalCount, page, howMany);
             });
         }
     }

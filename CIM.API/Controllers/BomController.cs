@@ -22,9 +22,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/List")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<BomModel>>> List(string keyword = "", int page = 1, int howMany = 10,bool isActive = true)
+        public async Task<ProcessReponseModel<PagingModel<MaterialGroupModel>>> List(string keyword = "", int page = 1, int howMany = 10,bool isActive = true)
         {
-            var output = new ProcessReponseModel<PagingModel<BomModel>>();
+            var output = new ProcessReponseModel<PagingModel<MaterialGroupModel>>();
             try
             {
                 output.Data = await _bomService.List(keyword, page, howMany, isActive);
@@ -39,9 +39,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListMaterial")]
         [HttpGet]
-        public async Task<ProcessReponseModel<List<BomMaterialModel>>> ListMaterial(int bomId)
+        public async Task<ProcessReponseModel<List<MaterialGroupMaterialModel>>> ListMaterial(int bomId)
         {
-            var output = new ProcessReponseModel<List<BomMaterialModel>>();
+            var output = new ProcessReponseModel<List<MaterialGroupMaterialModel>>();
             try
             {
                 output.Data = await _bomService.ListBomMapping(bomId);
@@ -56,9 +56,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/InsertMapping")]
         [HttpPost]
-        public async Task<ProcessReponseModel<BomMaterialModel>> InsertMapping(List<BomMaterialModel> data)
+        public async Task<ProcessReponseModel<MaterialGroupMaterialModel>> InsertMapping(List<MaterialGroupMaterialModel> data)
         {
-            var output = new ProcessReponseModel<BomMaterialModel>();
+            var output = new ProcessReponseModel<MaterialGroupMaterialModel>();
             try
             {
                 await _bomService.InsertMapping(data);
@@ -73,7 +73,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> Create([FromBody] BomModel data)
+        public async Task<ProcessReponseModel<object>> Create([FromBody] MaterialGroupModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -91,7 +91,7 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPut]
-        public async Task<ProcessReponseModel<object>> Update([FromBody] BomModel data)
+        public async Task<ProcessReponseModel<object>> Update([FromBody] MaterialGroupModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -127,9 +127,9 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Get")]
         [HttpGet]
-        public async Task<ProcessReponseModel<BomModel>> Get(int id)
+        public async Task<ProcessReponseModel<MaterialGroupModel>> Get(int id)
         {
-            var output = new ProcessReponseModel<BomModel>();
+            var output = new ProcessReponseModel<MaterialGroupModel>();
             try
             {
                 output.Data =   await _bomService.Get(id);

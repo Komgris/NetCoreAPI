@@ -32,19 +32,19 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagingModel<BomModel>> List(string keyword, int page, int howMany, bool isActive)
+        public async Task<PagingModel<MaterialGroupModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             var output = await _bomRepository.ListBom(page, howMany, keyword, isActive);
             return output;
         }
 
-        public async Task<List<BomMaterialModel>> ListBomMapping(int bomId)
+        public async Task<List<MaterialGroupMaterialModel>> ListBomMapping(int bomId)
         {
             var output = await _bomRepository.ListMaterialByBom(bomId);
             return output;
         }
 
-        public async Task InsertMapping(List<BomMaterialModel> data)
+        public async Task InsertMapping(List<MaterialGroupMaterialModel> data)
         {
             await DeleteMapping(data[0].BomId);
             foreach (var model in data)
@@ -70,7 +70,7 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        public async Task Create(BomModel data)
+        public async Task Create(MaterialGroupModel data)
         {
             var db_model = MapperHelper.AsModel(data, new MaterialGroup());
             db_model.CreatedAt = DateTime.Now;
@@ -81,7 +81,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task Update(BomModel data)
+        public async Task Update(MaterialGroupModel data)
         {
             var db_model = MapperHelper.AsModel(data, new MaterialGroup());
             db_model.UpdatedAt = DateTime.Now;
@@ -90,10 +90,10 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<BomModel> Get(int id)
+        public async Task<MaterialGroupModel> Get(int id)
         {
             var db_model = await _bomRepository.Where(x => x.Id == id ).FirstOrDefaultAsync();
-            return MapperHelper.AsModel(db_model, new BomModel());
+            return MapperHelper.AsModel(db_model, new MaterialGroupModel());
         }
 
         public async Task Delete(int id)

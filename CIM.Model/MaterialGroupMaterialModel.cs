@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class BomMaterialModel
+    public class MaterialGroupMaterialModel
     {
         public int Id { get; set; }
         public int BomId { get; set; }
