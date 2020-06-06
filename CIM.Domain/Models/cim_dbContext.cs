@@ -1078,7 +1078,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.BriteItemPerUpcitem)
+                entity.Property(e => e.BriteItemPerUPCItem)
                     .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
@@ -1121,7 +1121,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.WeightPerUom)
+                entity.Property(e => e.WeightPerUOM)
                     .HasColumnName("WeightPerUOM")
                     .HasColumnType("decimal(18, 2)");
 

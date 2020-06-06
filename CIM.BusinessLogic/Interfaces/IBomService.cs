@@ -8,7 +8,12 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IBomService : IBaseService
     {
-        Task<PagingModel<BomModel>> List(string keyword, int page, int howmany);
-        Task<List<BomMaterialModel>> ListBomMapping(int bomId);
+        Task<PagingModel<MaterialGroupModel>> List(string keyword, int page, int howMany, bool isActive);
+        Task<List<MaterialGroupMaterialModel>> ListBomMapping(int bomId);
+        Task InsertMapping(List<MaterialGroupMaterialModel> data);
+        Task Create(MaterialGroupModel data);
+        Task Update(MaterialGroupModel data);
+        Task Delete(int id);
+        Task<MaterialGroupModel> Get(int id);
     }
 }
