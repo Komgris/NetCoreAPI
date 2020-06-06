@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IComponentRepository : IRepository<Component>
     {
-        Task<PagingModel<ComponentModel>> ListComponent(int page, int howmany, string keyword);
+        Task<PagingModel<ComponentModel>> ListComponent(int page, int howMany, string keyword, bool isActive);
         Task<List<ComponentModel>> ListComponentByMachine(int machineId);
     }
 }

@@ -40,9 +40,9 @@ namespace CIM.BusinessLogic.Services
             return new List<MachineCacheModel>();
         }
 
-        public async Task Create(MachineModel model)
+        public async Task Create(MachineListModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new Machine());
+            var dbModel = MapperHelper.AsModel(model, new Machine(), new[] { "Status" });
             dbModel.StatusId = Constans.MACHINE_STATUS.Idle;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
@@ -58,27 +58,30 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Name = x.Name,
                             StatusId = x.StatusId,
-                            Status = x.Status.Name,
                             MachineTypeId = x.MachineTypeId,
                             Type = x.MachineType.Name,
+                            StatusTag = x.StatusTag,
+                            CounterInTag = x.CounterInTag,
+                            CounterOutTag = x.CounterOutTag,
+                            CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _machineRepository.List(keyword, page, howmany);
+            var output = await _machineRepository.List(keyword, page, howMany, isActive);
             return output;
         }
 
-        public async Task Update(MachineModel model)
+        public async Task Update(MachineListModel model)
         {
-            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id );
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
@@ -154,32 +157,33 @@ namespace CIM.BusinessLogic.Services
             int sequence = 1;
             foreach (var model in data)
             {
-
-                var db_model = MapperHelper.AsModel(model, new RouteMachine());
-                db_model.IsActive = true;
-                db_model.IsDelete = false;
-                db_model.CreatedAt = DateTime.Now;
-                db_model.CreatedBy = CurrentUser.UserId;
-                db_model.Sequence = sequence;
-                _routeMachineRepository.Add(db_model);
-                sequence++;
+                if (model.MachineId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new RouteMachine());
+                    db_model.IsActive = true;
+                    db_model.IsDelete = false;
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.Sequence = sequence;
+                    _routeMachineRepository.Add(db_model);
+                    sequence++;
+                }
             }
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<List<MachineModel>> GetMachineByRoute(int routeId)
+        public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
             var output = await _machineRepository.ListMachineByRoute(routeId);
             return output;
         }
         public async Task DeleteMapping(int routeid)
         {
-            var list = _routeMachineRepository.Where(x => x.RouteId == routeid);
+            var list = await _routeMachineRepository.WhereAsync(x => x.RouteId == routeid);
             foreach (var model in list)
             {
                 _routeMachineRepository.Delete(model);
             }
-            await _unitOfWork.CommitAsync();
         }
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {

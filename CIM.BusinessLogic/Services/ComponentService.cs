@@ -35,9 +35,9 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<PagingModel<ComponentModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ComponentModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _componentRepository.ListComponent(page, howmany, keyword);
+            var output = await _componentRepository.ListComponent(page, howMany, keyword, isActive);
             return output;
         }
 
@@ -57,8 +57,6 @@ namespace CIM.BusinessLogic.Services
             var db_model = MapperHelper.AsModel(data, new Component());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdateBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.IsDelete = false;
             _componentRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }
@@ -77,7 +75,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedAt = x.CreatedAt,
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive.Value && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task InsertMappingMachineComponent(MappingMachineComponent data)

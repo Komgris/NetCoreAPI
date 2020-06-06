@@ -28,7 +28,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -48,7 +48,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -68,13 +68,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
 
-                output.Data = await _service.List(keyword, page, howmany);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -104,9 +104,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetMachineByRoute")]
-        public async Task<ProcessReponseModel<List<MachineModel>>> GetMachineByRoute(int routeId)
+        public async Task<ProcessReponseModel<List<RouteMachineModel>>> GetMachineByRoute(int routeId)
         {
-            var output = new ProcessReponseModel<List<MachineModel>>();
+            var output = new ProcessReponseModel<List<RouteMachineModel>>();
             try
             {
 
