@@ -54,7 +54,7 @@ namespace CIM.BusinessLogic.Services
                 CreatedBy = x.CreatedBy,
                 UpdatedAt = x.UpdatedAt,
                 UpdatedBy = x.UpdatedBy
-            }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive.Value && x.IsDelete == false);
+            }).FirstOrDefaultAsync(x => x.Id == id);
 
         }
 

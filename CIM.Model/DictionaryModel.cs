@@ -18,6 +18,7 @@ namespace CIM.Model
         public IDictionary<int, string> ProductType { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> ProductGroup { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> ProductFamily { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> Machine { get; set; } = new Dictionary<int, string>();
 
     }
 }
