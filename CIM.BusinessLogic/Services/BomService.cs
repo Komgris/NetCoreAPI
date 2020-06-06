@@ -51,7 +51,8 @@ namespace CIM.BusinessLogic.Services
             {
                 if (model.MaterialId != 0)
                 {
-                    var db_model = MapperHelper.AsModel(model, new BomMaterial());
+                    var db_model = MapperHelper.AsModel(model, new MaterialGroupMaterial());
+                    db_model.MaterialGroupId = model.BomId;
                     db_model.CreatedAt = DateTime.Now;
                     db_model.CreatedBy = CurrentUser.UserId;
                     _bomMaterialRepository.Add(db_model);
@@ -62,7 +63,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task DeleteMapping(int bomId)
         {
-            var list = await _bomMaterialRepository.WhereAsync(x => x.BomId == bomId);
+            var list = await _bomMaterialRepository.WhereAsync(x => x.MaterialGroupId == bomId);
             foreach (var model in list)
             {
                 _bomMaterialRepository.Delete(model);
@@ -71,7 +72,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Create(BomModel data)
         {
-            var db_model = MapperHelper.AsModel(data, new BomTemp());
+            var db_model = MapperHelper.AsModel(data, new MaterialGroup());
             db_model.CreatedAt = DateTime.Now;
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
@@ -82,7 +83,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(BomModel data)
         {
-            var db_model = MapperHelper.AsModel(data, new BomTemp());
+            var db_model = MapperHelper.AsModel(data, new MaterialGroup());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
             _bomRepository.Edit(db_model);

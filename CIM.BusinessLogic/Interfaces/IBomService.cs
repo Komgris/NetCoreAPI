@@ -14,6 +14,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task Create(BomModel data);
         Task Update(BomModel data);
         Task Delete(int id);
-        Task<BomModel> Get(int id)
+        Task<BomModel> Get(int id);
     }
 }
