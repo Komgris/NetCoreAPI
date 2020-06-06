@@ -67,22 +67,22 @@ namespace CIM.BusinessLogic.Services
             return response;
         }
 
-        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive)
         {
-            var output = await _productRepository.Paging(keyword, page, howmany);
+            var output = await _productRepository.Paging(keyword, page, howMany, isActiive);
             return output;
         }
 
         public async Task<ProductModel> Get(int id)
         {
-            var dbModel = await _productRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
+            var dbModel = await _productRepository.Where(x => x.Id == id)
                 .Select(
                         x => new ProductModel
                         {
                             Id = x.Id,
                             Code = x.Code,
                             Description = x.Description,
-                            BriteItemPerUpcitem = x.BriteItemPerUpcitem,
+                            BriteItemPerUPCItem = x.BriteItemPerUPCItem,
                             ProductFamilyId = x.ProductFamilyId,
                             ProductGroupId = x.ProductGroupId,
                             ProductTypeId = x.ProductTypeId,
@@ -90,7 +90,7 @@ namespace CIM.BusinessLogic.Services
                             NetWeight = x.NetWeight,
                             IGWeight = x.IGWeight,
                             PMWeight = x.PMWeight,
-                            WeightPerUom = x.WeightPerUom,
+                            WeightPerUOM = x.WeightPerUOM,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,
@@ -103,7 +103,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(ProductModel model)
         {
-            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;

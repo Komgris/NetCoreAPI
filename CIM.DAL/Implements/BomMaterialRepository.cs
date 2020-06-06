@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CIM.DAL.Implements
 {
-    public class BomMaterialRepository : Repository<BomMaterial>, IBomMaterialRepository
+    public class BomMaterialRepository : Repository<MaterialGroupMaterial>, IBomMaterialRepository
     {
         public BomMaterialRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {
