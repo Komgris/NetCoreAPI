@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -13,16 +14,14 @@ namespace CIM.API.Controllers
 
         internal IHubContext<GlobalHub> _hub;
         internal IResponseCacheService _responseCacheService;
+        internal IReportService _service;
+
+        #region general
 
         public JsonSerializerSettings JsonsSetting = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
-
-        internal async Task BoardcastingDashboard<T>(string channel,object data)
-        {
-            await _hub.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
-        }
 
         internal T ObjectForBoardcast<T>(object obj)
         {
@@ -45,5 +44,79 @@ namespace CIM.API.Controllers
         {
             return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
         }
+
+        internal async Task BoardcastClientData<T>(string channel, object data)
+        {
+            await _hub.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
+        }
+
+        #endregion
+
+        #region Management
+
+        internal async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        {
+            var cache = await GetCached<BoardcastModel>(channelKey);
+            if (cache == null)
+            {
+                cache = model;
+            }
+            else
+            {
+                foreach (BoardcastDataModel dashboard in model.Data)
+                {
+                    cache.SetData(dashboard);
+                }
+            }
+            await _responseCacheService.SetAsync(channelKey, cache);
+        }
+
+        internal async Task HandleBoardcastingManagementData(string channelKey, BoardcastModel boardcastData)
+        {
+            if (boardcastData != null)
+            {
+                await SetBoardcastDataCached(channelKey, boardcastData);
+                await BoardcastClientData<BoardcastModel>(channelKey, boardcastData);
+            }
+        }
+
+        #endregion
+
+        #region Operation
+
+        internal async Task HandleBoardcastingActiveProcess(BoardcastType updateType, string productionPlan, int routeId, ActiveProductionPlanModel activeModel)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, routeId);
+            if (boardcastData.Data.Count > 0)
+            {
+                await SetBoardcastActiveDataCached(channelKey, routeId, activeModel, boardcastData);
+
+                activeModel.ActiveProcesses[routeId].BoardcastData = boardcastData;
+                await BoardcastClientData<ActiveProductionPlanModel>(channelKey, activeModel);
+            }
+        }
+
+        internal async Task SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        {
+            var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
+            if(cache is null)
+            {
+                activeModel.ActiveProcesses[routeId].BoardcastData = model;
+            }
+            else
+            {
+                foreach (BoardcastDataModel dashboard in model.Data)
+                {
+                    cache.SetData(dashboard);
+                }
+                activeModel.ActiveProcesses[routeId].BoardcastData = cache;
+            }
+
+            await _responseCacheService.SetAsync(channelKey, activeModel);
+        }
+
+        #endregion
+
     }
 }
