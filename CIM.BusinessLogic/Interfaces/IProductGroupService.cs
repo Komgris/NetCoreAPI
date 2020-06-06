@@ -10,7 +10,7 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task<List<RouteProductGroupModel>> ListRouteByProductGroup(int productGroupId);
         Task Create(ProductGroupModel data);
-        Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany);
+        Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<ProductGroupModel> Get(int id);
         Task Update(ProductGroupModel data);
         Task Delete(int id);

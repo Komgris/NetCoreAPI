@@ -22,12 +22,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/List")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductGroupModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<ProductGroupModel>>> List(string keyword = "", int page = 1, int howmany = 10,bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<ProductGroupModel>>();
             try
             {
-                output.Data = await _productGroupService.List(keyword, page, howmany);
+                output.Data = await _productGroupService.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

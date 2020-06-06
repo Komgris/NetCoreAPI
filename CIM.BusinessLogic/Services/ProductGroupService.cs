@@ -50,26 +50,29 @@ namespace CIM.BusinessLogic.Services
             await DeleteMapping(data[0].ProductGroupId);
             foreach (var model in data)
             {
-                var db = MapperHelper.AsModel(model, new RouteProductGroup());
-                db.CreatedAt = DateTime.Now;
-                db.CreatedBy = CurrentUser.UserId;
-                _routeProductGroupRepository.Add(db);
+                if(model.RouteId == 0)
+                {
+                    var db = MapperHelper.AsModel(model, new RouteProductGroup());
+                    db.CreatedAt = DateTime.Now;
+                    db.CreatedBy = CurrentUser.UserId;
+                    _routeProductGroupRepository.Add(db);
+                }
             }
             await _unitOfWork.CommitAsync();
         }
 
         public async Task DeleteMapping(int id)
         {
-            var list = _routeProductGroupRepository.Where(x => x.ProductGroupId == id);
+            var list = await _routeProductGroupRepository.WhereAsync(x => x.ProductGroupId == id);
             foreach (var model in list)
             {
                 _routeProductGroupRepository.Delete(model);
             }
         }
 
-        public async Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany, bool isActive)
         {
-            var output = await _productGroupRepository.List(page, howmany, keyword);
+            var output = await _productGroupRepository.List(page, howmany, keyword, isActive);
             return output;
         }
 
@@ -92,8 +95,6 @@ namespace CIM.BusinessLogic.Services
             var db_model = MapperHelper.AsModel(data, new ProductGroup());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.IsDelete = false;
             _productGroupRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }
