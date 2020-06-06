@@ -37,5 +37,19 @@ namespace CIM.DAL.Implements
             });
         }
 
+        public async Task<List<ComponentModel>> ListComponentByMachine(int machineId)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@machine_id", machineId},
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListComponentByMachine", parameterList);
+
+                return (dt.ToModel<ComponentModel>());
+            });
+        }
     }
 }

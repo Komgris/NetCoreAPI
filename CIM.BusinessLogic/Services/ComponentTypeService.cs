@@ -64,12 +64,12 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany,bool isActive)
         {
             int skipRec = (page - 1) * howmany;
             int takeRec = howmany;
 
-            var dbModel = await _componentTypeRepository.Where(x => x.IsActive && x.IsDelete == false &
+            var dbModel = await _componentTypeRepository.Where(x => x.IsActive == isActive &
                 string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
                 .Select(
                     x => new ComponentTypeModel
@@ -94,8 +94,6 @@ namespace CIM.BusinessLogic.Services
             var db_model = MapperHelper.AsModel(data, new ComponentType());
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.IsDelete = false;
             _componentTypeRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }
@@ -124,7 +122,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id );
         }
     }
 }

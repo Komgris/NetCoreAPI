@@ -8,8 +8,9 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IRecordManufacturingLossService : IBaseService
     {
-        Task Create(RecordManufacturingLossModel model);
-        Task Update(RecordManufacturingLossModel model);
+        Task<ActiveProductionPlanModel> Create(RecordManufacturingLossModel model);
+        Task<ActiveProductionPlanModel> Update(RecordManufacturingLossModel model);
         Task<RecordManufacturingLossModel> GetByGuid(Guid guid);
+        Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model);
     }
 }

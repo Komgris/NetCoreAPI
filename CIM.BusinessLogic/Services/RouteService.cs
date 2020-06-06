@@ -58,30 +58,10 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany,bool isActive)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = await _routeRepository.Where(x => x.IsActive.Value && x.IsDelete == false &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
-                .Select(
-                    x => new RouteListModel
-                    {
-                        Id = x.Id,
-                        ParentId = x.ParentId,
-                        Name = x.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-
-            int totalCount = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-            return ToPagingModel(dbModel, totalCount, page, howmany);
+            var output = await _routeRepository.List(page, howmany, keyword, isActive);
+            return output;
         }
 
         public async Task Update(RouteListModel data)

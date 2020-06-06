@@ -14,14 +14,10 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BoardcastController : ControllerBase
-    {
-
-        private IHubContext<MachineHub> _hub;
-
+    public class BoardcastController : BaseController {
 
         public BoardcastController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IMachineService machineService
             )
         {
