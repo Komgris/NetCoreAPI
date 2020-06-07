@@ -16,30 +16,44 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordProductionPlanOutputController : BaseController
     {
+        private IActiveProductionPlanService _activeProductionPlanService;
         private IRecordProductionPlanOutputService _recordProductionPlanOutputService;
 
         public RecordProductionPlanOutputController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
+            IActiveProductionPlanService activeProductionPlanService,
             IRecordProductionPlanOutputService recordProductionPlanOutputService
             )
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
+            _activeProductionPlanService = activeProductionPlanService;
             _recordProductionPlanOutputService = recordProductionPlanOutputService;
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData)
+        public async Task<ProcessReponseModel<object>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData, int hour)
         {
-            var storeData = listData;
-            var hour = DateTime.Now.Hour;
 
-            if (storeData != null)
+            var output = new ProcessReponseModel<object>();
+            try
             {
-                var Status = await _recordProductionPlanOutputService.UpdateMachineProduceCounter(storeData, hour);
+                var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hour);
+                //await _recordProductionPlanOutputService.UpdateMachineProduceCounter(listData, hour);
+                foreach (var productionPlan in productionPlans)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                }
+                output.IsSuccess = true;
             }
-            return new ProcessReponseModel<bool>();
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
 
         }
     }
