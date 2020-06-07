@@ -24,6 +24,7 @@ namespace CIM.BusinessLogic.Services
         private IProductionPlanRepository _productionPlanRepository;
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IRecordMachineStatusRepository _recordMachineStatusRepository;
+        private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public ActiveProductionPlanService(
@@ -45,6 +46,7 @@ namespace CIM.BusinessLogic.Services
             _productionPlanRepository = productionPlanRepository;
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
+            _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -394,15 +396,36 @@ namespace CIM.BusinessLogic.Services
         {
             var machineList = new List<ActiveMachineModel>();
             var activeProductionPlanList = new List<ActiveProductionPlanModel>();
+            var now = DateTime.Now;
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
                 if (cachedMachine != null)
                 {
-                    if (cachedMachine?.RecordProductionPlanOutput.Hour < hour)
+                    if (cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour < hour)
                     {
                         //update db
-
+                        var dbOutput = await _recordProductionPlanOutputRepository.Where(x=>x.MachineId == cachedMachine.Id).OrderByDescending(x=>x.CreatedAt).FirstOrDefaultAsync();
+                        var newOutput = new RecordProductionPlanOutput
+                        {
+                            CounterIn = item.CounterIn,
+                            CounterOut = item.CounterOut,
+                            CreatedAt = now,
+                            CreatedBy = CurrentUser.UserId,
+                            Hour = hour,
+                            MachineId = item.MachineId,
+                            Month = now.Month,
+                            ProductionPlanId = cachedMachine.ProductionPlanId,
+                            TotalIn = item.CounterIn,
+                            TotalOut = item.CounterOut,
+                            Year = now.Year,
+                        };
+                        if(dbOutput != null)
+                        {
+                            newOutput.CounterIn = item.CounterIn - dbOutput.TotalIn;
+                            newOutput.CounterOut = item.CounterOut - dbOutput.TotalOut;
+                        }
+                        _recordProductionPlanOutputRepository.Add(newOutput);
                     }
 
                     cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
@@ -411,7 +434,7 @@ namespace CIM.BusinessLogic.Services
                 }
             }
 
-            var activeProductionPlanIds = machineList.Select(x => x.ProductionPlanId).ToList();
+            var activeProductionPlanIds = machineList.Select(x => x.ProductionPlanId).Distinct().ToList();
             foreach (var item in activeProductionPlanIds)
             {
                 var activeProductionPlan = await GetCached(item);
@@ -420,6 +443,7 @@ namespace CIM.BusinessLogic.Services
                 SetCached(activeProductionPlan);
 
             }
+            await _unitOfWork.CommitAsync();
             return activeProductionPlanList;
         }
     }

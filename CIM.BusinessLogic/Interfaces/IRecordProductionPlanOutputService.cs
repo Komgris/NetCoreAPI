@@ -8,6 +8,5 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IRecordProductionPlanOutputService : IBaseService
     {
-        Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter(List<MachineProduceCounterModel> listData, int hour);
     }
 }

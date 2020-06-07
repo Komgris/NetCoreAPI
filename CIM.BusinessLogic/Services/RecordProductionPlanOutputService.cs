@@ -31,10 +31,5 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ProcessReponseModel<bool>> UpdateMachineProduceCounter(List<MachineProduceCounterModel> listData, int hour)
-        {
-
-            return null;
-        }
     }
 }
