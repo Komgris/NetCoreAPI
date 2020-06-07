@@ -23,12 +23,6 @@ namespace CIM.API.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        internal T ObjectForBoardcast<T>(object obj)
-        {
-            var dataString = JsonConvert.SerializeObject(obj, JsonsSetting);
-            return JsonConvert.DeserializeObject<T>(dataString);
-        }
-
         internal string CacheForBoardcast<T>(string cache)
         {
             var model = JsonConvert.DeserializeObject<T>(cache);
@@ -45,9 +39,9 @@ namespace CIM.API.Controllers
             return await _responseCacheService.GetAsTypeAsync<T>(channelKey);
         }
 
-        internal async Task BoardcastClientData<T>(string channel, object data)
+        internal async Task BoardcastClientData(string channel, object data)
         {
-            await _hub.Clients.All.SendAsync(channel, ObjectForBoardcast<T>(data));
+            await _hub.Clients.All.SendAsync(channel, JsonConvert.SerializeObject(data, JsonsSetting));
         }
 
         #endregion
@@ -76,24 +70,24 @@ namespace CIM.API.Controllers
             if (boardcastData != null)
             {
                 await SetBoardcastDataCached(channelKey, boardcastData);
-                await BoardcastClientData<BoardcastModel>(channelKey, boardcastData);
+                await BoardcastClientData(channelKey, boardcastData);
             }
         }
 
         #endregion
 
         #region Operation
-
         internal async Task HandleBoardcastingActiveProcess(BoardcastType updateType, string productionPlan, int routeId, ActiveProductionPlanModel activeModel)
         {
-            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
             var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, routeId);
             if (boardcastData.Data.Count > 0)
             {
-                await SetBoardcastActiveDataCached(channelKey, routeId, activeModel, boardcastData);
+                await SetBoardcastActiveDataCached(rediskey, routeId, activeModel, boardcastData);
 
                 activeModel.ActiveProcesses[routeId].BoardcastData = boardcastData;
-                await BoardcastClientData<ActiveProductionPlanModel>(channelKey, activeModel);
+                await BoardcastClientData(channelKey, activeModel);
             }
         }
 
