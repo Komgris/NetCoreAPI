@@ -7,6 +7,10 @@ namespace CIM.Model
 {
     public class ActiveProductionPlanModel
     {
+        public ActiveProductionPlanModel(string planId)
+        {
+            ProductionPlanId = planId;
+        }
         public string ProductionPlanId { get; set; }
 
         /// <summary>

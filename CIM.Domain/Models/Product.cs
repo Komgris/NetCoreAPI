@@ -14,16 +14,15 @@ namespace CIM.Domain.Models
         public string Code { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
-        public int? UnitId { get; set; }
-        public string BriteItemPerUpcitem { get; set; }
+        public string BriteItemPerUPCItem { get; set; }
         public int ProductFamilyId { get; set; }
         public int ProductGroupId { get; set; }
         public int ProductTypeId { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
-        public decimal? Igweight { get; set; }
-        public decimal? Pmweight { get; set; }
-        public decimal? WeightPerUom { get; set; }
+        public decimal? IGWeight { get; set; }
+        public decimal? PMWeight { get; set; }
+        public decimal? WeightPerUOM { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

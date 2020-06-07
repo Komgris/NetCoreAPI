@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IBomRepository :IRepository<BomTemp>
+    public interface IBomRepository :IRepository<MaterialGroup>
     {
-        Task<List<BomMaterialModel>> ListMaterialByBom(int bomId);
-        Task<PagingModel<BomModel>> ListBom(int page, int howmany, string keyword);
+        Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId);
+        Task<PagingModel<MaterialGroupModel>> ListBom(int page, int howMany, string keyword, bool isActive);
     }
 }

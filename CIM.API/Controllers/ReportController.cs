@@ -16,8 +16,6 @@ namespace CIM.API.Controllers {
     [ApiController]
     public class ReportController : BaseController {
 
-        private IReportService _service;
-
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
@@ -361,93 +359,44 @@ namespace CIM.API.Controllers {
         public async Task<string> GetBoardcastingDashboard(string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var cache = await GetCached(channelKey);
-            if (cache is null)
-            {
-                await BoardcastingDashboard(DashboardTimeFrame.Default, DashboardType.All, channel);
-            }
-
-            return CacheForBoardcast<BoardcastModel>(cache);
+            return CacheForBoardcast<BoardcastModel>(await GetCached(channelKey));
         }
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DashboardTimeFrame type, DashboardType updateType, string channel)
+        public async Task BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = new BoardcastModel(type);
-            await Task.Run(() =>
+            var boardcastData = await _service.GenerateBoardcastManagementData(dataFrame, updateType);
+            if (boardcastData.Data.Count > 0)
             {
-                try
-                {
-                    var paramsList = new Dictionary<string, object>() { { "@type", type } };
-                    switch (updateType)
-                    {
-                        case DashboardType.All:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                        case DashboardType.KPI:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.KPI], type, paramsList));
-                            break;
-                        case DashboardType.Output:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Output], type, paramsList));
-                            break;
-                        case DashboardType.Loss:
-                        case DashboardType.TimeUtilisation:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Loss], type, paramsList));
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.TimeUtilisation], type, paramsList));
-                            break;
-                        case DashboardType.Waste:
-                            boardcastData.SetDashboard(_service.GetDashboardData(Dashboard[DashboardType.Waste], type, paramsList));
-                            break;
-                    }
-
-                    if (boardcastData.Dashboards.Count > 0)
-                    {
-                        HandleBoardcastData(channelKey, boardcastData);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    boardcastData.IsSuccess = false;
-                    boardcastData.Message = ex.Message;
-                }
-            });
-        }
-
-        private async Task HandleBoardcastData(string channelKey, BoardcastModel boardcastData)
-        {
-            if (boardcastData != null)
-            {
-                await SetCached(channelKey, boardcastData);
-                await BoardcastingDashboard<BoardcastModel>(channelKey, boardcastData);
-            }
-        }
-
-        private async Task SetCached(string channelKey, BoardcastModel model)
-        {
-            var cache = await GetCached<BoardcastModel>(channelKey);
-            if (cache == null)
-            {
-                await _responseCacheService.SetAsync(channelKey, model);
-            }
-            else
-            {
-                foreach (BoardcastDataModel dashboard in model.Dashboards)
-                {
-                    cache.SetDashboard(dashboard);
-                }
-                await _responseCacheService.SetAsync(channelKey, cache);
+                await HandleBoardcastingManagementData(channelKey, boardcastData);
             }
         }
 
         #endregion
 
         #region Cim-Oper realtime process
+
+        [Route("api/[controller]/GetBoardcastActiveOperationData")]
+        [HttpGet]
+        public async Task<string> GetBoardcastActiveOperationData(string productionPlan, int routeId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            return CacheForBoardcast<ActiveProductionPlanModel>(await GetCached(channelKey));
+        }
+
+        [Route("api/[controller]/BoardcastingActiveOperationData")]
+        [HttpGet]
+        public async Task BoardcastingActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var activeProductionPlan = await GetCached<ActiveProductionPlanModel>(channelKey);
+            if (activeProductionPlan!.ActiveProcesses[routeId] != null)
+            {
+                await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan);
+            }
+        }
 
         #endregion
     }

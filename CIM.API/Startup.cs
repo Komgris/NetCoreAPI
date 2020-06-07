@@ -112,6 +112,7 @@ namespace CIM.API
             services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
             services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
             services.AddTransient<IBomService, BomService>();
+            services.AddTransient<IProductGroupService, ProductGroupService>();
 
             services.AddControllers();
             services.AddSignalR();

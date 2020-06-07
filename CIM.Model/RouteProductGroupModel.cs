@@ -4,16 +4,13 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class RouteMachineModel
+    public class RouteProductGroupModel
     {
         public int Id { get; set; }
         public int RouteId { get; set; }
-        public int MachineId { get; set; }
-        public string MachineName { get; set; }
-        public int MachineTypeId { get; set; }
-        public string MachineTypeName { get; set; }
-        public string Image { get; set; }
-        public int Sequence { get; set; }
+        public string RouteName { get; set; }
+        public int ProductGroupId { get; set; }
+        public string ProductGroupName { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

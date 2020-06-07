@@ -224,6 +224,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
             masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
             masterData.Dictionary.ProductType = await GetProductTypeDictionary();
+            masterData.Dictionary.Machine = await GetMachineDictionary();
 
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
@@ -399,6 +400,18 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, string>> GetProductGroupDictionary()
         {
             var db = (await _productGroupRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetMachineDictionary()
+        {
+            var db = (await _machineRepository.AllAsync()).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
