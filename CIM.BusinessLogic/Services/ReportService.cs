@@ -25,7 +25,7 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
 
                 { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
-                { BoardcastType.ActiveOutput, new DashboardConfig("Output","sp_report_productionsummary")},
+                { BoardcastType.ActiveProductionSummary, new DashboardConfig("ProductionSummary","sp_report_productionsummary")},
                 { BoardcastType.ActiveWasteMat, new DashboardConfig("WastebyMat","sp_report_waste_materials")},
                 { BoardcastType.ActiveWasteCase, new DashboardConfig("WastebyCase","sp_report_waste_cases")},
                 { BoardcastType.ActiveWasteMC, new DashboardConfig("WastebyMC","sp_report_waste_machines")},
@@ -36,7 +36,8 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.ActiveOperator, new DashboardConfig("Operator","sp_report_productionoperators")},
                 { BoardcastType.ActiveMachineInfo, new DashboardConfig("MachineInfo","sp_report_active_machineinfo")},
                 { BoardcastType.ActiveMachineSpeed, new DashboardConfig("MachineSpeed","sp_report_machinespeed")},
-                { BoardcastType.ActiveMachineEvent, new DashboardConfig("MachineEvent","sp_report_active_machineevent")},
+                { BoardcastType.ActiveMachineStatus, new DashboardConfig("MachineStatus","sp_Report_Machine_Status")},
+                { BoardcastType.ActiveMachineLossEvent, new DashboardConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
         public ReportService(IDirectSqlRepository directSqlRepository)
@@ -306,7 +307,7 @@ namespace CIM.BusinessLogic.Services {
                         case BoardcastType.All:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveWasteMat
                                                                 , BoardcastType.ActiveWasteCase
                                                                 , BoardcastType.ActiveWasteMC
@@ -317,7 +318,7 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveOperator
                                                                 , BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineEvent}
+                                                                , BoardcastType.ActiveMachineLossEvent}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
                         case BoardcastType.ActiveKPI:
@@ -325,10 +326,10 @@ namespace CIM.BusinessLogic.Services {
                                                             new[]{ BoardcastType.ActiveKPI}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
-                        case BoardcastType.ActiveOutput:
+                        case BoardcastType.ActiveProductionSummary:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveMachineSpeed}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
@@ -369,7 +370,7 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineEvent}
+                                                                , BoardcastType.ActiveMachineLossEvent}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
                     }

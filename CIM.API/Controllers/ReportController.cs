@@ -364,7 +364,7 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/BoardcastingDashboard")]
         [HttpGet]
-        public async Task BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
+        public async Task<string> BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
             var boardcastData = await _service.GenerateBoardcastManagementData(dataFrame, updateType);
@@ -372,6 +372,8 @@ namespace CIM.API.Controllers {
             {
                 await HandleBoardcastingManagementData(channelKey, boardcastData);
             }
+
+            return JsonConvert.SerializeObject(boardcastData, JsonsSetting);
         }
 
         #endregion
@@ -388,14 +390,17 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/BoardcastingActiveOperationData")]
         [HttpGet]
-        public async Task BoardcastingActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<string> BoardcastingActiveOperationData(BoardcastType updateType, string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = await GetCached<ActiveProductionPlanModel>(channelKey);
             if (activeProductionPlan!.ActiveProcesses[routeId] != null)
             {
-                await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan);
+                return JsonConvert.SerializeObject(
+                    await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan)
+                    , JsonsSetting);
             }
+            return "";
         }
 
         #endregion

@@ -97,7 +97,7 @@ namespace CIM.Model
             Loss,
             TimeUtilisation,
             ActiveKPI,
-            ActiveOutput,
+            ActiveProductionSummary,
             ActiveWaste,
             ActiveWasteMat,
             ActiveWasteCase,
@@ -109,7 +109,8 @@ namespace CIM.Model
             ActiveOperator,
             ActiveMachineInfo,
             ActiveMachineSpeed,
-            ActiveMachineEvent,
+            ActiveMachineLossEvent,
+            ActiveMachineStatus,
         }
 
         public class DashboardConfig {
