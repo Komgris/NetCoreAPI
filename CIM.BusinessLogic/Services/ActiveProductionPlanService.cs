@@ -4,6 +4,7 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,6 +34,7 @@ namespace CIM.BusinessLogic.Services
             IProductionPlanRepository productionPlanRepository,
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository,
+            IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
@@ -389,6 +391,39 @@ namespace CIM.BusinessLogic.Services
                 });
             }
             return activeProductionPlan;
+        }
+
+        public async Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour)
+        {
+            var machineList = new List<ActiveMachineModel>();
+            var activeProductionPlanList = new List<ActiveProductionPlanModel>();
+            foreach (var item in listData)
+            {
+                var cachedMachine = await _machineService.GetCached(item.MachineId);
+                if (cachedMachine != null)
+                {
+                    if (cachedMachine?.RecordProductionPlanOutput.Hour < hour)
+                    {
+                        //update db
+
+                    }
+
+                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
+                    machineList.Add(cachedMachine);
+                    _machineService.SetCached(item.MachineId, cachedMachine);
+                }
+            }
+
+            var activeProductionPlanIds = machineList.Select(x => x.ProductionPlanId).ToList();
+            foreach (var item in activeProductionPlanIds)
+            {
+                var activeProductionPlan = await GetCached(item);
+                activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId).ToDictionary(x => x.Id, x => x);
+                activeProductionPlanList.Add(activeProductionPlan);
+                SetCached(activeProductionPlan);
+
+            }
+            return activeProductionPlanList;
         }
     }
 }
