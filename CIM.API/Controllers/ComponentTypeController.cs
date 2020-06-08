@@ -7,26 +7,24 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
     public class ComponentTypeController : BaseController
     {
-        private IResponseCacheService _responseCacheService;
-        private IMachineService _machineService;
         private IComponentTypeService _componentTypeService;
+        private IUtilitiesService _utilitiesService;
 
 
         public ComponentTypeController(
-            IResponseCacheService responseCacheService,
-            IMachineService machineService,
-            IComponentTypeService componentTypeService
+            IComponentTypeService componentTypeService,
+            IUtilitiesService utilitiesService
         )
         {
-            _responseCacheService = responseCacheService;
-            _machineService = machineService;
             _componentTypeService = componentTypeService;
+            _utilitiesService = utilitiesService;
         }
 
         [Route("api/[controller]/GetByMachineType")]
@@ -83,12 +81,14 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ComponentTypeModel>> Create([FromBody] ComponentTypeModel data)
+        public async Task<ProcessReponseModel<ComponentTypeModel>> Create([FromForm] IFormFile file, [FromForm] string data)
         {
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                await _componentTypeService.Create(data);
+                var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
+                list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                await _componentTypeService.Create(list);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -100,12 +100,14 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPut]
-        public async Task<ProcessReponseModel<ComponentTypeModel>> Update([FromBody] ComponentTypeModel data)
+        public async Task<ProcessReponseModel<ComponentTypeModel>> Update([FromForm] IFormFile file, [FromForm] string data)
         {
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                await _componentTypeService.Update(data);
+                var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
+                list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                await _componentTypeService.Update(list);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

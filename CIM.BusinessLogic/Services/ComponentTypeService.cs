@@ -76,6 +76,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         Id = x.Id,
                         Name = x.Name,
+                        Image = x.Image,
                         IsActive = x.IsActive,
                         IsDelete = x.IsDelete,
                         CreatedAt = x.CreatedAt,

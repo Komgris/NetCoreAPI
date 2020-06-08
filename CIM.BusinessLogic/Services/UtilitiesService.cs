@@ -30,6 +30,10 @@ namespace CIM.BusinessLogic.Services
                 {
                     var savePath = Constans.SAVE_PATH;
                     var folderName = Path.Combine(savePath, pathName);
+                    if (!Directory.Exists(folderName))
+                    {
+                        Directory.CreateDirectory(folderName);
+                    }
                     var serverPath = Path.Combine(Constans.SERVER_PATH, pathName);
                     var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"');
                     var pathToSave = Path.Combine(folderName, fileName);
