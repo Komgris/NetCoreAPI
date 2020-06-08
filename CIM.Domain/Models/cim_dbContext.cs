@@ -935,7 +935,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.Property(e => e.BhtperUnit)
+                entity.Property(e => e.BHTPerUnit)
                     .HasColumnName("BHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
 
@@ -954,7 +954,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description).HasMaxLength(4000);
 
-                entity.Property(e => e.Icsgroup)
+                entity.Property(e => e.ICSGroup)
                     .HasColumnName("ICSGroup")
                     .HasMaxLength(50);
 
@@ -966,7 +966,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ProductCategory).HasMaxLength(50);
 
-                entity.Property(e => e.Uom)
+                entity.Property(e => e.UOM)
                     .HasColumnName("UOM")
                     .HasMaxLength(50);
 
