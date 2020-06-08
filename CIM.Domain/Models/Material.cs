@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public Material()
         {
-            BomMaterial = new HashSet<BomMaterial>();
+            MaterialGroupMaterial = new HashSet<MaterialGroupMaterial>();
         }
 
         public int Id { get; set; }
@@ -15,10 +15,10 @@ namespace CIM.Domain.Models
         public string Image { get; set; }
         public string Description { get; set; }
         public string ProductCategory { get; set; }
-        public string Icsgroup { get; set; }
+        public string ICSGroup { get; set; }
         public string MaterialGroup { get; set; }
-        public string Uom { get; set; }
-        public decimal? BhtperUnit { get; set; }
+        public string UOM { get; set; }
+        public decimal? BHTPerUnit { get; set; }
         public int MaterialTypeId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
@@ -28,6 +28,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual MaterialType MaterialType { get; set; }
-        public virtual ICollection<BomMaterial> BomMaterial { get; set; }
+        public virtual ICollection<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
     }
 }

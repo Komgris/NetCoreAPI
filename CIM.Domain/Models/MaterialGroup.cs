@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CIM.Model
+namespace CIM.Domain.Models
 {
-    public class BomModel
+    public partial class MaterialGroup
     {
+        public MaterialGroup()
+        {
+            MaterialGroupMaterial = new HashSet<MaterialGroupMaterial>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }
@@ -14,5 +18,7 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual ICollection<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
     }
 }

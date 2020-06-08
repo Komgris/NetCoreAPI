@@ -13,12 +13,8 @@ namespace CIM.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ChartController : ControllerBase
-    {
-
-        private IHubContext<ChartHub> _hub;
-
-        public ChartController(IHubContext<ChartHub> hub)
+    public class ChartController : BaseController {
+        public ChartController(IHubContext<GlobalHub> hub)
         {
             _hub = hub;
         }
@@ -26,9 +22,7 @@ namespace CIM.API.Controllers
         public IActionResult Get()
         {
             var timerManager = new TimerService(() => _hub.Clients.All.SendAsync("transferchartdata", DataService.GetData()));
-
             return Ok(new { Message = "Request Completed" });
         }
-
     }
 }

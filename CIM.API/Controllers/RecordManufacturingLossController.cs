@@ -15,11 +15,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordManufacturingLossController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public RecordManufacturingLossController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IRecordManufacturingLossService recordManufacturingLossService
             )
         {
@@ -34,7 +33,29 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _recordManufacturingLossService.Create(model);
+                var productionPlan = await _recordManufacturingLossService.Create(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/End")]
+        public async Task<ProcessReponseModel<object>> End(RecordManufacturingLossModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _recordManufacturingLossService.End(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)

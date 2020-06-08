@@ -15,13 +15,11 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineTypeController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
-        private IResponseCacheService _responseCacheService;
         private IMachineTypeService _machineTypeService;
         private IUtilitiesService _utilitiesService;
 
         public MachineTypeController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IMachineTypeService machineTypeService,
             IUtilitiesService utilitiesService
@@ -74,14 +72,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<MachineTypeModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MachineTypeModel>>> List(string keyword = "", int page = 1, int howmany = 10,bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<MachineTypeModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _machineTypeService.List(keyword, page, howmany);
+                output.Data = await _machineTypeService.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -98,8 +94,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTypeModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 output.Data = await _machineTypeService.Get(id);
                 output.IsSuccess = true;
             }

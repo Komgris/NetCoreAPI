@@ -21,24 +21,25 @@ namespace CIM.API.IntegrationTests
             scenario = CreateWebApplication();
         }
 
-        public BomTemp Get(string name, TestScenario scenario)
+        public MaterialGroup Get(string name, TestScenario scenario)
         {
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                return context.BomTemp.First(x => x.Name == name);
+                return context.MaterialGroup.First(x => x.Name == name);
             }
         }
 
         [Fact]
         public async Task List_Test()
         {
-            var bomList = new List<BomTemp>()
+            var expectedCount = 3;
+            var bomList = new List<MaterialGroup>()
             {
-                new BomTemp{ Name="testA",IsActive=true},
-                new BomTemp{ Name="testB",IsActive=true},
-                new BomTemp{ Name="testC",IsActive=true},
-                new BomTemp{ Name="testD",IsActive=true},
+                new MaterialGroup{ Name="testA",IsActive=true},
+                new MaterialGroup{ Name="testB",IsActive=true},
+                new MaterialGroup{ Name="testC",IsActive=true},
+                new MaterialGroup{ Name="testD",IsActive=true},
             };
 
             foreach (var model in bomList)
@@ -46,19 +47,19 @@ namespace CIM.API.IntegrationTests
                 using (var scope = scenario.ServiceScopeFactory.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                    context.BomTemp.Add(model);
+                    context.MaterialGroup.Add(model);
                     context.SaveChanges();
                 }
             }
 
             // Act
-            var loadResponse = await scenario.TestClient.GetAsync($"api/Bom/List?page=1&howmany={bomList.Count()}");
+            var loadResponse = await scenario.TestClient.GetAsync($"api/Bom/List?page=1&howmany={expectedCount}");
             loadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var loadResponseString = await loadResponse.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<BomModel>>>(loadResponseString);
+            var result = JsonConvert.DeserializeObject<ProcessReponseModel<PagingModel<MaterialGroupModel>>>(loadResponseString);
 
             result.Data.Should().NotBeNull();
-            result.Data.Data.Count().Should().Be(4);
+            result.Data.Data.Count().Should().Be(expectedCount);
             result.Data.Data.Where(x => x.Name == bomList[0].Name);
         }
 

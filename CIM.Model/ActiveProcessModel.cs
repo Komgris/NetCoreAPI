@@ -11,6 +11,6 @@ namespace CIM.Model
         public int ProductId { get; set; }
         public PRODUCTION_PLAN_STATUS Status { get; set; }
         public ActiveRouteModel Route { get; set; }
-
+        public BoardcastModel BoardcastData { get; set; }
     }
 }

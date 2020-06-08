@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IBomMaterialRepository : IRepository<MaterialGroupMaterial>
+    public interface IMaterialTypeRepository : IRepository<MaterialType>
     {
     }
 }
