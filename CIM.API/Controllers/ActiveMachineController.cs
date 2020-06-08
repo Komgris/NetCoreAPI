@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ActiveMachineController : BaseController
     {
@@ -43,6 +43,5 @@ namespace CIM.API.Controllers
             return "OK";
 
         }
-
     }
 }
