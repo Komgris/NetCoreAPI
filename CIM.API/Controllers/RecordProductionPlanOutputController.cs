@@ -40,7 +40,6 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hour);
-                //await _recordProductionPlanOutputService.UpdateMachineProduceCounter(listData, hour);
                 foreach (var productionPlan in productionPlans)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
