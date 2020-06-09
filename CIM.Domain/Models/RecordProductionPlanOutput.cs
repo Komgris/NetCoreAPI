@@ -8,12 +8,12 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int? MachineId { get; set; }
-        public bool? IsCounterOut { get; set; }
-        public int Count { get; set; }
-        public int Total { get; set; }
-        public bool IsChecker { get; set; }
+        public int? CounterIn { get; set; }
+        public int? TotalIn { get; set; }
+        public int? CounterOut { get; set; }
+        public int? TotalOut { get; set; }
         public string Remark { get; set; }
-        public int Hour { get; set; }
+        public int? Hour { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
