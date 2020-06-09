@@ -407,7 +407,7 @@ namespace CIM.BusinessLogic.Services
                                                             .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToList();
-                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour < hour)
+                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
                     {
                         recordOutput = new RecordProductionPlanOutput
                         {
@@ -417,11 +417,9 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = CurrentUser.UserId,
                             Hour = hour,
                             MachineId = item.MachineId,
-                            Month = now.Month,
                             ProductionPlanId = cachedMachine.ProductionPlanId,
                             TotalIn = item.CounterIn,
                             TotalOut = item.CounterOut,
-                            Year = now.Year,
                         };
 
                         if (dbOutput.Count > 0)

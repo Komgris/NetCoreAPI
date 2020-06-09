@@ -13,7 +13,7 @@ namespace CIM.Domain.Models
         public int? CounterOut { get; set; }
         public int? TotalOut { get; set; }
         public string Remark { get; set; }
-        public int Hour { get; set; }
+        public int? Hour { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
