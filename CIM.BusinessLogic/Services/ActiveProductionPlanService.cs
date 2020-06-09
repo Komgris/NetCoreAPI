@@ -4,6 +4,7 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,6 +24,7 @@ namespace CIM.BusinessLogic.Services
         private IProductionPlanRepository _productionPlanRepository;
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IRecordMachineStatusRepository _recordMachineStatusRepository;
+        private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public ActiveProductionPlanService(
@@ -33,6 +35,7 @@ namespace CIM.BusinessLogic.Services
             IProductionPlanRepository productionPlanRepository,
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository,
+            IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
@@ -43,6 +46,7 @@ namespace CIM.BusinessLogic.Services
             _productionPlanRepository = productionPlanRepository;
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
+            _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -388,5 +392,76 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
+        public async Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour)
+        {
+            var machineList = new List<ActiveMachineModel>();
+            var activeProductionPlanList = new List<ActiveProductionPlanModel>();
+            var now = DateTime.Now;
+            foreach (var item in listData)
+            {
+                var cachedMachine = await _machineService.GetCached(item.MachineId);
+                if (cachedMachine.ProductionPlanId != null)
+                {
+                    var recordOutput = new RecordProductionPlanOutput();
+                    var dbOutput = _recordProductionPlanOutputRepository
+                                                            .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
+                                                            .OrderByDescending(x => x.CreatedAt)
+                                                            .Take(2).ToList();
+                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
+                    {
+                        recordOutput = new RecordProductionPlanOutput
+                        {
+                            CounterIn = item.CounterIn,
+                            CounterOut = item.CounterOut,
+                            CreatedAt = now,
+                            CreatedBy = CurrentUser.UserId,
+                            Hour = hour,
+                            MachineId = item.MachineId,
+                            ProductionPlanId = cachedMachine.ProductionPlanId,
+                            TotalIn = item.CounterIn,
+                            TotalOut = item.CounterOut,
+                        };
+
+                        if (dbOutput.Count > 0)
+                        {
+                            recordOutput.CounterIn = item.CounterIn - dbOutput[0].TotalIn;
+                            recordOutput.CounterOut = item.CounterOut - dbOutput[0].TotalOut;
+                        }
+
+                        //insert
+                        _recordProductionPlanOutputRepository.Add(recordOutput);
+                    }
+                    else
+                    {
+                        //update
+                        recordOutput = dbOutput[0];
+                        recordOutput.CounterIn = item.CounterIn - (dbOutput.Count > 1? dbOutput[1].TotalIn:0);
+                        recordOutput.CounterOut = item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0);
+                        recordOutput.TotalIn = item.CounterIn;
+                        recordOutput.TotalOut = item.CounterOut;
+                        recordOutput.UpdatedAt = now;
+
+                        _recordProductionPlanOutputRepository.Edit(recordOutput);
+                    }
+
+                    //set cache
+                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
+                    machineList.Add(cachedMachine);
+                    await _machineService.SetCached(item.MachineId, cachedMachine);
+                }
+            }
+
+            var activeProductionPlanIds = machineList.Select(x => x.ProductionPlanId).Distinct().ToList();
+            foreach (var item in activeProductionPlanIds)
+            {
+                var activeProductionPlan = await GetCached(item);
+                activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId).ToDictionary(x => x.Id, x => x);
+                activeProductionPlanList.Add(activeProductionPlan);
+                await SetCached(activeProductionPlan);
+
+            }
+            await _unitOfWork.CommitAsync();
+            return activeProductionPlanList;
+        }
     }
 }
