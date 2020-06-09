@@ -21,23 +21,21 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<string> UploadImage(IFormFile image, string pathName)
+        public async Task<string> UploadImage(IFormFile image, string pathName, string savePath)
         {
             string toDbPath = "";
             if (image != null)
             {
                 if (image.Length > 0)
                 {
-                    var savePath = Constans.SAVE_PATH;
                     var folderName = Path.Combine(savePath, pathName);
                     if (!Directory.Exists(folderName))
                     {
                         Directory.CreateDirectory(folderName);
                     }
-                    var serverPath = Path.Combine(Constans.SERVER_PATH, pathName);
                     var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"');
                     var pathToSave = Path.Combine(folderName, fileName);
-                    toDbPath = Path.Combine(serverPath, fileName);
+                    toDbPath = Path.Combine(pathName, fileName);
                     using (var stream = new FileStream(pathToSave, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);

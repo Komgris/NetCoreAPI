@@ -41,8 +41,9 @@ namespace CIM.API.Controllers
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
 
-
-                output.Data = await _productService.Create(data);
+                var list = JsonConvert.DeserializeObject<ProductModel>(data);
+                list.Image = await _utilitiesService.UploadImage(file, "product", Constans.SAVE_PATH);
+                await _productService.Create(list);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -125,7 +126,7 @@ namespace CIM.API.Controllers
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "product");
+                list.Image = await _utilitiesService.UploadImage(file, "product", Constans.SAVE_PATH);
                 await _productService.Update(list);
                 output.IsSuccess = true;
             }

@@ -40,7 +40,7 @@ namespace CIM.API.Controllers
             try
             {
                 var list = JsonConvert.DeserializeObject<MachineTypeModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "machineType");
+                list.Image = await _utilitiesService.UploadImage(file, "machineType", Constans.SAVE_PATH);
                 await _machineTypeService.Create(list);
                 output.IsSuccess = true;
             }
@@ -59,7 +59,7 @@ namespace CIM.API.Controllers
             try
             {
                 var list = JsonConvert.DeserializeObject<MachineTypeModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "machineType");
+                list.Image = await _utilitiesService.UploadImage(file, "machineType", Constans.SAVE_PATH);
                 await _machineTypeService.Update(list);
                 output.IsSuccess = true;
             }

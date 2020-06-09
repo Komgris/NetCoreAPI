@@ -5,7 +5,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
@@ -14,23 +16,26 @@ namespace CIM.API.Controllers
     public class MaterialController : ControllerBase
     {
         private IMaterialService _service;
-        public MaterialController(IMaterialService service)
+        private IUtilitiesService _utilitiesService;
+        public MaterialController(
+            IMaterialService service,
+            IUtilitiesService utilitiesService)
         {
             _service = service;
+            _utilitiesService = utilitiesService;
         }
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<MaterialModel> Create([FromBody]MaterialModel model)
+        public async Task<MaterialModel> Create([FromForm] IFormFile file, [FromForm] string data)
         {
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                //_service.CurrentUser = currentUser;
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                
-               return await _service.Create(model);
+
+                var list = JsonConvert.DeserializeObject<MaterialModel>(data);
+                list.Image = await _utilitiesService.UploadImage(file, "material", Constans.SAVE_PATH);
+                return await _service.Create(list);
             }
             catch (Exception e)
             {
@@ -40,16 +45,15 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<MaterialModel> Update([FromBody]MaterialModel model)
+        public async Task<MaterialModel> Update([FromForm] IFormFile file, [FromForm] string data)
         {
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                //_service.CurrentUser = currentUser;
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                return await _service.Update(model);
+                var list = JsonConvert.DeserializeObject<MaterialModel>(data);
+                list.Image = await _utilitiesService.UploadImage(file, "material", Constans.SAVE_PATH);
+                return await _service.Create(list);
             }
             catch (Exception e)
             {
