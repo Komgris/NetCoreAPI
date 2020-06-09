@@ -3,6 +3,7 @@ using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,6 +15,11 @@ namespace CIM.BusinessLogic.Services {
     public class ReportService : BaseService, IReportService {
 
         private IDirectSqlRepository _directSqlRepository;
+
+        private JsonSerializerSettings JsonSetting = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
         private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
             = new Dictionary<BoardcastType, DashboardConfig>()
@@ -228,7 +234,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@page", page }
             };
 
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
+            var dt =  _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
             var totalcnt = dt.Rows[0].Field<int>("totalcount");
             var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
             pagingmodel.DataObject = dt;
@@ -467,7 +473,8 @@ namespace CIM.BusinessLogic.Services {
             {
                 dashboarddata.Name = dashboardConfig.Name;
                 dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList)
+                                        ,JsonSetting);
             }
             catch (Exception ex)
             {

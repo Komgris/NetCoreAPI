@@ -283,7 +283,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to, page), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to, page)));
                 output.IsSuccess = true;
             }
             catch (Exception e)
