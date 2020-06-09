@@ -397,8 +397,7 @@ namespace CIM.API.Controllers {
             if (activeProductionPlan!.ActiveProcesses[routeId] != null)
             {
                 return JsonConvert.SerializeObject(
-                    await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan)
-                    , JsonsSetting);
+                    await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan));
             }
             return "";
         }
