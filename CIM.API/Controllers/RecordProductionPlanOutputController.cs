@@ -33,13 +33,13 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData, int hour)
+        public async Task<ProcessReponseModel<object>> UpdateMachineProduceCounter([FromBody] List<MachineProduceCounterModel> listData,int? hour)
         {
-
+            var hr = hour ?? DateTime.Now.Hour;
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hour);
+                var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
                 foreach (var productionPlan in productionPlans)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";

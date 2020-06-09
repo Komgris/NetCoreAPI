@@ -400,13 +400,16 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
-                if (cachedMachine != null)
+                if (cachedMachine.ProductionPlanId != null)
                 {
-                    if (cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour < hour)
+                    var recordOutput = new RecordProductionPlanOutput();
+                    var dbOutput = _recordProductionPlanOutputRepository
+                                                            .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
+                                                            .OrderByDescending(x => x.CreatedAt)
+                                                            .Take(2).ToList();
+                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour < hour)
                     {
-                        //update db
-                        var dbOutput = await _recordProductionPlanOutputRepository.Where(x=>x.MachineId == cachedMachine.Id).OrderByDescending(x=>x.CreatedAt).FirstOrDefaultAsync();
-                        var newOutput = new RecordProductionPlanOutput
+                        recordOutput = new RecordProductionPlanOutput
                         {
                             CounterIn = item.CounterIn,
                             CounterOut = item.CounterOut,
@@ -420,17 +423,33 @@ namespace CIM.BusinessLogic.Services
                             TotalOut = item.CounterOut,
                             Year = now.Year,
                         };
-                        if(dbOutput != null)
+
+                        if (dbOutput.Count > 0)
                         {
-                            newOutput.CounterIn = item.CounterIn - dbOutput.TotalIn;
-                            newOutput.CounterOut = item.CounterOut - dbOutput.TotalOut;
+                            recordOutput.CounterIn = item.CounterIn - dbOutput[0].TotalIn;
+                            recordOutput.CounterOut = item.CounterOut - dbOutput[0].TotalOut;
                         }
-                        _recordProductionPlanOutputRepository.Add(newOutput);
+
+                        //insert
+                        _recordProductionPlanOutputRepository.Add(recordOutput);
+                    }
+                    else
+                    {
+                        //update
+                        recordOutput = dbOutput[0];
+                        recordOutput.CounterIn = item.CounterIn - (dbOutput.Count > 1? dbOutput[1].TotalIn:0);
+                        recordOutput.CounterOut = item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0);
+                        recordOutput.TotalIn = item.CounterIn;
+                        recordOutput.TotalOut = item.CounterOut;
+                        recordOutput.UpdatedAt = now;
+
+                        _recordProductionPlanOutputRepository.Edit(recordOutput);
                     }
 
+                    //set cache
                     cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
                     machineList.Add(cachedMachine);
-                    _machineService.SetCached(item.MachineId, cachedMachine);
+                    await _machineService.SetCached(item.MachineId, cachedMachine);
                 }
             }
 
@@ -440,7 +459,7 @@ namespace CIM.BusinessLogic.Services
                 var activeProductionPlan = await GetCached(item);
                 activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId).ToDictionary(x => x.Id, x => x);
                 activeProductionPlanList.Add(activeProductionPlan);
-                SetCached(activeProductionPlan);
+                await SetCached(activeProductionPlan);
 
             }
             await _unitOfWork.CommitAsync();
