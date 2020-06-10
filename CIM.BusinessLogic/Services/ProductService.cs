@@ -69,7 +69,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive)
         {
-            var output = await _productRepository.Paging(keyword, page, howMany, isActiive);
+            var output = await _productRepository.Paging(keyword, page, howMany, isActiive, ImagePath);
             return output;
         }
 

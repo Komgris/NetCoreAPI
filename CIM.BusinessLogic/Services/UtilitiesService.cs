@@ -21,14 +21,14 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<string> UploadImage(IFormFile image, string pathName, string savePath)
+        public async Task<string> UploadImage(IFormFile image, string pathName)
         {
             string toDbPath = "";
             if (image != null)
             {
                 if (image.Length > 0)
                 {
-                    var folderName = Path.Combine(savePath, pathName);
+                    var folderName = Path.Combine(ServerPath, pathName);
                     if (!Directory.Exists(folderName))
                     {
                         Directory.CreateDirectory(folderName);

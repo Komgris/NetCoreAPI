@@ -8,6 +8,6 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IUtilitiesService : IBaseService
     {
-        Task<string> UploadImage(IFormFile image, string pathName, string savePath);
+        Task<string> UploadImage(IFormFile image, string pathName);
     }
 }

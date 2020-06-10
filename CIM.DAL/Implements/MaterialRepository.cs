@@ -20,7 +20,7 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive)
+        public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive, string imagePath)
         {
             return await Task.Run(() =>
             {
@@ -30,6 +30,7 @@ namespace CIM.DAL.Implements
                                             {"@howmany", howMany},
                                             { "@page", page},
                                             { "@is_active", isActive},
+                                            { "@imagepath", imagePath},
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterial", parameterList);

@@ -53,7 +53,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _materialRepository.List(keyword, page, howMany, isActive);
+            var output = await _materialRepository.List(keyword, page, howMany, isActive, ImagePath);
             return output;
         }
 
