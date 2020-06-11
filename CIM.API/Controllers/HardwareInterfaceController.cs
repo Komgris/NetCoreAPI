@@ -37,6 +37,13 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/ForceInitialTags")]
+        public async Task ForceInitialTags()
+        {
+            await _machineService.ForceInitialTags();
+        }
+
         [HttpPost]
         [Route("api/[controller]/SetListMachinesResetCounter")]
         public async Task SetListMachinesResetCounter([FromBody] List<int>  machines)
@@ -59,13 +66,6 @@ namespace CIM.API.Controllers
                 output.Message = ex.Message;
             }
             return output;
-        }
-
-        [HttpGet]
-        [Route("api/[controller]/ForceInitialTags")]
-        public async Task ForceInitialTags()
-        {
-            await _machineService.ForceInitialTags();
         }
     }
 }
