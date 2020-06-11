@@ -34,7 +34,14 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "material");
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                }
+                else if (list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"material/{list.Image}";
+                }
                 return await _service.Create(list);
             }
             catch (Exception e)
@@ -52,8 +59,15 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "material");
-                return await _service.Create(list);
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                }
+                else if(list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"material/{list.Image}";
+                }
+                return await _service.Update(list);
             }
             catch (Exception e)
             {

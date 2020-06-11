@@ -42,7 +42,14 @@ namespace CIM.API.Controllers
 
 
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "product");
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                }
+                else if (list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"product/{list.Image}";
+                }
                 await _productService.Create(list);
                 output.IsSuccess = true;
             }
@@ -126,7 +133,14 @@ namespace CIM.API.Controllers
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
-                list.Image = await _utilitiesService.UploadImage(file, "product");
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                }
+                else if (list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"product/{list.Image}";
+                }
                 await _productService.Update(list);
                 output.IsSuccess = true;
             }

@@ -11,6 +11,6 @@ namespace CIM.DAL.Interfaces
     {
         Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive);
         Task<List<MachineTagsModel>> GetMachineTags();
-        Task<List<RouteMachineModel>> ListMachineByRoute(int routeId);
+        Task<List<RouteMachineModel>> ListMachineByRoute(int routeId, string imagePath);
     }
 }

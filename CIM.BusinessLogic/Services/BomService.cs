@@ -40,7 +40,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<MaterialGroupMaterialModel>> ListBomMapping(int bomId)
         {
-            var output = await _bomRepository.ListMaterialByBom(bomId);
+            var output = await _bomRepository.ListMaterialByBom(bomId,ImagePath);
             return output;
         }
 

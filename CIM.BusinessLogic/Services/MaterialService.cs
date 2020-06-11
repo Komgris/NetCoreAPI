@@ -65,7 +65,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
         {
-            var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            var output = await _productMaterialRepository.ListMaterialByProduct(productId, ImagePath);
             return output;
         }
 

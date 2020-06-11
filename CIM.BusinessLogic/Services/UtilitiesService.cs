@@ -35,7 +35,7 @@ namespace CIM.BusinessLogic.Services
                     }
                     var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"');
                     var pathToSave = Path.Combine(folderName, fileName);
-                    toDbPath = Path.Combine(pathName, fileName);
+                    toDbPath = (Path.Combine(pathName, fileName)).Replace(@"\", "/" );
                     using (var stream = new FileStream(pathToSave, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);

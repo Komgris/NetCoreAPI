@@ -38,13 +38,14 @@ namespace CIM.DAL.Implements
                 return ToPagingModel(dt.ToModel<MachineListModel>(), totalCount, page, howMany);
             });
         }
-        public async Task<List<RouteMachineModel>> ListMachineByRoute(int routeId)
+        public async Task<List<RouteMachineModel>> ListMachineByRoute(int routeId,string imagePath)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
                                             {"@route_id", routeId},
+                                            {"@imagepath", imagePath }
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachineByRoute", parameterList);

@@ -45,7 +45,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<ComponentTypeModel>> GetComponentTypesByMachineType(int machineTypeId)
         {
-            var output = await _componentTypeRepository.ListComponentTypeByMachineType(machineTypeId);
+            var output = await _componentTypeRepository.ListComponentTypeByMachineType(machineTypeId, ImagePath);
             return output;
         }
 

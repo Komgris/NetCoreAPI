@@ -80,6 +80,7 @@ namespace CIM.BusinessLogic.Services
                         x => new ProductModel
                         {
                             Id = x.Id,
+                            Image = x.Image,
                             Code = x.Code,
                             Description = x.Description,
                             BriteItemPerUPCItem = x.BriteItemPerUPCItem,

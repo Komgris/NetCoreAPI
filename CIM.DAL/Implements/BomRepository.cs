@@ -19,13 +19,14 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId)
+        public async Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId, string pathName)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
                                             {"@bom_id", bomId},
+                                            {"@imagepath", pathName}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterialGroupMaterial", parameterList);

@@ -174,7 +174,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
-            var output = await _machineRepository.ListMachineByRoute(routeId);
+            var output = await _machineRepository.ListMachineByRoute(routeId, ImagePath);
             return output;
         }
         public async Task DeleteMapping(int routeid)

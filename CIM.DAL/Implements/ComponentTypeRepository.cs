@@ -40,13 +40,14 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<List<ComponentTypeModel>> ListComponentTypeByMachineType(int machineTypeId)
+        public async Task<List<ComponentTypeModel>> ListComponentTypeByMachineType(int machineTypeId, string imagePath)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
                                             {"@machinetype_id", machineTypeId},
+                                            { "@imagepath" , imagePath}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachineTypeComponentType", parameterList);
