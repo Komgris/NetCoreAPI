@@ -9,33 +9,33 @@ using CIM.Model;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class HardwareInterfaceService : BaseService, IHardwareInterfaceService
-    {
-        private readonly IProductionOutputRepository _productionoutputrepository;
-        private IUnitOfWorkCIM _unitOfWork;
-        public HardwareInterfaceService(
-            IProductionOutputRepository productionoutputrepository,
-            IUnitOfWorkCIM unitOfWork
-            )
-        {
-            _productionoutputrepository = productionoutputrepository;
-            _unitOfWork = unitOfWork;
-        }
+    //public class HardwareInterfaceService : BaseService, IHardwareInterfaceService
+    //{
+    //    private readonly IProductionOutputRepository _productionoutputrepository;
+    //    private IUnitOfWorkCIM _unitOfWork;
+    //    public HardwareInterfaceService(
+    //        IProductionOutputRepository productionoutputrepository,
+    //        IUnitOfWorkCIM unitOfWork
+    //        )
+    //    {
+    //        _productionoutputrepository = productionoutputrepository;
+    //        _unitOfWork = unitOfWork;
+    //    }
 
-        public async Task<bool>  OutputUpdate(RecordOutputModel model)
-        {
-            var dbModel = new RecordProductionOutput
-            {
-                ProductionPlanId = model.OutputId.ToString(),
-                Count = model.Count,
-                CreatedBy = CurrentUser.UserId,
-                CreatedAt = DateTime.Now
+    //    public async Task<bool>  OutputUpdate(RecordOutputModel model)
+    //    {
+    //        var dbModel = new RecordProductionOutput
+    //        {
+    //            ProductionPlanId = model.OutputId.ToString(),
+    //            Count = model.Count,
+    //            CreatedBy = CurrentUser.UserId,
+    //            CreatedAt = DateTime.Now
 
-            };
-            _productionoutputrepository.Add(dbModel);
-            await _unitOfWork.CommitAsync();
+    //        };
+    //        _productionoutputrepository.Add(dbModel);
+    //        await _unitOfWork.CommitAsync();
 
-            return true;
-        }
-    }
+    //        return true;
+    //    }
+    //}
 }

@@ -104,7 +104,6 @@ namespace CIM.API
             services.AddTransient<IComponentService, ComponentService>();
             services.AddTransient<IRouteService, RouteService>();
             services.AddTransient<IRecordProductionPlanOutputService, RecordProductionPlanOutputService>();
-            services.AddTransient<IHardwareInterfaceService, HardwareInterfaceService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();

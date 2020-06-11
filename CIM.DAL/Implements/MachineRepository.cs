@@ -58,7 +58,8 @@ namespace CIM.DAL.Implements
             return await Task.Run(() =>
             {
                 var query = _entities.Machine;
-                var output = query.Select(
+                var output = query.Where(x=>x.IsActive)
+                                .Select(
                                             x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.CounterInTag, x.CounterOutTag, x.CounterResetTag))
                                 .ToList();
                 return output;
