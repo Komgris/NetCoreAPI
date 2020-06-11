@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
@@ -36,6 +37,12 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpPost]
+        [Route("api/[controller]/SetListMachinesResetCounter")]
+        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines)
+        {
+            await _machineService.SetListMachinesResetCounter(machines);
+        }
 
         [HttpGet]
         [Route("api/[controller]/CheckSystemParamters")]
