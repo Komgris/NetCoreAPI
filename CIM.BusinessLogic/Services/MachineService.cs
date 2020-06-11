@@ -19,6 +19,7 @@ namespace CIM.BusinessLogic.Services
         private readonly IRouteMachineRepository _routeMachineRepository;
         private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private string systemparamtersKey = "SystemParamters";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
@@ -185,9 +186,38 @@ namespace CIM.BusinessLogic.Services
                 _routeMachineRepository.Delete(model);
             }
         }
+
+        #region HW interface
+
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {
             return await _machineRepository.GetMachineTags();
         }
+
+        public async Task ForceInitialTags()
+        {
+            var model = await GetSystemParamters();
+            model.HasTagChanged = true;
+            await _responseCacheService.SetAsync(systemparamtersKey, model);
+        }
+
+        public async Task<SystemParametersModel> CheckSystemParamters()
+        {
+            var result = await GetSystemParamters();
+            await _responseCacheService.SetAsync(systemparamtersKey, null);
+            return result;
+        }
+
+        private async Task<SystemParametersModel> GetSystemParamters()
+        {
+            var cache = await _responseCacheService.GetAsTypeAsync<SystemParametersModel>(systemparamtersKey);
+            if (cache is null)
+            {
+                cache = new SystemParametersModel();
+            }
+            return cache;
+        }
+
+        #endregion
     }
 }

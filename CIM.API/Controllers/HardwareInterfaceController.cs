@@ -21,18 +21,44 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetMachineTags")]
-        public async Task<string> GetMachineTags()
+        public async Task<ProcessReponseModel<object>> GetMachineTags()
         {
-            string output;
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output = ex.Message;
+                output.Message = ex.Message;
             }
             return output;
+        }
+
+
+        [HttpGet]
+        [Route("api/[controller]/CheckSystemParamters")]
+        public async Task<ProcessReponseModel<object>> CheckSystemParamters()
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _machineService.CheckSystemParamters(), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/ForceInitialTags")]
+        public async Task ForceInitialTags()
+        {
+            await _machineService.ForceInitialTags();
         }
     }
 }
