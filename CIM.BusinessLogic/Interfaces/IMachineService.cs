@@ -20,7 +20,9 @@ namespace CIM.BusinessLogic.Interfaces
         Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList);
         Task<List<RouteMachineModel>> GetMachineByRoute(int routeId);
         Task InsertMappingRouteMachine(List<RouteMachineModel> data);
-
         Task<List<MachineTagsModel>> GetMachineTags();
+        Task SetListMachinesResetCounter(List<int> machines);
+        Task<SystemParametersModel> CheckSystemParamters();
+        Task ForceInitialTags();
     }
 }
