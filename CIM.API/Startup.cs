@@ -31,6 +31,8 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BaseService.ImagePath = Configuration.GetValue<string>("ImagePath");
+            BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
         }
         public IConfiguration Configuration { get; }
 
@@ -43,7 +45,6 @@ namespace CIM.API
             });
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
-
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
@@ -167,7 +168,7 @@ namespace CIM.API
 #if (DEBUG)
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
 #else
-                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                c.SwaggerEndpoint("/cim-oper/kom/swagger/v1/swagger.json", "CIM Data Service");
 #endif
             });
 

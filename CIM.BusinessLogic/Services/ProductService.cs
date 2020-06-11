@@ -4,6 +4,7 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace CIM.BusinessLogic.Services
         {
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
-            _responseCacheService = responseCacheService; 
+            _responseCacheService = responseCacheService;
         }
 
         public async Task BulkEdit(List<ProductModel> model)
@@ -69,7 +70,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive)
         {
-            var output = await _productRepository.Paging(keyword, page, howMany, isActiive, ImagePath);
+            var output = await _productRepository.Paging(keyword, page, howMany, isActiive,ImagePath);
             return output;
         }
 
