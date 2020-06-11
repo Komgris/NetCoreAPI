@@ -9,5 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IMaterialRepository : IRepository<Material>
     {
+        Task<IList<MaterialDictionaryModel>> ListProductBOM();
+        Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive);
     }
 }

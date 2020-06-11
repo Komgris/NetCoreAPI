@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using OfficeOpenXml;
 using CIM.BusinessLogic.Utility;
 using CIM.Domain.Models;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -20,31 +20,38 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IProductionPlanRepository _productionPlanRepository;
-        private IProductRepository _productRepository;
         private IUnitOfWorkCIM _unitOfWork;
-        private IMachineService _machineService;
         private IActiveProductionPlanService _activeProductionPlanService;
-        private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IReportService _reportService;
 
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
-            IProductRepository productRepository,
-            IMachineService machineService,
             IActiveProductionPlanService activeProductionPlanService,
-            IRecordManufacturingLossService recordManufacturingLossService
+            IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
             _productionPlanRepository = productionPlanRepository;
-            _productRepository = productRepository;
             _unitOfWork = unitOfWork;
-            _machineService = machineService;
             _activeProductionPlanService = activeProductionPlanService;
-            _recordManufacturingLossService = recordManufacturingLossService;
+            _reportService = reportService;
+        }
+
+        private static class ExcelMapping
+        {
+            public const int PLAN = 3;
+            public const int ROUTE = 4;
+            public const int PRODUCT = 5;
+            public const int TARGET = 15;
+            public const int UNIT = 16;
+            public const int PLANSTART = 17;
+            public const int PLANFINISH = 18;
+            public const int OFFSET_TOP_ROW = 5;
+            public const int OFFSET_BOTTOM_ROW = 2;
         }
 
         public List<ProductionPlanModel> Get()
@@ -88,33 +95,60 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<List<ProductionPlanModel>> Create(List<ProductionPlanModel> import)
+        public async Task<List<ProductionPlanModel>> CheckDuplicate(List<ProductionPlanModel> import)
         {
-            List<ProductionPlanModel> fromDb = _productionPlanRepository.Get();
             List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
-            List<ProductionPlanModel> existsPlan = new List<ProductionPlanModel>();
-            DateTime timeNow = DateTime.Now;
+            var masterData = await _masterDataService.GetData();
+            var productionPlanDict = masterData.ProductionPlan;
             foreach (var plan in import)
             {
-                if (fromDb.Any(x => x.PlanId == plan.PlanId))
+                if (productionPlanDict.ContainsKey(plan.PlanId))
                 {
-                    var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
-                    db_model.UpdatedBy = CurrentUser.UserId;
-                    db_model.UpdatedAt = timeNow;
-                    _productionPlanRepository.Edit(db_model);
+                     UpdatePlan(plan);
                 }
                 else
                 {
-                    var db_model = MapperHelper.AsModel(plan, new ProductionPlan());
-                    db_model.CreatedBy = CurrentUser.UserId;
-                    db_model.CreatedAt = timeNow;
-                    db_model.IsActive = true;
-                    _productionPlanRepository.Add(db_model);
-                    db_list.Add(MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+                    var model =  CreatePlan(plan);
+                    db_list.Add(model);
                 }
             }
             await _unitOfWork.CommitAsync();
             return db_list;
+        }
+
+        public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
+        {
+            var plan = CreatePlan(model);
+            await _unitOfWork.CommitAsync();
+            return plan;
+        }
+
+        public async Task Update(ProductionPlanModel model)
+        {
+            UpdatePlan(model);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public ProductionPlanModel CreatePlan(ProductionPlanModel model)
+        {
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Unit" });
+            db_model.UnitId = model.Unit;
+            db_model.CreatedBy = CurrentUser.UserId;
+            db_model.CreatedAt = DateTime.Now;
+            db_model.IsActive = true;
+            db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
+            _productionPlanRepository.Add(db_model);
+            return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+        }
+
+        public void UpdatePlan(ProductionPlanModel model)
+        {
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
+            db_model.UnitId = model.Unit;
+            db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.IsActive = true;
+            db_model.UpdatedAt = DateTime.Now;
+            _productionPlanRepository.Edit(db_model);
         }
 
         public async Task Delete(string id)
@@ -124,25 +158,77 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public void Update(List<ProductionPlanModel> list)
+        public async Task<List<ProductionPlanModel>> Compare(List<ProductionPlanModel> import)
         {
-            _productionPlanRepository.UpdateProduction(list);
-        }
+            var masterData = await _masterDataService.GetData();
+            var productionPlanDict = masterData.ProductionPlan;
+            var productDict = masterData.Dictionary.Products;
+            var productCodeToIds = masterData.Dictionary.ProductsByCode;
+            var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
+            var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
+            var targetBuffer = (int)Constans.ProductionPlanBuffer.TARGET_BUFFER;
 
-        public List<ProductionPlanModel> Compare(List<ProductionPlanModel> import, List<ProductionPlanModel> dbPlan)
-        {
+            DateTime timeNow = DateTime.Now;
+
             foreach (var plan in import)
             {
-                if (dbPlan.Any(x => x.PlanId == plan.PlanId))
+                plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
+                if (plan.ProductId != 0)
                 {
-                    //plan.StatusId = "Inprocess";
+                    if (productionPlanDict.ContainsKey(plan.PlanId))
+                    {
+                        plan.StatusId = await planStatus(plan.PlanId);
+                        plan.CompareResult = Constans.CompareMapping.Inprocess;
+                        //Validate updated production plan status with current existing
+                        switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
+                        {
+                            case Constans.PRODUCTION_PLAN_STATUS.Production:
+                            case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                            case Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                            case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                            case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                                if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
+                                    plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                                else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
+                                    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
+                                        plan.CompareResult = Constans.CompareMapping.InvalidTarget;
+                                break;
+                            case Constans.PRODUCTION_PLAN_STATUS.New:
+                            case Constans.PRODUCTION_PLAN_STATUS.Hold:
+                            case Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                                break;
+                            case Constans.PRODUCTION_PLAN_STATUS.Finished:
+                                plan.CompareResult = Constans.CompareMapping.PlanFinished;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        plan.CompareResult = Constans.CompareMapping.NEW;
+                    }
                 }
                 else
                 {
-                    plan.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
+                    plan.CompareResult = Constans.CompareMapping.NoProduct;
                 }
             }
             return import;
+        }
+        public async Task<int> planStatus(string planId)
+        {
+            var plan = await _productionPlanRepository.WhereAsync(x => x.PlanId == planId);
+            return plan.Select(x => x.StatusId).FirstOrDefault().Value;
+        }
+
+        public int ProductCodeToId(string Code, IDictionary<string, int> productDict)
+        {
+            int productCode;
+            if (productDict.TryGetValue(Code, out productCode))
+                return productCode;
+            else
+                return 0;
         }
 
         public List<ProductionPlanModel> ReadImport(string path)
@@ -161,13 +247,18 @@ namespace CIM.BusinessLogic.Services
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
-            for (int i = 2; i <= totalRows; i++)
+            int offsetTop = ExcelMapping.OFFSET_TOP_ROW;
+            int offsetBottom = ExcelMapping.OFFSET_BOTTOM_ROW;
+            for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
                 ProductionPlanModel data = new ProductionPlanModel();
-                data.PlanId = (oSheet.Cells[i, 1].Value ?? string.Empty).ToString();
-                data.ProductId = Convert.ToInt32(oSheet.Cells[i, 2].Value ?? string.Empty);
-                data.Target = Convert.ToInt32(oSheet.Cells[i, 3].Value ?? string.Empty);
-                data.Unit = Convert.ToInt32(oSheet.Cells[i, 4].Value ?? string.Empty);
+                data.PlanId = oSheet.Cells[i, ExcelMapping.PLAN].CellValToString();
+                data.Route = oSheet.Cells[i, ExcelMapping.ROUTE].CellValToString();
+                data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
+                data.Target = oSheet.Cells[i, ExcelMapping.TARGET].CellValToInt();
+                data.UnitName = oSheet.Cells[i, ExcelMapping.UNIT].CellValToString();
+                data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
+                data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 listImport.Add(data);
             }
             return listImport;
@@ -205,97 +296,28 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(productionPlanKey, null);
         }
 
-        public async Task<ActiveProductionPlanModel> Start(ProductionPlanModel model)
+        public async Task<ProductionPlanOverviewModel> Load(string id,int routeId)
         {
-            if (!model.RouteId.HasValue)
-            {
-                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_START_ROUTE_EMPTY);
-            }
-
-            var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
-            if (masterData.Routes[model.RouteId.Value] == null)
-            {
-                throw new Exception(ErrorMessages.PRODUCTION_PLAN.CANNOT_ROUTE_INVALID);
-            }
-
-            var output = (await _activeProductionPlanService.GetCached(model.PlanId)) ?? new ActiveProductionPlanModel
-            {
-                ProductionPlanId = model.PlanId,
-            };
-
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == model.PlanId);
-            if (dbModel.StatusId == (int)Constans.PRODUCTION_PLAN_STATUS.Production)
-            {
-                if (output.ActiveProcesses[model.RouteId.Value] != null)
-                    throw new Exception(ErrorMessages.PRODUCTION_PLAN.PLAN_STARTED);
-            }
-
-            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
-            dbModel.PlanStart = now;
-            dbModel.ActualStart = now;
-            dbModel.UpdatedAt = now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            _productionPlanRepository.Edit(dbModel);
-
-            output.ActiveProcesses[model.RouteId.Value] = new ActiveProcessModel
-            {
-                ProductionPlanId = model.PlanId,
-                ProductId = model.ProductId,
-                Route = new ActiveRouteModel
-                {
-                    Id = model.RouteId.Value,
-                    MachineList = masterData.Routes[model.RouteId.Value].MachineList,
-                }
-            };
-
-            await _machineService.BulkCacheMachines(model.PlanId, model.RouteId.Value, output.ActiveProcesses[model.RouteId.Value].Route.MachineList);
-            await _activeProductionPlanService.SetCached(output);
-            await _unitOfWork.CommitAsync();
-            return output;
-        }
-
-        public async Task Stop(string id, int[] routeIds)
-        {
-
-            var now = DateTime.Now;
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
-
-            dbModel.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Finished;
-            dbModel.UpdatedAt = now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            _productionPlanRepository.Edit(dbModel);
-
+            var productionPlan = await _productionPlanRepository.Load(id, routeId);
             var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
-
-            if (activeProductionPlan != null)
+            var route = new ActiveProcessModel();
+            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
-                foreach (var activeProcess in activeProductionPlan.ActiveProcesses)
+                route = activeProductionPlan?.ActiveProcesses[routeId];
+            } 
+            else
+            {
+                route = new ActiveProcessModel
                 {
-                    if (routeIds.Length == 0 || routeIds.Contains(activeProcess.Key))
-                    {
-                        foreach (var machine in activeProcess.Value.Route.MachineList)
-                        {
-                            await _machineService.RemoveCached(machine.Key, null);
-                        }
-                        activeProductionPlan.ActiveProcesses.Remove(activeProcess.Key);
-                    }
-                }
-                await _activeProductionPlanService.RemoveCached(activeProductionPlan.ProductionPlanId);
+                    Route = new ActiveRouteModel { Id = routeId },
+                    Status = Constans.PRODUCTION_PLAN_STATUS.New
+                };
             }
-            await _unitOfWork.CommitAsync();
-
-        }
-
-        public async Task<ProductionPlanModel> Load(string id)
-        {
-            var masterData = await _masterDataService.GetData();
-            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == id);
-            var productDb = await _productRepository.FirstOrDefaultAsync(x => x.Id == dbModel.ProductId);
-            var model = MapperHelper.AsModel(dbModel, new ProductionPlanModel(), new[] { "Product" });
-            model.Product = MapperHelper.AsModel(productDb, new ProductModel());
-            return model;
+            return new ProductionPlanOverviewModel
+            {
+                ProductionPlan = productionPlan,
+                Route = route
+            };            
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
@@ -329,18 +351,18 @@ namespace CIM.BusinessLogic.Services
                                 Id = x.Product.Id,
                                 Code = x.Product.Code,
                                 Description = x.Product.Description,
-                                BriteItemPerUpcitem = x.Product.BriteItemPerUpcitem,
-                                ProductFamily_Id = x.Product.ProductFamilyId,
+                                BriteItemPerUPCItem = x.Product.BriteItemPerUPCItem,
+                                ProductFamilyId = x.Product.ProductFamilyId,
                                 ProductFamily = x.Product.ProductFamily.Description,
-                                ProductGroup_Id = x.Product.ProductGroupId,
+                                ProductGroupId = x.Product.ProductGroupId,
                                 ProductGroup = x.Product.ProductGroup.Name,
-                                ProductType_Id = x.Product.ProductTypeId,
+                                ProductTypeId = x.Product.ProductTypeId,
                                 ProductType = x.Product.ProductType.Description,
                                 PackingMedium = x.Product.PackingMedium,
                                 NetWeight = x.Product.NetWeight,
-                                Igweight = x.Product.Igweight,
-                                Pmweight = x.Product.Pmweight,
-                                WeightPerUom = x.Product.WeightPerUom,
+                                IGWeight = x.Product.IGWeight,
+                                PMWeight = x.Product.PMWeight,
+                                WeightPerUOM = x.Product.WeightPerUOM,
                                 IsActive = x.Product.IsActive,
                                 IsDelete = x.Product.IsDelete,
                                 CreatedAt = x.Product.CreatedAt,
@@ -365,57 +387,11 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<ActiveProductionPlanModel> UpdateByMachine(int machineId, int statusId)
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId)
         {
-            var cachedMachine = await _machineService.GetCached(machineId);
-            var masterData = await _masterDataService.GetData();
-            var machine = masterData.Machines[machineId];
-            ActiveProductionPlanModel output = null;
-            //ActiveProcessModel activeProcess = null;
-            // If Production Plan doesn't start but machine just start to send status
-            if (cachedMachine == null)
-            {
-                cachedMachine = new ActiveMachineModel
-                {
-                    Id = machine.Id,
-                    StatusId = statusId
-                };
-                await _machineService.SetCached(machineId, cachedMachine);
-            }
-
-            //if machine is apart of production plan
-            if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && cachedMachine.RouteIds != null)
-            {
-                output = await _activeProductionPlanService.GetCached(cachedMachine.ProductionPlanId);
-                foreach (var routeId in cachedMachine.RouteIds)
-                {
-                    output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
-                    var alert = new AlertModel
-                    {
-                        StatusId = (int)Constans.AlertStatus.New,
-                        ItemStatusId = statusId,
-                        CreatedAt = DateTime.Now,
-                        Id = Guid.NewGuid(),
-                        ItemId = machineId,
-                        ItemType = (int)Constans.AlertType.MACHINE
-                    };
-                    output.Alerts.Add(alert);
-                    await _recordManufacturingLossService.Create(new RecordManufacturingLossModel
-                    {
-                        CreatedBy = CurrentUser.UserId,
-                        Guid = alert.Id.ToString(),
-                        IsAuto = false,
-                        LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
-                        MachineId = machineId,
-                        ProductionPlanId = cachedMachine.ProductionPlanId,
-                        StartedAt = DateTime.Now,
-                    });
-                }
-                await _activeProductionPlanService.SetCached(output);
-
-            }
-
+            var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId, planId);
             return output;
         }
+        
     }
 }

@@ -7,69 +7,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(cim_dbContext context) : base(context)
+        private IDirectSqlRepository _directSqlRepository;
+        public ProductRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
         {
-
+            _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howmany)
+        public async Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howMany, bool isActive)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@keyword", keyword},
+                                            {"@howmany", howMany},
+                                            { "@page", page},
+                                            {"@is_active", isActive}
+                                        };
 
-            var dbModel = _entities.Product.Where(x => x.IsActive == true &
-           string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword) || x.Description.Contains(keyword)))
-                                .Select(
-                    x => new ProductModel
-                    {
-                        Id = x.Id,
-                        Code = x.Code,
-                        Description = x.Description,
-                        BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                        ProductFamily_Id = x.ProductFamilyId,
-                        ProductGroup_Id = x.ProductGroupId,
-                        ProductType_Id = x.ProductTypeId,
-                        PackingMedium = x.PackingMedium,
-                        NetWeight = x.NetWeight,
-                        Igweight = x.Igweight,
-                        Pmweight = x.Pmweight,
-                        WeightPerUom = x.WeightPerUom,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy,
-                    });
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProduct", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-            return await ToPagingModelAsync(dbModel, page, howmany);
-
+                return ToPagingModel(dt.ToModel<ProductModel>(), totalCount, page, howMany);
+            });
         }
 
-        public async Task<List<ProductModel>> Get()
+        public async Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM)
         {
-            var query = _entities.Product;
-            var data = await query
-                .Select(x => new ProductModel
-                {
-                    Code = x.Code,
-                    Description = x.Description,
-                    BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                    ProductFamily_Id = x.ProductFamilyId,
-                    ProductGroup_Id = x.ProductGroupId,
-                    ProductType_Id = x.ProductTypeId,
-                    PackingMedium = x.PackingMedium,
-                    Igweight = x.Igweight,
-                    Pmweight = x.Pmweight,
-                    WeightPerUom = x.WeightPerUom,
 
-                }).ToListAsync();
-            return data;
+            var output = await _dbset.Where(x => x.IsActive == true && x.IsDelete == false)
+            .Select(x => new ProductDictionaryModel
+            {
+                Id = x.Id,
+                Code = x.Code,
+                GroupId = x.ProductGroupId,
+                TypeId = x.ProductTypeId,
+            }).ToListAsync();
+            foreach (var item in output)
+            {
+                item.Materials = productBOM.Where(x => x.ProductId == item.Id).ToDictionary(x => x.Id, x => x);
+            }
+            
+            return output.ToDictionary(x => x.Id, x => x);
         }
+
     }
 }

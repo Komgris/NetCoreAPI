@@ -189,27 +189,18 @@ namespace CIM.API.IntegrationTests
         [Fact]
         public async Task InsertProductionPlan_Test()
         {
-            var dbProductionPlanMoq = new List<ProductionPlanModel>()
+            var productionPlan = new ProductionPlanModel
             {
-                new ProductionPlanModel{ PlanId="testA",ProductId=1,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
-                new ProductionPlanModel{ PlanId="testB",ProductId=2,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
-                new ProductionPlanModel{ PlanId="testC",ProductId=2,StatusId=(int)Constans.PRODUCTION_PLAN_STATUS.New},
+                PlanId = "TestPlan",
+                ProductCode = "00407",
+                IsActive = true
             };
-            int countBeforeInsert = CountProductionPlan(scenario);
 
-            var content = GetHttpContentForPost(dbProductionPlanMoq, scenario.AdminToken);
+            var content = GetHttpContentForPost(productionPlan, scenario.AdminToken);
             var createResponse = await scenario.TestClient.PostAsync("/api/ProductionPlan/Create", content);
             createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            int countAfterInsert = CountProductionPlan(scenario);
-            var totalList = countAfterInsert - countBeforeInsert;
-            totalList.Should().Be(dbProductionPlanMoq.Count());
-
-            foreach (var expect in dbProductionPlanMoq)
-            {
-                var result = Get(expect.PlanId, scenario);
-                result.PlanId.Should().Be(expect.PlanId);
-            }
+            var result = Get(productionPlan.PlanId, scenario);
+            result.PlanId.Should().Be(productionPlan.PlanId);
         }
 
     }

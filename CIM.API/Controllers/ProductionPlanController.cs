@@ -12,19 +12,30 @@ using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
 using CIM.BusinessLogic.Utility;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.SignalR;
+using CIM.API.HubConfig;
+using System.Reflection.Metadata;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
     public class ProductionPlanController : BaseController
     {
-        private IProductionPlanService _planService;
+        private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
-            IProductionPlanService planService
+            IHubContext<GlobalHub> hub,
+            IProductionPlanService productionPlanService,
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
-            _planService = planService;
+            _hub = hub;
+            _productionPlanService = productionPlanService;
+            _activeProductionPlanService = activeProductionPlanService;
         }
+
+        #region Production plan mng 
 
         [Route("api/[controller]/Compare")]
         [HttpPost]
@@ -47,9 +58,8 @@ namespace CIM.API.Controllers
                     }
 
 
-                    var fromExcel = _planService.ReadImport(fullPath);
-                    var fromDb = _planService.Get();
-                    var result = _planService.Compare(fromExcel, fromDb);
+                    var fromExcel = _productionPlanService.ReadImport(fullPath);
+                    var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
                 }
@@ -72,10 +82,10 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _planService.List(page, howmany, keyword, productId, routeId, true, statusIds);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
-            } 
-            catch( Exception ex)
+            }
+            catch (Exception ex)
             {
                 output.Message = ex.Message;
             }
@@ -83,22 +93,37 @@ namespace CIM.API.Controllers
         }
 
 
-        [Route("api/[controller]/Create")]
+        [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Create([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
         {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-                output.Data = await _planService.Create(data);
+                output.Data = await _productionPlanService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Create")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
+        {
+            var output = new ProcessReponseModel<ProductionPlanModel>();
+            try
+            {
+                await _productionPlanService.Create(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -106,20 +131,17 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Update")]
         [HttpPut]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<ProductionPlanModel>> Update([FromBody] ProductionPlanModel data)
         {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-                await _planService.Create(data);
+                await _productionPlanService.Update(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
+                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -132,51 +154,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-                await _planService.Delete(id);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [Route("api/ProductionPlanStart")]
-        [HttpPost]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Start(ProductionPlanModel model)
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Start(model);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [Route("api/ProductionPlanStop")]
-        [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Stop(string id, string routeIds = "")
-        {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
-            try
-            {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                await _planService.Stop(id, HelperUtility.StringToArray(routeIds));
+                await _productionPlanService.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -188,15 +166,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<ProductionPlanModel>> Load(string id)
+        public async Task<ProcessReponseModel<object>> Load(string id, int routeId)
         {
-            var output = new ProcessReponseModel<ProductionPlanModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _planService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-                output.Data = await _planService.Load(id);
+                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -213,7 +188,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = await _planService.Get(id);
+                output.Data = await _productionPlanService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -223,5 +198,126 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        #endregion
+
+        #region Production Process
+
+        [Route("api/ProductionPlanStart")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Start(string planId, int routeId, int? target)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Start(planId, routeId, target);
+                output = HandleResult(result);
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanFinish")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Finish(string planId, int routeId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Finish(planId, routeId);
+                output = HandleResult(result);
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanPause")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Pause(string planId, int routeId, int lossLevel3Id)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Pause(planId, routeId, lossLevel3Id);
+                output = HandleResult(result);
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanResume")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Resume(string planId, int routeId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Resume(planId, routeId);
+                output = HandleResult(result);
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/FilterLoadProductionPlan")]
+        [HttpGet]
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId = "")
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlan/GetActiveRoutes")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<int>>> GetActiveRoutes(string planId)
+        {
+            var output = new ProcessReponseModel<List<int>>();
+            try
+            {
+                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select( x=>x.Key).ToList();
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        private ProcessReponseModel<object> HandleResult(ActiveProductionPlanModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            if (model != null)
+            {
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{model.ProductionPlanId}";
+                var dataString = JsonConvert.SerializeObject(model, JsonsSetting);
+                _hub.Clients.All.SendAsync(channelKey, dataString);
+                output.Data = dataString;
+                output.IsSuccess = true;
+            }
+            return output;
+        }
+
+        #endregion
     }
 }

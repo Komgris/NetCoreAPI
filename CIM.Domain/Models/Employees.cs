@@ -12,6 +12,7 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string EmNo { get; set; }
+        public string Image { get; set; }
         public int Company { get; set; }
         public string EmLevel { get; set; }
         public string UserId { get; set; }

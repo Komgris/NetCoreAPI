@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CIM.Model
 {
@@ -11,5 +12,8 @@ namespace CIM.Model
 
         public Dictionary<int, MachineComponentModel> ComponentList { get; set; }
         public int StatusId { get; set; }
+        public string UserId { get; set; }
+        public DateTime StartedAt { get; set; }
+        public RecordProductionPlanOutputModel RecordProductionPlanOutput { get; set; }
     }
 }

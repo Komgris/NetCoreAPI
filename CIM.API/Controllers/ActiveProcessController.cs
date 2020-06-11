@@ -20,11 +20,10 @@ namespace CIM.API.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ActiveProcessController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
 
-        public ActiveProcessController(IHubContext<MachineHub> hub,
+        public ActiveProcessController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
             )
@@ -32,7 +31,6 @@ namespace CIM.API.Controllers
             _hub = hub;
             _productionPlanService = productionPlanService;
             _activeProductionPlanService = activeProductionPlanService;
-
         }
 
         public IActionResult Get()
@@ -49,7 +47,7 @@ namespace CIM.API.Controllers
 
             try
             {
-                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); ;
+                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); 
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
             }
@@ -88,7 +86,6 @@ namespace CIM.API.Controllers
 
             return output;
         }
-
 
     }
 }

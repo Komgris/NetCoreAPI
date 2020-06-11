@@ -13,7 +13,7 @@ namespace CIM.Model
         public string ProductGroup { get; set; }
         public int? RouteId { get; set; }
         public string Route { get; set; }
-        public int? Target { get; set; }
+        public int Target { get; set; }
         public int? Unit { get; set; }
         public string UnitName { get; set; }
         public DateTime? PlanStart { get; set; }
@@ -28,6 +28,7 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public ProductModel Product { get; set; }
-        public string CompareResult { get; set; }
+        public int CompareResult { get; set; }
+
     }
 }

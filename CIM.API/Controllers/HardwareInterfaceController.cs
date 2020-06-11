@@ -3,42 +3,58 @@ using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class HardwareInterfaceController : ControllerBase
+    public class HardwareInterfaceController : BaseController
     {
-        private IHardwareInterfaceService _service;
-        public HardwareInterfaceController(IHardwareInterfaceService service)
+        private IMachineService _machineService;
+
+        public HardwareInterfaceController(
+            IMachineService machineService
+            )
         {
-            _service = service;
+            _machineService = machineService;
         }
 
-        //[HttpPut]
-        //[Route("api/[controller]/UpdateStatus")]
-        //public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
-        //{
-        //    throw new NotImplementedException();
+        [HttpPut]
+        [Route("api/[controller]/UpdateLoss")]
+        public async Task<bool> UpdateLoss([FromBody]RecordLossModel model)
+        {
+            throw new NotImplementedException();
+        }
 
-        //}
+        [HttpPut]
+        [Route("api/[controller]/UpdateStatus")]
+        public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
+        {
+            throw new NotImplementedException();
+
+        }
 
         [HttpPut]
         [Route("api/[controller]/UpdateOutput")]
         public async Task<bool> UpdateOutput([FromBody]RecordOutputModel model)
         {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetMachineTags")]
+        public async Task<string> GetMachineTags()
+        {
+            string output;
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-                return await _service.OutputUpdate(model);
+                output = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
             }
             catch (Exception ex)
             {
-                throw ex;
+                output = ex.Message;
             }
+            return output;
         }
     }
 }

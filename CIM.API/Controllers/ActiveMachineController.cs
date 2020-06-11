@@ -16,25 +16,23 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ActiveMachineController : BaseController
     {
-        private IResponseCacheService _responseCacheService;
-        private IHubContext<MachineHub> _hub;
-        private IProductionPlanService _productionPlanService;
+        private IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
             IResponseCacheService responseCacheService,
-            IHubContext<MachineHub> hub,
-            IProductionPlanService productionPlanService
+            IHubContext<GlobalHub> hub,
+            IActiveProductionPlanService activeProductionPlanService
             )
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
-            _productionPlanService = productionPlanService;
+            _activeProductionPlanService = activeProductionPlanService;
         }
 
         [HttpGet]
-        public async Task<string> SetStatus(int machineId, int statusId)
+        public async Task<string> SetStatus(int id, int statusId, bool isAuto = true)
         {
-            var productionPlan = await _productionPlanService.UpdateByMachine(machineId, statusId);
+            var productionPlan = await _activeProductionPlanService.UpdateByMachine(id, statusId, isAuto);
 
             // Production plan of this component doesn't started yet
             if (productionPlan != null)

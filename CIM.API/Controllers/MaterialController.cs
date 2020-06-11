@@ -59,16 +59,19 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<PagingModel<MaterialModel>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MaterialModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
+            var output = new ProcessReponseModel<PagingModel<MaterialModel>>();
             try
             {
-                return await _service.List(keyword,page, howmany);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
+            return output;
         }
 
         [HttpGet]
@@ -83,6 +86,40 @@ namespace CIM.API.Controllers
             {
                 throw e;
             }
+        }
+
+        [Route("api/[controller]/ListByProduct")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ProductMaterialModel>>> ListByProduct(int productId)
+        {
+            var output = new ProcessReponseModel<List<ProductMaterialModel>>();
+            try
+            {
+                output.Data = await _service.ListMaterialByProduct(productId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/InsertByProduct")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<ProductMaterialModel>> InsertByProduct([FromBody] List<ProductMaterialModel> data)
+        {
+            var output = new ProcessReponseModel<ProductMaterialModel>();
+            try
+            {
+                await _service.InsertByProduct(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
         }
 
     }

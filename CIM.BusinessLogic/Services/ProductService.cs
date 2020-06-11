@@ -45,48 +45,52 @@ namespace CIM.BusinessLogic.Services
         public async Task Delete(int id)
         {
             var existingItem = _productRepository.Where(x => x.Id == id).ToList().FirstOrDefault();
-            _productRepository.Delete(existingItem);
+            existingItem.IsActive = false;
+            existingItem.IsDelete = true;
             await _unitOfWork.CommitAsync();
         }
 
         public async Task<ProductModel> Create(ProductModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Product());
-            _productRepository.Add(dbModel);
+            dbModel.ProductTypeId = model.ProductTypeId;
+            dbModel.ProductFamilyId = model.ProductFamilyId;
+            dbModel.ProductGroupId = model.ProductGroupId;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.IsActive = true;
             dbModel.IsDelete = false;
+            _productRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
             var response = MapperHelper.AsModel(dbModel, new ProductModel());
 
             return response;
         }
 
-        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive)
         {
-            var output = await _productRepository.Paging(keyword, page, howmany);
+            var output = await _productRepository.Paging(keyword, page, howMany, isActiive);
             return output;
         }
 
         public async Task<ProductModel> Get(int id)
         {
-            var dbModel = await _productRepository.Where(x => x.Id == id && x.IsActive && x.IsDelete == false)
+            var dbModel = await _productRepository.Where(x => x.Id == id)
                 .Select(
                         x => new ProductModel
                         {
                             Id = x.Id,
                             Code = x.Code,
                             Description = x.Description,
-                            BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                            ProductFamily_Id = x.ProductFamilyId,
-                            ProductGroup_Id = x.ProductGroupId,
-                            ProductType_Id = x.ProductTypeId,
+                            BriteItemPerUPCItem = x.BriteItemPerUPCItem,
+                            ProductFamilyId = x.ProductFamilyId,
+                            ProductGroupId = x.ProductGroupId,
+                            ProductTypeId = x.ProductTypeId,
                             PackingMedium = x.PackingMedium,
                             NetWeight = x.NetWeight,
-                            Igweight = x.Igweight,
-                            Pmweight = x.Pmweight,
-                            WeightPerUom = x.WeightPerUom,
+                            IGWeight = x.IGWeight,
+                            PMWeight = x.PMWeight,
+                            WeightPerUOM = x.WeightPerUOM,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,
@@ -99,7 +103,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(ProductModel model)
         {
-            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _productRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
