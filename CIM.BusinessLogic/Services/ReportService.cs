@@ -325,19 +325,19 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
                                                                 , BoardcastType.ActiveMachineLossEvent}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveKPI:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveProductionSummary:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveMachineSpeed}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveLoss:
                             boardcastData = GenerateBoardcastData(
@@ -346,12 +346,12 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveTimeUtilisation
                                                                 , BoardcastType.ActiveProductionEvent
                                                                 , BoardcastType.ActiveMachineInfo}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveTimeUtilisation:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveTimeUtilisation}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveWaste:
                             boardcastData = GenerateBoardcastData(
@@ -360,24 +360,24 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveWasteCase
                                                                 , BoardcastType.ActiveWasteMC
                                                                 , BoardcastType.ActiveWasteTime}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveProductionEvent:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveProductionEvent}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveOperator:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveOperator}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveMachineInfo:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
                                                                 , BoardcastType.ActiveMachineLossEvent}
-                                                            , DataFrame.Default, updateType, paramsList);
+                                                            , DataFrame.Default, paramsList);
                             break;
                     }
                 }
@@ -411,35 +411,35 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.Loss
                                                                 , BoardcastType.TimeUtilisation
                                                                 , BoardcastType.Waste}
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                             case BoardcastType.KPI:
                                 boardcastData = GenerateBoardcastData(
                                                                 new[]{ BoardcastType.KPI}
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                             case BoardcastType.Output:
                                 boardcastData = GenerateBoardcastData(
                                                                 new[] { BoardcastType.Output
                                                                     , BoardcastType.KPI}
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                             case BoardcastType.Loss:
                                 boardcastData = GenerateBoardcastData(
                                                                 new[] { BoardcastType.Loss
                                                                     , BoardcastType.KPI
                                                                     , BoardcastType.TimeUtilisation}
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                         case BoardcastType.TimeUtilisation:
                                 boardcastData = GenerateBoardcastData(
                                                                 new[] { BoardcastType.TimeUtilisation}
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                             case BoardcastType.Waste:
                                 boardcastData = GenerateBoardcastData(
                                                                 new[] { BoardcastType.Waste }
-                                                                , timeFrame, updateType, paramsList);
+                                                                , timeFrame, paramsList);
                                 break;
                         }
 
@@ -454,7 +454,7 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, BoardcastType updateType, Dictionary<string, object> paramsList)
+        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
             var boardcastData = new BoardcastModel(timeFrame);
             foreach (var dbtype in dashboardType)
@@ -473,8 +473,7 @@ namespace CIM.BusinessLogic.Services {
             {
                 dashboarddata.Name = dashboardConfig.Name;
                 dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList)
-                                        ,JsonSetting);
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
             }
             catch (Exception ex)
             {

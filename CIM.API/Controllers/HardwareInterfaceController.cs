@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
@@ -19,40 +20,50 @@ namespace CIM.API.Controllers
             _machineService = machineService;
         }
 
-        [HttpPut]
-        [Route("api/[controller]/UpdateLoss")]
-        public async Task<bool> UpdateLoss([FromBody]RecordLossModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateStatus")]
-        public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
-        {
-            throw new NotImplementedException();
-
-        }
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateOutput")]
-        public async Task<bool> UpdateOutput([FromBody]RecordOutputModel model)
-        {
-            throw new NotImplementedException();
-        }
-
         [HttpGet]
         [Route("api/[controller]/GetMachineTags")]
-        public async Task<string> GetMachineTags()
+        public async Task<ProcessReponseModel<object>> GetMachineTags()
         {
-            string output;
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output = ex.Message;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/ForceInitialTags")]
+        public async Task ForceInitialTags()
+        {
+            await _machineService.ForceInitialTags();
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/SetListMachinesResetCounter")]
+        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines)
+        {
+            await _machineService.SetListMachinesResetCounter(machines);
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/CheckSystemParamters")]
+        public async Task<ProcessReponseModel<object>> CheckSystemParamters()
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _machineService.CheckSystemParamters(), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
             }
             return output;
         }
