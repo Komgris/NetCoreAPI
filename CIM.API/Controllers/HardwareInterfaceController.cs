@@ -19,28 +19,6 @@ namespace CIM.API.Controllers
             _machineService = machineService;
         }
 
-        [HttpPut]
-        [Route("api/[controller]/UpdateLoss")]
-        public async Task<bool> UpdateLoss([FromBody]RecordLossModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateStatus")]
-        public async Task<bool> UpdateStatus([FromBody]MachineStatusModel model)
-        {
-            throw new NotImplementedException();
-
-        }
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateOutput")]
-        public async Task<bool> UpdateOutput([FromBody]RecordOutputModel model)
-        {
-            throw new NotImplementedException();
-        }
-
         [HttpGet]
         [Route("api/[controller]/GetMachineTags")]
         public async Task<string> GetMachineTags()
