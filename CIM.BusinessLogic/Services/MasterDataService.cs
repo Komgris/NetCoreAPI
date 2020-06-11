@@ -151,12 +151,15 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _routeRepository.AllAsync();
             foreach (var item in dbModel)
             {
-                output[item.Id] = new RouteModel
+                if (routeMachines.ContainsKey(item.Id))
                 {
-                    Id = item.Id,
-                    Name = item.Name,
-                    MachineList = routeMachines[item.Id].Distinct().ToDictionary(x => x, x => machines[x])
-                };
+                    output[item.Id] = new RouteModel
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        MachineList = routeMachines[item.Id].Distinct().ToDictionary(x => x, x => machines[x])
+                    };
+                }
             }
             return output;
         }

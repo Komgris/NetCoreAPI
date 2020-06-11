@@ -20,5 +20,6 @@ namespace CIM.Model
 
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
         public PRODUCTION_PLAN_STATUS Status { get; set; }
+        public Dictionary<int, ActiveMachineModel> Machines { get; set; }
     }
 }

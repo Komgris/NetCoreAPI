@@ -3,6 +3,7 @@ using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,6 +16,11 @@ namespace CIM.BusinessLogic.Services {
 
         private IDirectSqlRepository _directSqlRepository;
 
+        private JsonSerializerSettings JsonSetting = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
             = new Dictionary<BoardcastType, DashboardConfig>()
             {
@@ -25,7 +31,7 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
 
                 { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
-                { BoardcastType.ActiveOutput, new DashboardConfig("Output","sp_report_productionsummary")},
+                { BoardcastType.ActiveProductionSummary, new DashboardConfig("ProductionSummary","sp_report_productionsummary")},
                 { BoardcastType.ActiveWasteMat, new DashboardConfig("WastebyMat","sp_report_waste_materials")},
                 { BoardcastType.ActiveWasteCase, new DashboardConfig("WastebyCase","sp_report_waste_cases")},
                 { BoardcastType.ActiveWasteMC, new DashboardConfig("WastebyMC","sp_report_waste_machines")},
@@ -36,7 +42,8 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.ActiveOperator, new DashboardConfig("Operator","sp_report_productionoperators")},
                 { BoardcastType.ActiveMachineInfo, new DashboardConfig("MachineInfo","sp_report_active_machineinfo")},
                 { BoardcastType.ActiveMachineSpeed, new DashboardConfig("MachineSpeed","sp_report_machinespeed")},
-                { BoardcastType.ActiveMachineEvent, new DashboardConfig("MachineEvent","sp_report_active_machineevent")},
+                { BoardcastType.ActiveMachineStatus, new DashboardConfig("MachineStatus","sp_Report_Machine_Status")},
+                { BoardcastType.ActiveMachineLossEvent, new DashboardConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
         public ReportService(IDirectSqlRepository directSqlRepository)
@@ -227,7 +234,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@page", page }
             };
 
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
+            var dt =  _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
             var totalcnt = dt.Rows[0].Field<int>("totalcount");
             var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
             pagingmodel.DataObject = dt;
@@ -306,7 +313,7 @@ namespace CIM.BusinessLogic.Services {
                         case BoardcastType.All:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveWasteMat
                                                                 , BoardcastType.ActiveWasteCase
                                                                 , BoardcastType.ActiveWasteMC
@@ -317,7 +324,7 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveOperator
                                                                 , BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineEvent}
+                                                                , BoardcastType.ActiveMachineLossEvent}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
                         case BoardcastType.ActiveKPI:
@@ -325,10 +332,10 @@ namespace CIM.BusinessLogic.Services {
                                                             new[]{ BoardcastType.ActiveKPI}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
-                        case BoardcastType.ActiveOutput:
+                        case BoardcastType.ActiveProductionSummary:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveOutput
+                                                                , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveMachineSpeed}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
@@ -369,7 +376,7 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineEvent}
+                                                                , BoardcastType.ActiveMachineLossEvent}
                                                             , DataFrame.Default, updateType, paramsList);
                             break;
                     }
@@ -466,7 +473,8 @@ namespace CIM.BusinessLogic.Services {
             {
                 dashboarddata.Name = dashboardConfig.Name;
                 dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList)
+                                        ,JsonSetting);
             }
             catch (Exception ex)
             {
