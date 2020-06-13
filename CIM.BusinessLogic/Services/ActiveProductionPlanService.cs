@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -26,6 +27,7 @@ namespace CIM.BusinessLogic.Services
         private IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IReportService _reportService;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -36,7 +38,8 @@ namespace CIM.BusinessLogic.Services
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository,
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
@@ -48,6 +51,7 @@ namespace CIM.BusinessLogic.Services
             _recordMachineStatusRepository = recordMachineStatusRepository;
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _unitOfWork = unitOfWork;
+            _reportService = reportService;
         }
 
         public string GetKey(string productionPLanId)
@@ -144,6 +148,8 @@ namespace CIM.BusinessLogic.Services
                         });
                     }
 
+                    //generate -> BoardcastData
+                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
                     await SetCached(activeProductionPlan);
 
                     output = activeProductionPlan;

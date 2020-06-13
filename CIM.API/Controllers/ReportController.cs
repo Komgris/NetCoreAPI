@@ -388,11 +388,11 @@ namespace CIM.API.Controllers {
             var activeProductionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(channelKey);
             if (activeProductionPlan.ActiveProcesses[routeId]!.BoardcastData is null)
             {
-                activeProductionPlan.ActiveProcesses[routeId].BoardcastData = 
+                activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
                     await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
             }
 
-            return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting); 
+            return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
 
         [Route("api/[controller]/BoardcastingActiveOperationData")]
