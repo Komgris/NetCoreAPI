@@ -38,6 +38,7 @@ namespace CIM.Domain.Models
         public decimal? Weight { get; set; }
         public int? TotalLine { get; set; }
         public string Note { get; set; }
+        public string Country { get; set; }
 
         public virtual Product Product { get; set; }
         public virtual Route Route { get; set; }

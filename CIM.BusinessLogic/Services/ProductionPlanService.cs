@@ -43,8 +43,10 @@ namespace CIM.BusinessLogic.Services
 
         private static class ExcelMapping
         {
+            public const int LINE = 1;
+            public const int WBRT = 2;
             public const int PLAN = 3;
-            public const int ROUTE = 4;
+            public const int ITEMBRITE = 4;
             public const int PRODUCT = 3;
             public const int TARGET = 14;
             public const int UNIT = 15;
