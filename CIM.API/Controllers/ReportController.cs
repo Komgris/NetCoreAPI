@@ -385,7 +385,14 @@ namespace CIM.API.Controllers {
         public async Task<string> GetBoardcastActiveOperationData(string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            return CacheForBoardcast<ActiveProductionPlanModel>(await GetCached(channelKey));
+            var activeProductionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(channelKey);
+            if (activeProductionPlan.ActiveProcesses[routeId]!.BoardcastData is null)
+            {
+                activeProductionPlan.ActiveProcesses[routeId].BoardcastData = 
+                    await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
+            }
+
+            return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting); 
         }
 
         [Route("api/[controller]/BoardcastingActiveOperationData")]
