@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IBomRepository :IRepository<MaterialGroup>
     {
-        Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId, string pathName);
+        Task<List<MaterialGroupMaterialModel>> ListMaterialByBom(int bomId);
         Task<PagingModel<MaterialGroupModel>> ListBom(int page, int howMany, string keyword, bool isActive);
     }
 }

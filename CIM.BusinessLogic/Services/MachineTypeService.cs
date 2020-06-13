@@ -51,7 +51,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool isActive)
         {
-            var output = await _machineTypeRepository.List(keyword, page, howmany, isActive, ImagePath);
+            var output = await _machineTypeRepository.List(keyword, page, howmany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 

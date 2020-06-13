@@ -9,6 +9,6 @@ namespace CIM.DAL.Interfaces
 {
     public interface IMachineTypeRepository : IRepository<MachineType>
     {
-        Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool isActive, string imagePath);
+        Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool isActive);
     }
 }

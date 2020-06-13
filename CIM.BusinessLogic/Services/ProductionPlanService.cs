@@ -45,11 +45,11 @@ namespace CIM.BusinessLogic.Services
         {
             public const int PLAN = 3;
             public const int ROUTE = 4;
-            public const int PRODUCT = 5;
-            public const int TARGET = 15;
-            public const int UNIT = 16;
-            public const int PLANSTART = 17;
-            public const int PLANFINISH = 18;
+            public const int PRODUCT = 3;
+            public const int TARGET = 14;
+            public const int UNIT = 15;
+            public const int PLANSTART = 16;
+            public const int PLANFINISH = 17;
             public const int OFFSET_TOP_ROW = 5;
             public const int OFFSET_BOTTOM_ROW = 2;
         }
@@ -253,7 +253,6 @@ namespace CIM.BusinessLogic.Services
             {
                 ProductionPlanModel data = new ProductionPlanModel();
                 data.PlanId = oSheet.Cells[i, ExcelMapping.PLAN].CellValToString();
-                data.Route = oSheet.Cells[i, ExcelMapping.ROUTE].CellValToString();
                 data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
                 data.Target = oSheet.Cells[i, ExcelMapping.TARGET].CellValToInt();
                 data.UnitName = oSheet.Cells[i, ExcelMapping.UNIT].CellValToString();

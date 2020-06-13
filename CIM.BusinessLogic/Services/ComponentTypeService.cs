@@ -45,7 +45,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<ComponentTypeModel>> GetComponentTypesByMachineType(int machineTypeId)
         {
-            var output = await _componentTypeRepository.ListComponentTypeByMachineType(machineTypeId, ImagePath);
+            var output = await _componentTypeRepository.ListComponentTypeByMachineType(machineTypeId);
+            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
@@ -66,7 +67,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany,bool isActive)
         {
-            var output = await _componentTypeRepository.List(keyword, page, howmany, isActive, ImagePath);
+            var output = await _componentTypeRepository.List(keyword, page, howmany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 

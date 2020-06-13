@@ -18,7 +18,7 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howMany, bool isActive, string imagePath)
+        public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             return await Task.Run(() =>
             {
@@ -27,8 +27,7 @@ namespace CIM.DAL.Implements
                                             {"@keyword", keyword},
                                             {"@howmany", howMany},
                                             { "@page", page},
-                                            { "@is_active", isActive},
-                                            { "@imagepath" , imagePath}
+                                            { "@is_active", isActive}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListComponentType", parameterList);
@@ -40,14 +39,13 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<List<ComponentTypeModel>> ListComponentTypeByMachineType(int machineTypeId, string imagePath)
+        public async Task<List<ComponentTypeModel>> ListComponentTypeByMachineType(int machineTypeId)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@machinetype_id", machineTypeId},
-                                            { "@imagepath" , imagePath}
+                                            {"@machinetype_id", machineTypeId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachineTypeComponentType", parameterList);
