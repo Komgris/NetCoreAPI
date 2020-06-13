@@ -35,9 +35,11 @@ namespace CIM.Model
         public string Brix { get; set; }
         public string Acid { get; set; }
         public string Ph { get; set; }
-        public decimal? Weight { get; set; }
+        public string Weight { get; set; }
         public int? TotalLine { get; set; }
         public string Note { get; set; }
+        public string Country { get; set; }
+        public string Pm { get; set; }
         public ProductModel Product { get; set; }
         public int CompareResult { get; set; }
 

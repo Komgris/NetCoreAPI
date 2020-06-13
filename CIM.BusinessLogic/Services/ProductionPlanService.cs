@@ -12,6 +12,7 @@ using CIM.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Globalization;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -47,11 +48,21 @@ namespace CIM.BusinessLogic.Services
             public const int WBRT = 2;
             public const int PLAN = 3;
             public const int ITEMBRITE = 4;
+            public const int COUNTRY = 5;
             public const int PRODUCT = 3;
+            public const int RAWMATERIAL = 6;
+            public const int INGREDIENT = 7;
+            public const int BRIX = 8;
+            public const int ACID = 9;
+            public const int PH = 10;
+            public const int WEIGHT = 11;
+            public const int PM = 12;
+            public const int TOTALLINE = 13;
             public const int TARGET = 14;
             public const int UNIT = 15;
             public const int PLANSTART = 16;
             public const int PLANFINISH = 17;
+            public const int NOTE = 18;
             public const int OFFSET_TOP_ROW = 5;
             public const int OFFSET_BOTTOM_ROW = 2;
         }
@@ -253,13 +264,26 @@ namespace CIM.BusinessLogic.Services
             int offsetBottom = ExcelMapping.OFFSET_BOTTOM_ROW;
             for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
-                ProductionPlanModel data = new ProductionPlanModel();               
+                ProductionPlanModel data = new ProductionPlanModel();             
+                data.Line = oSheet.Cells[i, ExcelMapping.LINE].CellValToString();
+                data.Wbrt = oSheet.Cells[i, ExcelMapping.WBRT].CellValToString();
                 data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
+                data.ItemBrite = oSheet.Cells[i, ExcelMapping.ITEMBRITE].CellValToString();
+                data.Country = oSheet.Cells[i, ExcelMapping.COUNTRY].CellValToString();
+                data.RawMaterial = oSheet.Cells[i, ExcelMapping.RAWMATERIAL].CellValToString();
+                data.Ingredient = oSheet.Cells[i, ExcelMapping.INGREDIENT].CellValToString();
+                data.Brix = oSheet.Cells[i, ExcelMapping.BRIX].CellValToString();
+                data.Acid = oSheet.Cells[i, ExcelMapping.ACID].CellValToString();
+                data.Ph = oSheet.Cells[i, ExcelMapping.PH].CellValToString();
+                data.Weight = oSheet.Cells[i, ExcelMapping.WEIGHT].CellValToString();
+                data.Pm = oSheet.Cells[i, ExcelMapping.PM].CellValToString();
+                data.TotalLine = oSheet.Cells[i, ExcelMapping.TOTALLINE].CellValToInt();
                 data.Target = oSheet.Cells[i, ExcelMapping.TARGET].CellValToInt();
                 data.UnitName = oSheet.Cells[i, ExcelMapping.UNIT].CellValToString();
                 data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
                 data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
-                data.PlanId = data.PlanStart.ToString() +'.'+ i.ToString();
+                data.Note = oSheet.Cells[i, ExcelMapping.NOTE].CellValToString();
+                data.PlanId = data.PlanStart.Value.ToString("yyyy") + data.PlanStart.Value.ToString("MM") + data.PlanStart.Value.ToString("dd") + '.' + i.ToString();
                 listImport.Add(data);
             }
             return listImport;
