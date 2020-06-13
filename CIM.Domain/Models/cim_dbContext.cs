@@ -1254,9 +1254,13 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PlanId).HasMaxLength(50);
 
+                entity.Property(e => e.Acid).HasMaxLength(10);
+
                 entity.Property(e => e.ActualFinish).HasColumnType("datetime");
 
                 entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.Brix).HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1266,9 +1270,19 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.Ingredient).HasMaxLength(200);
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.ItemBrite).HasMaxLength(15);
+
+                entity.Property(e => e.Line).HasMaxLength(10);
+
+                entity.Property(e => e.Note).HasMaxLength(200);
+
+                entity.Property(e => e.Ph).HasMaxLength(10);
 
                 entity.Property(e => e.PlanFinish).HasColumnType("datetime");
 
@@ -1277,6 +1291,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.ProductId)
                     .HasColumnName("Product_Id")
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.RawMaterial).HasMaxLength(200);
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
@@ -1289,6 +1305,12 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Wbrt)
+                    .HasColumnName("WBRT")
+                    .HasMaxLength(5);
+
+                entity.Property(e => e.Weight).HasColumnType("decimal(18, 3)");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductionPlan)
@@ -1565,8 +1587,6 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
-
-                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
