@@ -25,7 +25,7 @@ namespace CIM.DAL.Implements
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@product_id", productId},
+                                            {"@product_id", productId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductMaterial", parameterList);

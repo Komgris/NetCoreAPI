@@ -25,7 +25,7 @@ namespace CIM.DAL.Implements
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@bom_id", bomId},
+                                            {"@bom_id", bomId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterialGroupMaterial", parameterList);

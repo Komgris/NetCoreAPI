@@ -29,7 +29,7 @@ namespace CIM.DAL.Implements
                                             {"@keyword", keyword},
                                             {"@howmany", howMany},
                                             { "@page", page},
-                                            { "@is_active", isActive},
+                                            { "@is_active", isActive}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMaterial", parameterList);

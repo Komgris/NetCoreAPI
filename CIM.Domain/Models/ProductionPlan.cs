@@ -27,6 +27,19 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public string Line { get; set; }
+        public string Wbrt { get; set; }
+        public string ItemBrite { get; set; }
+        public string Ingredient { get; set; }
+        public string RawMaterial { get; set; }
+        public string Brix { get; set; }
+        public string Acid { get; set; }
+        public string Ph { get; set; }
+        public string Weight { get; set; }
+        public int? TotalLine { get; set; }
+        public string Note { get; set; }
+        public string Country { get; set; }
+        public string Pm { get; set; }
 
         public virtual Product Product { get; set; }
         public virtual Route Route { get; set; }

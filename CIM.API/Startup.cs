@@ -31,6 +31,8 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BaseService.ImagePath = Configuration.GetValue<string>("ImagePath");
+            BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
         }
         public IConfiguration Configuration { get; }
 
@@ -43,7 +45,6 @@ namespace CIM.API
             });
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
-
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
@@ -113,6 +114,7 @@ namespace CIM.API
             services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
             services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
             services.AddTransient<IBomService, BomService>();
+            services.AddTransient<IUtilitiesService, UtilitiesService>();
             services.AddTransient<IProductGroupService, ProductGroupService>();
 
             services.AddControllers();

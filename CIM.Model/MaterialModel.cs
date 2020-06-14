@@ -24,5 +24,6 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
         public bool IsPlanActive { get; set; }
+        public string ImagePath { get; set; }
     } 
 }

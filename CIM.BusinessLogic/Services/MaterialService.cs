@@ -54,6 +54,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             var output = await _materialRepository.List(keyword, page, howMany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
@@ -66,6 +67,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
         {
             var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 

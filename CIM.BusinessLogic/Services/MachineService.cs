@@ -77,6 +77,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             var output = await _machineRepository.List(keyword, page, howMany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
@@ -176,6 +177,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
             var output = await _machineRepository.ListMachineByRoute(routeId);
+            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
         public async Task DeleteMapping(int routeid)

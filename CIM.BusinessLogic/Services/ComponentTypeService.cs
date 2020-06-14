@@ -46,6 +46,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<List<ComponentTypeModel>> GetComponentTypesByMachineType(int machineTypeId)
         {
             var output = await _componentTypeRepository.ListComponentTypeByMachineType(machineTypeId);
+            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
@@ -66,27 +67,9 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany,bool isActive)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = await _componentTypeRepository.Where(x => x.IsActive == isActive &
-                string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
-                .Select(
-                    x => new ComponentTypeModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-
-            int totalCount = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-            return ToPagingModel(dbModel, totalCount, page, howmany);
+            var output = await _componentTypeRepository.List(keyword, page, howmany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
+            return output;
         }
 
         public async Task Update(ComponentTypeModel data)

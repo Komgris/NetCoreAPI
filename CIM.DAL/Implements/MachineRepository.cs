@@ -44,7 +44,7 @@ namespace CIM.DAL.Implements
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@route_id", routeId},
+                                            {"@route_id", routeId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachineByRoute", parameterList);

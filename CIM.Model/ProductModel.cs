@@ -10,6 +10,7 @@ namespace CIM.Model
         [Key]
         public int Id { get; set; }
         public string Code { get; set; }
+        public string Image { get; set; }
         public string Description { get; set; }
         public string BriteItemPerUPCItem { get; set; }
         public int ProductFamilyId { get; set; }
@@ -30,5 +31,6 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public bool IsPlanActive { get; set; }
+        public string ImagePath { get; set; }
     }
 }

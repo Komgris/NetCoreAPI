@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Cors;
 using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,25 +20,37 @@ namespace CIM.API.Controllers
     public class ProductController : ControllerBase
     {
         private IProductService _productService;
+        private IUtilitiesService _utilitiesService;
+
         public ProductController(
-            IProductService productService
+            IProductService productService,
+            IUtilitiesService utilitiesService
             )
         {
             _productService = productService;
+            _utilitiesService = utilitiesService;
         }
 
         [Route("api/[controller]/Create")]
         [HttpPost]
-        public async Task<ProcessReponseModel<ProductModel>> Create([FromBody] ProductModel data)
+        public async Task<ProcessReponseModel<ProductModel>> Create([FromForm] IFormFile file, [FromForm] string data)
         {
             var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                output.Data = await _productService.Create(data);
+
+                var list = JsonConvert.DeserializeObject<ProductModel>(data);
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                }
+                else if (list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"product/{list.Image}";
+                }
+                await _productService.Create(list);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -111,16 +125,23 @@ namespace CIM.API.Controllers
 
         [HttpPut]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody]ProductModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromForm] IFormFile file, [FromForm] string data)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
-                await _productService.Update(model);
+                var list = JsonConvert.DeserializeObject<ProductModel>(data);
+                if (file != null)
+                {
+                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                }
+                else if (list.Image != "" && list.Image != null)
+                {
+                    list.Image = $"product/{list.Image}";
+                }
+                await _productService.Update(list);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
