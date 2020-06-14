@@ -98,6 +98,7 @@ namespace CIM.Model
             TimeUtilisation,
             ActiveKPI,
             ActiveProductionSummary,
+            ActiveProductionOutput,
             ActiveWaste,
             ActiveWasteMat,
             ActiveWasteCase,

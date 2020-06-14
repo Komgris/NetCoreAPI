@@ -32,6 +32,7 @@ namespace CIM.BusinessLogic.Services {
 
                 { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
                 { BoardcastType.ActiveProductionSummary, new DashboardConfig("ProductionSummary","sp_report_productionsummary")},
+                { BoardcastType.ActiveProductionOutput, new DashboardConfig("ProductionOutput","sp_dashboard_output")},
                 { BoardcastType.ActiveWasteMat, new DashboardConfig("WastebyMat","sp_report_waste_materials")},
                 { BoardcastType.ActiveWasteCase, new DashboardConfig("WastebyCase","sp_report_waste_cases")},
                 { BoardcastType.ActiveWasteMC, new DashboardConfig("WastebyMC","sp_report_waste_machines")},
@@ -314,6 +315,7 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveProductionSummary
+                                                                , BoardcastType.ActiveProductionOutput
                                                                 , BoardcastType.ActiveWasteMat
                                                                 , BoardcastType.ActiveWasteCase
                                                                 , BoardcastType.ActiveWasteMC
@@ -336,6 +338,7 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveProductionSummary
+                                                                , BoardcastType.ActiveProductionOutput
                                                                 , BoardcastType.ActiveMachineSpeed}
                                                             , DataFrame.Default, paramsList);
                             break;
