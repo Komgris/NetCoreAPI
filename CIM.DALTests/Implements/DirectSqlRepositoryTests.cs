@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements.Tests
     {
         Dictionary<string, string> InMemorySettings = new Dictionary<string, string>
         {
-            {"ConnectionStrings:CIMDatabase", "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"},
+            {"ConnectionStrings:CIMDatabase", "Server=HHN-MES-DB;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"},
         };
 
 
