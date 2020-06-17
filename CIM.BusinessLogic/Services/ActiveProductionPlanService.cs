@@ -379,7 +379,8 @@ namespace CIM.BusinessLogic.Services
                     Id = Guid.NewGuid(),
                     LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
                     ItemId = machineId,
-                    ItemType = (int)Constans.AlertType.MACHINE
+                    ItemType = (int)Constans.AlertType.MACHINE,
+                    RouteId = routeId
                 };
                 activeProductionPlan.Alerts.Add(alert);
 

@@ -13,5 +13,6 @@ namespace CIM.Model
 
         public int StatusId { get; set; }
         public int LossLevel3Id { get; set; }
+        public int RouteId { get; set; }
     }
 }
