@@ -11,7 +11,7 @@ using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
-    public class LossLevel3Repository : Repository<LossLevel3>, ILossLevel3Repository
+    public class LossLevel3Repository : Repository<LossLevel3, LossLevel3Model>, ILossLevel3Repository
     {
         private IDirectSqlRepository _directSqlRepository;
 

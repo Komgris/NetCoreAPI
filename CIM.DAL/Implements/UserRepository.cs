@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class UserRepository : Repository<Users>, IUserRepository
+    public class UserRepository : Repository<Users, object>, IUserRepository
     {
         public UserRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {

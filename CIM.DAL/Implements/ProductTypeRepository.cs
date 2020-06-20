@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductTypeRepository : Repository<ProductType>, IProductTypeRepository
+    public class ProductTypeRepository : Repository<ProductType, object>, IProductTypeRepository
     {
         public ProductTypeRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

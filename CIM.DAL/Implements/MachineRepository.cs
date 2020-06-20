@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class MachineRepository : Repository<Machine>, IMachineRepository
+    public class MachineRepository : Repository<Machine, MachineModel>, IMachineRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public MachineRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)

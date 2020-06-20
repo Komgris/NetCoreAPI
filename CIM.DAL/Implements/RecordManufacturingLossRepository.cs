@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss>, IRecordManufacturingLossRepository
+    public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss, object>, IRecordManufacturingLossRepository
     {
         public RecordManufacturingLossRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {

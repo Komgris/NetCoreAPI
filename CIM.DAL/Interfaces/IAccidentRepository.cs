@@ -1,11 +1,15 @@
 ﻿using CIM.Domain.Models;
+using CIM.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IAccidentRepository : IRepository<Accidents>
+    public interface IAccidentRepository : IRepository<Accidents, AccidentModel>
     {
+
+        Task<Accidents> Get(int id);
     }
 }

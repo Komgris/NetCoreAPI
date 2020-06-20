@@ -11,7 +11,7 @@ using CIM.Model;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordProductionPlanWasteRepository : Repository<RecordProductionPlanWaste>, IRecordProductionPlanWasteRepository
+    public class RecordProductionPlanWasteRepository : Repository<RecordProductionPlanWaste, object>, IRecordProductionPlanWasteRepository
     {
         public RecordProductionPlanWasteRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

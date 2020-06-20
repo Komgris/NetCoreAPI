@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRecordActiveProductionPlanRepository : IRepository<RecordActiveProductionPlan>
+    public interface IRecordActiveProductionPlanRepository : IRepository<RecordActiveProductionPlan, object>
     {
     }
 }
