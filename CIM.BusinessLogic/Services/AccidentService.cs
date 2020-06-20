@@ -39,6 +39,7 @@ namespace CIM.BusinessLogic.Services
             }
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
+            _accidentRepository.Add(dbModel);
             await _unitOfWorkCIM.CommitAsync();
         }
 
@@ -67,6 +68,11 @@ namespace CIM.BusinessLogic.Services
         public async Task Update(AccidentModel model)
         {
             var dbModel = await _accidentRepository.Get(model.Id);
+            dbModel.Title = model.Title;
+            dbModel.HappenAt = model.HappenAt;
+            dbModel.Note = model.Note;
+            dbModel.UpdatedAt = DateTime.Now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
             foreach (var item in dbModel.AccidentParticipants)
                 _accidentParticipantRepository. Delete(item);
 
@@ -77,15 +83,14 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWorkCIM.CommitAsync();
         }
 
-        public async Task<PagingModel<AccidentModel>> List(string keyword, int page, int howMany, bool isActive)
+        public async Task<PagingModel<AccidentModel>> List(string keyword, int page, int howMany)
         {
-            var output = await _accidentRepository.ListAsPaging("",new Dictionary<string, object>()
-                                        {
-                                            {"@keyword", keyword},
-                                            {"@howmany", howMany},
-                                            { "@page", page},
-                                            {"@is_active", isActive}
-                                        }, page, howMany);
+            var output = await _accidentRepository.ListAsPaging("sp_ListAccident", new Dictionary<string, object>()
+                {
+                    {"@keyword", keyword},
+                    {"@howmany", howMany},
+                    { "@page", page}
+                }, page, howMany);
             return output;
         }
     }

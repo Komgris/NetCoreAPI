@@ -22,12 +22,13 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<AccidentModel>>> List(string keyword = "", int page = 1, int howmany = 10, bool isActive = true)
+        [Route("List")]
+        public async Task<ProcessReponseModel<PagingModel<AccidentModel>>> List(string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<AccidentModel>>();
             try
             {
-                output.Data = await _accidentService.List(keyword, page, howmany, isActive);
+                output.Data = await _accidentService.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
