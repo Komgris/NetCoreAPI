@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class UnitsRepository : Repository<Units>, IUnitsRepository
+    public class UnitsRepository : Repository<Units, object>, IUnitsRepository
     {
         public UnitsRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {

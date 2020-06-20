@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductMaterialRepository : IRepository<ProductMaterial, object>
+    public interface IAccidentRepository : IRepository<Accidents, AccidentModel>
     {
-        Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId);
+
+        Task<Accidents> Get(int id);
     }
 }

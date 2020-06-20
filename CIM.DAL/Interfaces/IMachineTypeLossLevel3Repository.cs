@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IMachineTypeLossLevel3Repository : IRepository<MachineTypeLossLevel3>
+    public interface IMachineTypeLossLevel3Repository : IRepository<MachineTypeLossLevel3, object>
     {
         Task<PagingModel<MachineTypeLossLevel3ListModel>> List(int? machineTypeId, int? lossLevel3Id, int page, int howmany);
     }

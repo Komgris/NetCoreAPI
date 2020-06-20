@@ -12,7 +12,7 @@ using System.Data;
 
 namespace CIM.DAL.Implements
 {
-    public class ComponentTypeLossLevel3Repository : Repository<ComponentTypeLossLevel3>, IComponentTypeLossLevel3Repository
+    public class ComponentTypeLossLevel3Repository : Repository<ComponentTypeLossLevel3, ComponentTypeLossLevel3Model>, IComponentTypeLossLevel3Repository
     {
         private IDirectSqlRepository _directSqlRepository;
 

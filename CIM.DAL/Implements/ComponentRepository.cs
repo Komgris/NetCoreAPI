@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class ComponentRepository : Repository<Component>, IComponentRepository
+    public class ComponentRepository : Repository<Component, ComponentModel>, IComponentRepository
     {
 
         private IDirectSqlRepository _directSqlRepository;

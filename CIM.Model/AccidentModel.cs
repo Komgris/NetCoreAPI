@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class Accidents
+    public class AccidentModel
     {
-        public Accidents()
-        {
-            AccidentParticipants = new HashSet<AccidentParticipants>();
-        }
-
         public int Id { get; set; }
         public string Title { get; set; }
         public DateTime HappenAt { get; set; }
@@ -19,6 +15,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
         public string Note { get; set; }
 
-        public virtual ICollection<AccidentParticipants> AccidentParticipants { get; set; }
+        public List<AccidentParticipantsModel> Participants { get; set; } = new List<AccidentParticipantsModel>();
     }
 }

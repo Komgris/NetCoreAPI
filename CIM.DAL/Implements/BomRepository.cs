@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class BomRepository : Repository<MaterialGroup>, IBomRepository
+    public class BomRepository : Repository<MaterialGroup, MaterialGroupModel>, IBomRepository
     {
         private IDirectSqlRepository _directSqlRepository;
 

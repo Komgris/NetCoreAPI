@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductionStatusRepository : IRepository<ProductionStatus>
+    public interface IProductionStatusRepository : IRepository<ProductionStatus, object>
     {
     }
 }

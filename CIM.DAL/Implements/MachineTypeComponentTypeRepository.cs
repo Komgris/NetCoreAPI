@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CIM.DAL.Implements
 {
-    public class MachineTypeComponentTypeRepository : Repository<MachineTypeComponentType>, IMachineTypeComponentTypeRepository
+    public class MachineTypeComponentTypeRepository : Repository<MachineTypeComponentType, object>, IMachineTypeComponentTypeRepository
     {
         public MachineTypeComponentTypeRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {
