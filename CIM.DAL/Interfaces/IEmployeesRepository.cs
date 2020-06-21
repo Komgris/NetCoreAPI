@@ -7,8 +7,5 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IEmployeesRepository : IRepository<Employees>
-    {
-        Task<PagingModel<EmployeesModel>> List(string keyword, int page, int howMany, bool isActive);
-    }
+    public interface IEmployeesRepository : IRepository<Employees, EmployeesModel> { }
 }

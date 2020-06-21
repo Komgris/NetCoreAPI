@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductFamilyRepository : Repository<ProductFamily>, IProductFamilyRepository
+    public class ProductFamilyRepository : Repository<ProductFamily, object>, IProductFamilyRepository
     {
         public ProductFamilyRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

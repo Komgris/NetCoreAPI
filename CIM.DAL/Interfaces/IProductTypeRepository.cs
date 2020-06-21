@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductTypeRepository : IRepository<ProductType>
+    public interface IProductTypeRepository : IRepository<ProductType, object>
     {
     }
 }

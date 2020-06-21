@@ -128,6 +128,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);

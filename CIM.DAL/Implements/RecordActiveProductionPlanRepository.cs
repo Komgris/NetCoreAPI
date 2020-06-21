@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordActiveProductionPlanRepository : Repository<RecordActiveProductionPlan>, IRecordActiveProductionPlanRepository
+    public class RecordActiveProductionPlanRepository : Repository<RecordActiveProductionPlan, object>, IRecordActiveProductionPlanRepository
     {
         public RecordActiveProductionPlanRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

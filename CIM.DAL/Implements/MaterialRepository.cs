@@ -12,7 +12,7 @@ using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
-    public class MaterialRepository : Repository<Material>, IMaterialRepository
+    public class MaterialRepository : Repository<Material, object>, IMaterialRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public MaterialRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)

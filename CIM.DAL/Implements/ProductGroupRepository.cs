@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductGroupRepository : Repository<ProductGroup>, IProductGroupRepository
+    public class ProductGroupRepository : Repository<ProductGroup, object>, IProductGroupRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public ProductGroupRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)

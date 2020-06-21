@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductionPlanRepository : Repository<ProductionPlan>, IProductionPlanRepository
+    public class ProductionPlanRepository : Repository<ProductionPlan, object>, IProductionPlanRepository
     {
 
         private IDirectSqlRepository _directSqlRepository;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface ILossLevel3Repository : IRepository<LossLevel3>
+    public interface ILossLevel3Repository : IRepository<LossLevel3, LossLevel3Model>
     {
         Task<IList<LossLevelComponentMappingModel>> ListComponentMappingAsync();
         Task<IList<LossLevelMachineMappingModel>> ListMachineMappingAsync();
