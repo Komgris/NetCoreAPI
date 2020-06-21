@@ -60,15 +60,15 @@ namespace CIM.BusinessLogic.Services
                 }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagingModel<TeamModel>> List(string keyword, int page, int howmany, bool isActive)
+        public async Task<PagingModel<TeamModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             var output = await _teamRepository.ListAsPaging("sp_ListTeam", new Dictionary<string, object>()
                 {
                     {"@keyword", keyword},
-                    {"@howmany", howmany},
+                    {"@howmany", howMany},
                     {"@page", page},
                     {"@is_active", isActive}
-                }, page, howmany);
+                }, page, howMany);
             return output;
         }
 
