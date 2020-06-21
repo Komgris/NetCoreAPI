@@ -125,13 +125,13 @@ namespace CIM.API.Controllers {
 
         [HttpGet]
         [Route("api/[controller]/GetProductionLoss")]
-        public async Task<ProcessReponseModel<object>> GetProductionLoss(string planId, int routeId, int lossLv, int? machineId)
+        public async Task<ProcessReponseModel<object>> GetProductionLoss(string planId, int routeId, int lossLv, int? machineId, int? lossid)
         {
 
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, lossLv, machineId, null, null), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, lossLv, machineId, lossid, null, null), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
