@@ -51,9 +51,16 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<PagingModel<EmployeesModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _employeesRepository.List(keyword, page, howMany, isActive);
+            var output = await _employeesRepository.ListAsPaging("sp_ListEmployees", new Dictionary<string, object>()
+                {
+                    {"@keyword", keyword},
+                    {"@howmany", howMany},
+                    {"@page", page},
+                    {"@is_active", isActive}
+                }, page, howMany);
             output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
+
         }
 
         public async Task<EmployeesModel> Get(int id)
