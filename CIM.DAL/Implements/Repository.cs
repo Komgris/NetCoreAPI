@@ -79,6 +79,15 @@ namespace CIM.DAL.Implements
                 return ToPagingModel(dt.ToModel<TModel>(), totalCount, page, howMany);
             });
         }
+        public async Task<List<TModel>> List(string storeProcedureName, Dictionary<string, object> parameterList)
+        {
+            return await Task.Run(() =>
+            {
+                var dt = ExecuteSPWithQuery(storeProcedureName, parameterList);
+
+                return dt.ToModel<TModel>();
+            });
+        }
 
         public DataTable ExecuteSPWithQuery(string sql, Dictionary<string, object> parameters)
         {
