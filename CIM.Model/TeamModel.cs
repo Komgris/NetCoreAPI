@@ -9,6 +9,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public int TeamTypeId { get; set; }
+        public string TeamType { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
