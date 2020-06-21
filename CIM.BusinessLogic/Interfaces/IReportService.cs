@@ -14,7 +14,7 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to);
         DataTable GetCapacityUtilisation(string planId, int routeId, DateTime? from, DateTime? to);
         DataTable GetProductionOperators(string planId, int routeId);
-        DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? mcId,int? lossid, DateTime? from, DateTime? to);
+        DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? mcId,int? lossId, DateTime? from, DateTime? to);
         PagingModel<object> GetProductionWCMLossHistory(string planId, int routeId, DateTime? from, DateTime? to, int page);
         DataTable GetProductionDasboard(string planId, int routeId, int mcId);
         DataTable GetWasteByMaterials(string planId, int routeId, DateTime? from, DateTime? to);

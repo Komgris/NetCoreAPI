@@ -125,7 +125,7 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
         }
 
-        public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId,int? lossid, DateTime? from, DateTime? to) {
+        public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId,int? lossId, DateTime? from, DateTime? to) {
 
             var paramsList = new Dictionary<string, object>() {
                 {"@planid", planId },
@@ -134,7 +134,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@mcid", machineId },
                 {"@from", from },
                 {"@to", to },
-                {"@lossid", lossid }
+                {"@lossid", lossId }
             };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
