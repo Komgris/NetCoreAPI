@@ -50,6 +50,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    TeamTypeId = x.TeamTypeId,
                     IsActive = x.IsActive,
                     IsDelete = x.IsDelete,
                     CreatedAt = x.CreatedAt,
@@ -100,7 +101,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<List<TeamEmployeesModel>> GetEmployeesByTeam(int teamId)
         {
-            var output = await _teamEmployeesRepository.List("sp_ListEmployeeByRoute", new Dictionary<string, object>()
+            var output = await _teamEmployeesRepository.List("sp_ListEmployeeByTeam", new Dictionary<string, object>()
                 {
                     {"@team_id", teamId}
                 });
