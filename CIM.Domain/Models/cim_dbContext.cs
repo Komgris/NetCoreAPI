@@ -37,6 +37,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
+        public virtual DbSet<MachineOperators> MachineOperators { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
         public virtual DbSet<MachineTypeComponentType> MachineTypeComponentType { get; set; }
@@ -846,6 +847,23 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Machine_MachineStatus");
+            });
+
+            modelBuilder.Entity<MachineOperators>(entity =>
+            {
+                entity.ToTable("Machine_Operators");
+
+                entity.Property(e => e.LastUpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.LastUpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.PlanId)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<MachineStatus>(entity =>
