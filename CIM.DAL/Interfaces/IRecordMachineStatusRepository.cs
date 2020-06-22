@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRecordMachineStatusRepository : IRepository<RecordMachineStatus>
+    public interface IRecordMachineStatusRepository : IRepository<RecordMachineStatus, object>
     {
     }
 }

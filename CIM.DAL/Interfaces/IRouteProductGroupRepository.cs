@@ -2,7 +2,7 @@
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRouteProductGroupRepository : IRepository<RouteProductGroup>
+    public interface IRouteProductGroupRepository : IRepository<RouteProductGroup, object>
     {
     }
 }

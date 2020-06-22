@@ -15,6 +15,8 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<AccidentParticipants> AccidentParticipants { get; set; }
+        public virtual DbSet<Accidents> Accidents { get; set; }
         public virtual DbSet<App> App { get; set; }
         public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
@@ -92,6 +94,49 @@ namespace CIM.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccidentParticipants>(entity =>
+            {
+                entity.ToTable("Accident_Participants");
+
+                entity.Property(e => e.AccidentId).HasColumnName("Accident_Id");
+
+                entity.Property(e => e.EmNo)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.HasOne(d => d.Accident)
+                    .WithMany(p => p.AccidentParticipants)
+                    .HasForeignKey(d => d.AccidentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Accident_Participants_Accidents");
+            });
+
+            modelBuilder.Entity<Accidents>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.HappenAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<App>(entity =>
             {
                 entity.Property(e => e.Name)

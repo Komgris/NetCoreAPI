@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IUnitsRepository : IRepository<Units>
+    public interface IUnitsRepository : IRepository<Units, object>
     {
     }
 }

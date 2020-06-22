@@ -71,6 +71,8 @@ namespace CIM.API
             services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
             services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
             services.AddTransient<IRecordMachineStatusRepository, RecordMachineStatusRepository>();
+            services.AddTransient<IAccidentRepository, AccidentRepository>();
+            services.AddTransient<IAccidentParticipantRepository, AccidentParticipantRepository>();
 
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
@@ -86,6 +88,7 @@ namespace CIM.API
             services.AddTransient<IProductGroupRepository, ProductGroupRepository>();
             services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
             services.AddTransient<IMaterialTypeRepository, MaterialTypeRespository>();
+            services.AddTransient<IEmployeesRepository, EmployeesRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -116,6 +119,8 @@ namespace CIM.API
             services.AddTransient<IBomService, BomService>();
             services.AddTransient<IUtilitiesService, UtilitiesService>();
             services.AddTransient<IProductGroupService, ProductGroupService>();
+            services.AddTransient<IAccidentService, AccidentService>();
+            services.AddTransient<IEmployeesService, EmployeesService>();
 
             services.AddControllers();
             services.AddSignalR();

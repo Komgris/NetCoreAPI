@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class SiteRepository : Repository<Sites>, ISiteRepository
+    public class SiteRepository : Repository<Sites, object>, ISiteRepository
     {
         public SiteRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {}

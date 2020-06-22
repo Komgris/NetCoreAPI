@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordProductionPlanWasteMaterialRepository : Repository<RecordProductionPlanWasteMaterials>, IRecordProductionPlanWasteMaterialRepository
+    public class RecordProductionPlanWasteMaterialRepository : Repository<RecordProductionPlanWasteMaterials, object>, IRecordProductionPlanWasteMaterialRepository
     {
         public RecordProductionPlanWasteMaterialRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

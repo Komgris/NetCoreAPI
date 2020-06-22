@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRecordProductionPlanWasteMaterialRepository : IRepository<RecordProductionPlanWasteMaterials>
+    public interface IRecordProductionPlanWasteMaterialRepository : IRepository<RecordProductionPlanWasteMaterials, object>
     {
         Task<List<RecordProductionPlanWasteMaterialModel>> ListByLoss(int lossId);
     }
