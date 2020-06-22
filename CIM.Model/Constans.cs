@@ -114,6 +114,15 @@ namespace CIM.Model
             ActiveMachineStatus,
         }
 
+        public enum ReportType
+        {
+            Daily,
+            Weekly,
+            Monthly,
+            Yearly,
+            DoleCalendar
+        }
+
         public class DashboardConfig {
             public string Name { get; set; }
             public string StoreName { get; set; }
