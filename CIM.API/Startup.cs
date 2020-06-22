@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Http;
 
 namespace CIM.API
 {

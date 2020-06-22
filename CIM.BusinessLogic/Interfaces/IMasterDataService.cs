@@ -13,6 +13,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task Clear();
 
         MasterDataModel Data { get; set; }
-
+        string HostUrl { get; set; }
     }
 }
