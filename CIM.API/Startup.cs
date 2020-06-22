@@ -90,6 +90,9 @@ namespace CIM.API
             services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
             services.AddTransient<IMaterialTypeRepository, MaterialTypeRespository>();
             services.AddTransient<IEmployeesRepository, EmployeesRepository>();
+            services.AddTransient<ITeamRepository, TeamRepository>();
+            services.AddTransient<ITeamTypeRepository, TeamTypeRepository>();
+            services.AddTransient<ITeamEmployeesRepository, TeamEmployeesRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -123,6 +126,7 @@ namespace CIM.API
             services.AddTransient<IAccidentService, AccidentService>();
             services.AddTransient<IEmployeesService, EmployeesService>();
             services.AddTransient<IMachineOperatorService, MachineOperatorService>();
+            services.AddTransient<ITeamService, TeamService>();
 
             services.AddControllers();
             services.AddSignalR();
