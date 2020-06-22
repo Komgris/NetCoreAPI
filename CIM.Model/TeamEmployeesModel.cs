@@ -11,6 +11,7 @@ namespace CIM.Model
         public int EmployeesId { get; set; }
         public string EmployeesName { get; set; }
         public string EmNo { get; set; }
+        public bool? IsLeader { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
