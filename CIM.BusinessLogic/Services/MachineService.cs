@@ -17,19 +17,23 @@ namespace CIM.BusinessLogic.Services
         private readonly IResponseCacheService _responseCacheService;
         private readonly IMachineRepository _machineRepository;
         private readonly IRouteMachineRepository _routeMachineRepository;
+        private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private string systemparamtersKey = "SystemParamters";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
             IResponseCacheService responseCacheService,
-            IRouteMachineRepository routeMachineRepository
+            IRouteMachineRepository routeMachineRepository,
+            IRecordMachineStatusRepository recordMachineStatusRepository
             )
         {
             _machineRepository = machineRepository;
             _unitOfWork = unitOfWork;
             _responseCacheService = responseCacheService;
             _routeMachineRepository = routeMachineRepository;
+            _recordMachineStatusRepository = recordMachineStatusRepository;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -37,9 +41,9 @@ namespace CIM.BusinessLogic.Services
             return new List<MachineCacheModel>();
         }
 
-        public async Task Create(MachineModel model)
+        public async Task Create(MachineListModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new Machine());
+            var dbModel = MapperHelper.AsModel(model, new Machine(), new[] { "Status" });
             dbModel.StatusId = Constans.MACHINE_STATUS.Idle;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
@@ -55,27 +59,31 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Name = x.Name,
                             StatusId = x.StatusId,
-                            Status = x.Status.Name,
                             MachineTypeId = x.MachineTypeId,
                             Type = x.MachineType.Name,
+                            StatusTag = x.StatusTag,
+                            CounterInTag = x.CounterInTag,
+                            CounterOutTag = x.CounterOutTag,
+                            CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            var output = await _machineRepository.List(keyword, page, howmany);
+            var output = await _machineRepository.List(keyword, page, howMany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
-        public async Task Update(MachineModel model)
+        public async Task Update(MachineListModel model)
         {
-            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id );
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
@@ -117,7 +125,8 @@ namespace CIM.BusinessLogic.Services
                         Id = machine.Key,
                         RouteIds = new List<int> { routeId },
                         UserId = CurrentUser.UserId,
-                        StartedAt = DateTime.Now
+                        StartedAt = DateTime.Now,
+                        StatusId = Constans.MACHINE_STATUS.Unknown,
                     };
                 }
                 else
@@ -128,7 +137,15 @@ namespace CIM.BusinessLogic.Services
                     }
                     cachedMachine.RouteIds.Add(routeId);
                 }
+                
+                if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
+                {
+                    var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machine.Key).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+                    if (dbModel != null)
+                        cachedMachine.StatusId = dbModel.MachineStatusId;
+                }
                 cachedMachine.ProductionPlanId = productionPlanId;
+
                 await SetCached(machine.Key, cachedMachine);
                 output.Add(cachedMachine);
             }
@@ -142,36 +159,83 @@ namespace CIM.BusinessLogic.Services
             int sequence = 1;
             foreach (var model in data)
             {
-
-                var db_model = MapperHelper.AsModel(model, new RouteMachine());
-                db_model.IsActive = true;
-                db_model.IsDelete = false;
-                db_model.CreatedAt = DateTime.Now;
-                db_model.CreatedBy = CurrentUser.UserId;
-                db_model.Sequence = sequence;
-                _routeMachineRepository.Add(db_model);
-                sequence++;
+                if (model.MachineId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new RouteMachine());
+                    db_model.IsActive = true;
+                    db_model.IsDelete = false;
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    db_model.Sequence = sequence;
+                    _routeMachineRepository.Add(db_model);
+                    sequence++;
+                }
             }
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<List<MachineModel>> GetMachineByRoute(int routeId)
+        public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
             var output = await _machineRepository.ListMachineByRoute(routeId);
+            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
         public async Task DeleteMapping(int routeid)
         {
-            var list = _routeMachineRepository.Where(x => x.RouteId == routeid);
+            var list = await _routeMachineRepository.WhereAsync(x => x.RouteId == routeid);
             foreach (var model in list)
             {
                 _routeMachineRepository.Delete(model);
             }
-            await _unitOfWork.CommitAsync();
         }
+
+        #region HW interface
+
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {
             return await _machineRepository.GetMachineTags();
         }
+
+        public async Task SetListMachinesResetCounter(List<int> machines)
+        {
+            if (machines!.Count > 0)
+            {
+                var model = await GetSystemParamters();
+                foreach (var mcid in machines) 
+                {
+                    if (!model.ListMachineIdsResetCounter.Contains(mcid))
+                    {
+                        model.ListMachineIdsResetCounter.Add(mcid);
+                    }
+                }
+                await _responseCacheService.SetAsync(systemparamtersKey, model);
+            }
+        }
+
+        public async Task ForceInitialTags()
+        {
+            var model = await GetSystemParamters();
+            model.HasTagChanged = true;
+            await _responseCacheService.SetAsync(systemparamtersKey, model);
+        }
+
+        public async Task<SystemParametersModel> CheckSystemParamters()
+        {
+            var result = await GetSystemParamters();
+            await _responseCacheService.SetAsync(systemparamtersKey, null);
+            return result;
+        }
+
+        private async Task<SystemParametersModel> GetSystemParamters()
+        {
+            var cache = await _responseCacheService.GetAsTypeAsync<SystemParametersModel>(systemparamtersKey);
+            if (cache is null)
+            {
+                cache = new SystemParametersModel();
+            }
+            return cache;
+        }
+
+        #endregion
     }
 }

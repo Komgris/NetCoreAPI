@@ -10,7 +10,7 @@ using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
-    public class RouteRepository : Repository<Route>, IRouteRepository
+    public class RouteRepository : Repository<Route, object>, IRouteRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public RouteRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)

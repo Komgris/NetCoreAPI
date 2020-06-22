@@ -15,14 +15,14 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<AccidentParticipants> AccidentParticipants { get; set; }
+        public virtual DbSet<Accidents> Accidents { get; set; }
         public virtual DbSet<App> App { get; set; }
         public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
         public virtual DbSet<Bom> Bom { get; set; }
         public virtual DbSet<BomDole> BomDole { get; set; }
-        public virtual DbSet<BomMaterial> BomMaterial { get; set; }
-        public virtual DbSet<BomTemp> BomTemp { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
@@ -45,6 +45,8 @@ namespace CIM.Domain.Models
         public virtual DbSet<MaintenanceTeam> MaintenanceTeam { get; set; }
         public virtual DbSet<MaintenanceTeamMember> MaintenanceTeamMember { get; set; }
         public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<MaterialGroup> MaterialGroup { get; set; }
+        public virtual DbSet<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
         public virtual DbSet<MaterialType> MaterialType { get; set; }
         public virtual DbSet<Name> Name { get; set; }
         public virtual DbSet<Product> Product { get; set; }
@@ -92,6 +94,49 @@ namespace CIM.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccidentParticipants>(entity =>
+            {
+                entity.ToTable("Accident_Participants");
+
+                entity.Property(e => e.AccidentId).HasColumnName("Accident_Id");
+
+                entity.Property(e => e.EmNo)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.HasOne(d => d.Accident)
+                    .WithMany(p => p.AccidentParticipants)
+                    .HasForeignKey(d => d.AccidentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Accident_Participants_Accidents");
+            });
+
+            modelBuilder.Entity<Accidents>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.HappenAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<App>(entity =>
             {
                 entity.Property(e => e.Name)
@@ -373,50 +418,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Sysdate).HasColumnName("sysdate");
 
                 entity.Property(e => e.TodayJdate).HasColumnName("today_jdate");
-            });
-
-            modelBuilder.Entity<BomMaterial>(entity =>
-            {
-                entity.ToTable("BOM_Material");
-
-                entity.Property(e => e.BomId).HasColumnName("BOM_Id");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedBy).HasMaxLength(128);
-
-                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
-
-                entity.HasOne(d => d.Bom)
-                    .WithMany(p => p.BomMaterial)
-                    .HasForeignKey(d => d.BomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_BOM_Material_BOM_temp");
-
-                entity.HasOne(d => d.Material)
-                    .WithMany(p => p.BomMaterial)
-                    .HasForeignKey(d => d.MaterialId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_BOM_Material_Material");
-            });
-
-            modelBuilder.Entity<BomTemp>(entity =>
-            {
-                entity.ToTable("BOM_temp");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
             modelBuilder.Entity<Companies>(entity =>
@@ -979,7 +980,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.Property(e => e.BhtperUnit)
+                entity.Property(e => e.BHTPerUnit)
                     .HasColumnName("BHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
 
@@ -998,7 +999,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description).HasMaxLength(4000);
 
-                entity.Property(e => e.Icsgroup)
+                entity.Property(e => e.ICSGroup)
                     .HasColumnName("ICSGroup")
                     .HasMaxLength(50);
 
@@ -1010,7 +1011,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ProductCategory).HasMaxLength(50);
 
-                entity.Property(e => e.Uom)
+                entity.Property(e => e.UOM)
                     .HasColumnName("UOM")
                     .HasMaxLength(50);
 
@@ -1023,6 +1024,48 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.MaterialTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_MaterialType");
+            });
+
+            modelBuilder.Entity<MaterialGroup>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MaterialGroupMaterial>(entity =>
+            {
+                entity.ToTable("MaterialGroup_Material");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.MaterialGroupId).HasColumnName("MaterialGroup_Id");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.HasOne(d => d.MaterialGroup)
+                    .WithMany(p => p.MaterialGroupMaterial)
+                    .HasForeignKey(d => d.MaterialGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BOM_Material_BOM_temp");
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.MaterialGroupMaterial)
+                    .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BOM_Material_Material");
             });
 
             modelBuilder.Entity<MaterialType>(entity =>
@@ -1080,7 +1123,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.BriteItemPerUpcitem)
+                entity.Property(e => e.BriteItemPerUPCItem)
                     .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
@@ -1099,7 +1142,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.Igweight)
+                entity.Property(e => e.IGWeight)
                     .HasColumnName("IGWeight")
                     .HasColumnType("decimal(18, 2)");
 
@@ -1109,7 +1152,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
-                entity.Property(e => e.Pmweight)
+                entity.Property(e => e.PMWeight)
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 2)");
 
@@ -1123,7 +1166,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.WeightPerUom)
+                entity.Property(e => e.WeightPerUOM)
                     .HasColumnName("WeightPerUOM")
                     .HasColumnType("decimal(18, 2)");
 
@@ -1256,9 +1299,15 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PlanId).HasMaxLength(50);
 
+                entity.Property(e => e.Acid).HasMaxLength(50);
+
                 entity.Property(e => e.ActualFinish).HasColumnType("datetime");
 
                 entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.Brix).HasMaxLength(100);
+
+                entity.Property(e => e.Country).HasMaxLength(10);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1268,17 +1317,31 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.Ingredient).HasMaxLength(300);
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.ItemBrite).HasMaxLength(50);
+
+                entity.Property(e => e.Line).HasMaxLength(10);
+
+                entity.Property(e => e.Note).HasMaxLength(300);
+
+                entity.Property(e => e.Ph).HasMaxLength(20);
 
                 entity.Property(e => e.PlanFinish).HasColumnType("datetime");
 
                 entity.Property(e => e.PlanStart).HasColumnType("datetime");
 
+                entity.Property(e => e.Pm).HasMaxLength(10);
+
                 entity.Property(e => e.ProductId)
                     .HasColumnName("Product_Id")
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.RawMaterial).HasMaxLength(300);
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
@@ -1291,6 +1354,12 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Wbrt)
+                    .HasColumnName("WBRT")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Weight).HasMaxLength(50);
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductionPlan)
@@ -1567,10 +1636,6 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
-
-                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
-
-                entity.Property(e => e.IsCounterOut).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
@@ -1993,7 +2058,7 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("UserGroups_Apps");
 
-                entity.Property(e => e.Id).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.AppId).HasColumnName("App_Id");
 

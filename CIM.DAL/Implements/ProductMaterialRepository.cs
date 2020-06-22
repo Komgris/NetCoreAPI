@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductMaterialRepository : Repository<ProductMaterial>, IProductMaterialRepository
+    public class ProductMaterialRepository : Repository<ProductMaterial, object>, IProductMaterialRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public ProductMaterialRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
@@ -25,7 +25,7 @@ namespace CIM.DAL.Implements
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@product_id", productId},
+                                            {"@product_id", productId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductMaterial", parameterList);

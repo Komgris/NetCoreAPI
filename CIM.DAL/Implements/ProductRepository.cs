@@ -12,7 +12,7 @@ using CIM.DAL.Utility;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductRepository : Repository<Product>, IProductRepository
+    public class ProductRepository : Repository<Product, ProductModel>, IProductRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public ProductRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
@@ -20,15 +20,16 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howmany)
+        public async Task<PagingModel<ProductModel>> Paging(string keyword, int page, int howMany, bool isActive)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, object> parameterList = new Dictionary<string, object>()
                                         {
                                             {"@keyword", keyword},
-                                            {"@howmany", howmany},
-                                            { "@page", page}
+                                            {"@howmany", howMany},
+                                            { "@page", page},
+                                            {"@is_active", isActive}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProduct", parameterList);
@@ -36,29 +37,8 @@ namespace CIM.DAL.Implements
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                return ToPagingModel(dt.ToModel<ProductModel>(), totalCount, page, howmany);
+                return ToPagingModel(dt.ToModel<ProductModel>(), totalCount, page, howMany);
             });
-        }
-
-        public async Task<List<ProductModel>> Get()
-        {
-            var query = _entities.Product;
-            var data = await query
-                .Select(x => new ProductModel
-                {
-                    Code = x.Code,
-                    Description = x.Description,
-                    BriteItemPerUpcitem = x.BriteItemPerUpcitem,
-                    ProductFamilyId = x.ProductFamilyId,
-                    ProductGroupId = x.ProductGroupId,
-                    ProductTypeId = x.ProductTypeId,
-                    PackingMedium = x.PackingMedium,
-                    Igweight = x.Igweight,
-                    Pmweight = x.Pmweight,
-                    WeightPerUom = x.WeightPerUom,
-
-                }).ToListAsync();
-            return data;
         }
 
         public async Task<IDictionary<int, ProductDictionaryModel>> ListAsDictionary(IList<MaterialDictionaryModel> productBOM)

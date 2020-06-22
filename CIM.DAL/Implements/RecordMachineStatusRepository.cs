@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordMachineStatusRepository : Repository<RecordMachineStatus>, IRecordMachineStatusRepository
+    public class RecordMachineStatusRepository : Repository<RecordMachineStatus, object>, IRecordMachineStatusRepository
     {
         public RecordMachineStatusRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {

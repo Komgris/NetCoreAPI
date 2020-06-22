@@ -49,30 +49,11 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool? isActive = true)
+        public async Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool isActive)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            var dbModel = await _machineTypeRepository.Where(x => x.IsDelete == false
-            && (string.IsNullOrEmpty(keyword) ? true : (x.Name.Contains(keyword)))
-            && (isActive == null ? true : (x.IsActive == isActive)))
-                .Select(
-                    x => new MachineTypeModel
-                    {
-                        Id = x.Id,
-                        Image = x.Image,
-                        Name = x.Name,
-                        IsActive = x.IsActive,
-                        IsDelete = x.IsDelete,
-                        CreatedAt = x.CreatedAt,
-                        CreatedBy = x.CreatedBy,
-                        UpdatedAt = x.UpdatedAt,
-                        UpdatedBy = x.UpdatedBy
-                    }).ToListAsync();
-            var totalCount = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-            return ToPagingModel(dbModel, totalCount, page, howmany);
+            var output = await _machineTypeRepository.List(keyword, page, howmany, isActive);
+            output.Data.ForEach(x => x.ImagePath = ImagePath);
+            return output;
         }
 
         public async Task<MachineTypeModel> Get(int id)
@@ -90,7 +71,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = x.CreatedBy,
                             UpdatedAt = x.UpdatedAt,
                             UpdatedBy = x.UpdatedBy
-                        }).FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+                        }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
     }

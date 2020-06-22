@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IMachineRepository : IRepository<Machine>
+    public interface IMachineRepository : IRepository<Machine, MachineModel>
     {
-        Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany);
+        Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive);
         Task<List<MachineTagsModel>> GetMachineTags();
-        Task<List<MachineModel>> ListMachineByRoute(int routeId);
+        Task<List<RouteMachineModel>> ListMachineByRoute(int routeId);
     }
 }

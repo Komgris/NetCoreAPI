@@ -4,15 +4,17 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class BomModel
+    public class AccidentModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsDelete { get; set; }
+        public string Title { get; set; }
+        public DateTime HappenAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public string Note { get; set; }
+
+        public List<AccidentParticipantsModel> Participants { get; set; } = new List<AccidentParticipantsModel>();
     }
 }

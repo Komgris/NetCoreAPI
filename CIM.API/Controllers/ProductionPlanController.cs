@@ -22,11 +22,10 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductionPlanController : BaseController
     {
-        private IHubContext<MachineHub> _hub;
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
             )
@@ -48,16 +47,18 @@ namespace CIM.API.Controllers
                 var file = Request.Form.Files[0];
                 var folderName = Path.Combine("ProductionPlan");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                if (!Directory.Exists(pathToSave))
+                {
+                    Directory.CreateDirectory(pathToSave);
+                }
                 if (file.Length > 0)
                 {
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                     var fullPath = Path.Combine(pathToSave, fileName);
-                    var dbPath = Path.Combine(folderName, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         file.CopyTo(stream);
                     }
-
 
                     var fromExcel = _productionPlanService.ReadImport(fullPath);
                     var result = await _productionPlanService.Compare(fromExcel);

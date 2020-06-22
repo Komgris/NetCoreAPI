@@ -9,7 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IComponentTypeService : IBaseService
     {
         Task<List<ComponentTypeModel>> GetComponentTypesByMachineType(int machineTypeId);
-        Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany, bool? isActive);
+        Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howmany, bool isActive);
         Task InsertByMachineId(MappingMachineTypeComponentTypeModel<List<ComponentTypeModel>> data);
         Task Create(ComponentTypeModel data);
         Task Update(ComponentTypeModel data);

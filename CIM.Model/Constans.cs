@@ -37,6 +37,7 @@ namespace CIM.Model
         }
 
         public static class MACHINE_STATUS {
+            public const int Unknown = 0;
             public const int Idle = 1;
             public const int Running = 2;
             public const int Stop = 3;
@@ -81,35 +82,47 @@ namespace CIM.Model
 
         }
 
-        public enum DashboardTimeFrame {
+        public enum DataFrame {
             Default,
             Daily,
             Weekly,
             Monthly,
             Yearly
         }
-        public enum DashboardType {
+        public enum BoardcastType {
             All,
             KPI,
             Output,
             Waste,
             Loss,
-            TimeUtilisation
+            TimeUtilisation,
+            ActiveKPI,
+            ActiveProductionSummary,
+            ActiveProductionOutput,
+            ActiveWaste,
+            ActiveWasteMat,
+            ActiveWasteCase,
+            ActiveWasteMC,
+            ActiveWasteTime,
+            ActiveLoss,
+            ActiveTimeUtilisation,
+            ActiveProductionEvent,
+            ActiveOperator,
+            ActiveMachineInfo,
+            ActiveMachineSpeed,
+            ActiveMachineLossEvent,
+            ActiveMachineStatus,
         }
 
         public class DashboardConfig {
             public string Name { get; set; }
             public string StoreName { get; set; }
-        }
-
-        public static Dictionary<DashboardType, DashboardConfig> Dashboard
-            = new Dictionary<DashboardType, DashboardConfig>()
+            public DashboardConfig(){}
+            public DashboardConfig(string name,string storeName)
             {
-                { DashboardType.KPI, new DashboardConfig(){Name="KPI",StoreName="sp_dashboard_kpi"} },
-                { DashboardType.Output, new DashboardConfig(){Name="Output",StoreName="sp_dashboard_output"} },
-                { DashboardType.Waste, new DashboardConfig(){Name="Waste",StoreName="sp_dashboard_waste"} },
-                { DashboardType.Loss, new DashboardConfig(){Name="MachineLoss",StoreName="sp_dashboard_machineLoss"} },
-                { DashboardType.TimeUtilisation, new DashboardConfig(){Name="Utilization",StoreName="sp_dashboard_utilization"} },
-            };
+                Name = name;
+                StoreName = storeName;
+            }
+        }
     }
 }

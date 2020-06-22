@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CIM.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T, TModel> 
+        where T : class
+        where TModel : new()
     {
         IQueryable<T> All();
         Task<IList<T>> AllAsync();
@@ -17,5 +20,8 @@ namespace CIM.DAL.Interfaces
         void Add(T entity);
         void Edit(T entity);
         void Delete(T entity);
+
+        Task<PagingModel<TModel>> ListAsPaging(string storeProcedureName, Dictionary<string, object> parameterList, int page, int howMany);
+
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class ComponentRepository : Repository<Component>, IComponentRepository
+    public class ComponentRepository : Repository<Component, ComponentModel>, IComponentRepository
     {
 
         private IDirectSqlRepository _directSqlRepository;
@@ -17,15 +17,16 @@ namespace CIM.DAL.Implements
         {
             _directSqlRepository = directSqlRepository;
         }
-        public async Task<PagingModel<ComponentModel>> ListComponent(int page, int howmany, string keyword)
+        public async Task<PagingModel<ComponentModel>> ListComponent(int page, int howMany, string keyword, bool isActive)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, object> parameterList = new Dictionary<string, object>()
                                         {
                                             {"@keyword", keyword},
-                                            {"@howmany", howmany},
-                                            { "@page", page}
+                                            {"@howmany", howMany},
+                                            { "@page", page},
+                                            { "@is_active", isActive}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListComponent", parameterList);
@@ -33,7 +34,7 @@ namespace CIM.DAL.Implements
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                return ToPagingModel(dt.ToModel<ComponentModel>(), totalCount, page, howmany);
+                return ToPagingModel(dt.ToModel<ComponentModel>(), totalCount, page, howMany);
             });
         }
 

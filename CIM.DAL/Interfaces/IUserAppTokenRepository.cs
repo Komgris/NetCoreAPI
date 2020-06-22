@@ -5,5 +5,5 @@ using System.Text;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IUserAppTokenRepository : IRepository<UserAppTokens> { }
+    public interface IUserAppTokenRepository : IRepository<UserAppTokens, object> { }
 }

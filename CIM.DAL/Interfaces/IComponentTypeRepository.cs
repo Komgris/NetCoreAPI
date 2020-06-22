@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IComponentTypeRepository : IRepository<ComponentType>
+    public interface IComponentTypeRepository : IRepository<ComponentType, ComponentTypeModel>
     {
         Task<List<ComponentTypeModel>> ListComponentTypeByMachineType(int machineTypeId);
+        Task<PagingModel<ComponentTypeModel>> List(string keyword, int page, int howMany, bool isActive);
     }
 }

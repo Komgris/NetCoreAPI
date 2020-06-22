@@ -11,7 +11,8 @@ namespace CIM.BusinessLogic.Utility
         {
 			try
 			{
-				return Convert.ToDateTime(val.Value);
+				DateTime oDate = DateTime.ParseExact(val.Value.ToString(), "dd/MM/yyyy HH:mm", null);
+				return Convert.ToDateTime(oDate);
 			}
 			catch (Exception)
 			{

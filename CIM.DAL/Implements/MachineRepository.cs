@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class MachineRepository : Repository<Machine>, IMachineRepository
+    public class MachineRepository : Repository<Machine, MachineModel>, IMachineRepository
     {
         private IDirectSqlRepository _directSqlRepository;
         public MachineRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
@@ -18,15 +18,16 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, object> parameterList = new Dictionary<string, object>()
                                         {
                                             {"@keyword", keyword},
-                                            {"@howmany", howmany},
-                                            { "@page", page}
+                                            {"@howmany", howMany},
+                                            {"@page", page},
+                                            {"@is_active", isActive},
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachine", parameterList);
@@ -34,21 +35,21 @@ namespace CIM.DAL.Implements
                 if (dt.Rows.Count > 0)
                     totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                return ToPagingModel(dt.ToModel<MachineListModel>(), totalCount, page, howmany);
+                return ToPagingModel(dt.ToModel<MachineListModel>(), totalCount, page, howMany);
             });
         }
-        public async Task<List<MachineModel>> ListMachineByRoute(int routeId)
+        public async Task<List<RouteMachineModel>> ListMachineByRoute(int routeId)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@route_id", routeId},
+                                            {"@route_id", routeId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListMachineByRoute", parameterList);
 
-                return (dt.ToModel<MachineModel>());
+                return (dt.ToModel<RouteMachineModel>());
             });
         }
 
@@ -57,7 +58,8 @@ namespace CIM.DAL.Implements
             return await Task.Run(() =>
             {
                 var query = _entities.Machine;
-                var output = query.Select(
+                var output = query.Where(x=>x.IsActive)
+                                .Select(
                                             x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.CounterInTag, x.CounterOutTag, x.CounterResetTag))
                                 .ToList();
                 return output;

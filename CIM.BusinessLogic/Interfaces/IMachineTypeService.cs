@@ -9,7 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IMachineTypeService : IBaseService
     {
         Task Create(MachineTypeModel data);
-        Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool? isActive);
+        Task<PagingModel<MachineTypeModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<MachineTypeModel> Get(int id);
         Task Update(MachineTypeModel data);
     }

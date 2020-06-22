@@ -14,5 +14,6 @@ namespace CIM.Model
         public int StatusId { get; set; }
         public string UserId { get; set; }
         public DateTime StartedAt { get; set; }
+        public RecordProductionPlanOutputModel RecordProductionPlanOutput { get; set; }
     }
 }

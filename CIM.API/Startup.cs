@@ -31,6 +31,8 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BaseService.ImagePath = Configuration.GetValue<string>("ImagePath");
+            BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
         }
         public IConfiguration Configuration { get; }
 
@@ -43,7 +45,6 @@ namespace CIM.API
             });
             services.AddDbContext<cim_dbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
-
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 
@@ -70,7 +71,8 @@ namespace CIM.API
             services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
             services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
             services.AddTransient<IRecordMachineStatusRepository, RecordMachineStatusRepository>();
-
+            services.AddTransient<IAccidentRepository, AccidentRepository>();
+            services.AddTransient<IAccidentParticipantRepository, AccidentParticipantRepository>();
 
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
@@ -85,6 +87,8 @@ namespace CIM.API
             services.AddTransient<IProductFamilyRepository, ProductFamilyRepository>();
             services.AddTransient<IProductGroupRepository, ProductGroupRepository>();
             services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
+            services.AddTransient<IMaterialTypeRepository, MaterialTypeRespository>();
+            services.AddTransient<IEmployeesRepository, EmployeesRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -103,6 +107,7 @@ namespace CIM.API
             services.AddTransient<IComponentTypeService, ComponentTypeService>();
             services.AddTransient<IComponentService, ComponentService>();
             services.AddTransient<IRouteService, RouteService>();
+            services.AddTransient<IRecordProductionPlanOutputService, RecordProductionPlanOutputService>();
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
@@ -112,6 +117,10 @@ namespace CIM.API
             services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
             services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
             services.AddTransient<IBomService, BomService>();
+            services.AddTransient<IUtilitiesService, UtilitiesService>();
+            services.AddTransient<IProductGroupService, ProductGroupService>();
+            services.AddTransient<IAccidentService, AccidentService>();
+            services.AddTransient<IEmployeesService, EmployeesService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -151,9 +160,7 @@ namespace CIM.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChartHub>("/chart");
-                endpoints.MapHub<MachineHub>("/activeprocess");
-                endpoints.MapHub<DashboardHub>("/report");
+                endpoints.MapHub<GlobalHub>("/GlobalBoardcast");
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -166,7 +173,7 @@ namespace CIM.API
 #if (DEBUG)
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
 #else
-                                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
 #endif
             });
 

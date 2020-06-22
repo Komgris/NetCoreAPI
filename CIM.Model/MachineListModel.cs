@@ -12,6 +12,10 @@ namespace CIM.Model
         public string Status { get; set; }
         public int MachineTypeId { get; set; }
         public string Type { get; set; }
+        public string StatusTag { get; set; }
+        public string CounterInTag { get; set; }
+        public string CounterOutTag { get; set; }
+        public string CounterResetTag { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -19,6 +23,7 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public bool IsPlanActive { get; set; }
+        public string ImagePath { get; set; }
 
     }
 }
