@@ -237,7 +237,6 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Machine = await GetMachineDictionary();
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
-            masterData.ImagePath = ImagePath;
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 

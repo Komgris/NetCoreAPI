@@ -18,6 +18,5 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public string Image { get; set; }
-        public string ImagePath { get; set; }
     }
 }

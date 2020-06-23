@@ -34,7 +34,6 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            BaseService.ImagePath = Configuration.GetValue<string>("ImagePath");
             BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
         }
         public IConfiguration Configuration { get; }

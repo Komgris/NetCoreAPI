@@ -105,7 +105,6 @@ namespace CIM.BusinessLogic.Services
                 {
                     {"@team_id", teamId}
                 });
-            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
         public async Task DeleteMapping(int teamId)
