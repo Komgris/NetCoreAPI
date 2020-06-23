@@ -43,8 +43,10 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(MachineOperatorModel model)
         {
-            var dbModel = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
-            dbModel = MapperHelper.AsModel(model, dbModel);
+            var dbModel = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.PlanId == model.PlanId);
+            dbModel.OperatorCount = model.OperatorCount;
+            dbModel.LastUpdatedAt = DateTime.Now;
+            dbModel.LastUpdatedBy = CurrentUser.UserId;
             _machineOperatorRepository.Edit(dbModel);
             await _unitOfWorkCIM.CommitAsync();
         }

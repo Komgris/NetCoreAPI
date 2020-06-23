@@ -26,6 +26,7 @@ namespace CIM.BusinessLogic.Services
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
+        private IMachineOperatorRepository _machineOperatorRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IReportService _reportService;
 
@@ -38,6 +39,7 @@ namespace CIM.BusinessLogic.Services
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository,
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
+            IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
             IReportService reportService
             )
@@ -50,6 +52,7 @@ namespace CIM.BusinessLogic.Services
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
+            _machineOperatorRepository = machineOperatorRepository;
             _unitOfWork = unitOfWork;
             _reportService = reportService;
         }
@@ -120,7 +123,25 @@ namespace CIM.BusinessLogic.Services
                         RouteIds = x.Value.RouteList,
                     });
                     var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
+                    foreach (var machine in activeMachines)
+                    {
+                        var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
+                        if (machineOperator == null)
+                        {
+                            var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
+                                 {"@@machine_id", machine.Key }
+                            });
+                            _machineOperatorRepository.Add(new MachineOperators
+                            {
+                                LastUpdatedAt = DateTime.Now,
+                                MachineId = machine.Key,
+                                PlanId = planId,
+                                LastUpdatedBy = CurrentUser.UserId,
+                                OperatorCount = machineTeamCount,
+                            });
+                        }
 
+                    }
                     activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
                     {
                         ProductionPlanId = planId,
