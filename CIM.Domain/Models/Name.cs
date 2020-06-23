@@ -16,10 +16,10 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public int? EmployeeId { get; set; }
+        public int? EmployeesId { get; set; }
         public string UserId { get; set; }
 
-        public virtual Employees Employee { get; set; }
+        public virtual Employees Employees { get; set; }
         public virtual Users User { get; set; }
     }
 }
