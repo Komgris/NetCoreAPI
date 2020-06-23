@@ -39,6 +39,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<Machine> Machine { get; set; }
         public virtual DbSet<MachineOperators> MachineOperators { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
+        public virtual DbSet<MachineTeam> MachineTeam { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
         public virtual DbSet<MachineTypeComponentType> MachineTypeComponentType { get; set; }
         public virtual DbSet<MachineTypeLossLevel3> MachineTypeLossLevel3 { get; set; }
@@ -873,6 +874,44 @@ namespace CIM.Domain.Models
                     .HasMaxLength(50);
             });
 
+            modelBuilder.Entity<MachineTeam>(entity =>
+            {
+                entity.ToTable("Machine_Team");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.TeamId).HasColumnName("Team_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.MachineTeam)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Team_Machine_Team");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.MachineTeam)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Team_Team");
+            });
+
             modelBuilder.Entity<MachineType>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -1174,7 +1213,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.EmployeeId).HasColumnName("Employee_Id");
+                entity.Property(e => e.EmployeesId).HasColumnName("Employees_Id");
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
@@ -1199,9 +1238,9 @@ namespace CIM.Domain.Models
                     .HasColumnName("User_Id")
                     .HasMaxLength(128);
 
-                entity.HasOne(d => d.Employee)
+                entity.HasOne(d => d.Employees)
                     .WithMany(p => p.Name)
-                    .HasForeignKey(d => d.EmployeeId)
+                    .HasForeignKey(d => d.EmployeesId)
                     .HasConstraintName("FK_Name_Employees");
 
                 entity.HasOne(d => d.User)
