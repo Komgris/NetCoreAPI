@@ -41,7 +41,6 @@ namespace CIM.API.Controllers
         {
             await _masterDataService.Refresh();
             return "OK";
-
         }
 
         [HttpGet]
