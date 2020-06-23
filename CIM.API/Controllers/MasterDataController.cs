@@ -39,10 +39,8 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/Refresh")]
         public async Task<string> Refresh()
         {
-            _masterDataService.HostUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
             await _masterDataService.Refresh();
             return "OK";
-
         }
 
         [HttpGet]

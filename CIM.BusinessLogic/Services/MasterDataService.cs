@@ -37,7 +37,6 @@ namespace CIM.BusinessLogic.Services
         private IProductFamilyRepository _productFamilyRepository;
         private IMaterialTypeRepository _materialTypeRepository;
         private ITeamTypeRepository _teamTypeRepository;
-        public string HostUrl { get; set; }
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -238,7 +237,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Machine = await GetMachineDictionary();
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
-            masterData.ImagePath = HostUrl + ImagePath;
+            masterData.ImagePath = ImagePath;
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
