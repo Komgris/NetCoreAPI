@@ -24,6 +24,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace CIM.API
 {
@@ -139,7 +141,6 @@ namespace CIM.API
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
             masterDataService.Refresh();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -182,6 +183,13 @@ namespace CIM.API
 #endif
             });
 
+            //using static path
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                            Path.Combine(Directory.GetCurrentDirectory(), "Image")),
+                RequestPath = "/Image"
+            });
         }
     }
 }
