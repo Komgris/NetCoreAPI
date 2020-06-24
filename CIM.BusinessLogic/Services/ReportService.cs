@@ -377,6 +377,8 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveMachineInfo:
+                        case BoardcastType.ActiveMachineSpeed:
+                        case BoardcastType.ActiveMachineLossEvent:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
