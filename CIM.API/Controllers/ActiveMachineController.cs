@@ -21,12 +21,14 @@ namespace CIM.API.Controllers
         public ActiveMachineController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
             _activeProductionPlanService = activeProductionPlanService;
+            _service = reportService;
         }
 
         [HttpGet]
@@ -38,11 +40,10 @@ namespace CIM.API.Controllers
             if (productionPlan != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                //foreach(var p in productionPlan.ActiveProcesses)
-                //{
-                //    HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId, p.Key, productionPlan);
-                //}
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    , productionPlan.ActiveProcesses.Select(o=>o.Key).ToArray() , productionPlan);
+
+                //await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
             }
             return "OK";
 

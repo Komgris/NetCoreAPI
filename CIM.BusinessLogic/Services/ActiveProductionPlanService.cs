@@ -366,8 +366,8 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
 
-            foreach (var routeId in activeRoute)
-                output.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.ActiveMachineInfo, output.ProductionPlanId, routeId);
+            //foreach (var routeId in activeRoute)
+            //    output.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.ActiveMachineInfo, output.ProductionPlanId, routeId);
 
             return output;
         }
