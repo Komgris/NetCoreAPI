@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public int Id { get; set; }
         public int MachineId { get; set; }
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
