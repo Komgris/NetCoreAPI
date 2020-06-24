@@ -14,6 +14,5 @@ namespace CIM.Model
         public string MaterialDescription { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string CreatedBy { get; set; }
-        public string ImagePath { get; set; }
     }
 }

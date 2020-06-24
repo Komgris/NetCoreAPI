@@ -58,7 +58,6 @@ namespace CIM.BusinessLogic.Services
                     {"@page", page},
                     {"@is_active", isActive}
                 }, page, howMany);
-            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
