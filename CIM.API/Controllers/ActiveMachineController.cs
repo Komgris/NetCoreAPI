@@ -38,6 +38,10 @@ namespace CIM.API.Controllers
             if (productionPlan != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                //foreach(var p in productionPlan.ActiveProcesses)
+                //{
+                //    HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId, p.Key, productionPlan);
+                //}
                 await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
             }
             return "OK";
