@@ -908,6 +908,7 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.Team)
                     .WithMany(p => p.MachineTeam)
                     .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Machine_Team_Team");
             });
 
