@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using CIM.BusinessLogic.Utility;
 
 namespace CIM.API
 {
@@ -33,14 +34,17 @@ namespace CIM.API
     {
         public Startup(IConfiguration configuration)
         {
+            HelperUtility.Logging("", "Startup-Start");
             Configuration = configuration;
             BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
+            HelperUtility.Logging("", "Startup-End");
         }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            HelperUtility.Logging("", "ConfigureServices-Start");
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
@@ -142,11 +146,14 @@ namespace CIM.API
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
             masterDataService.Refresh();
+            services.AddDirectoryBrowser();
+            HelperUtility.Logging("", "ConfigureServices-End");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            HelperUtility.Logging("", "Configure-Start");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -185,12 +192,13 @@ namespace CIM.API
             });
 
             //using static path
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                            Path.Combine(Directory.GetCurrentDirectory(), "Image")),
-                RequestPath = "/Image"
-            });
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //                Path.Combine(Directory.GetCurrentDirectory(), "Image")),
+            //    RequestPath = "/Image"
+            //});
+            HelperUtility.Logging("", "Configure-End");
         }
     }
 }
