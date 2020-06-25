@@ -8,7 +8,6 @@ namespace CIM.BusinessLogic.Utility
 {
     public static class HelperUtility
     {
-
         public static int[] StringToArray(string text)
         {
             if (string.IsNullOrEmpty(text))

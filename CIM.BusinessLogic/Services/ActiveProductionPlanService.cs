@@ -306,6 +306,7 @@ namespace CIM.BusinessLogic.Services
                 }
             }
 
+            //handle machine status
             var recordMachineStatusId = statusId;
             if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
             {
@@ -346,21 +347,17 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
-            var losses = await _recordManufacturingLossRepository.WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId);
+            var losses = await _recordManufacturingLossRepository
+                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
+                && x.IsAuto == true); //update only isAuto = true
             var now = DateTime.Now;
 
             foreach (var dbModel in losses)
             {
-                if (
-                    isAuto == false || //user update manually 
-                    isAuto && dbModel.IsAuto // machine automatic send status
-                    )
-                {
-                    dbModel.EndAt = now;
-                    dbModel.EndBy = CurrentUser.UserId;
-                    dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
-                    _recordManufacturingLossRepository.Edit(dbModel);
-                } 
+                dbModel.EndAt = now;
+                dbModel.EndBy = CurrentUser.UserId;
+                dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                _recordManufacturingLossRepository.Edit(dbModel);
             }
             return activeProductionPlan;
         }
