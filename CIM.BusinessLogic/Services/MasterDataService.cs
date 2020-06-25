@@ -2,14 +2,18 @@
 using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Model;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class MasterDataService : IMasterDataService
+    public class MasterDataService : BaseService, IMasterDataService
     {
         private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
@@ -32,7 +36,7 @@ namespace CIM.BusinessLogic.Services
         private IProductGroupRepository _productGroupRepository;
         private IProductFamilyRepository _productFamilyRepository;
         private IMaterialTypeRepository _materialTypeRepository;
-
+        private ITeamTypeRepository _teamTypeRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -54,8 +58,8 @@ namespace CIM.BusinessLogic.Services
             IProductTypeRepository productTypeRepository,
             IProductGroupRepository productGroupRepository,
             IProductFamilyRepository productFamilyRepository,
-            IMaterialTypeRepository materialTypeRepository
-
+            IMaterialTypeRepository materialTypeRepository,
+            ITeamTypeRepository teamTypeRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -79,6 +83,7 @@ namespace CIM.BusinessLogic.Services
             _productGroupRepository = productGroupRepository;
             _productTypeRepository = productTypeRepository;
             _materialTypeRepository = materialTypeRepository;
+            _teamTypeRepository = teamTypeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -167,7 +172,7 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<string, ProductionPlanDictionaryModel>> GetProductionPlan(IDictionary<int, ProductDictionaryModel> products)
         {
             var output = new Dictionary<string, ProductionPlanDictionaryModel>();
-            var dbModel = await _productionPlanRepository.WhereAsync(x=>x.IsActive == true && x.Product.IsActive == true);
+            var dbModel = await _productionPlanRepository.WhereAsync(x => x.IsActive == true && x.Product.IsActive == true);
             foreach (var item in dbModel)
             {
                 output[item.PlanId] = new ProductionPlanDictionaryModel
@@ -196,7 +201,6 @@ namespace CIM.BusinessLogic.Services
             }
             return Data;
         }
-
         public async Task<MasterDataModel> Refresh()
         {
 
@@ -232,7 +236,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.ProductType = await GetProductTypeDictionary();
             masterData.Dictionary.Machine = await GetMachineDictionary();
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
-
+            masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -431,6 +435,18 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, string>> GetMaterialTypeDictionary()
         {
             var db = (await _materialTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetTeamTypeDictionary()
+        {
+            var db = (await _teamTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {

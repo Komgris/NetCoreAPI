@@ -14,6 +14,7 @@ namespace CIM.Domain.Models
         public string Code { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
+        public int? UnitId { get; set; }
         public string BriteItemPerUPCItem { get; set; }
         public int ProductFamilyId { get; set; }
         public int ProductGroupId { get; set; }

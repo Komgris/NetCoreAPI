@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Image\symbol\" />
     <Folder Include="ProductionPlan\" />
   </ItemGroup>
 

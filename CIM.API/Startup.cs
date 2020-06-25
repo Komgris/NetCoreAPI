@@ -23,6 +23,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace CIM.API
 {
@@ -31,7 +34,6 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            BaseService.ImagePath = Configuration.GetValue<string>("ImagePath");
             BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
         }
         public IConfiguration Configuration { get; }
@@ -73,6 +75,7 @@ namespace CIM.API
             services.AddTransient<IRecordMachineStatusRepository, RecordMachineStatusRepository>();
             services.AddTransient<IAccidentRepository, AccidentRepository>();
             services.AddTransient<IAccidentParticipantRepository, AccidentParticipantRepository>();
+            services.AddTransient<IMachineOperatorRepository, MachineOperatorRepository>();
 
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
@@ -89,6 +92,9 @@ namespace CIM.API
             services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
             services.AddTransient<IMaterialTypeRepository, MaterialTypeRespository>();
             services.AddTransient<IEmployeesRepository, EmployeesRepository>();
+            services.AddTransient<ITeamRepository, TeamRepository>();
+            services.AddTransient<ITeamTypeRepository, TeamTypeRepository>();
+            services.AddTransient<ITeamEmployeesRepository, TeamEmployeesRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -121,6 +127,8 @@ namespace CIM.API
             services.AddTransient<IProductGroupService, ProductGroupService>();
             services.AddTransient<IAccidentService, AccidentService>();
             services.AddTransient<IEmployeesService, EmployeesService>();
+            services.AddTransient<IMachineOperatorService, MachineOperatorService>();
+            services.AddTransient<ITeamService, TeamService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -134,7 +142,6 @@ namespace CIM.API
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
             masterDataService.Refresh();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -177,6 +184,13 @@ namespace CIM.API
 #endif
             });
 
+            //using static path
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                            Path.Combine(Directory.GetCurrentDirectory(), "Image")),
+                RequestPath = "/Image"
+            });
         }
     }
 }

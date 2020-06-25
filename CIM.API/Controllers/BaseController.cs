@@ -77,18 +77,21 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Operation
-        internal async Task<ActiveProductionPlanModel> HandleBoardcastingActiveProcess(BoardcastType updateType, string productionPlan, int routeId, ActiveProductionPlanModel activeModel)
+        internal async Task<ActiveProductionPlanModel> HandleBoardcastingActiveProcess(BoardcastType updateType, string productionPlan, int[] routeId, ActiveProductionPlanModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
-            var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, routeId);
-            if (boardcastData.Data.Count > 0)
-            {
-                await SetBoardcastActiveDataCached(rediskey, routeId, activeModel, boardcastData);
 
-                activeModel.ActiveProcesses[routeId].BoardcastData = boardcastData;
-                await BoardcastClientData(channelKey, activeModel);
+            foreach(var r in routeId)
+            {
+                var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, r);
+                if (boardcastData.Data.Count > 0)
+                {
+                    await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
+                    activeModel.ActiveProcesses[r].BoardcastData = boardcastData;
+                }
             }
+            await BoardcastClientData(channelKey, activeModel);
             return activeModel;
         }
 
