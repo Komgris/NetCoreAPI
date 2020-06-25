@@ -407,7 +407,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
-                if (cachedMachine.ProductionPlanId != null)
+                if (cachedMachine?.ProductionPlanId != null)
                 {
                     var recordOutput = new RecordProductionPlanOutput();
                     var dbOutput = _recordProductionPlanOutputRepository
