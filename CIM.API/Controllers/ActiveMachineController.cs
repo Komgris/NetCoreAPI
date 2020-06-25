@@ -41,7 +41,6 @@ namespace CIM.API.Controllers
                 await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
             }
             return "OK";
-
         }
     }
 }

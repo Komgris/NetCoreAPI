@@ -366,7 +366,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId.HasValue && x.MachineId.Value == machineId && x.EndAt.HasValue == false);
-            if (dbModel == null)
+            if (dbModel == null)//is recording?
             {
                 var alert = new AlertModel
                 {
