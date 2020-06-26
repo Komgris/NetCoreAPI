@@ -173,6 +173,9 @@ namespace CIM.BusinessLogic.Services
                         });
                     }
 
+                    //start counting output
+                    await _machineService.SetListMachinesResetCounter(activeMachines.Keys.ToList(), true);
+
                     //generate -> BoardcastData
                     activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
                     await SetCached(activeProductionPlan);
@@ -212,6 +215,7 @@ namespace CIM.BusinessLogic.Services
                     var activeProductionPlan = await GetCached(planId);
                     if (activeProductionPlan != null)
                     {
+                        var mcliststopCounting = new List<int>();
                         var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
                         activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                         var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
@@ -221,9 +225,14 @@ namespace CIM.BusinessLogic.Services
                             if (!isPlanActive)
                             {
                                 machine.Value.ProductionPlanId = null;
+                                mcliststopCounting.Add(machine.Key);
                             }
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
+
+                        //stop counting output
+                        await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
+
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
@@ -304,6 +313,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
             ActiveProductionPlanModel output = null;
+
             // If Production Plan doesn't start but machine just start to send status
             if (cachedMachine == null)
             {
@@ -311,6 +321,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = machine.Id,
                     UserId = CurrentUser.UserId,
+                    StatusId = statusId,
                     StartedAt = DateTime.Now
                 };
             }
@@ -341,6 +352,7 @@ namespace CIM.BusinessLogic.Services
                 }
             }
 
+            //handle machine status
             var recordMachineStatusId = statusId;
             if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
             {
@@ -362,12 +374,14 @@ namespace CIM.BusinessLogic.Services
 
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
+            else if (lastRecordMachineStatus?.EndAt == null)
+            {
+                lastRecordMachineStatus.EndAt = DateTime.Now;
+                _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
+            }
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
-
-            //foreach (var routeId in activeRoute)
-            //    output.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.ActiveMachineInfo, output.ProductionPlanId, routeId);
 
             return output;
         }
@@ -385,25 +399,18 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
-            var losses = await _recordManufacturingLossRepository.WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId);
+            var losses = await _recordManufacturingLossRepository
+                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
+                && x.IsAuto == true); //update only isAuto = true
             var now = DateTime.Now;
 
             foreach (var dbModel in losses)
             {
-                if (
-                    isAuto == false || //user update manually 
-                    isAuto && dbModel.IsAuto // machine automatic send status
-                    )
-                {
-                    dbModel.EndAt = now;
-                    dbModel.EndBy = CurrentUser.UserId;
-                    dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
-                    var alert = activeProductionPlan.Alerts.First(x => x.Id == Guid.Parse(dbModel.Guid));
-                    alert.EndAt = now;
-                    _recordManufacturingLossRepository.Edit(dbModel);
-                } 
+                dbModel.EndAt = now;
+                dbModel.EndBy = CurrentUser.UserId;
+                dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                _recordManufacturingLossRepository.Edit(dbModel);
             }
-
             return activeProductionPlan;
         }
 
@@ -411,7 +418,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId.HasValue && x.MachineId.Value == machineId && x.EndAt.HasValue == false);
-            if (dbModel == null)
+            if (dbModel == null)//is recording?
             {
                 var alert = new AlertModel
                 {
@@ -449,7 +456,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
-                if (cachedMachine.ProductionPlanId != null)
+                if (cachedMachine?.ProductionPlanId != null)
                 {
                     var recordOutput = new RecordProductionPlanOutput();
                     var dbOutput = _recordProductionPlanOutputRepository

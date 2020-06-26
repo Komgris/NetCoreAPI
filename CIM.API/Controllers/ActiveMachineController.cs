@@ -14,9 +14,8 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActiveMachineController : BaseController
-    {
-        private IActiveProductionPlanService _activeProductionPlanService;
+    public class ActiveMachineController : BaseController {
+        IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
             IResponseCacheService responseCacheService,
@@ -41,12 +40,9 @@ namespace CIM.API.Controllers
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                 await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
-                    , productionPlan.ActiveProcesses.Select(o=>o.Key).ToArray() , productionPlan);
-
-                //await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
             return "OK";
-
         }
     }
 }

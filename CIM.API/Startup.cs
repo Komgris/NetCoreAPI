@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using CIM.BusinessLogic.Utility;
 
 namespace CIM.API
 {
@@ -184,6 +185,7 @@ namespace CIM.API
 #endif
             });
 
+#if (DEBUG)
             //using static path
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -191,6 +193,7 @@ namespace CIM.API
                             Path.Combine(Directory.GetCurrentDirectory(), "Image")),
                 RequestPath = "/Image"
             });
+#endif
         }
     }
 }
