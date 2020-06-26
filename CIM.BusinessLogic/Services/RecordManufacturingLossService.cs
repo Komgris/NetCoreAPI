@@ -131,14 +131,18 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<ActiveProductionPlanModel> UpdateActiveProductionPlanMachine(int routeId, int machineId, int status, ActiveProductionPlanModel activeProductionPlan)
         {
-            //checking for auto machine?
-            var atmachine = _machineRepository.Where(x => x.Id == machineId && x.StatusTag != null && x.StatusTag.Trim() != "").FirstOrDefault();
-            var statusbyManual = atmachine?.StatusId ?? status;
-            var machine = activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId];
+            var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            if (dbmachine.StatusTag == null || dbmachine.StatusTag.Trim() == "")
+            {
+                dbmachine.StatusId = status;
+                _machineRepository.Edit(dbmachine);
+            }
 
-            machine.StatusId = statusbyManual;
+            var machine = activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId];
+            machine.StatusId = status;
             await _machineService.SetCached(machineId, machine);
             await _activeProductionPlanService.SetCached(activeProductionPlan);
+            await _unitOfWork.CommitAsync();
             return activeProductionPlan;
         }
 
