@@ -34,8 +34,12 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.Create(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -54,8 +58,12 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.End(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -74,8 +82,12 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.Update(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)

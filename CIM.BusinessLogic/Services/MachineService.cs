@@ -233,9 +233,10 @@ namespace CIM.BusinessLogic.Services
 
         public async Task InitialMachineCache()
         { 
-            foreach(var mc in _masterDataService.Data.Machines)
+            var masterdata = await _masterDataService.GetData();
+            foreach (var mc in masterdata.Machines)
             {
-                if (GetCached(mc.Key) == null)
+                if (GetCached(mc.Key).Result == null)
                 {
                     await SetCached(mc.Key,
                                            new ActiveMachineModel

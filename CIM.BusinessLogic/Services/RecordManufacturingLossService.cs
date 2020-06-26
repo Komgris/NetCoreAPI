@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Services
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
             IActiveProductionPlanService activeProductionPlanService,
             IMachineService machineService,
-            IMachineRepository machineRepository
+            IMachineRepository machineRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
