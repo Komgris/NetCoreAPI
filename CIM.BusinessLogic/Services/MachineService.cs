@@ -19,11 +19,13 @@ namespace CIM.BusinessLogic.Services
         private readonly IRouteMachineRepository _routeMachineRepository;
         private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        IMasterDataService _masterDataService;
         private string systemparamtersKey = "SystemParamters";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
+            IMasterDataService masterDataService,
             IResponseCacheService responseCacheService,
             IRouteMachineRepository routeMachineRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository
@@ -34,6 +36,7 @@ namespace CIM.BusinessLogic.Services
             _responseCacheService = responseCacheService;
             _routeMachineRepository = routeMachineRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
+            _masterDataService = masterDataService;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -222,6 +225,24 @@ namespace CIM.BusinessLogic.Services
             var result = await GetSystemParamters();
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
+        }
+
+        public async Task InitialMachineCache()
+        { 
+            foreach(var mc in _masterDataService.Data.Machines)
+            {
+                if (GetCached(mc.Key) == null)
+                {
+                    await SetCached(mc.Key,
+                                           new ActiveMachineModel
+                                           {
+                                               Id = mc.Key,
+                                               UserId = CurrentUser.UserId,
+                                               StatusId = 2,
+                                               StartedAt = DateTime.Now
+                                           });
+                }
+            }
         }
 
         private async Task<SystemParametersModel> GetSystemParamters()

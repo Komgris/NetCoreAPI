@@ -15,22 +15,19 @@ namespace CIM.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ActiveMachineController : BaseController {
-        private IActiveProductionPlanService _activeProductionPlanService;
-        IMasterDataService _masterdataService;
+        IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
             IActiveProductionPlanService activeProductionPlanService,
-            IReportService reportService,
-            IMasterDataService masterdataService
+            IReportService reportService
             )
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
             _activeProductionPlanService = activeProductionPlanService;
             _service = reportService;
-            _masterdataService = masterdataService;
         }
 
         [HttpGet]
@@ -46,23 +43,6 @@ namespace CIM.API.Controllers
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
             return "OK";
-        }
-
-        [HttpGet]
-        public async Task<string> InitialMachineCache()
-        {
-            try
-            {
-                var machineList = _masterdataService.Data.Machines;
-                foreach (var mc in machineList)
-                    await _activeProductionPlanService.UpdateByMachine(mc.Key, 2, true);
-
-                return "OK";
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
         }
     }
 }

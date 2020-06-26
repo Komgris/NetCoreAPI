@@ -304,6 +304,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
             ActiveProductionPlanModel output = null;
+
             // If Production Plan doesn't start but machine just start to send status
             if (cachedMachine == null)
             {

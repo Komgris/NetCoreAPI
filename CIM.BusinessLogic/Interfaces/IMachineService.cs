@@ -24,5 +24,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetListMachinesResetCounter(List<int> machines);
         Task<SystemParametersModel> CheckSystemParamters();
         Task ForceInitialTags();
+        Task InitialMachineCache();
     }
 }

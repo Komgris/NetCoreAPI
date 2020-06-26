@@ -67,5 +67,20 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/InitialMachineCache")]
+        public async Task<string> InitialMachineCache()
+        {
+            try
+            {
+                await _machineService.InitialMachineCache();
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }
