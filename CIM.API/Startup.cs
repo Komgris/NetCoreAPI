@@ -184,6 +184,7 @@ namespace CIM.API
 #endif
             });
 
+#if (DEBUG)
             //using static path
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -191,6 +192,7 @@ namespace CIM.API
                             Path.Combine(Directory.GetCurrentDirectory(), "Image")),
                 RequestPath = "/Image"
             });
+#endif
         }
     }
 }

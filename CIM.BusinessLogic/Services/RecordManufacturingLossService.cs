@@ -105,7 +105,6 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
         {
-
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
             var now = DateTime.Now;
             if (dbModel == null)
