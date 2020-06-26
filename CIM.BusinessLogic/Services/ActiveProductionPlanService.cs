@@ -311,6 +311,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = machine.Id,
                     UserId = CurrentUser.UserId,
+                    StatusId = statusId,
                     StartedAt = DateTime.Now
                 };
             }
@@ -366,9 +367,6 @@ namespace CIM.BusinessLogic.Services
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
-
-            //foreach (var routeId in activeRoute)
-            //    output.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.ActiveMachineInfo, output.ProductionPlanId, routeId);
 
             return output;
         }
