@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using CIM.BusinessLogic.Utility;
 
 namespace CIM.API
 {

@@ -5,6 +5,7 @@ using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,8 +27,10 @@ namespace CIM.BusinessLogic.Services
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
+        private IMachineOperatorRepository _machineOperatorRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IReportService _reportService;
+        private IMachineRepository _machineRepository;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -38,8 +41,10 @@ namespace CIM.BusinessLogic.Services
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository,
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
+            IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
-            IReportService reportService
+            IReportService reportService,
+            IMachineRepository machineRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -50,8 +55,10 @@ namespace CIM.BusinessLogic.Services
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
+            _machineOperatorRepository = machineOperatorRepository;
             _unitOfWork = unitOfWork;
             _reportService = reportService;
+            _machineRepository = machineRepository;
         }
 
         public string GetKey(string productionPLanId)
@@ -120,7 +127,25 @@ namespace CIM.BusinessLogic.Services
                         RouteIds = x.Value.RouteList,
                     });
                     var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
+                    foreach (var machine in activeMachines)
+                    {
+                        var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
+                        if (machineOperator == null)
+                        {
+                            var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
+                                 {"@@machine_id", machine.Key }
+                            });
+                            _machineOperatorRepository.Add(new MachineOperators
+                            {
+                                LastUpdatedAt = DateTime.Now,
+                                MachineId = machine.Key,
+                                PlanId = planId,
+                                LastUpdatedBy = CurrentUser.UserId,
+                                OperatorCount = machineTeamCount,
+                            });
+                        }
 
+                    }
                     activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
                     {
                         ProductionPlanId = planId,
@@ -273,6 +298,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProductionPlanModel> UpdateByMachine(int machineId, int statusId, bool isAuto)
         {
+            var now = DateTime.Now;
+            var activeRoute = new List<int>();
             var cachedMachine = await _machineService.GetCached(machineId);
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
@@ -298,11 +325,19 @@ namespace CIM.BusinessLogic.Services
                     {
                         if (output.ActiveProcesses.ContainsKey(routeId))
                         {
+                            var dbmodel = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+                            dbmodel.StatusId = statusId;
+                            dbmodel.UpdatedAt = now;
+                            dbmodel.UpdatedBy = CurrentUser.UserId;
+                            _machineRepository.Edit(dbmodel);
+                            activeRoute.Add(routeId);
+
                             output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
                             output = await HandleMachineByStatus(machineId, statusId, output, routeId, isAuto);
                         }
                     }
                     await SetCached(output);
+
                 }
             }
 
@@ -331,6 +366,10 @@ namespace CIM.BusinessLogic.Services
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
+
+            //foreach (var routeId in activeRoute)
+            //    output.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.ActiveMachineInfo, output.ProductionPlanId, routeId);
+
             return output;
         }
 
