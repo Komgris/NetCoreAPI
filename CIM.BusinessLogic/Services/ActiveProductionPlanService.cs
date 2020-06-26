@@ -365,6 +365,11 @@ namespace CIM.BusinessLogic.Services
 
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
+            else if (lastRecordMachineStatus?.EndAt == null)
+            {
+                lastRecordMachineStatus.EndAt = DateTime.Now;
+                _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
+            }
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
