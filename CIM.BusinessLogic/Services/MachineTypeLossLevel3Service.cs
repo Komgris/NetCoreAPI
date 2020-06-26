@@ -31,5 +31,23 @@ namespace CIM.BusinessLogic.Services
             var output = await _machineTypeLossLevel3Repository.List(machineTypeId, lossLevel3Id, page, howmany);
             return output;
         }
+
+        public async Task Update(List<int> lossLevel3Ids, int machineTypeId)
+        {
+            var list = _machineTypeLossLevel3Repository.Where(x => x.MachineTypeId == machineTypeId);
+            foreach (var model in list)
+            {
+                _machineTypeLossLevel3Repository.Delete(model);
+            }
+
+            foreach (var lossLevel3Id in lossLevel3Ids)
+            {
+                var db_model = new MachineTypeLossLevel3();
+                db_model.LossLevel3Id = lossLevel3Id;
+                db_model.MachineTypeId = machineTypeId;
+                _machineTypeLossLevel3Repository.Add(db_model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
     }
 }

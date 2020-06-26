@@ -31,5 +31,23 @@ namespace CIM.BusinessLogic.Services
             var output = await _componentTypeLossLevel3Repository.List( componentTypeId, lossLevel3Id, page,  howmany);
             return output;
         }
+
+        public async Task Update(List<int> lossLevel3Ids, int componentTypeId)
+        {
+            var list = _componentTypeLossLevel3Repository.Where(x => x.ComponentTypeId == componentTypeId);
+            foreach (var model in list)
+            {
+                _componentTypeLossLevel3Repository.Delete(model);
+            }
+
+            foreach (var lossLevel3Id in lossLevel3Ids)
+            {
+                var db_model = new ComponentTypeLossLevel3();
+                db_model.LossLevel3Id = lossLevel3Id;
+                db_model.ComponentTypeId = componentTypeId;
+                _componentTypeLossLevel3Repository.Add(db_model);
+            }
+            await _unitOfWork.CommitAsync();
+        }
     }
 }
