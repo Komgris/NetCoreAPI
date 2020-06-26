@@ -173,6 +173,9 @@ namespace CIM.BusinessLogic.Services
                         });
                     }
 
+                    //start counting output
+                    await _machineService.SetListMachinesResetCounter(activeMachines.Keys.ToList(), true);
+
                     //generate -> BoardcastData
                     activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
                     await SetCached(activeProductionPlan);
@@ -212,6 +215,7 @@ namespace CIM.BusinessLogic.Services
                     var activeProductionPlan = await GetCached(planId);
                     if (activeProductionPlan != null)
                     {
+                        var mcliststopCounting = new List<int>();
                         var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
                         activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                         var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
@@ -221,9 +225,14 @@ namespace CIM.BusinessLogic.Services
                             if (!isPlanActive)
                             {
                                 machine.Value.ProductionPlanId = null;
+                                mcliststopCounting.Add(machine.Key);
                             }
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
+
+                        //stop counting output
+                        await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
+
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);

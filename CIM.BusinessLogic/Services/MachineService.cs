@@ -197,16 +197,20 @@ namespace CIM.BusinessLogic.Services
             return await _machineRepository.GetMachineTags();
         }
 
-        public async Task SetListMachinesResetCounter(List<int> machines)
+        public async Task SetListMachinesResetCounter(List<int> machines,bool isCounting)
         {
             if (machines!.Count > 0)
             {
                 var model = await GetSystemParamters();
                 foreach (var mcid in machines) 
                 {
-                    if (!model.ListMachineIdsResetCounter.Contains(mcid))
+                    if (!model.ListMachineIdsResetCounter.ContainsKey(mcid))
                     {
-                        model.ListMachineIdsResetCounter.Add(mcid);
+                        model.ListMachineIdsResetCounter.Add(mcid, isCounting);
+                    }
+                    else
+                    {
+                        model.ListMachineIdsResetCounter[mcid] = isCounting;
                     }
                 }
                 await _responseCacheService.SetAsync(systemparamtersKey, model);
