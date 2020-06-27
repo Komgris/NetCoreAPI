@@ -107,32 +107,33 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
         {
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
-            var now = DateTime.Now;
-            if (dbModel == null)
-            {
-                throw new Exception($"Unknow stop record for machine id {model.MachineId}");
-            }
-
-            dbModel.EndAt = now;
-            dbModel.EndBy = CurrentUser.UserId;
-            dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
-            _recordManufacturingLossRepository.Edit(dbModel);
-            await _unitOfWork.CommitAsync();
-
             var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
-            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
-            if (alert != null)
+            var now = DateTime.Now;
+            if (dbModel != null)
             {
-                alert.EndAt = now;
-                alert.StatusId = (int)Constans.AlertStatus.Edited;
+
+                dbModel.EndAt = now;
+                dbModel.EndBy = CurrentUser.UserId;
+                dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                _recordManufacturingLossRepository.Edit(dbModel);
+                await _unitOfWork.CommitAsync();
+
+                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+                if (alert != null)
+                {
+                    alert.EndAt = now;
+                    alert.StatusId = (int)Constans.AlertStatus.Edited;
+                }
+
             }
 
-            return await UpdateActiveProductionPlanMachine(dbModel.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
+            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
         }
 
         private async Task<ActiveProductionPlanModel> UpdateActiveProductionPlanMachine(int routeId, int machineId, int status, ActiveProductionPlanModel activeProductionPlan)
         {
             var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            //when machine is auto
             if (dbmachine.StatusTag == null || dbmachine.StatusTag.Trim() == "")
             {
                 dbmachine.StatusId = status;
