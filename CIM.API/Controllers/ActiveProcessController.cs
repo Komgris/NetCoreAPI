@@ -32,7 +32,6 @@ namespace CIM.API.Controllers
             IActiveProductionPlanService activeProductionPlanService
             ) : base(hub, responseCacheService, service, config)
         {
-            _hub = hub;
             _productionPlanService = productionPlanService;
             _activeProductionPlanService = activeProductionPlanService;
         }
