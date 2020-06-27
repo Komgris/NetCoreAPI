@@ -15,7 +15,6 @@ using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class BoardcastController : BaseController {
 
@@ -35,13 +34,6 @@ namespace CIM.API.Controllers
             _responseCacheService = responseCacheService;
             _service = service;
             _config = config;
-        }
-
-        [HttpPost]
-        public async Task<string> Boardcast(string channel, string data)
-        {
-            await _hub.Clients.All.SendAsync(channel, data);
-            return "OK";
         }
 
         #region general
