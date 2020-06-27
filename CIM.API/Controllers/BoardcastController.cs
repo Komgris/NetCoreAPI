@@ -134,9 +134,9 @@ namespace CIM.API.Controllers
                     cache.SetData(dashboard);
                 }
                 activeModel.ActiveProcesses[routeId].BoardcastData = cache;
-                var alertLimit = _config.GetValue<int>("AlertLimit");
-                activeModel.ActiveProcesses[routeId].Alerts = activeModel.ActiveProcesses[routeId].Alerts.OrderByDescending(x => x.CreatedAt).Take(alertLimit).ToList();
             }
+            var alertLimit = _config.GetValue<int>("AlertLimit");
+            activeModel.ActiveProcesses[routeId].Alerts = activeModel.ActiveProcesses[routeId].Alerts.OrderByDescending(x => x.CreatedAt).Take(alertLimit).ToList();
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
         }
