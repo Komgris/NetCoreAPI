@@ -8,19 +8,23 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class RecordManufacturingLossController : BaseController
+    public class RecordManufacturingLossController : BoardcastController
     {
         private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public RecordManufacturingLossController(
             IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IRecordManufacturingLossService recordManufacturingLossService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
             _hub = hub;
             _recordManufacturingLossService = recordManufacturingLossService;

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers
 {
@@ -15,7 +18,7 @@ namespace CIM.API.Controllers
         private IBomService _bomService;
         public BomController(
             IBomService bomService
-        )
+        ) 
         {
             _bomService = bomService;
         }

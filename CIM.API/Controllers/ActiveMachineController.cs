@@ -8,21 +8,25 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActiveMachineController : BaseController {
+    public class ActiveMachineController : BoardcastController
+    {
         IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
-            IResponseCacheService responseCacheService,
-            IHubContext<GlobalHub> hub,
             IActiveProductionPlanService activeProductionPlanService,
+            IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IReportService reportService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
             _responseCacheService = responseCacheService;
             _hub = hub;

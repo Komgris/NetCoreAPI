@@ -8,28 +8,27 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class RecordProductionPlanOutputController : BaseController
+    public class RecordProductionPlanOutputController : BoardcastController
     {
         private IActiveProductionPlanService _activeProductionPlanService;
-        private IRecordProductionPlanOutputService _recordProductionPlanOutputService;
 
         public RecordProductionPlanOutputController(
-            IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService,
             IRecordProductionPlanOutputService recordProductionPlanOutputService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
-            _responseCacheService = responseCacheService;
-            _hub = hub;
             _activeProductionPlanService = activeProductionPlanService;
-            _recordProductionPlanOutputService = recordProductionPlanOutputService;
         }
 
         [HttpPost]

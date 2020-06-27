@@ -10,6 +10,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
@@ -18,15 +19,18 @@ namespace CIM.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ActiveProcessController : BaseController
+    public class ActiveProcessController : BoardcastController
     {
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveProcessController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
             _hub = hub;
             _productionPlanService = productionPlanService;
