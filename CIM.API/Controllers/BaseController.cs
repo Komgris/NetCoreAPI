@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Linq;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
 

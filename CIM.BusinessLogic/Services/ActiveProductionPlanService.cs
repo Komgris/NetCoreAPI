@@ -398,7 +398,7 @@ namespace CIM.BusinessLogic.Services
                     dbModel.EndAt = now;
                     dbModel.EndBy = CurrentUser.UserId;
                     dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
-                    var alert = activeProductionPlan.Alerts.First(x => x.Id == Guid.Parse(dbModel.Guid));
+                    var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.First(x => x.Id == Guid.Parse(dbModel.Guid));
                     alert.EndAt = now;
                     _recordManufacturingLossRepository.Edit(dbModel);
                 } 
@@ -424,7 +424,7 @@ namespace CIM.BusinessLogic.Services
                     ItemType = (int)Constans.AlertType.MACHINE,
                     RouteId = routeId
                 };
-                activeProductionPlan.Alerts.Add(alert);
+                activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);
 
                 _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
                 {

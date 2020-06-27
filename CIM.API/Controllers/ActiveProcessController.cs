@@ -62,19 +62,20 @@ namespace CIM.API.Controllers
 
         [Route("TakeAction")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId)
+        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId, int routeId)
         {
             var output = new ProcessReponseModel<object>();
 
             try
             {
-                var productionPlan = await _productionPlanService.TakeAction(productionPlanId);
+                var productionPlan = await _productionPlanService.TakeAction(productionPlanId, routeId);
 
                 // Production plan of this component doesn't started yet
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
                 output.IsSuccess = true;

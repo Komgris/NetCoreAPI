@@ -185,12 +185,12 @@ namespace CIM.API
             });
 
             //using static path
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                            Path.Combine(Directory.GetCurrentDirectory(), "Image")),
-                RequestPath = "/Image"
-            });
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //                Path.Combine(Directory.GetCurrentDirectory(), "Image")),
+            //    RequestPath = "/Image"
+            //});
         }
     }
 }

@@ -96,7 +96,7 @@ namespace CIM.BusinessLogic.Services
                 StatusId = Constans.MACHINE_STATUS.Stop,
                 Id = guid,
             };
-            activeProductionPlan.Alerts.Add(alert);
+            activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
             return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); ;
         }
@@ -118,7 +118,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
 
             var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
-            var alert = activeProductionPlan.Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
             if (alert != null)
             {
                 alert.EndAt = now;
@@ -152,7 +152,7 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
             var now = DateTime.Now;
             var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
-            var alert = activeProductionPlan.Alerts.First(x => x.Id == Guid.Parse(model.Guid));
+            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.First(x => x.Id == Guid.Parse(model.Guid));
             alert.LossLevel3Id = model.LossLevelId;
             alert.StatusId = (int)Constans.AlertStatus.Edited;
             dbModel.LossLevel3Id = model.LossLevelId;
@@ -165,7 +165,6 @@ namespace CIM.BusinessLogic.Services
 
             dbModel = await HandleWaste(dbModel, model, now);
 
-            activeProductionPlan.Alerts.First(x => x.Id.ToString() == model.Guid).StatusId = (int)Constans.AlertStatus.Edited;
             await _unitOfWork.CommitAsync();
             await _activeProductionPlanService.SetCached(activeProductionPlan);
             return activeProductionPlan;
