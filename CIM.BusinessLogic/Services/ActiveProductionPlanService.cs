@@ -406,6 +406,9 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var dbModel in losses)
             {
+ 
+                var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.First(x => x.Id == Guid.Parse(dbModel.Guid));
+                alert.EndAt = now;
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
@@ -431,7 +434,7 @@ namespace CIM.BusinessLogic.Services
                     ItemType = (int)Constans.AlertType.MACHINE,
                     RouteId = routeId
                 };
-                activeProductionPlan.Alerts.Add(alert);
+                activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);
 
                 _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
                 {

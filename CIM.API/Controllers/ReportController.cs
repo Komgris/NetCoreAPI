@@ -8,27 +8,32 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using static CIM.Model.Constans;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CIM.API.Controllers {
 
     [ApiController]
-    public class ReportController : BaseController {
+    public class ReportController : BoardcastController
+    {
 
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
-            IReportService reportService) 
+            IReportService service,
+            IConfiguration config,
+            IReportService reportService
+            ) : base(hub, responseCacheService, service, config)
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
             _service = reportService;
-        }
+        } 
 
         #region Cim-Oper Production overview
 
-        [HttpGet]
+[HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
         public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {

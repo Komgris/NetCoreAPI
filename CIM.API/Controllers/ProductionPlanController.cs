@@ -16,19 +16,23 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using CIM.API.HubConfig;
 using System.Reflection.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class ProductionPlanController : BaseController
+    public class ProductionPlanController : BoardcastController
     {
         private IProductionPlanService _productionPlanService;
         private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
             _hub = hub;
             _productionPlanService = productionPlanService;
