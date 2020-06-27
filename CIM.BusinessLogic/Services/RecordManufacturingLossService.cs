@@ -133,6 +133,7 @@ namespace CIM.BusinessLogic.Services
         private async Task<ActiveProductionPlanModel> UpdateActiveProductionPlanMachine(int routeId, int machineId, int status, ActiveProductionPlanModel activeProductionPlan)
         {
             var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            //when machine is auto
             if (dbmachine.StatusTag == null || dbmachine.StatusTag.Trim() == "")
             {
                 dbmachine.StatusId = status;
