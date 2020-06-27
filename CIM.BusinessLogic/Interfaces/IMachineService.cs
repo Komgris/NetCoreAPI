@@ -21,8 +21,9 @@ namespace CIM.BusinessLogic.Interfaces
         Task<List<RouteMachineModel>> GetMachineByRoute(int routeId);
         Task InsertMappingRouteMachine(List<RouteMachineModel> data);
         Task<List<MachineTagsModel>> GetMachineTags();
-        Task SetListMachinesResetCounter(List<int> machines);
+        Task SetListMachinesResetCounter(List<int> machines, bool isCounting);
         Task<SystemParametersModel> CheckSystemParamters();
         Task ForceInitialTags();
+        Task InitialMachineCache();
     }
 }

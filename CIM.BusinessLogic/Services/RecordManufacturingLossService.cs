@@ -20,6 +20,7 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IMachineService _machineService;
+        private IMachineRepository _machineRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordManufacturingLossService(
@@ -29,6 +30,7 @@ namespace CIM.BusinessLogic.Services
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
             IActiveProductionPlanService activeProductionPlanService,
             IMachineService machineService,
+            IMachineRepository machineRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
@@ -39,6 +41,7 @@ namespace CIM.BusinessLogic.Services
             _activeProductionPlanService = activeProductionPlanService;
             _machineService = machineService;
             _unitOfWork = unitOfWork;
+            _machineRepository = machineRepository;
 
         }
 
@@ -103,7 +106,6 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
         {
-
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
             var now = DateTime.Now;
             if (dbModel == null)
@@ -124,16 +126,24 @@ namespace CIM.BusinessLogic.Services
                 alert.EndAt = now;
                 alert.StatusId = (int)Constans.AlertStatus.Edited;
             }
-            return await UpdateActiveProductionPlanMachine(dbModel.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
 
+            return await UpdateActiveProductionPlanMachine(dbModel.RouteId, model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
         }
 
         private async Task<ActiveProductionPlanModel> UpdateActiveProductionPlanMachine(int routeId, int machineId, int status, ActiveProductionPlanModel activeProductionPlan)
         {
+            var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            if (dbmachine.StatusTag == null || dbmachine.StatusTag.Trim() == "")
+            {
+                dbmachine.StatusId = status;
+                _machineRepository.Edit(dbmachine);
+            }
+
             var machine = activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId];
             machine.StatusId = status;
             await _machineService.SetCached(machineId, machine);
             await _activeProductionPlanService.SetCached(activeProductionPlan);
+            await _unitOfWork.CommitAsync();
             return activeProductionPlan;
         }
 
