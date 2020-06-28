@@ -12,5 +12,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlanModel> Update(RecordManufacturingLossModel model);
         Task<RecordManufacturingLossModel> GetByGuid(Guid guid);
         Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model);
+        Task<PagingModel<RecordManufacturingLossModel>> List(string keyword, int page, int howmany);
     }
 }

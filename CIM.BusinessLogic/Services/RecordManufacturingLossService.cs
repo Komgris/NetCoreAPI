@@ -205,5 +205,14 @@ namespace CIM.BusinessLogic.Services
 
         }
 
+        public async Task<PagingModel<RecordManufacturingLossModel>> List(string keyword, int page, int howmany)
+        {
+            return await _recordManufacturingLossRepository.ListAsPaging("sp_ListManufacturingLoss", new Dictionary<string, object>()
+                {
+                    {"@keyword", keyword},
+                    {"@howmany", howmany},
+                    { "@page", page}
+                }, page, howmany);
+        }
     }
 }
