@@ -163,9 +163,13 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
             var now = DateTime.Now;
             var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
-            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.First(x => x.Id == Guid.Parse(model.Guid));
-            alert.LossLevel3Id = model.LossLevelId;
-            alert.StatusId = (int)Constans.AlertStatus.Edited;
+            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
+            //handle case alert is removed from redis
+            if (alert != null)
+            {
+                alert.LossLevel3Id = model.LossLevelId;
+                alert.StatusId = (int)Constans.AlertStatus.Edited;
+            }
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
             if (model.ComponentId > 0)
