@@ -5,6 +5,6 @@ using System.Text;
 namespace CIM.Model {
     public class SystemParametersModel {
         public bool HasTagChanged { get; set; } = false;
-        public List<int> ListMachineIdsResetCounter { get; set; } = new List<int>();
+        public Dictionary<int, bool> ListMachineIdsResetCounter { get; set; } = new Dictionary<int, bool>();
     }
 }

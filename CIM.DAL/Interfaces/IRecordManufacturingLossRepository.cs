@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRecordManufacturingLossRepository : IRepository<RecordManufacturingLoss, object>
+    public interface IRecordManufacturingLossRepository : IRepository<RecordManufacturingLoss, RecordManufacturingLossModel>
     {
         Task<RecordManufacturingLoss> GetByGuid(Guid guid);
         Task<int[]> GetNotExistingStoppedMachineRecord(Dictionary<int, ActiveMachineModel> activeMachines);

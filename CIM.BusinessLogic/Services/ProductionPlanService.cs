@@ -399,11 +399,11 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<ActiveProductionPlanModel> TakeAction(string id)
+        public async Task<ActiveProductionPlanModel> TakeAction(string id, int routeId)
         {
             var output = await _activeProductionPlanService.GetCached(id);
 
-            var alertList = output.Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
+            var alertList = output.ActiveProcesses[routeId].Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
             foreach (var item in alertList)
             {
                 item.StatusId = (int)Constans.AlertStatus.Processing;

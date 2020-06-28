@@ -8,12 +8,13 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class MachineTypeController : BaseController
+    public class MachineTypeController : BoardcastController
     {
         private IMachineTypeService _machineTypeService;
         private IUtilitiesService _utilitiesService;
@@ -21,12 +22,12 @@ namespace CIM.API.Controllers
         public MachineTypeController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IMachineTypeService machineTypeService,
             IUtilitiesService utilitiesService
-        )
+        ) : base(hub, responseCacheService, service, config)
         {
-            _hub = hub;
-            _responseCacheService = responseCacheService;
             _machineTypeService = machineTypeService;
             _utilitiesService = utilitiesService;
         }

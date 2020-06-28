@@ -8,22 +8,25 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActiveMachineController : BaseController
+    public class ActiveMachineController : BoardcastController
     {
-        private IActiveProductionPlanService _activeProductionPlanService;
+        IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
-            IResponseCacheService responseCacheService,
-            IHubContext<GlobalHub> hub,
             IActiveProductionPlanService activeProductionPlanService,
+            IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
             IReportService reportService
-            )
+            ) : base(hub, responseCacheService, service, config)
         {
             _responseCacheService = responseCacheService;
             _hub = hub;
@@ -41,12 +44,9 @@ namespace CIM.API.Controllers
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                 await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
-                    , productionPlan.ActiveProcesses.Select(o=>o.Key).ToArray() , productionPlan);
-
-                //await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
             return "OK";
-
         }
     }
 }
