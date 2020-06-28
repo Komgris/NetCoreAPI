@@ -123,12 +123,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> List(string planId, int? routeId = null, string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
             try
             {
-                output.Data = await _recordManufacturingLossService.List(keyword, page, howmany);
+                output.Data = await _recordManufacturingLossService.List(planId, routeId, keyword, page, howmany);
                 output.IsSuccess = true;
             } 
             catch( Exception e)
