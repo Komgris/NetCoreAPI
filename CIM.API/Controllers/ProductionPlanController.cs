@@ -32,11 +32,9 @@ namespace CIM.API.Controllers
             IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config)
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
             _productionPlanService = productionPlanService;
-            _activeProductionPlanService = activeProductionPlanService;
         }
 
         #region Production plan mng 
