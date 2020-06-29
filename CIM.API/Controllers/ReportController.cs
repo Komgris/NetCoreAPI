@@ -23,12 +23,10 @@ namespace CIM.API.Controllers {
             IHubContext<GlobalHub> hub,
             IReportService service,
             IConfiguration config,
-            IReportService reportService
-            ) : base(hub, responseCacheService, service, config)
+            IReportService reportService,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
-            _responseCacheService = responseCacheService;
-            _service = reportService;
         } 
 
         #region Cim-Oper Production overview

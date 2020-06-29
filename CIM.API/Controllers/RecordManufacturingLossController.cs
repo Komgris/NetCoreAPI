@@ -24,10 +24,10 @@ namespace CIM.API.Controllers
             IResponseCacheService responseCacheService,
             IReportService service,
             IConfiguration config,
-            IRecordManufacturingLossService recordManufacturingLossService
-            ) : base(hub, responseCacheService, service, config)
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
             _recordManufacturingLossService = recordManufacturingLossService;
         }
 

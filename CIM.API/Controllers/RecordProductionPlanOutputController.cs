@@ -24,11 +24,9 @@ namespace CIM.API.Controllers
             IResponseCacheService responseCacheService,
             IReportService service,
             IConfiguration config,
-            IActiveProductionPlanService activeProductionPlanService,
-            IRecordProductionPlanOutputService recordProductionPlanOutputService
-            ) : base(hub, responseCacheService, service, config)
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _activeProductionPlanService = activeProductionPlanService;
         }
 
         [HttpPost]

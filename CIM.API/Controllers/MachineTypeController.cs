@@ -25,8 +25,9 @@ namespace CIM.API.Controllers
             IReportService service,
             IConfiguration config,
             IMachineTypeService machineTypeService,
-            IUtilitiesService utilitiesService
-        ) : base(hub, responseCacheService, service, config)
+            IUtilitiesService utilitiesService,
+            IActiveProductionPlanService activeProductionPlanService
+        ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _machineTypeService = machineTypeService;
             _utilitiesService = utilitiesService;

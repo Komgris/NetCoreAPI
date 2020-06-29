@@ -522,5 +522,12 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return activeProductionPlanList;
         }
+
+        public async Task<int[]> ListMachineReady(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
     }
 }
