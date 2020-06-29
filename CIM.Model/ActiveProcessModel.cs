@@ -12,5 +12,6 @@ namespace CIM.Model
         public PRODUCTION_PLAN_STATUS Status { get; set; }
         public ActiveRouteModel Route { get; set; }
         public BoardcastModel BoardcastData { get; set; }
+        public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
     }
 }

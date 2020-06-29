@@ -46,9 +46,9 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/SetListMachinesResetCounter")]
-        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines)
+        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines, bool isCounting)
         {
-            await _machineService.SetListMachinesResetCounter(machines);
+            await _machineService.SetListMachinesResetCounter(machines, isCounting);
         }
 
         [HttpGet]
@@ -66,6 +66,21 @@ namespace CIM.API.Controllers
                 output.Message = ex.Message;
             }
             return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/InitialMachineCache")]
+        public async Task<string> InitialMachineCache()
+        {
+            try
+            {
+                await _machineService.InitialMachineCache();
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
     }
 }

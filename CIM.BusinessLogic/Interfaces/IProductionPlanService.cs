@@ -23,7 +23,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ProductionPlanModel> Get(string id);
         Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
         Task<ProductionPlanOverviewModel> Load(string id,int routeId);
-        Task<ActiveProductionPlanModel> TakeAction(string id);
+        Task<ActiveProductionPlanModel> TakeAction(string id, int routeId);
         FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId);
     }
 }
