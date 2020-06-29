@@ -96,6 +96,7 @@ namespace CIM.API
             services.AddTransient<ITeamRepository, TeamRepository>();
             services.AddTransient<ITeamTypeRepository, TeamTypeRepository>();
             services.AddTransient<ITeamEmployeesRepository, TeamEmployeesRepository>();
+            services.AddTransient<IMachineTeamRepository, MachineTeamRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -130,6 +131,7 @@ namespace CIM.API
             services.AddTransient<IEmployeesService, EmployeesService>();
             services.AddTransient<IMachineOperatorService, MachineOperatorService>();
             services.AddTransient<ITeamService, TeamService>();
+            services.AddTransient<IMachineTeamService, MachineTeamService>();
 
             services.AddControllers();
             services.AddSignalR();
