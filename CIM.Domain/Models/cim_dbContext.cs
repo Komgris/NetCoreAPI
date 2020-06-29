@@ -1681,8 +1681,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<RecordMaintenancePlan>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("Record_Maintenance_Plan");
 
                 entity.Property(e => e.ActualFinish).HasColumnType("datetime");
@@ -1700,8 +1698,6 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Details).HasMaxLength(2000);
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
@@ -1713,6 +1709,18 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Machine");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Team");
             });
 
             modelBuilder.Entity<RecordManufacturingLoss>(entity =>

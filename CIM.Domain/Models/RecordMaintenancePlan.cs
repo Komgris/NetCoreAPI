@@ -19,5 +19,8 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual Machine Machine { get; set; }
+        public virtual Team Team { get; set; }
     }
 }
