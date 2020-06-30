@@ -11,5 +11,6 @@ namespace CIM.DAL.Interfaces
     {
         Task<RecordManufacturingLoss> GetByGuid(Guid guid);
         Task<int[]> GetNotExistingStoppedMachineRecord(Dictionary<int, ActiveMachineModel> activeMachines);
+        Task<int[]> ListMachineReady(Dictionary<string, object> dictionaries);
     }
 }

@@ -17,21 +17,15 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ActiveMachineController : BoardcastController
     {
-        IActiveProductionPlanService _activeProductionPlanService;
 
         public ActiveMachineController(
             IActiveProductionPlanService activeProductionPlanService,
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IReportService service,
-            IConfiguration config,
-            IReportService reportService
-            ) : base(hub, responseCacheService, service, config)
+            IConfiguration config
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _responseCacheService = responseCacheService;
-            _hub = hub;
-            _activeProductionPlanService = activeProductionPlanService;
-            _service = reportService;
         }
 
         [HttpGet]

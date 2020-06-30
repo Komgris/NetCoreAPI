@@ -21,10 +21,10 @@ namespace CIM.API.Controllers
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IReportService service,
-            IConfiguration config
-            ) : base(hub, responseCacheService, service, config)
+            IConfiguration config,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
         }
 
         public IActionResult Get()

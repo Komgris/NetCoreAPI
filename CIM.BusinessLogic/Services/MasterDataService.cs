@@ -145,6 +145,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
+                    MachineTypeId = item.MachineTypeId,
                     ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                     RouteList = routeMachines.Where(x => x.Value.Contains(item.Id)).Select(x => x.Key).ToList()

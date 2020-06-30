@@ -22,18 +22,22 @@ namespace CIM.API.Controllers
         public IResponseCacheService _responseCacheService;
         public IReportService _service;
         public IConfiguration _config;
+        public IActiveProductionPlanService _activeProductionPlanService;
 
         public BoardcastController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IReportService service,
-            IConfiguration config
+            IConfiguration config,
+            IActiveProductionPlanService activeProductionPlanService
             ) 
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
             _service = service;
             _config = config;
+            _activeProductionPlanService = activeProductionPlanService;
+
         }
 
         #region general
@@ -127,6 +131,13 @@ namespace CIM.API.Controllers
                 }
                 activeModel.ActiveProcesses[routeId].BoardcastData = cache;
             }
+
+            var readyMachines = await _activeProductionPlanService.ListMachineReady(activeModel.ProductionPlanId);
+            foreach (var machine in activeModel.ActiveProcesses[routeId].Route.MachineList)
+            {
+                machine.Value.IsReady = readyMachines.Any(x => x == machine.Key);
+            }
+
             var alertLimit = _config.GetValue<int>("AlertLimit");
             activeModel.ActiveProcesses[routeId].Alerts = activeModel.ActiveProcesses[routeId].Alerts.OrderByDescending(x => x.CreatedAt)
                 .Where(x=>x.LossLevel3Id == Constans.DEFAULT_LOSS_LV3)
