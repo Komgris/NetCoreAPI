@@ -38,5 +38,78 @@ namespace CIM.API.Controllers
 
             return output;
         }
+
+        [Route("api/[controller]/ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<RecordMaintenancePlanModel>>> ListByDate(DateTime date)
+        {
+            var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
+            try
+            {
+                output.Data = await _recordMaintenancePlanService.ListByDate(date);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/Create")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<RecordMaintenancePlanModel>> Create([FromBody]RecordMaintenancePlanModel data)
+        {
+            var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
+            try
+            {
+                await _recordMaintenancePlanService.Create(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/Update")]
+        [HttpPut]
+        public async Task<ProcessReponseModel<RecordMaintenancePlanModel>> Update([FromBody]RecordMaintenancePlanModel data)
+        {
+            var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
+            try
+            {
+                await _recordMaintenancePlanService.Update(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+
+        [Route("api/[controller]/Get")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<RecordMaintenancePlanModel>> Get(int id)
+        {
+            var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
+            try
+            {
+                output.Data = await _recordMaintenancePlanService.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
     }
 }

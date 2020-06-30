@@ -37,6 +37,7 @@ namespace CIM.BusinessLogic.Services
         private IProductFamilyRepository _productFamilyRepository;
         private IMaterialTypeRepository _materialTypeRepository;
         private ITeamTypeRepository _teamTypeRepository;
+        private ITeamRepository _teamRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -59,7 +60,8 @@ namespace CIM.BusinessLogic.Services
             IProductGroupRepository productGroupRepository,
             IProductFamilyRepository productFamilyRepository,
             IMaterialTypeRepository materialTypeRepository,
-            ITeamTypeRepository teamTypeRepository
+            ITeamTypeRepository teamTypeRepository,
+            ITeamRepository teamRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -84,6 +86,7 @@ namespace CIM.BusinessLogic.Services
             _productTypeRepository = productTypeRepository;
             _materialTypeRepository = materialTypeRepository;
             _teamTypeRepository = teamTypeRepository;
+            _teamRepository = teamRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -237,6 +240,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Machine = await GetMachineDictionary();
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
+            masterData.Dictionary.Team = await GetTeamDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -447,6 +451,18 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, string>> GetTeamTypeDictionary()
         {
             var db = (await _teamTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetTeamDictionary()
+        {
+            var db = (await _teamRepository.WhereAsync(x => x.IsActive.Value && !x.IsDelete)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {

@@ -8,7 +8,9 @@ namespace CIM.Model
     {
         public int Id { get; set; }
         public int MachineId { get; set; }
+        public string MachineName { get; set; }
         public int TeamId { get; set; }
+        public string TeamName { get; set; }
         public DateTime PlanStart { get; set; }
         public DateTime? ActualStart { get; set; }
         public DateTime? ActualFinish { get; set; }
