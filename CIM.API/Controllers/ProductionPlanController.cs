@@ -24,7 +24,6 @@ namespace CIM.API.Controllers
     public class ProductionPlanController : BoardcastController
     {
         private IProductionPlanService _productionPlanService;
-        private IActiveProductionPlanService _activeProductionPlanService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
