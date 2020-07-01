@@ -17,7 +17,6 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordProductionPlanOutputController : BoardcastController
     {
-        private IActiveProductionPlanService _activeProductionPlanService;
 
         public RecordProductionPlanOutputController(
             IHubContext<GlobalHub> hub,
