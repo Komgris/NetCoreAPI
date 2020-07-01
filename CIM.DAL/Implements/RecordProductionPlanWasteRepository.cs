@@ -11,7 +11,7 @@ using CIM.Model;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordProductionPlanWasteRepository : Repository<RecordProductionPlanWaste, object>, IRecordProductionPlanWasteRepository
+    public class RecordProductionPlanWasteRepository : Repository<RecordProductionPlanWaste, RecordProductionPlanWasteModel>, IRecordProductionPlanWasteRepository
     {
         public RecordProductionPlanWasteRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {
@@ -45,6 +45,17 @@ namespace CIM.DAL.Implements
                     WasteLevel1Id = x.WasteLevel2.WasteLevel1Id,
                     Id = x.Id
                 }).ToListAsync();
+        }
+
+        public async Task<RecordProductionPlanWaste> Get(int id)
+        {
+            var dbModel = await _dbset.Where(x => x.Id == id).Select(x => new
+            {
+                Waste = x,
+                Masterials = x.RecordProductionPlanWasteMaterials
+            }).FirstOrDefaultAsync();
+            dbModel.Waste.RecordProductionPlanWasteMaterials = dbModel.Masterials;
+            return dbModel.Waste;
         }
 
     }
