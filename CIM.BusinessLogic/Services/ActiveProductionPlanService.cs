@@ -358,7 +358,7 @@ namespace CIM.BusinessLogic.Services
             {
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
-            cachedMachine.StatusId = recordMachineStatusId;
+             cachedMachine.StatusId = recordMachineStatusId;
             var lastRecordMachineStatus = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId)
                 .OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
 
@@ -374,7 +374,8 @@ namespace CIM.BusinessLogic.Services
 
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
-            else if (lastRecordMachineStatus?.EndAt == null)
+            
+            if (lastRecordMachineStatus?.EndAt == null)
             {
                 lastRecordMachineStatus.EndAt = DateTime.Now;
                 _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
