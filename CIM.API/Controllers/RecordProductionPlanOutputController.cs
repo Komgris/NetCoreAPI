@@ -36,10 +36,14 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
+
                 foreach (var productionPlan in productionPlans)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                    await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                                                                , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    //await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 }
                 output.IsSuccess = true;
             }
