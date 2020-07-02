@@ -332,7 +332,7 @@ namespace CIM.BusinessLogic.Services
                 output = await GetCached(cachedMachine.ProductionPlanId);
                 if (output != null)
                 {
-                    foreach (var routeId in cachedMachine.RouteIds)
+                    foreach (var routeId in cachedMachine.RouteIds.Distinct())
                     {
                         if (output.ActiveProcesses.ContainsKey(routeId))
                         {
@@ -358,7 +358,7 @@ namespace CIM.BusinessLogic.Services
             {
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
-             cachedMachine.StatusId = recordMachineStatusId;
+            cachedMachine.StatusId = recordMachineStatusId;
             var lastRecordMachineStatus = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId)
                 .OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
 
