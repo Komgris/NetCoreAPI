@@ -49,12 +49,13 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<List<RecordMaintenancePlanModel>> ListByMonth(int month, int year)
+        public async Task<List<RecordMaintenancePlanModel>> ListByMonth(int month, int year, bool isActive)
         {
             var output = await _recordMaintenancePlanRepositiry.List("sp_ListRecordMaintenancePlanByMonth", new Dictionary<string, object>()
                 {
                     {"@month", month},
-                    {"@year", year}
+                    {"@year", year},
+                    {"@is_active", isActive}
                 });
             return output;
         }

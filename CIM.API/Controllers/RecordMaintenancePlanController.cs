@@ -23,12 +23,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListByMonth")]
         [HttpGet]
-        public async Task<ProcessReponseModel<List<RecordMaintenancePlanModel>>> ListByMonth(int month, int year)
+        public async Task<ProcessReponseModel<List<RecordMaintenancePlanModel>>> ListByMonth(int month, int year, bool isActive)
         {
             var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
             try
             {
-                output.Data = await _recordMaintenancePlanService.ListByMonth(month, year);
+                output.Data = await _recordMaintenancePlanService.ListByMonth(month, year, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

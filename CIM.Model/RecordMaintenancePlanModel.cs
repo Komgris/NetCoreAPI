@@ -7,6 +7,7 @@ namespace CIM.Model
     public class RecordMaintenancePlanModel
     {
         public int Id { get; set; }
+        public string Image { get; set; }
         public int MachineId { get; set; }
         public string MachineName { get; set; }
         public int TeamId { get; set; }
