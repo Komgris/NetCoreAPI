@@ -41,9 +41,6 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-
-                    //var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                    //await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
                 }
                 output.IsSuccess = true;
             }
