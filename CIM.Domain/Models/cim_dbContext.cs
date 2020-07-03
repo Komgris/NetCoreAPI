@@ -64,6 +64,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual DbSet<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
         public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
+        public virtual DbSet<RecordMaintenancePlan> RecordMaintenancePlan { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
         public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
@@ -1676,6 +1677,50 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.MachineStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_Machine_Component_Status_MachineStatus");
+            });
+
+            modelBuilder.Entity<RecordMaintenancePlan>(entity =>
+            {
+                entity.ToTable("Record_Maintenance_Plan");
+
+                entity.Property(e => e.ActualFinish).HasColumnType("datetime");
+
+                entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Details).HasMaxLength(2000);
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.PlanStart).HasColumnType("datetime");
+
+                entity.Property(e => e.TeamId).HasColumnName("Team_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Machine");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Team");
             });
 
             modelBuilder.Entity<RecordManufacturingLoss>(entity =>
