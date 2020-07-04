@@ -138,8 +138,6 @@ namespace CIM.API.Controllers
                 machine.Value.IsReady = readyMachines.Any(x => x == machine.Key);
             }
             await _responseCacheService.SetAsync(channelKey, activeModel);
-
-            await _responseCacheService.SetAsync(channelKey, activeModel);
             var alertLimit = _config.GetValue<int>("AlertLimit");
             activeModel.ActiveProcesses[routeId].Alerts = activeModel.ActiveProcesses[routeId].Alerts.OrderByDescending(x => x.CreatedAt)
                 .Where(x=>x.LossLevel3Id == Constans.DEFAULT_LOSS_LV3)
