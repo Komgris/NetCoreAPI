@@ -78,10 +78,9 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("SetProductionPlans")]
-        public async Task<ResponseModel<CacheExportModel>> SetProductionPlans(CacheExportModel model)
+        public async Task<object> SetProductionPlans(CacheExportModel model)
         {
 
-            var output = new ResponseModel<CacheExportModel>();
             try
             {
                 foreach (var plan in model.ProductionPlans)
@@ -93,13 +92,13 @@ namespace CIM.API.Controllers
                 {
                     await _machineService.SetCached(machine.Id,machine);
                 }
+                return "OK";
 
             }
             catch (Exception ex)
             {
-                output.ErrorMessage = ex.Message;
+                throw ex;
             }
-            return output;
         }
 
     }
