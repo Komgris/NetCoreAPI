@@ -139,14 +139,15 @@ namespace CIM.DAL.Implements
             }
         }
 
-        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId)
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string? planId)
         {
             var output = new FilterLoadProductionPlanListModel();
             Dictionary<string, object> parameterList = new Dictionary<string, object>()
                 {
                     {"@routeid", routeId},
                     {"@productid", productId},
-                    {"@statusid", statusId}
+                    {"@statusid", statusId},
+                    {"@planid", planId }
                 };
             var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", parameterList);
             if (dt.Rows.Count > 0)

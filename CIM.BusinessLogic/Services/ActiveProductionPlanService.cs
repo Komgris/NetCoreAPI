@@ -80,7 +80,7 @@ namespace CIM.BusinessLogic.Services
         public async Task RemoveCached(string id)
         {
             var key = GetKey(id);
-            await _responseCacheService.SetAsync(key, null);
+            await _responseCacheService.RemoveAsync(key);
         }
 
         /// <summary>
@@ -375,9 +375,9 @@ namespace CIM.BusinessLogic.Services
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
             
-            if (lastRecordMachineStatus?.EndAt == null)
+            if(lastRecordMachineStatus != null && lastRecordMachineStatus.EndAt == null)
             {
-                lastRecordMachineStatus.EndAt = DateTime.Now;
+                lastRecordMachineStatus.EndAt = now;
                 _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
             }
 
@@ -462,6 +462,13 @@ namespace CIM.BusinessLogic.Services
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
                 if (cachedMachine?.ProductionPlanId != null)
                 {
+                    //hanling incase -> inActiveprodcutionplan stuck in cache
+                    if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                    {
+                        await RemoveCached(cachedMachine.ProductionPlanId);
+                        continue;
+                    }
+
                     var recordOutput = new RecordProductionPlanOutput();
                     var dbOutput = _recordProductionPlanOutputRepository
                                                             .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
@@ -515,7 +522,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in activeProductionPlanIds)
             {
                 var activeProductionPlan = await GetCached(item);
-                activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId).ToDictionary(x => x.Id, x => x);
+                activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId)?.ToDictionary(x => x.Id, x => x);
                 activeProductionPlanList.Add(activeProductionPlan);
                 await SetCached(activeProductionPlan);
 

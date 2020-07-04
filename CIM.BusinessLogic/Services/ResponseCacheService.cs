@@ -40,8 +40,19 @@ namespace CIM.BusinessLogic.Services
 
         public async Task SetAsync(string key, object model)
         {
-            var stringJson = JsonConvert.SerializeObject(model);
-            await _distributedCache.SetStringAsync(key, stringJson);
+            if(model == null)
+            {
+                _distributedCache.Remove(key);
+            }
+            else
+            {
+                var stringJson = JsonConvert.SerializeObject(model);
+                await _distributedCache.SetStringAsync(key, stringJson);
+            }
+        }
+        public async Task RemoveAsync(string key)
+        {
+            _distributedCache.Remove(key);
         }
     }
 }
