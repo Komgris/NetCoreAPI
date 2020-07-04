@@ -32,8 +32,8 @@ namespace CIM.BusinessLogic.Services
         private IUnitOfWorkCIM _unitOfWork;
         private IReportService _reportService;
         private IMachineRepository _machineRepository;
-        private IRecordManufacturingLossService _recordManufacturingLossService;
         public IConfiguration _config;
+        private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -48,8 +48,8 @@ namespace CIM.BusinessLogic.Services
             IUnitOfWorkCIM unitOfWork,
             IReportService reportService,
             IMachineRepository machineRepository,
-            IRecordManufacturingLossService recordManufacturingLossService,
-            IConfiguration config
+            IConfiguration config,
+            IRecordManufacturingLossService recordManufacturingLossService
             )
         {
             _responseCacheService = responseCacheService;
@@ -64,8 +64,8 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
             _reportService = reportService;
             _machineRepository = machineRepository;
-            _recordManufacturingLossService = recordManufacturingLossService;
             _config = config;
+            _recordManufacturingLossService = recordManufacturingLossService;
         }
 
         public string GetKey(string productionPLanId)
@@ -525,9 +525,7 @@ namespace CIM.BusinessLogic.Services
                             recordOutput.CounterIn = item.CounterIn - dbOutput[0].TotalIn;
                             recordOutput.CounterOut = item.CounterOut - dbOutput[0].TotalOut;
                         }
-
-                        //close ramp-up records and start to operating time #139
-                        else
+                        else//close ramp-up records and start to operating time #139
                         {
                             foreach(var routeid in cachedMachine.RouteIds)
                             {
