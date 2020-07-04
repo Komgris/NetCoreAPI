@@ -462,11 +462,10 @@ namespace CIM.BusinessLogic.Services
                 var cachedMachine = await _machineService.GetCached(item.MachineId);
                 if (cachedMachine?.ProductionPlanId != null)
                 {
-                    var check = await GetCached(cachedMachine?.ProductionPlanId);
                     //hanling incase -> inActiveprodcutionplan stuck in cache
-                    if (GetCached(cachedMachine?.ProductionPlanId).Result == null)
+                    if (GetCached(cachedMachine.ProductionPlanId).Result == null)
                     {
-                        await RemoveCached(cachedMachine?.ProductionPlanId);
+                        await RemoveCached(cachedMachine.ProductionPlanId);
                         continue;
                     }
 
@@ -523,10 +522,6 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in activeProductionPlanIds)
             {
                 var activeProductionPlan = await GetCached(item);
-                if (machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId) == null)
-                {
-
-                }
                 activeProductionPlan.Machines = machineList.Where(x => x.ProductionPlanId == activeProductionPlan.ProductionPlanId)?.ToDictionary(x => x.Id, x => x);
                 activeProductionPlanList.Add(activeProductionPlan);
                 await SetCached(activeProductionPlan);
