@@ -43,5 +43,9 @@ namespace CIM.BusinessLogic.Services
             var stringJson = JsonConvert.SerializeObject(model);
             await _distributedCache.SetStringAsync(key, stringJson);
         }
+        public async Task RemoveAsync(string key)
+        {
+            _distributedCache.Remove(key);
+        }
     }
 }
