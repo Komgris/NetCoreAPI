@@ -408,8 +408,9 @@ namespace CIM.BusinessLogic.Services
             foreach (var dbModel in losses)
             {
  
-                var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.First(x => x.Id == Guid.Parse(dbModel.Guid));
-                alert.EndAt = now;
+                var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                if(alert != null)
+                    alert.EndAt = now;
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
