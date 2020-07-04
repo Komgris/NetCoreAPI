@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -59,6 +64,8 @@ namespace CIM.API.Controllers
                         {
                             foreach (var machine in route.Value.Route.MachineList)
                             {
+                                route.Value.BoardcastData = null;
+
                                 exportModel.Machines.Add(machine.Value);
                             }
                         }
@@ -76,24 +83,34 @@ namespace CIM.API.Controllers
             }
         }
 
+
         [HttpPost]
         [Route("SetProductionPlans")]
-        public async Task<object> SetProductionPlans(CacheExportModel model)
+        public async Task SetProductionPlans(IFormFile file)
         {
 
+            var result = new StringBuilder();
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                while (reader.Peek() >= 0)
+                    result.AppendLine(reader.ReadLine());
+            }
+
+            var data = result.ToString();
+
+            var model = JsonConvert.DeserializeObject<CacheExportModel>(data);
             try
             {
                 foreach (var plan in model.ProductionPlans)
                 {
                     await _activeProductionPlanService.SetCached(plan);
                 }
-
+            
                 foreach (var machine in model.Machines)
                 {
                     await _machineService.SetCached(machine.Id,machine);
                 }
-                return "OK";
-
+            
             }
             catch (Exception ex)
             {
