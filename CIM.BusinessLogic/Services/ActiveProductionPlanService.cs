@@ -421,8 +421,8 @@ namespace CIM.BusinessLogic.Services
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var now = DateTime.Now;
-            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId.HasValue && x.MachineId.Value == machineId && x.EndAt.HasValue == false);
-            if (dbModel == null)//is recording?
+            var cachedMachine = await _machineService.GetCached(machineId);
+            if (cachedMachine.IsReady)
             {
                 var alert = new AlertModel
                 {
