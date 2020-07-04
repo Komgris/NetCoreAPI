@@ -375,9 +375,9 @@ namespace CIM.BusinessLogic.Services
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
             
-            if (lastRecordMachineStatus?.EndAt == null)
+            if(lastRecordMachineStatus != null && lastRecordMachineStatus.EndAt == null)
             {
-                lastRecordMachineStatus.EndAt = DateTime.Now;
+                lastRecordMachineStatus.EndAt = now;
                 _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
             }
 
