@@ -529,14 +529,29 @@ namespace CIM.BusinessLogic.Services
                         //close ramp-up records and start to operating time #139
                         else
                         {
-                            exemachineIds.Add(item.MachineId);
-                            var model = new RecordManufacturingLossModel()
+                            foreach(var routeid in cachedMachine.RouteIds)
                             {
-                                ProductionPlanId = cachedMachine?.ProductionPlanId,
-                                MachineId = item.MachineId,
-                                RouteId = (int)cachedMachine?.RouteIds[0]
-                            };
-                            await _recordManufacturingLossService.End(model);
+                                var activeplan = await GetCached(cachedMachine.ProductionPlanId);
+                                if(activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
+                                {
+                                    foreach(var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
+                                    {
+                                        //close ramp-up records for front machine in the same route #139
+                                        if (!exemachineIds.Contains(activemc.Key))
+                                        {
+                                            var model = new RecordManufacturingLossModel()
+                                            {
+                                                ProductionPlanId = cachedMachine.ProductionPlanId,
+                                                MachineId = activemc.Key,
+                                                RouteId = routeid
+                                            };
+                                            await _recordManufacturingLossService.End(model);
+                                            exemachineIds.Add(item.MachineId);
+                                        }
+                                        if (activemc.Key == item.MachineId) break;
+                                    }
+                                }
+                            }
                         }
 
                         //insert
@@ -571,13 +586,6 @@ namespace CIM.BusinessLogic.Services
                 await SetCached(activeProductionPlan);
 
             }
-
-            //close ramp-up records front machine in the same route #139
-            foreach (var exemcId in exemachineIds)
-            {
-
-            }
-
             await _unitOfWork.CommitAsync();
             return activeProductionPlanList;
         }
