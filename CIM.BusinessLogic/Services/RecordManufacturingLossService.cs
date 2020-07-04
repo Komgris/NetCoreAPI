@@ -101,7 +101,7 @@ namespace CIM.BusinessLogic.Services
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
-            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); ;
+            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); 
         }
 
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
@@ -118,7 +118,7 @@ namespace CIM.BusinessLogic.Services
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
-                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
                 if (alert != null)
                 {
                     alert.EndAt = now;
