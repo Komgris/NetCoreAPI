@@ -332,7 +332,7 @@ namespace CIM.BusinessLogic.Services
                 output = await GetCached(cachedMachine.ProductionPlanId);
                 if (output != null)
                 {
-                    foreach (var routeId in cachedMachine.RouteIds)
+                    foreach (var routeId in cachedMachine.RouteIds.Distinct())
                     {
                         if (output.ActiveProcesses.ContainsKey(routeId))
                         {
@@ -374,7 +374,8 @@ namespace CIM.BusinessLogic.Services
 
                 _recordMachineStatusRepository.Add(recordMachineStatus);
             }
-            else if (lastRecordMachineStatus?.EndAt == null)
+            
+            if (lastRecordMachineStatus?.EndAt == null)
             {
                 lastRecordMachineStatus.EndAt = DateTime.Now;
                 _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
