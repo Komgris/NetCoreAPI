@@ -132,10 +132,10 @@ namespace CIM.API.Controllers
                 activeModel.ActiveProcesses[routeId].BoardcastData = cache;
             }
 
-            var readyMachines = await _activeProductionPlanService.ListMachineReady(activeModel.ProductionPlanId);
+            var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
             foreach (var machine in activeModel.ActiveProcesses[routeId].Route.MachineList)
             {
-                machine.Value.IsReady = readyMachines.Any(x => x == machine.Key);
+                machine.Value.IsReady = recordingMachines.Contains(machine.Key);
             }
             await _responseCacheService.SetAsync(channelKey, activeModel);
             var alertLimit = _config.GetValue<int>("AlertLimit");

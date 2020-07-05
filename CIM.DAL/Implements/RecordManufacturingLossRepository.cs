@@ -35,7 +35,12 @@ namespace CIM.DAL.Implements
 
         public async Task<int[]> ListMachineReady(Dictionary<string, object> dictionaries)
         {
-            var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineReady]", dictionaries);
+            var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineReady]", dictionaries); 
+            return output.Select(x => x.MachineId).ToArray();
+        }
+        public async Task<int[]> ListMachineLossRecording(Dictionary<string, object> dictionaries)
+        {
+            var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineLossRecording]", dictionaries);
             return output.Select(x => x.MachineId).ToArray();
         }
     }

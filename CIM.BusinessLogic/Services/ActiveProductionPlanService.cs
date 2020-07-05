@@ -135,25 +135,7 @@ namespace CIM.BusinessLogic.Services
                         ProductionPlanId = planId,
                         RouteIds = x.Value.RouteList,
                     });
-
-                    //record time loss on process ramp-up #139
                     var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
-                    var rampupModel = new RecordManufacturingLossModel()
-                    {
-                        ProductionPlanId = planId,
-                        RouteId = routeId,
-                        LossLevelId  = _config.GetValue<int>("DefaultIdlelv3Id"),
-                        IsAuto = false,
-                    };
-                    foreach (var machine in activeMachines)
-                    {
-                        //Is first start for machine
-                        if(machine.Value.RouteIds.Count == 1)
-                        {
-                            rampupModel.MachineId = machine.Key;
-                            await _recordManufacturingLossService.Create(rampupModel);
-                        }
-                    }
 
                     //record operators
                     foreach (var machine in activeMachines)
@@ -186,11 +168,6 @@ namespace CIM.BusinessLogic.Services
                             MachineList = activeMachines,
                         }
                     };
-                    var notExistingStoppedMachineRecordIds = await _recordManufacturingLossRepository.GetNotExistingStoppedMachineRecord(activeMachines);
-                    foreach (var machineId in notExistingStoppedMachineRecordIds)
-                    {
-                        activeProductionPlan = await HandleMachineStop(machineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan, routeId, true);
-                    }
 
                     var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
                     foreach (var machineId in runningMachineIds)
@@ -208,8 +185,26 @@ namespace CIM.BusinessLogic.Services
                     //generate -> BoardcastData
                     activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
                     await SetCached(activeProductionPlan);
-
                     output = activeProductionPlan;
+
+                    //record time loss on process ramp-up #139
+                    var rampupModel = new RecordManufacturingLossModel()
+                    {
+                        ProductionPlanId = planId,
+                        RouteId = routeId,
+                        LossLevelId = _config.GetValue<int>("DefaultIdlelv3Id"),
+                        IsAuto = false,
+                    };
+                    foreach (var machine in activeMachines)
+                    {
+                        //Is first start for machine
+                        if (machine.Value.RouteIds.Count == 1)
+                        {
+                            //activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machine.Key].IsReady = true;
+                            rampupModel.MachineId = machine.Key;
+                            await _recordManufacturingLossService.Create(rampupModel);
+                        }
+                    }
                 }
             }
             await _unitOfWork.CommitAsync();
@@ -544,9 +539,9 @@ namespace CIM.BusinessLogic.Services
                                                 RouteId = routeid
                                             };
                                             await _recordManufacturingLossService.End(model);
-                                            exemachineIds.Add(item.MachineId);
+                                            exemachineIds.Add(activemc.Key);
                                         }
-                                        if (activemc.Key == item.MachineId) break;
+                                        if (activemc.Key == item.MachineId) break;//tondev
                                     }
                                 }
                             }
@@ -591,6 +586,12 @@ namespace CIM.BusinessLogic.Services
         public async Task<int[]> ListMachineReady(string productionPlanId)
         {
             return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
+        public async Task<int[]> ListMachineLossRecording(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
                 {"@plan_id", productionPlanId }
             });
         }
