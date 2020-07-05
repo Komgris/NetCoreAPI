@@ -256,7 +256,6 @@ namespace CIM.BusinessLogic.Services
 
                         //stop counting output
                         await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
-
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
@@ -530,7 +529,7 @@ namespace CIM.BusinessLogic.Services
                                     foreach(var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
-                                        if (!exemachineIds.Contains(activemc.Key))
+                                        if (!exemachineIds.Contains(activemc.Key) && !activemc.Value.IsReady)
                                         {
                                             var model = new RecordManufacturingLossModel()
                                             {
