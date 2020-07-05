@@ -445,8 +445,8 @@ namespace CIM.BusinessLogic.Services
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var now = DateTime.Now;
-            var cachedMachine = await _machineService.GetCached(machineId);
-            if (!cachedMachine.IsReady) // has unclosed record inside
+           /// var cachedMachine = await _machineService.GetCached(machineId);
+            if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
             {
                 var alert = new AlertModel
                 {
@@ -529,7 +529,7 @@ namespace CIM.BusinessLogic.Services
                                     foreach(var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
-                                        if (!exemachineIds.Contains(activemc.Key) && !activemc.Value.IsReady)
+                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady)
                                         {
                                             var model = new RecordManufacturingLossModel()
                                             {
