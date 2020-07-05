@@ -447,7 +447,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
             var cachedMachine = await _machineService.GetCached(machineId);
-            if (cachedMachine.IsReady)
+            if (!cachedMachine.IsReady) // has unclosed record inside
             {
                 var alert = new AlertModel
                 {
