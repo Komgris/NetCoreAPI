@@ -217,7 +217,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }
@@ -230,7 +230,8 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
-                output = await HandleResult(result);
+                await HandleBoardcastingActiveProcess(Constans.BoardcastType.End, planId
+                        , new int[] {routeId }, result);
             }
             catch (Exception ex)
             {

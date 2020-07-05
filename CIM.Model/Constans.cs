@@ -113,6 +113,7 @@ namespace CIM.Model
             ActiveMachineSpeed,
             ActiveMachineLossEvent,
             ActiveMachineStatus,
+            End
         }
 
         public class DashboardConfig {
