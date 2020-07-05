@@ -312,7 +312,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             if (model != null)
             {
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, model.ProductionPlanId
+                await HandleBoardcastingActiveProcess(Constans.BoardcastType.All, model.ProductionPlanId
                     , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
 
                 output.IsSuccess = true;

@@ -259,7 +259,8 @@ namespace CIM.BusinessLogic.Services
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
-                        } else
+                        } 
+                        else
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
                             activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
