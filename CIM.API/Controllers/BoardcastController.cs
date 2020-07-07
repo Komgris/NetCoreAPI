@@ -102,18 +102,18 @@ namespace CIM.API.Controllers
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
-
+            var boardcastModel = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
             foreach (var r in routeId)
             {
                 var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, r);
                 if (boardcastData.Data.Count > 0)
                 {
                     await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
-                    activeModel.ActiveProcesses[r].BoardcastData = boardcastData;
+                    boardcastModel.ActiveProcesses[r].BoardcastData = boardcastData;
                 }
             }
-            await BoardcastClientData(channelKey, activeModel);
-            return activeModel;
+            await BoardcastClientData(channelKey, boardcastModel);
+            return boardcastModel;
         }
 
         internal async Task SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
