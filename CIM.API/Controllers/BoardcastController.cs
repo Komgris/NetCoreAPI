@@ -98,25 +98,27 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Operation
+
         internal async Task<ActiveProductionPlanModel> HandleBoardcastingActiveProcess(BoardcastType updateType, string productionPlan, int[] routeId, ActiveProductionPlanModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
-            var boardcastModel = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+
+            //generate data for boardcast
             foreach (var r in routeId)
             {
                 var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, r);
                 if (boardcastData.Data.Count > 0)
                 {
-                    await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
-                    boardcastModel.ActiveProcesses[r].BoardcastData = boardcastData;
+                    activeModel = await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
                 }
             }
-            await BoardcastClientData(channelKey, boardcastModel);
-            return boardcastModel;
+
+            await BoardcastClientData(channelKey, activeModel);
+            return activeModel;
         }
 
-        internal async Task SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        internal async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
             if (cache is null)
@@ -125,6 +127,7 @@ namespace CIM.API.Controllers
             }
             else
             {
+                //update only new dashboard
                 foreach (BoardcastDataModel dashboard in model.Data)
                 {
                     cache.SetData(dashboard);
@@ -137,12 +140,14 @@ namespace CIM.API.Controllers
             {
                 machine.Value.IsReady = recordingMachines.Contains(machine.Key);
             }
+
             await _responseCacheService.SetAsync(channelKey, activeModel);
             var alertLimit = _config.GetValue<int>("AlertLimit");
             activeModel.ActiveProcesses[routeId].Alerts = activeModel.ActiveProcesses[routeId].Alerts.OrderByDescending(x => x.CreatedAt)
-                .Where(x=>x.LossLevel3Id == Constans.DEFAULT_LOSS_LV3)
+                .Where(x => x.LossLevel3Id == Constans.DEFAULT_LOSS_LV3)
                 .Take(alertLimit).ToList();
 
+            return activeModel;
         }
 
         #endregion
