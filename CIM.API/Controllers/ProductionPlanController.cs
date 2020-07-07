@@ -213,11 +213,11 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Start(planId, routeId, target);
-                output = HandleResult(result);
+                output = await HandleResult(result);
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }
@@ -230,7 +230,8 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
-                output = HandleResult(result);
+                await HandleBoardcastingActiveProcess(Constans.BoardcastType.End, planId
+                        , new int[] {routeId }, result);
             }
             catch (Exception ex)
             {
@@ -247,7 +248,7 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Pause(planId, routeId, lossLevel3Id);
-                output = HandleResult(result);
+                output = await HandleResult(result);
             }
             catch (Exception ex)
             {
@@ -264,7 +265,7 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Resume(planId, routeId);
-                output = HandleResult(result);
+                output = await HandleResult(result);
             }
             catch (Exception ex)
             {
@@ -307,15 +308,14 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        private ProcessReponseModel<object> HandleResult(ActiveProductionPlanModel model)
+        private async Task<ProcessReponseModel<object>> HandleResult(ActiveProductionPlanModel model)
         {
             var output = new ProcessReponseModel<object>();
             if (model != null)
             {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{model.ProductionPlanId}";
-                var dataString = JsonConvert.SerializeObject(model, JsonsSetting);
-                _hub.Clients.All.SendAsync(channelKey, dataString);
-                output.Data = dataString;
+                await HandleBoardcastingActiveProcess(Constans.BoardcastType.All, model.ProductionPlanId
+                    , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
+
                 output.IsSuccess = true;
             }
             return output;

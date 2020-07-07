@@ -389,7 +389,7 @@ namespace CIM.API.Controllers {
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(channelKey);
-            if (activeProductionPlan.ActiveProcesses[routeId]!.BoardcastData is null)
+            if (activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
                     await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);

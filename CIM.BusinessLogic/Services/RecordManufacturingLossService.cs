@@ -12,37 +12,52 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class RecordManufacturingLossService : BaseService, IRecordManufacturingLossService
-    {
+    public class RecordManufacturingLossService : BaseService, IRecordManufacturingLossService {
+        private IResponseCacheService _responseCacheService;
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IMasterDataService _masterDataService;
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
-        private IActiveProductionPlanService _activeProductionPlanService;
         private IMachineService _machineService;
         private IMachineRepository _machineRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordManufacturingLossService(
+            IResponseCacheService responseCacheService,
             IRecordManufacturingLossRepository recordManufacturingLossRepository,
             IMasterDataService masterDataService,
             IRecordProductionPlanWasteService recordProductionPlanWasteService,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
-            IActiveProductionPlanService activeProductionPlanService,
             IMachineService machineService,
             IMachineRepository machineRepository,
             IUnitOfWorkCIM unitOfWork
             )
         {
+            _responseCacheService = responseCacheService;
             _recordManufacturingLossRepository = recordManufacturingLossRepository;
             _masterDataService = masterDataService;
             _recordProductionPlanWasteService = recordProductionPlanWasteService;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
-            _activeProductionPlanService = activeProductionPlanService;
             _machineService = machineService;
             _unitOfWork = unitOfWork;
             _machineRepository = machineRepository;
 
+        }
+
+        public string GetKey(string productionPLanId)
+        {
+            return $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPLanId}";
+        }
+
+        public async Task<ActiveProductionPlanModel> GetCached(string id)
+        {
+            var key = GetKey(id);
+            return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(key);
+        }
+
+        public async Task SetCached(ActiveProductionPlanModel model)
+        {
+            await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
         }
 
         private async Task NewRecordManufacturingLoss(RecordManufacturingLossModel model, DateTime now, string guid)
@@ -88,7 +103,7 @@ namespace CIM.BusinessLogic.Services
 
             await _unitOfWork.CommitAsync();
 
-            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var activeProductionPlan = await GetCached(model.ProductionPlanId);
             var alert = new AlertModel
             {
                 CreatedAt = now,
@@ -101,13 +116,13 @@ namespace CIM.BusinessLogic.Services
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
-            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); ;
+            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); 
         }
 
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
         {
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
-            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var activeProductionPlan = await GetCached(model.ProductionPlanId);
             var now = DateTime.Now;
             if (dbModel != null)
             {
@@ -118,7 +133,7 @@ namespace CIM.BusinessLogic.Services
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
-                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x=>x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
                 if (alert != null)
                 {
                     alert.EndAt = now;
@@ -143,7 +158,7 @@ namespace CIM.BusinessLogic.Services
             var machine = activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId];
             machine.StatusId = status;
             await _machineService.SetCached(machineId, machine);
-            await _activeProductionPlanService.SetCached(activeProductionPlan);
+            await SetCached(activeProductionPlan);
             await _unitOfWork.CommitAsync();
             return activeProductionPlan;
         }
@@ -162,7 +177,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
             var now = DateTime.Now;
-            var activeProductionPlan = await _activeProductionPlanService.GetCached(model.ProductionPlanId);
+            var activeProductionPlan = await GetCached(model.ProductionPlanId);
             var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
             //handle case alert is removed from redis
             if (alert != null)
@@ -181,7 +196,7 @@ namespace CIM.BusinessLogic.Services
             dbModel = await HandleWaste(dbModel, model, now);
 
             await _unitOfWork.CommitAsync();
-            await _activeProductionPlanService.SetCached(activeProductionPlan);
+            await SetCached(activeProductionPlan);
             return activeProductionPlan;
         }
 
