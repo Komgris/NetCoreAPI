@@ -48,7 +48,11 @@ namespace CIM.API.Controllers
 
             try
             {
-                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId); 
+                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId);
+                foreach (var item in productionPlan.ActiveProcesses)
+                {
+                    item.Value.Alerts = LimitAlert(item.Value.Alerts);
+                }
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
             }
