@@ -19,11 +19,13 @@ namespace CIM.BusinessLogic.Services
         private readonly IRouteMachineRepository _routeMachineRepository;
         private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        IMasterDataService _masterDataService;
         private string systemparamtersKey = "SystemParamters";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
             IMachineRepository machineRepository,
+            IMasterDataService masterDataService,
             IResponseCacheService responseCacheService,
             IRouteMachineRepository routeMachineRepository,
             IRecordMachineStatusRepository recordMachineStatusRepository
@@ -34,6 +36,7 @@ namespace CIM.BusinessLogic.Services
             _responseCacheService = responseCacheService;
             _routeMachineRepository = routeMachineRepository;
             _recordMachineStatusRepository = recordMachineStatusRepository;
+            _masterDataService = masterDataService;
         }
 
         public List<MachineCacheModel> ListCached()
@@ -77,7 +80,6 @@ namespace CIM.BusinessLogic.Services
         public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
         {
             var output = await _machineRepository.List(keyword, page, howMany, isActive);
-            output.Data.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
 
@@ -108,7 +110,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task RemoveCached(int id, ActiveMachineModel model)
         {
-            await _responseCacheService.SetAsync(CachedKey(id), model);
+            await _responseCacheService.RemoveAsync(CachedKey(id));
         }
 
         public async Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
@@ -135,7 +137,9 @@ namespace CIM.BusinessLogic.Services
                     {
                         cachedMachine.RouteIds = new List<int>();
                     }
-                    cachedMachine.RouteIds.Add(routeId);
+
+                    if (!cachedMachine.RouteIds.Contains(routeId))
+                        cachedMachine.RouteIds.Add(routeId);
                 }
                 
                 if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
@@ -177,7 +181,6 @@ namespace CIM.BusinessLogic.Services
         public async Task<List<RouteMachineModel>> GetMachineByRoute(int routeId)
         {
             var output = await _machineRepository.ListMachineByRoute(routeId);
-            output.ForEach(x => x.ImagePath = ImagePath);
             return output;
         }
         public async Task DeleteMapping(int routeid)
@@ -196,16 +199,20 @@ namespace CIM.BusinessLogic.Services
             return await _machineRepository.GetMachineTags();
         }
 
-        public async Task SetListMachinesResetCounter(List<int> machines)
+        public async Task SetListMachinesResetCounter(List<int> machines,bool isCounting)
         {
             if (machines!.Count > 0)
             {
                 var model = await GetSystemParamters();
                 foreach (var mcid in machines) 
                 {
-                    if (!model.ListMachineIdsResetCounter.Contains(mcid))
+                    if (!model.ListMachineIdsResetCounter.ContainsKey(mcid))
                     {
-                        model.ListMachineIdsResetCounter.Add(mcid);
+                        model.ListMachineIdsResetCounter.Add(mcid, isCounting);
+                    }
+                    else
+                    {
+                        model.ListMachineIdsResetCounter[mcid] = isCounting;
                     }
                 }
                 await _responseCacheService.SetAsync(systemparamtersKey, model);
@@ -224,6 +231,25 @@ namespace CIM.BusinessLogic.Services
             var result = await GetSystemParamters();
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
+        }
+
+        public async Task InitialMachineCache()
+        { 
+            var masterdata = await _masterDataService.GetData();
+            foreach (var mc in masterdata.Machines)
+            {
+                if (GetCached(mc.Key).Result == null)
+                {
+                    await SetCached(mc.Key,
+                                           new ActiveMachineModel
+                                           {
+                                               Id = mc.Key,
+                                               UserId = CurrentUser.UserId,
+                                               StatusId = 2,
+                                               StartedAt = DateTime.Now
+                                           });
+                }
+            }
         }
 
         private async Task<SystemParametersModel> GetSystemParamters()

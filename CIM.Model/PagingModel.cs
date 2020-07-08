@@ -19,5 +19,8 @@ namespace CIM.Model
         public object DataObject { get; set; }
 
         public int Total { get; set; }
+        public int LastPage { get; set; }
+        public bool ShowNext { get; set; }
+        public bool ShowPrevious { get; set; }
     }
 }

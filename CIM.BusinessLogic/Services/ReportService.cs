@@ -338,6 +338,7 @@ namespace CIM.BusinessLogic.Services {
                         case BoardcastType.ActiveProductionSummary:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveProductionOutput
                                                                 , BoardcastType.ActiveMachineSpeed}
@@ -377,6 +378,8 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveMachineInfo:
+                        case BoardcastType.ActiveMachineSpeed:
+                        case BoardcastType.ActiveMachineLossEvent:
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed

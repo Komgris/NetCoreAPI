@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CIM.DAL.Implements
 {
-    public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss, object>, IRecordManufacturingLossRepository
+    public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss, RecordManufacturingLossModel>, IRecordManufacturingLossRepository
     {
         public RecordManufacturingLossRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
@@ -31,6 +31,17 @@ namespace CIM.DAL.Implements
         {
             var models = await _entities.RecordManufacturingLoss.Where(x => x.Guid == guid.ToString()).ToListAsync();
             return models.First(x => x.Guid == guid.ToString());
+        }
+
+        public async Task<int[]> ListMachineReady(Dictionary<string, object> dictionaries)
+        {
+            var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineReady]", dictionaries); 
+            return output.Select(x => x.MachineId).ToArray();
+        }
+        public async Task<int[]> ListMachineLossRecording(Dictionary<string, object> dictionaries)
+        {
+            var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineLossRecording]", dictionaries);
+            return output.Select(x => x.MachineId).ToArray();
         }
     }
 }

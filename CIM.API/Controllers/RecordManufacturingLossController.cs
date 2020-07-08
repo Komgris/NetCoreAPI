@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
@@ -8,21 +9,25 @@ using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class RecordManufacturingLossController : BaseController
+    public class RecordManufacturingLossController : BoardcastController
     {
         private IRecordManufacturingLossService _recordManufacturingLossService;
 
         public RecordManufacturingLossController(
             IHubContext<GlobalHub> hub,
-            IRecordManufacturingLossService recordManufacturingLossService
-            )
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
             _recordManufacturingLossService = recordManufacturingLossService;
         }
 
@@ -34,8 +39,12 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.Create(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -54,8 +63,11 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.End(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -74,8 +86,12 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _recordManufacturingLossService.Update(model);
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await _hub.Clients.All.SendAsync(channelKey, JsonConvert.SerializeObject(productionPlan, JsonsSetting));
+                if (productionPlan != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -104,5 +120,21 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/List")]
+        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> List(string planId, int? routeId = null, string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
+            try
+            {
+                output.Data = await _recordManufacturingLossService.List(planId, routeId, keyword, page, howmany);
+                output.IsSuccess = true;
+            } 
+            catch( Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
     }
 }

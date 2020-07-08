@@ -22,6 +22,6 @@ namespace CIM.DAL.Interfaces
         void Delete(T entity);
 
         Task<PagingModel<TModel>> ListAsPaging(string storeProcedureName, Dictionary<string, object> parameterList, int page, int howMany);
-
+        Task<List<TModel>> List(string storeProcedureName, Dictionary<string, object> parameterList);
     }
 }

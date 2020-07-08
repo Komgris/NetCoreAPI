@@ -8,27 +8,30 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using static CIM.Model.Constans;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CIM.API.Controllers {
 
     [ApiController]
-    public class ReportController : BaseController {
+    public class ReportController : BoardcastController
+    {
 
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
-            IReportService reportService) 
+            IReportService service,
+            IConfiguration config,
+            IReportService reportService,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
-            _responseCacheService = responseCacheService;
-            _service = reportService;
-        }
+        } 
 
         #region Cim-Oper Production overview
 
-        [HttpGet]
+[HttpGet]
         [Route("api/[controller]/GetProductionSummary")]
         public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
@@ -386,7 +389,7 @@ namespace CIM.API.Controllers {
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(channelKey);
-            if (activeProductionPlan.ActiveProcesses[routeId]!.BoardcastData is null)
+            if (activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
                     await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
@@ -404,7 +407,7 @@ namespace CIM.API.Controllers {
             if (activeProductionPlan!.ActiveProcesses[routeId] != null)
             {
                 return JsonConvert.SerializeObject(
-                    await HandleBoardcastingActiveProcess(updateType, productionPlan, routeId, activeProductionPlan));
+                    await HandleBoardcastingActiveProcess(updateType, productionPlan, new int[]{routeId}, activeProductionPlan));
             }
             return "";
         }

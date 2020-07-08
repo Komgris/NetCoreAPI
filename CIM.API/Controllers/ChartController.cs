@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
+using CIM.BusinessLogic.Interfaces;
 using CIM.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ChartController : BaseController {
-        public ChartController(IHubContext<GlobalHub> hub)
+    public class ChartController : BoardcastController
+    {
+        public ChartController(
+            IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
-            _hub = hub;
         }
 
         public IActionResult Get()

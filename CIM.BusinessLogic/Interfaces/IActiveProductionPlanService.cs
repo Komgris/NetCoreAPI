@@ -18,6 +18,8 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlanModel> Resume(string planId, int route);
         Task<ActiveProductionPlanModel> UpdateByMachine(int id, int statusId, bool isAuto);
         Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour);
+        Task<int[]> ListMachineReady(string productionPlanId);
+        Task<int[]> ListMachineLossRecording(string productionPlanId);
     }
 
 }

@@ -14,22 +14,6 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineComponentController : BaseController
     {
-        private IProductionPlanService _productionPlanService;
-        private IMachineService _machineService;
-
-
-        public MachineComponentController(
-            IHubContext<GlobalHub> hub,
-            IProductionPlanService productionPlanService,
-            IResponseCacheService responseCacheService,
-            IMachineService machineService
-        )
-        {
-            _hub = hub;
-            _productionPlanService = productionPlanService;
-            _responseCacheService = responseCacheService;
-            _machineService = machineService;
-        }
 
 
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
+using System.Collections.Generic;
 
 namespace CIM.API.Controllers
 {
@@ -30,6 +31,24 @@ namespace CIM.API.Controllers
             catch (Exception ex)
             {
                 output.Message = ex.ToString();
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/Update")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> Update([FromBody] List<int> lossLevel3Ids, int machineTypeId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _service.Update(lossLevel3Ids, machineTypeId);
+
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
             }
             return output;
         }

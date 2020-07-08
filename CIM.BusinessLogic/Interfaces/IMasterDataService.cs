@@ -11,8 +11,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<MasterDataModel> GetData();
         Task<MasterDataModel> Refresh();
         Task Clear();
-
         MasterDataModel Data { get; set; }
-
     }
 }
