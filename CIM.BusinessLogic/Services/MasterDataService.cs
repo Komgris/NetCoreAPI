@@ -38,6 +38,7 @@ namespace CIM.BusinessLogic.Services
         private IMaterialTypeRepository _materialTypeRepository;
         private ITeamTypeRepository _teamTypeRepository;
         private ITeamRepository _teamRepository;
+        private IUserPositionRepository _userPositionRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -61,7 +62,8 @@ namespace CIM.BusinessLogic.Services
             IProductFamilyRepository productFamilyRepository,
             IMaterialTypeRepository materialTypeRepository,
             ITeamTypeRepository teamTypeRepository,
-            ITeamRepository teamRepository
+            ITeamRepository teamRepository,
+            IUserPositionRepository userPositionRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -87,6 +89,7 @@ namespace CIM.BusinessLogic.Services
             _materialTypeRepository = materialTypeRepository;
             _teamTypeRepository = teamTypeRepository;
             _teamRepository = teamRepository;
+            _userPositionRepository = userPositionRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -242,6 +245,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
             masterData.Dictionary.Team = await GetTeamDictionary();
+            masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -472,6 +476,19 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
+        private async Task<IDictionary<int, string>> GetUserPositionDictionary()
+        {
+            var db = (await _userPositionRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
 
     }
 }

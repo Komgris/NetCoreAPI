@@ -15,15 +15,18 @@ namespace CIM.BusinessLogic.Services
     {
         private readonly IEmployeesRepository _employeesRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private INameRepository _nameRepository;
 
         public EmployeesService(
             IUnitOfWorkCIM unitOfWork,
             IEmployeesRepository employeesRepository,
-            IProductMaterialRepository productMaterialRepository
+            IProductMaterialRepository productMaterialRepository,
+            INameRepository nameRepository
             )
         {
             _employeesRepository = employeesRepository;
             _unitOfWork = unitOfWork;
+            _nameRepository = nameRepository;
         }
 
         public async Task<EmployeesModel> Create(EmployeesModel model)

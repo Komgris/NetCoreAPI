@@ -98,6 +98,8 @@ namespace CIM.API
             services.AddTransient<ITeamEmployeesRepository, TeamEmployeesRepository>();
             services.AddTransient<IMachineTeamRepository, MachineTeamRepository>();
             services.AddTransient<IRecordMaintenancePlanRepository, RecordMaintenancePlanRepository>();
+            services.AddTransient<IUserPositionRepository, UserPositionRepository>();
+            services.AddTransient<INameRepository, NameRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
