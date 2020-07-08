@@ -148,6 +148,8 @@ namespace CIM.API.Controllers
         }
 
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public List<AlertModel> LimitAlert(List<AlertModel> alerts)
         {
             var alertLimit = _config.GetValue<int>("AlertLimit");
