@@ -19,7 +19,7 @@ namespace CIM.DAL.Implements
 
         public async Task<List<RecordProductionPlanWasteMaterialModel>> ListByLoss(int recordManufacturingLossId)
         {
-            return await _entities.RecordProductionPlanWasteMaterials.Where(x => x.Waste.RecordManufacturingLossId == recordManufacturingLossId)
+            return await _entities.RecordProductionPlanWasteMaterials.Where(x => x.Waste.RecordManufacturingLossId == recordManufacturingLossId && x.Waste.IsDelete == false)
                 .Select(x => new RecordProductionPlanWasteMaterialModel
                 {
                     Amount = x.Amount,
