@@ -13,6 +13,12 @@ namespace CIM.Model
         public string User { get; set; }
         public string UserId { get; set; }
         public string FullName { get; set; }
+        public string TitleNameEN { get; set; }
+        public string FirstNameEN { get; set; }
+        public string LastNameEN { get; set; }
+        public string TitleNameTH { get; set; }
+        public string FirstNameTH { get; set; }
+        public string LastNameTH { get; set; }
         public string TitleName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
