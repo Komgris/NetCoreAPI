@@ -27,8 +27,9 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<EmployeesModel> Create([FromForm] IFormFile file, [FromForm] string data)
+        public async Task<ProcessReponseModel<EmployeesModel>> Create([FromForm] IFormFile file, [FromForm] string data)
         {
+            var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
@@ -42,18 +43,22 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"employees/{list.Image}";
                 }
-                return await _service.Create(list);
+                await _service.Create(list);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
+            return output;
         }
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<EmployeesModel> Update([FromForm] IFormFile file, [FromForm] string data)
+        public async Task<ProcessReponseModel<EmployeesModel>> Update([FromForm] IFormFile file, [FromForm] string data)
         {
+            var output = new ProcessReponseModel<EmployeesModel>();
+
             try
             {
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
@@ -67,12 +72,14 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"employees/{list.Image}";
                 }
-                return await _service.Update(list);
+                await _service.Update(list);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
+            return output;
         }
 
         [HttpGet]
@@ -94,16 +101,19 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/Get")]
-        public async Task<EmployeesModel> Get(int id)
+        public async Task<ProcessReponseModel<EmployeesModel>> Get(int id)
         {
+            var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
-                return await _service.Get(id);
+                output.Data = await _service.Get(id);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
+            return output;
         }
 
     }

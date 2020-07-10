@@ -31,6 +31,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<Component> Component { get; set; }
         public virtual DbSet<ComponentType> ComponentType { get; set; }
         public virtual DbSet<ComponentTypeLossLevel3> ComponentTypeLossLevel3 { get; set; }
+        public virtual DbSet<Education> Education { get; set; }
         public virtual DbSet<Employees> Employees { get; set; }
         public virtual DbSet<Locations> Locations { get; set; }
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
@@ -635,6 +636,30 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_LossLevel3_MachineTypeComponent_LossLevel3");
             });
 
+            modelBuilder.Entity<Education>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Educational)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+            });
+
             modelBuilder.Entity<Employees>(entity =>
             {
                 entity.Property(e => e.BirthDate).HasColumnType("date");
@@ -653,6 +678,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Ddsnam).HasMaxLength(20);
 
                 entity.Property(e => e.Education).HasMaxLength(50);
+
+                entity.Property(e => e.EducationId).HasColumnName("Education_Id");
 
                 entity.Property(e => e.EmLevel).HasMaxLength(20);
 
@@ -1649,6 +1676,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 

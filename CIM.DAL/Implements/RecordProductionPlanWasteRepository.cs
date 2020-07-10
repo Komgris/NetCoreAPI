@@ -36,6 +36,7 @@ namespace CIM.DAL.Implements
         public async Task<List<RecordProductionPlanWasteModel>> ListByLoss(int recordManufacturingLossId)
         {
             return await _dbset.Where(x => x.RecordManufacturingLossId == recordManufacturingLossId)
+                .Where(x=>x.IsDelete == false)
                 .Select(x => new RecordProductionPlanWasteModel
                 {
                     CauseMachineId = x.CauseMachineId,
