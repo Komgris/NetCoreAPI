@@ -35,7 +35,13 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
+
+#if (DEBUG)
+            BaseService.ImagePath = Directory.GetCurrentDirectory()+"\\Image";
+#else
+            BaseService.ImagePath =  Configuration.GetValue<string>("ServerPath");
+#endif
+
         }
         public IConfiguration Configuration { get; }
 

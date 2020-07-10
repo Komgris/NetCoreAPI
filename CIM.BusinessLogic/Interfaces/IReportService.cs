@@ -29,6 +29,19 @@ namespace CIM.BusinessLogic.Interfaces {
         Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType);
         Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId);
         Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId);
+        DataTable GetOEEReport(ReportTimeCriteriaModel data);
+        DataTable GetOutputReport(ReportTimeCriteriaModel data);
+        DataTable GetWasteReport(ReportTimeCriteriaModel data);
+        DataTable GetMachineLossReport(ReportTimeCriteriaModel data);
+        DataTable GetQualityReport(ReportTimeCriteriaModel data);
+        DataTable GetSPCReport(ReportTimeCriteriaModel data);
+        DataTable GetElectricityReport(ReportTimeCriteriaModel data);
+        DataTable GetProductionSummaryReport(ReportTimeCriteriaModel data);
+        DataTable GetOperatingTimeReport(ReportTimeCriteriaModel data);
+        DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data);
+        DataTable GetMaintenanceReport(ReportTimeCriteriaModel data);
+        DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data);
+
     }
 
 }
