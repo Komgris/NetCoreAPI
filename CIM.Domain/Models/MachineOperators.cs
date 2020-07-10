@@ -11,5 +11,6 @@ namespace CIM.Domain.Models
         public int OperatorCount { get; set; }
         public DateTime LastUpdatedAt { get; set; }
         public string LastUpdatedBy { get; set; }
+        public int? OperatorPlan { get; set; }
     }
 }
