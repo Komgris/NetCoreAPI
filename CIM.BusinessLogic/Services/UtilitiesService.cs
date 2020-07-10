@@ -28,7 +28,7 @@ namespace CIM.BusinessLogic.Services
             {
                 if (image.Length > 0)
                 {
-                    var folderName = Path.Combine(ServerPath, pathName);
+                    var folderName = Path.Combine(ImagePath, pathName);
                     if (!Directory.Exists(folderName))
                     {
                         Directory.CreateDirectory(folderName);

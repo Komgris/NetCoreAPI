@@ -116,6 +116,15 @@ namespace CIM.Model
             End
         }
 
+        public enum ReportType
+        {
+            Daily,
+            Weekly,
+            Monthly,
+            Yearly,
+            DoleCalendar
+        }
+
         public class DashboardConfig {
             public string Name { get; set; }
             public string StoreName { get; set; }

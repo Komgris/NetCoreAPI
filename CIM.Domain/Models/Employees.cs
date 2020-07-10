@@ -37,6 +37,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public int? EducationId { get; set; }
 
         public virtual Users User { get; set; }
         public virtual UserPosition UserPosition { get; set; }

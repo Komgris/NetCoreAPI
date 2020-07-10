@@ -35,7 +35,13 @@ namespace CIM.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            BaseService.ServerPath = Configuration.GetValue<string>("ServerPath");
+
+#if (DEBUG)
+            BaseService.ImagePath = Directory.GetCurrentDirectory()+"\\Image";
+#else
+            BaseService.ImagePath =  Configuration.GetValue<string>("ServerPath");
+#endif
+
         }
         public IConfiguration Configuration { get; }
 
@@ -98,6 +104,9 @@ namespace CIM.API
             services.AddTransient<ITeamEmployeesRepository, TeamEmployeesRepository>();
             services.AddTransient<IMachineTeamRepository, MachineTeamRepository>();
             services.AddTransient<IRecordMaintenancePlanRepository, RecordMaintenancePlanRepository>();
+            services.AddTransient<IUserPositionRepository, UserPositionRepository>();
+            services.AddTransient<INameRepository, NameRepository>();
+            services.AddTransient<IEducationRepository, EducationRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
