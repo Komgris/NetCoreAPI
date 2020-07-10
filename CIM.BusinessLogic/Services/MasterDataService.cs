@@ -39,6 +39,7 @@ namespace CIM.BusinessLogic.Services
         private ITeamTypeRepository _teamTypeRepository;
         private ITeamRepository _teamRepository;
         private IUserPositionRepository _userPositionRepository;
+        private IEducationRepository _educationRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -63,7 +64,8 @@ namespace CIM.BusinessLogic.Services
             IMaterialTypeRepository materialTypeRepository,
             ITeamTypeRepository teamTypeRepository,
             ITeamRepository teamRepository,
-            IUserPositionRepository userPositionRepository
+            IUserPositionRepository userPositionRepository,
+            IEducationRepository educationRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -90,6 +92,7 @@ namespace CIM.BusinessLogic.Services
             _teamTypeRepository = teamTypeRepository;
             _teamRepository = teamRepository;
             _userPositionRepository = userPositionRepository;
+            _educationRepository = educationRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -246,6 +249,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
             masterData.Dictionary.Team = await GetTeamDictionary();
             masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
+            masterData.Dictionary.Education = await GetEducationDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -479,12 +483,24 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetUserPositionDictionary()
         {
-            var db = (await _userPositionRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Id);
+            var db = (await _userPositionRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Name);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
                     output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetEducationDictionary()
+        {
+            var db = (await _educationRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Educational);
             }
             return output;
         }

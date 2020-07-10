@@ -39,6 +39,7 @@ namespace CIM.Model
         public string Education { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
+        public int? EducationId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
