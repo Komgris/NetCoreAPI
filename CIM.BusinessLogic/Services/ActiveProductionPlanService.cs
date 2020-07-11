@@ -153,6 +153,7 @@ namespace CIM.BusinessLogic.Services
                                 PlanId = planId,
                                 LastUpdatedBy = CurrentUser.UserId,
                                 OperatorCount = machineTeamCount,
+                                OperatorPlan = machineTeamCount
                             });
                         }
 
