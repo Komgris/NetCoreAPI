@@ -134,6 +134,7 @@ namespace CIM.BusinessLogic.Services
                         Id = x.Key,
                         ProductionPlanId = planId,
                         RouteIds = x.Value.RouteList,
+                        Image = x.Value.Image
                     });
                     var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
 
@@ -153,6 +154,7 @@ namespace CIM.BusinessLogic.Services
                                 PlanId = planId,
                                 LastUpdatedBy = CurrentUser.UserId,
                                 OperatorCount = machineTeamCount,
+                                OperatorPlan = machineTeamCount
                             });
                         }
 
@@ -495,30 +497,29 @@ namespace CIM.BusinessLogic.Services
                         continue;
                     }
 
-                    var recordOutput = new RecordProductionPlanOutput();
+                    //via store
+                    var paramsList = new Dictionary<string, object>() {
+                            {"@planid", cachedMachine.ProductionPlanId },
+                            {"@mcid", item.MachineId },
+                            {"@user", CurrentUser.UserId},
+                            {"@hr", hour},
+                            {"@tIn",  item.CounterIn},
+                            {"@tOut", item.CounterOut}
+                        };
+
+
+                    //db execute
                     var dbOutput = _recordProductionPlanOutputRepository
                                                             .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToList();
+
                     if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
                     {
-                        recordOutput = new RecordProductionPlanOutput
-                        {
-                            CounterIn = item.CounterIn,
-                            CounterOut = item.CounterOut,
-                            CreatedAt = now,
-                            CreatedBy = CurrentUser.UserId,
-                            Hour = hour,
-                            MachineId = item.MachineId,
-                            ProductionPlanId = cachedMachine.ProductionPlanId,
-                            TotalIn = item.CounterIn,
-                            TotalOut = item.CounterOut,
-                        };
-
                         if (dbOutput.Count > 0)
                         {
-                            recordOutput.CounterIn = item.CounterIn - dbOutput[0].TotalIn;
-                            recordOutput.CounterOut = item.CounterOut - dbOutput[0].TotalOut;
+                            paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
+                            paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
                         }
                         else//close ramp-up records and start to operating time #139
                         {
@@ -541,27 +542,20 @@ namespace CIM.BusinessLogic.Services
                                             await _recordManufacturingLossService.End(model);
                                             exemachineIds.Add(activemc.Key);
                                         }
-                                        if (activemc.Key == item.MachineId) break;//tondev
+                                        if (activemc.Key == item.MachineId) break;
                                     }
                                 }
                             }
                         }
-
-                        //insert
-                        _recordProductionPlanOutputRepository.Add(recordOutput);
                     }
                     else
                     {
                         //update
-                        recordOutput = dbOutput[0];
-                        recordOutput.CounterIn = item.CounterIn - (dbOutput.Count > 1? dbOutput[1].TotalIn:0);
-                        recordOutput.CounterOut = item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0);
-                        recordOutput.TotalIn = item.CounterIn;
-                        recordOutput.TotalOut = item.CounterOut;
-                        recordOutput.UpdatedAt = now;
-
-                        _recordProductionPlanOutputRepository.Edit(recordOutput);
+                        paramsList.Add("@id", dbOutput[0].Id);
+                        paramsList.Add("@cIn", item.CounterIn - (dbOutput.Count > 1 ? dbOutput[1].TotalIn : 0));
+                        paramsList.Add("@cOut", item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0));
                     }
+                    _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
 
                     //set cache
                     cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
