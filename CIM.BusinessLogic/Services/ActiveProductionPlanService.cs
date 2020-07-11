@@ -134,6 +134,7 @@ namespace CIM.BusinessLogic.Services
                         Id = x.Key,
                         ProductionPlanId = planId,
                         RouteIds = x.Value.RouteList,
+                        Image = x.Value.Image
                     });
                     var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
 
