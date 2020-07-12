@@ -143,14 +143,17 @@ namespace CIM.BusinessLogic.Services
         {
             var output = new Dictionary<int, MachineModel>();
             var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+            var machineTypes = (await _machineTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).ToDictionary( x=>x.Id, x=>x);
 
             foreach (var item in activeMachines)
             {
                 var machineComponents = components.Where(x => x.Value.MachineId == item.Id);
+                var image = machineTypes.ContainsKey(item.MachineTypeId) ? machineTypes[item.MachineTypeId].Image : "";
                 output[item.Id] = new MachineModel
                 {
                     Id = item.Id,
                     Name = item.Name,
+                    Image = image,
                     MachineTypeId = item.MachineTypeId,
                     ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
