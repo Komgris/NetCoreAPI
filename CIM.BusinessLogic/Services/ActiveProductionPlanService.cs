@@ -523,7 +523,10 @@ namespace CIM.BusinessLogic.Services
                         }
                         else//close ramp-up records and start to operating time #139
                         {
-                            foreach(var routeid in cachedMachine.RouteIds)
+                            paramsList.Add("@cIn", item.CounterIn);
+                            paramsList.Add("@cOut", item.CounterOut);
+
+                            foreach (var routeid in cachedMachine.RouteIds)
                             {
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
                                 if(activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)

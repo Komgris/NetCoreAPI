@@ -151,7 +151,7 @@ namespace CIM.BusinessLogic.Services {
             };
 
             var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
-            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var totalcnt = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("totalcount") : 0;
             var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
             pagingmodel.DataObject = dt;
 
