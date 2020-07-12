@@ -62,7 +62,6 @@ namespace CIM.API.Controllers
             }
 
             return output;
-
         }
 
         [Route("TakeAction")]

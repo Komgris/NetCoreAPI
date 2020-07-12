@@ -76,11 +76,9 @@ namespace CIM.Model
         }
 
         public class SIGNAL_R_CHANNEL {
-
             public const string CHANNEL_MESSAGE = "transfer-message";
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
-
         }
 
         public enum DataFrame {
@@ -90,6 +88,7 @@ namespace CIM.Model
             Monthly,
             Yearly
         }
+
         public enum BoardcastType {
             All,
             KPI,

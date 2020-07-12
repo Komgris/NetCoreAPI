@@ -29,7 +29,6 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.Waste, new DashboardConfig("Waste","sp_dashboard_waste")},
                 { BoardcastType.Loss, new DashboardConfig("MachineLoss","sp_dashboard_machineLoss")},
                 { BoardcastType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
-
                 { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
                 { BoardcastType.ActiveProductionSummary, new DashboardConfig("ProductionSummary","sp_report_productionsummary")},
                 { BoardcastType.ActiveProductionOutput, new DashboardConfig("ProductionOutput","sp_dashboard_output")},
