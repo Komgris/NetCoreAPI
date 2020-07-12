@@ -16,5 +16,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<UserModel> Get(string id);
         Task Update(UserModel data);
+        Task<UserModel> GetFromUserName(string userName);
     }
 }

@@ -243,13 +243,6 @@ namespace CIM.BusinessLogic.Services
                     oldEmployeedb_model.UpdatedAt = DateTime.Now;
                     oldEmployeedb_model.UpdatedBy = CurrentUser.UserId;
                     _employeesRepository.Edit(oldEmployeedb_model);
-
-                    //var updateEmployeedb_model = new Employees();
-                    //updateEmployeedb_model = employeedb_model;
-                    //updateEmployeedb_model.UserId = data.Id;
-                    //updateEmployeedb_model.UpdatedAt = DateTime.Now;
-                    //updateEmployeedb_model.UpdatedBy = CurrentUser.UserId;
-                    //_employeesRepository.Edit(updateEmployeedb_model);
                 }
 
                 var employeedb_model = _employeesRepository.Where(x => x.EmNo == data.EmployeeNo).FirstOrDefault();
@@ -263,6 +256,18 @@ namespace CIM.BusinessLogic.Services
             }
 
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<UserModel> GetFromUserName(string userName)
+        {
+            return await _userRepository.Where(x => x.UserName == userName)
+                .Select(x => new UserModel
+                {
+                    Id = x.Id,
+                    UserName = x.UserName,
+                    IsActive = x.IsActive,
+                    IsDelete = x.IsDelete
+                }).FirstOrDefaultAsync();
         }
 
     }

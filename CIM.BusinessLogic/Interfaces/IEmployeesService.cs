@@ -12,5 +12,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<EmployeesModel> Create(EmployeesModel model);
         Task<EmployeesModel> Update(EmployeesModel model);
         Task<EmployeesModel> Get(int id);
+        Task<EmployeesModel> GetFromEmployeeNo(string no);
     }
 }

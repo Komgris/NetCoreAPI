@@ -84,5 +84,22 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetFromUserName")]
+        public async Task<ProcessReponseModel<UserModel>> GetFromUserName(string userName)
+        {
+            var output = new ProcessReponseModel<UserModel>();
+            try
+            {
+                output.Data = await _service.GetFromUserName(userName);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
     }
 }
