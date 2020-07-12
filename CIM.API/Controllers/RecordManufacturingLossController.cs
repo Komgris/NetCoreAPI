@@ -65,7 +65,6 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.End(model);
                 if (productionPlan != null)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }

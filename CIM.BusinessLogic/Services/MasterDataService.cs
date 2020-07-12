@@ -38,6 +38,8 @@ namespace CIM.BusinessLogic.Services
         private IMaterialTypeRepository _materialTypeRepository;
         private ITeamTypeRepository _teamTypeRepository;
         private ITeamRepository _teamRepository;
+        private IUserPositionRepository _userPositionRepository;
+        private IEducationRepository _educationRepository;
         private IUserGroupRepository _userGroupRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
@@ -63,6 +65,8 @@ namespace CIM.BusinessLogic.Services
             IMaterialTypeRepository materialTypeRepository,
             ITeamTypeRepository teamTypeRepository,
             ITeamRepository teamRepository,
+            IUserPositionRepository userPositionRepository,
+            IEducationRepository educationRepository,
             IUserGroupRepository userGroupRepository
             )
         {
@@ -89,6 +93,8 @@ namespace CIM.BusinessLogic.Services
             _materialTypeRepository = materialTypeRepository;
             _teamTypeRepository = teamTypeRepository;
             _teamRepository = teamRepository;
+            _userPositionRepository = userPositionRepository;
+            _educationRepository = educationRepository;
             _userGroupRepository = userGroupRepository;
         }
         public MasterDataModel Data { get; set; }
@@ -245,6 +251,8 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
             masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
             masterData.Dictionary.Team = await GetTeamDictionary();
+            masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
+            masterData.Dictionary.Education = await GetEducationDictionary();
             masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
             masterData.Dictionary.Language = await GetLanguageDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
@@ -477,6 +485,31 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
+        private async Task<IDictionary<int, string>> GetUserPositionDictionary()
+        {
+            var db = (await _userPositionRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Name);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetEducationDictionary()
+        {
+            var db = (await _educationRepository.WhereAsync(x => x.IsActive.Value)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Educational);
+            }
+            return output;
+        }
+
 
         private async Task<IDictionary<int, string>> GetUserGroupDictionary()
         {
