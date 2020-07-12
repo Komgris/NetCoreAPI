@@ -50,15 +50,6 @@ namespace CIM.BusinessLogic.Services
                 UserGroupId = model.UserGroupId,
                 DefaultLanguageId = model.DefaultLanguageId
             };
-            //dbModel.UserProfiles.Add(new UserProfiles
-            //{
-            //    Image = model.Image,
-            //});
-            //dbModel.Name.Add(new Name
-            //{
-            //    FirstName = model.FirstName,
-            //    LastName = model.LastName,
-            //});
 
             _userRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
