@@ -49,6 +49,11 @@ namespace CIM.API.Controllers
             try
             {
                 var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId);
+                if (productionPlan == null)
+                {
+                    productionPlan = new ActiveProductionPlanModel(productionPlanId);
+                }
+
                 foreach (var item in productionPlan.ActiveProcesses)
                 {
                     item.Value.Alerts = LimitAlert(item.Value.Alerts);
