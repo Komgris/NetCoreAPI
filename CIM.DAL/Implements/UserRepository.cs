@@ -24,9 +24,6 @@ namespace CIM.DAL.Implements
             {
                 query = query.Where(x =>
                     x.UserName.Contains(keyword)
-                //|| x.UserProfiles.Any(profile =>
-                //    profile.FirstName.Contains(keyword) ||
-                //    profile.LastName.Contains(keyword))
                 );
             }
             var data = await query
@@ -38,8 +35,7 @@ namespace CIM.DAL.Implements
                     Id = x.Id,
                     DefaultLanguageId = x.DefaultLanguageId,
                     UserGroupId = x.UserGroupId,
-                    UserName = x.UserName,
-                    //Image = null
+                    UserName = x.UserName
                 })
                 .ToListAsync();
             return new PagingModel<UserModel>
