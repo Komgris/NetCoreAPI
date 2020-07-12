@@ -244,6 +244,7 @@ namespace CIM.BusinessLogic.Services
                                            new ActiveMachineModel
                                            {
                                                Id = mc.Key,
+                                               Image = mc.Value.Image,
                                                UserId = CurrentUser.UserId,
                                                StatusId = 2,
                                                StartedAt = DateTime.Now
