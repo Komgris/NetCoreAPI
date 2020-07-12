@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class UserRepository : Repository<Users, object>, IUserRepository
+    public class UserRepository : Repository<Users, UserModel>, IUserRepository
     {
         public UserRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
@@ -23,22 +23,23 @@ namespace CIM.DAL.Implements
             if (!string.IsNullOrEmpty(keyword))
             {
                 query = query.Where(x =>
-                    x.UserName.Contains(keyword) 
-                    //|| x.UserProfiles.Any(profile =>
-                    //    profile.FirstName.Contains(keyword) ||
-                    //    profile.LastName.Contains(keyword))
+                    x.UserName.Contains(keyword)
+                //|| x.UserProfiles.Any(profile =>
+                //    profile.FirstName.Contains(keyword) ||
+                //    profile.LastName.Contains(keyword))
                 );
             }
             var data = await query
-                .Select(x=> new UserModel { 
+                .Select(x => new UserModel
+                {
                     Email = x.Email,
                     FirstName = "",
                     LastName = "",
                     Id = x.Id,
-                    LanguageId = x.DefaultLanguageId,
+                    DefaultLanguageId = x.DefaultLanguageId,
                     UserGroupId = x.UserGroupId,
                     UserName = x.UserName,
-                    Image = null
+                    //Image = null
                 })
                 .ToListAsync();
             return new PagingModel<UserModel>
