@@ -15,7 +15,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<string> CreateToken(string userId);
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<UserModel> Get(string id);
-        Task Update(UserModel data);
+        Task Update(UserModel model);
         Task<UserModel> GetFromUserName(string userName);
     }
 }

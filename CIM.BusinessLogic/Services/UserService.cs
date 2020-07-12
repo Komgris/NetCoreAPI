@@ -184,8 +184,8 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<UserModel> Get(string id)
         {
-            var db_model = await _userRepository.Where(x => x.Id == id).Select(
-                x => new UserModel
+            var db_model = await _userRepository.Where(x => x.Id == id)
+                .Select(x => new UserModel
                 {
                     Id = x.Id,
                     UserName = x.UserName,
@@ -212,22 +212,22 @@ namespace CIM.BusinessLogic.Services
             return db_model;
         }
 
-        public async Task Update(UserModel data)
+        public async Task Update(UserModel model)
         {
-            var db_model = MapperHelper.AsModel(data, new Users());
-            db_model.HashedPassword = data.OldPassword;
-            if (!string.IsNullOrEmpty(data.Password))
+            var db_model = MapperHelper.AsModel(model, new Users());
+            db_model.HashedPassword = model.OldPassword;
+            if (!string.IsNullOrEmpty(model.Password))
             {
-                if (!IsPasswordValid(data.OldPassword, data.Password))
-                    db_model.HashedPassword = HashPassword(data);
+                if (!IsPasswordValid(model.OldPassword, model.Password))
+                    db_model.HashedPassword = HashPassword(model);
             }
             db_model.UpdatedAt = DateTime.Now;
             db_model.UpdatedBy = CurrentUser.UserId;
             _userRepository.Edit(db_model);
 
-            if (data.EmployeeNo != data.OldEmployeeNo)
+            if (model.EmployeeNo != model.OldEmployeeNo)
             {
-                var oldEmployeedb_model = _employeesRepository.Where(x => x.EmNo == data.OldEmployeeNo).FirstOrDefault();
+                var oldEmployeedb_model = _employeesRepository.Where(x => x.EmNo == model.OldEmployeeNo).FirstOrDefault();
                 if (oldEmployeedb_model != null)
                 {
                     oldEmployeedb_model.UserId = null;
@@ -236,10 +236,10 @@ namespace CIM.BusinessLogic.Services
                     _employeesRepository.Edit(oldEmployeedb_model);
                 }
 
-                var employeedb_model = _employeesRepository.Where(x => x.EmNo == data.EmployeeNo).FirstOrDefault();
+                var employeedb_model = _employeesRepository.Where(x => x.EmNo == model.EmployeeNo).FirstOrDefault();
                 if (employeedb_model != null)
                 {
-                    employeedb_model.UserId = data.Id;
+                    employeedb_model.UserId = model.Id;
                     employeedb_model.UpdatedAt = DateTime.Now;
                     employeedb_model.UpdatedBy = CurrentUser.UserId;
                     _employeesRepository.Edit(employeedb_model);

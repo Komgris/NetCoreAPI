@@ -69,12 +69,12 @@ namespace CIM.API.Controllers
 
         [HttpPut]
         [Route("api/[controller]/Update")]        
-        public async Task<ProcessReponseModel<UserModel>> Update([FromBody] UserModel data)
+        public async Task<ProcessReponseModel<UserModel>> Update([FromBody] UserModel model)
         {
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                await _service.Update(data);
+                await _service.Update(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
