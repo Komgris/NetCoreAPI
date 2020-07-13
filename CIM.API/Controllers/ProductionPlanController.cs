@@ -150,7 +150,7 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("api/[controller]/Delete/{id}")]
+        [Route("api/[controller]/Delete")]
         [HttpDelete]
         public async Task<ProcessReponseModel<ProductionPlanListModel>> Delete(string id)
         {
