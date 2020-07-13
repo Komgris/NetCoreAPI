@@ -182,7 +182,8 @@ namespace CIM.BusinessLogic.Services
                     }
 
                     //start counting output
-                    await _machineService.SetListMachinesResetCounter(activeMachines.Keys.ToList(), true);
+                    var mcfirstStart = activeMachines.Where(x => x.Value.RouteIds.Count == 1).Select(o=>o.Key).ToList();
+                    await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                     //generate -> BoardcastData
                     activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
@@ -248,11 +249,8 @@ namespace CIM.BusinessLogic.Services
                         foreach (var machine in activeProcess.Route.MachineList)
                         {
                             machine.Value.RouteIds.Remove(routeId);
-                            if (!isPlanActive)
-                            {
-                                machine.Value.ProductionPlanId = null;
-                                mcliststopCounting.Add(machine.Key);
-                            }
+                            if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
+                            if (!isPlanActive) machine.Value.ProductionPlanId = null;
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
 
