@@ -15,6 +15,7 @@ namespace CIM.Model
 
         public int LossLevelId { get; set; }
         public string LossLevel { get; set; }
+        public string LossDescription { get; set; }
 
         public string Guid { get; set; }
         public Int64 ElapseTime { get; set; }
@@ -23,7 +24,7 @@ namespace CIM.Model
         public bool IsAuto { get; set; }
         public int LossLevel3Id { get; set; }
         public DateTime StartedAt { get; set; }
-        public DateTime EndAt { get; set; }
+        public DateTime? EndAt { get; set; }
         public int RouteId { get; set; }
         public string Route { get; set; }
 

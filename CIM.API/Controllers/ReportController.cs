@@ -26,8 +26,7 @@ namespace CIM.API.Controllers {
             IReportService reportService,
             IActiveProductionPlanService activeProductionPlanService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
-        {
-        } 
+        {} 
 
         #region Cim-Oper Production overview
 

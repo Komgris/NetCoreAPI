@@ -232,10 +232,11 @@ namespace CIM.API.Controllers
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
                 await HandleBoardcastingActiveProcess(Constans.BoardcastType.End, planId
                         , new int[] {routeId }, result);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }
