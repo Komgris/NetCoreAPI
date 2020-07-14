@@ -155,7 +155,7 @@ namespace CIM.API
             services.InstallServicesInAssembly(Configuration);
 
             var sp = services.BuildServiceProvider();
-       var masterDataService = sp.GetService<IMasterDataService>();
+            var masterDataService = sp.GetService<IMasterDataService>();
             masterDataService.Refresh();
         }
 
