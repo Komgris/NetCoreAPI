@@ -41,6 +41,7 @@ namespace CIM.BusinessLogic.Services
         private IUserPositionRepository _userPositionRepository;
         private IEducationRepository _educationRepository;
         private IUserGroupRepository _userGroupRepository;
+        private IProcessTypeRepository _processTypeRepository;
         private IAppRepository _appRepository;
         private IAppFeatureRepository _appFeatureRepository;
         public MasterDataService(
@@ -69,6 +70,7 @@ namespace CIM.BusinessLogic.Services
             ITeamRepository teamRepository,
             IUserPositionRepository userPositionRepository,
             IEducationRepository educationRepository,
+            IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
             IAppFeatureRepository appFeatureRepository
@@ -99,6 +101,7 @@ namespace CIM.BusinessLogic.Services
             _teamRepository = teamRepository;
             _userPositionRepository = userPositionRepository;
             _educationRepository = educationRepository;
+            _processTypeRepository = processTypeRepository;
             _userGroupRepository = userGroupRepository;
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
@@ -152,14 +155,17 @@ namespace CIM.BusinessLogic.Services
         {
             var output = new Dictionary<int, MachineModel>();
             var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+            var machineTypes = (await _machineTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).ToDictionary( x=>x.Id, x=>x);
 
             foreach (var item in activeMachines)
             {
                 var machineComponents = components.Where(x => x.Value.MachineId == item.Id);
+                var image = machineTypes.ContainsKey(item.MachineTypeId) ? machineTypes[item.MachineTypeId].Image : "";
                 output[item.Id] = new MachineModel
                 {
                     Id = item.Id,
                     Name = item.Name,
+                    Image = image,
                     MachineTypeId = item.MachineTypeId,
                     ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
@@ -260,6 +266,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Team = await GetTeamDictionary();
             masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
             masterData.Dictionary.Education = await GetEducationDictionary();
+            masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
             masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
             masterData.Dictionary.Language = await GetLanguageDictionary();
             masterData.Dictionary.App = await GetAppDictionary();
@@ -534,6 +541,17 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async Task<IDictionary<int, string>> GetProcessTypeDictionary()
+        {
+            var db = (await _processTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
 
         private async Task<IDictionary<int, string>> GetUserGroupDictionary()
         {

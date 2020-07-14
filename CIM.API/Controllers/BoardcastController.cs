@@ -37,7 +37,6 @@ namespace CIM.API.Controllers
             _service = service;
             _config = config;
             _activeProductionPlanService = activeProductionPlanService;
-
         }
 
         #region general
@@ -65,7 +64,6 @@ namespace CIM.API.Controllers
         }
 
         #endregion
-
 
         #region Management
 
