@@ -446,33 +446,57 @@ namespace CIM.BusinessLogic.Services
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var now = DateTime.Now;
-           /// var cachedMachine = await _machineService.GetCached(machineId);
-            if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
-            {
-                var alert = new AlertModel
-                {
-                    StatusId = (int)Constans.AlertStatus.New,
-                    ItemStatusId = statusId,
-                    CreatedAt = now,
-                    Id = Guid.NewGuid(),
-                    LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
-                    ItemId = machineId,
-                    ItemType = (int)Constans.AlertType.MACHINE,
-                    RouteId = routeId
-                };
-                activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);
 
-                _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
+            var cachedMachine = await _machineService.GetCached(machineId);
+            if (cachedMachine.RouteIds.Count() > 0)
+            {
+                // create new alert and record only on first route of machine
+                var isFirstRoute = cachedMachine.RouteIds[0] == routeId;
+                if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
                 {
-                    CreatedBy = CurrentUser.UserId,
-                    Guid = alert.Id.ToString(),
-                    IsAuto = isAuto,
-                    LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
-                    MachineId = machineId,
-                    ProductionPlanId = activeProductionPlan.ProductionPlanId,
-                    StartedAt = now,
-                    RouteId = routeId
-                });
+                    AlertModel alert;
+
+                    if (isFirstRoute)
+                    {
+                        alert = new AlertModel
+                        {
+                            StatusId = (int)Constans.AlertStatus.New,
+                            ItemStatusId = statusId,
+                            CreatedAt = now,
+                            Id = Guid.NewGuid(),
+                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            ItemId = machineId,
+                            ItemType = (int)Constans.AlertType.MACHINE,
+                            RouteId = routeId
+                        };
+
+                        _recordManufacturingLossRepository.Add(new RecordManufacturingLoss
+                        {
+                            CreatedBy = CurrentUser.UserId,
+                            Guid = alert.Id.ToString(),
+                            IsAuto = isAuto,
+                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            MachineId = machineId,
+                            ProductionPlanId = activeProductionPlan.ProductionPlanId,
+                            StartedAt = now,
+                            RouteId = routeId
+                        });
+
+                    }
+                    // else reuse existing alert of first route and don't insert new other record
+                    else
+                    {
+                        alert = activeProductionPlan.ActiveProcesses[0].Alerts
+                            .Where(x =>
+                                x.ItemId == machineId &&
+                                x.StatusId == (int)Constans.AlertStatus.New &&
+                                x.EndAt == null).OrderByDescending(x => x.CreatedAt).First();
+                    }
+
+                    activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);
+
+                }
+
             }
             return activeProductionPlan;
         }
