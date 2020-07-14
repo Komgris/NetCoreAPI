@@ -15,6 +15,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public bool? IsPointOfCounter { get; set; }
 
         public virtual Machine Machine { get; set; }
         public virtual Route Route { get; set; }
