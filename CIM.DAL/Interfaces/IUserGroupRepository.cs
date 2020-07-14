@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IUserRepository : IRepository<Users, UserModel>
+    public interface IUserGroupRepository : IRepository<UserGroups, UserGroupModel>
     {
-        Task<PagingModel<UserModel>> List(string keyword, int page, int howmany);
     }
 }

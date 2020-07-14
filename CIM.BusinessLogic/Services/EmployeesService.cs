@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<EmployeesModel> Create(EmployeesModel model)
         {
-            var dbModel = MapperHelper.AsModel(model, new Employees());           
+            var dbModel = MapperHelper.AsModel(model, new Employees());
             dbModel.IsActive = true;
             dbModel.IsDelete = false;
             dbModel.CreatedBy = CurrentUser.UserId;
@@ -122,6 +123,18 @@ namespace CIM.BusinessLogic.Services
                     {"@id", id}
                 });
             return output.FirstOrDefault();
+        }
+
+        public async Task<EmployeesModel> GetFromEmployeeNo(string no)
+        {
+            return await _employeesRepository.Where(x => x.EmNo == no)
+                .Select(x => new EmployeesModel
+                {
+                    Id = x.Id,
+                    EmNo = x.EmNo,
+                    IsActive = x.IsActive,
+                    IsDelete = x.IsDelete
+                }).FirstOrDefaultAsync();
         }
 
     }

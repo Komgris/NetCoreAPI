@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-
     public class UserController : ControllerBase
     {
         private IUserService _service;
@@ -17,44 +15,90 @@ namespace CIM.API.Controllers
         public UserController(IUserService service)
         {
             _service = service;
-
         }
 
         [HttpPost]
-        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
-        public async Task<object> Create(UserModel model)
+        [Route("api/[controller]/Create")]
+        public async Task<ProcessReponseModel<UserModel>> Create(UserModel model)
         {
+            var output = new ProcessReponseModel<UserModel>();
             try
             {
-                var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = currentUser;
-
-                await Task.Run(() => {
-                    _service.Create(model);
-                });
-                return new object();
+                await _service.Create(model);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
-
+            return output;
         }
 
 
         [HttpGet]
-        [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
-        public async Task<PagingModel<UserModel>> List(string keyword = "", int page = 1, int howmany = 10)
+        [Route("api/[controller]/List")]
+        public async Task<PagingModel<UserModel>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
             try
             {
-                var result = await _service.List(keyword, page, howmany);
+                var result = await _service.List(keyword, page, howMany, isActive);
                 return result;
             }
             catch (Exception e)
             {
                 throw e;
             }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/Get")]
+        public async Task<ProcessReponseModel<UserModel>> Get(string id)
+        {
+            var output = new ProcessReponseModel<UserModel>();
+            try
+            {
+                output.Data = await _service.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpPut]
+        [Route("api/[controller]/Update")]        
+        public async Task<ProcessReponseModel<UserModel>> Update([FromBody] UserModel model)
+        {
+            var output = new ProcessReponseModel<UserModel>();
+            try
+            {
+                await _service.Update(model);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetFromUserName")]
+        public async Task<ProcessReponseModel<UserModel>> GetFromUserName(string userName)
+        {
+            var output = new ProcessReponseModel<UserModel>();
+            try
+            {
+                output.Data = await _service.GetFromUserName(userName);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
         }
 
     }

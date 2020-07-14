@@ -24,6 +24,10 @@ namespace CIM.Model
         public IDictionary<int, string> Team { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> UserPosition { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> Education { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> UserGroup { get; set; } = new Dictionary<int, string>();
+        public IDictionary<string, string> Language { get; set; } = new Dictionary<string, string>();
+
+
         public IDictionary<int, string> ProcessType { get; set; } = new Dictionary<int, string>();
     }
 }

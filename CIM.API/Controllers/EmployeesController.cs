@@ -116,5 +116,22 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetFromEmployeeNo")]
+        public async Task<ProcessReponseModel<EmployeesModel>> GetFromEmployeeNo(string no)
+        {
+            var output = new ProcessReponseModel<EmployeesModel>();
+            try
+            {
+                output.Data = await _service.GetFromEmployeeNo(no);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
     }
 }
