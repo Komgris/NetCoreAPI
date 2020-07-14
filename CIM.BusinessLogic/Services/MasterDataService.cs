@@ -40,6 +40,7 @@ namespace CIM.BusinessLogic.Services
         private ITeamRepository _teamRepository;
         private IUserPositionRepository _userPositionRepository;
         private IEducationRepository _educationRepository;
+        private IProcessTypeRepository _processTypeRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -65,7 +66,8 @@ namespace CIM.BusinessLogic.Services
             ITeamTypeRepository teamTypeRepository,
             ITeamRepository teamRepository,
             IUserPositionRepository userPositionRepository,
-            IEducationRepository educationRepository
+            IEducationRepository educationRepository,
+            IProcessTypeRepository processTypeRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -93,6 +95,7 @@ namespace CIM.BusinessLogic.Services
             _teamRepository = teamRepository;
             _userPositionRepository = userPositionRepository;
             _educationRepository = educationRepository;
+            _processTypeRepository = processTypeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -253,6 +256,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Team = await GetTeamDictionary();
             masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
             masterData.Dictionary.Education = await GetEducationDictionary();
+            masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -508,6 +512,16 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-
+        private async Task<IDictionary<int, string>> GetProcessTypeDictionary()
+        {
+            var db = (await _processTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
     }
 }
