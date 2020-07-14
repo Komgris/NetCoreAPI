@@ -10,7 +10,6 @@ namespace CIM.Model
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
-        public List<int> AppId { get; set; }
-        public List<int> FeatureId { get; set; }
+        public List<AppModel> AppList { get; set; }
     }
 }

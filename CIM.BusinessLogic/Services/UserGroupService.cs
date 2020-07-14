@@ -70,11 +70,28 @@ namespace CIM.BusinessLogic.Services
                     IsDelete = x.IsDelete
                 }).FirstOrDefaultAsync();
 
-            var app_model = await _userGroupAppRepository.Where(x => x.UserGroupId == id).Select(x => x.AppId).ToListAsync();
-            db_model.AppId = app_model;
+            var appList = new List<AppModel>();
+            var appDb_model = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == id);
+            foreach (var item in appDb_model)
+            {
+                var feature_model = await _userGroupAppFeatureRepository.Where(x => x.AppUserGroupId == item.Id)
+                    .Select(x => new AppFeatureModel
+                    {
+                        FeatureId = x.FeatureId,
+                        Name = x.Feature.Name,
+                        AppId = item.AppId
+                    }).ToListAsync();
 
-            var feature_model = await _userGroupAppFeatureRepository.Where(x => x.AppUserGroupId == id).Select(x => x.FeatureId).ToListAsync();
-            db_model.FeatureId = feature_model;
+                var app_model = new AppModel
+                {
+                    Id = item.AppId,
+                    FeatureList = feature_model
+                };
+
+                appList.Add(app_model);
+            }
+
+            db_model.AppList = appList;
 
             return db_model;
         }
@@ -89,44 +106,47 @@ namespace CIM.BusinessLogic.Services
             await InsertAppAndFeatureMapping(model, model.Id);
         }
 
-        public async Task InsertAppAndFeatureMapping(UserGroupModel model,int userGroupId)
+        public async Task InsertAppAndFeatureMapping(UserGroupModel model, int userGroupId)
         {
-            foreach (var id in model.AppId)
+            foreach (var item in model.AppList)
             {
                 var appDBModel = new UserGroupsApps
                 {
-                    AppId = id,
+                    AppId = item.Id,
                     UserGroupId = userGroupId
                 };
                 _userGroupAppRepository.Add(appDBModel);
                 await _unitOfWork.CommitAsync();
-            }
 
-            foreach (var id in model.FeatureId)
-            {
-                var appFeatureDBModel = new UserGroupsAppFeatures
+                var appUserGroupId = appDBModel.Id;
+
+                foreach (var feature in item.FeatureList)
                 {
-                    FeatureId = id,
-                    AppUserGroupId = userGroupId
-                };
-                _userGroupAppFeatureRepository.Add(appFeatureDBModel);
-                await _unitOfWork.CommitAsync();
-            }
+                    var appFeatureDBModel = new UserGroupsAppFeatures
+                    {
+                        FeatureId = feature.FeatureId,
+                        AppUserGroupId = appUserGroupId
+                    };
+                    _userGroupAppFeatureRepository.Add(appFeatureDBModel);
+                    await _unitOfWork.CommitAsync();
+                }
+            }            
         }
 
         public async Task DeleteMapping(int userGroupId)
         {
             var appList = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == userGroupId);
-            foreach (var model in appList)
+            foreach (var item in appList)
             {
-                _userGroupAppRepository.Delete(model);
+                var featureList = await _userGroupAppFeatureRepository.WhereAsync(x => x.AppUserGroupId == item.Id);
+                foreach (var featureItem in featureList)
+                {
+                    _userGroupAppFeatureRepository.Delete(featureItem);
+                }
+                _userGroupAppRepository.Delete(item);
             }
 
-            var featureList = await _userGroupAppFeatureRepository.WhereAsync(x => x.AppUserGroupId == userGroupId);
-            foreach (var model in featureList)
-            {
-                _userGroupAppFeatureRepository.Delete(model);
-            }
+
         }
     }
 }
