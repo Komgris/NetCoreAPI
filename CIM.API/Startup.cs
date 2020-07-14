@@ -108,6 +108,7 @@ namespace CIM.API
             services.AddTransient<INameRepository, NameRepository>();
             services.AddTransient<IEducationRepository, EducationRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
+            services.AddTransient<IProcessTypeRepository, ProcessTypeRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();

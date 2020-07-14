@@ -168,6 +168,8 @@ namespace CIM.BusinessLogic.Services
         {
             var existingItem = _productionPlanRepository.Where(x => x.PlanId == id).ToList().FirstOrDefault();
             existingItem.IsActive = false;
+            existingItem.UpdatedAt = DateTime.Now;
+            existingItem.UpdatedBy = CurrentUser.UserId;
             await _unitOfWork.CommitAsync();
         }
 

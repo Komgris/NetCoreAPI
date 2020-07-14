@@ -28,5 +28,6 @@ namespace CIM.Model
         public IDictionary<string, string> Language { get; set; } = new Dictionary<string, string>();
 
 
+        public IDictionary<int, string> ProcessType { get; set; } = new Dictionary<int, string>();
     }
 }

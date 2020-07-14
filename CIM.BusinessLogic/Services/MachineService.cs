@@ -238,16 +238,23 @@ namespace CIM.BusinessLogic.Services
             var masterdata = await _masterDataService.GetData();
             foreach (var mc in masterdata.Machines)
             {
-                if (GetCached(mc.Key).Result == null)
+                var mccache = GetCached(mc.Key).Result;
+                if (mccache == null)
                 {
                     await SetCached(mc.Key,
                                            new ActiveMachineModel
                                            {
                                                Id = mc.Key,
+                                               Image = mc.Value.Image,
                                                UserId = CurrentUser.UserId,
                                                StatusId = 2,
                                                StartedAt = DateTime.Now
                                            });
+                }
+                else
+                {
+                    mccache.Image = mc.Value.Image;
+                    await SetCached(mc.Key, mccache);
                 }
             }
         }
