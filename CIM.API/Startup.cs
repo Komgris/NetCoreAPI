@@ -107,6 +107,7 @@ namespace CIM.API
             services.AddTransient<IUserPositionRepository, UserPositionRepository>();
             services.AddTransient<INameRepository, NameRepository>();
             services.AddTransient<IEducationRepository, EducationRepository>();
+            services.AddTransient<IProcessTypeRepository, ProcessTypeRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -154,7 +155,7 @@ namespace CIM.API
             services.InstallServicesInAssembly(Configuration);
 
             var sp = services.BuildServiceProvider();
-            var masterDataService = sp.GetService<IMasterDataService>();
+       var masterDataService = sp.GetService<IMasterDataService>();
             masterDataService.Refresh();
         }
 
