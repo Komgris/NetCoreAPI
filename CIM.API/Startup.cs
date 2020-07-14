@@ -108,6 +108,10 @@ namespace CIM.API
             services.AddTransient<INameRepository, NameRepository>();
             services.AddTransient<IEducationRepository, EducationRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
+            services.AddTransient<IAppRepository, AppRepository>();
+            services.AddTransient<IAppFeatureRepository, AppFeatureRepository>();
+            services.AddTransient<IUserGroupAppRepository, UserGroupAppRepository>();
+            services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -144,6 +148,8 @@ namespace CIM.API
             services.AddTransient<ITeamService, TeamService>();
             services.AddTransient<IRecordMaintenancePlanService, RecordMaintenancePlanService>();
             services.AddTransient<IMachineTeamService, MachineTeamService>();
+            services.AddTransient<IUserGroupService, UserGroupService>();
+            services.AddTransient<IAppService, AppService>();
 
             services.AddControllers();
             services.AddSignalR();

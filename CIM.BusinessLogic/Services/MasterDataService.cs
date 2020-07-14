@@ -41,6 +41,8 @@ namespace CIM.BusinessLogic.Services
         private IUserPositionRepository _userPositionRepository;
         private IEducationRepository _educationRepository;
         private IUserGroupRepository _userGroupRepository;
+        private IAppRepository _appRepository;
+        private IAppFeatureRepository _appFeatureRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -67,7 +69,9 @@ namespace CIM.BusinessLogic.Services
             ITeamRepository teamRepository,
             IUserPositionRepository userPositionRepository,
             IEducationRepository educationRepository,
-            IUserGroupRepository userGroupRepository
+            IUserGroupRepository userGroupRepository,
+            IAppRepository appRepository,
+            IAppFeatureRepository appFeatureRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -96,6 +100,8 @@ namespace CIM.BusinessLogic.Services
             _userPositionRepository = userPositionRepository;
             _educationRepository = educationRepository;
             _userGroupRepository = userGroupRepository;
+            _appRepository = appRepository;
+            _appFeatureRepository = appFeatureRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -235,6 +241,7 @@ namespace CIM.BusinessLogic.Services
             masterData.ProductGroupRoutes = await GetProductGroupRoutes();
             masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
             masterData.ProcessDriven = await GetProcessDriven();
+            masterData.AppFeature = await GetAppFeature();
 
             masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
             masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
@@ -255,6 +262,7 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.Education = await GetEducationDictionary();
             masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
             masterData.Dictionary.Language = await GetLanguageDictionary();
+            masterData.Dictionary.App = await GetAppDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -386,6 +394,22 @@ namespace CIM.BusinessLogic.Services
                     Description = item.Description,
                     LossLevel3 = lossLevel3
                 });
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, AppFeatureModel>> GetAppFeature()
+        {
+            var output = new Dictionary<int, AppFeatureModel>();
+            var dbModel = await _appFeatureRepository.AllAsync();
+            foreach (var item in dbModel)
+            {
+                    output[item.FeatureId] = new AppFeatureModel
+                    {
+                        FeatureId = item.FeatureId,
+                        Name = item.Name,
+                        AppId = item.AppId
+                    };
             }
             return output;
         }
@@ -530,5 +554,18 @@ namespace CIM.BusinessLogic.Services
             output.Add("th", "TH");
             return output;
         }
+
+        private async Task<IDictionary<int, string>> GetAppDictionary()
+        {
+            var db = (await _appRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
     }
 }
