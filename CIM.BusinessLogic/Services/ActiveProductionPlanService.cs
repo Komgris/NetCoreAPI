@@ -451,7 +451,7 @@ namespace CIM.BusinessLogic.Services
             if (cachedMachine.RouteIds.Count() > 0)
             {
                 // create new alert and record only on first route of machine
-                var isFirstRoute = cachedMachine.RouteIds[0] == routeId;
+                var isFirstRoute = cachedMachine.RouteIds.OrderBy(x=>x)[0] == routeId;
                 if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
                 {
                     AlertModel alert;
