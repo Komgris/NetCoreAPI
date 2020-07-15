@@ -40,6 +40,7 @@ namespace CIM.BusinessLogic.Services
         private ITeamRepository _teamRepository;
         private IUserPositionRepository _userPositionRepository;
         private IEducationRepository _educationRepository;
+        private IUserGroupRepository _userGroupRepository;
         private IProcessTypeRepository _processTypeRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
@@ -67,7 +68,8 @@ namespace CIM.BusinessLogic.Services
             ITeamRepository teamRepository,
             IUserPositionRepository userPositionRepository,
             IEducationRepository educationRepository,
-            IProcessTypeRepository processTypeRepository
+            IProcessTypeRepository processTypeRepository,
+            IUserGroupRepository userGroupRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -96,6 +98,7 @@ namespace CIM.BusinessLogic.Services
             _userPositionRepository = userPositionRepository;
             _educationRepository = educationRepository;
             _processTypeRepository = processTypeRepository;
+            _userGroupRepository = userGroupRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -257,6 +260,8 @@ namespace CIM.BusinessLogic.Services
             masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
             masterData.Dictionary.Education = await GetEducationDictionary();
             masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
+            masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
+            masterData.Dictionary.Language = await GetLanguageDictionary();
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -521,6 +526,26 @@ namespace CIM.BusinessLogic.Services
                 if (!output.ContainsKey(item.Id))
                     output.Add(item.Id, item.Name);
             }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetUserGroupDictionary()
+        {
+            var db = (await _userGroupRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<string, string>> GetLanguageDictionary()
+        { 
+            var output = new Dictionary<string, string>();
+            output.Add("en", "EN");
+            output.Add("th", "TH");
             return output;
         }
     }

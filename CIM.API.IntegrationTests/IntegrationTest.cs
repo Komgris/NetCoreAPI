@@ -92,7 +92,7 @@ namespace CIM.API.IntegrationTests
                             Password = "super-secret",
                             FirstName = "Hans",
                             LastName = "Meier",
-                            LanguageId = "en",
+                            DefaultLanguageId = "en",
                             Image = null,
                             UserGroupId = adminGroup.Id,
                         };
