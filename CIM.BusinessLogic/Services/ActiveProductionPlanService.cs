@@ -443,7 +443,6 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
-
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var now = DateTime.Now;
