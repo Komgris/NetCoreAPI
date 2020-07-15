@@ -63,6 +63,7 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Image = x.Image,
                             Name = x.Name,
+                            IsCounterStd = x.IsCounterStd,
                             HasOee = x.HasOee,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
