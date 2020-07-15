@@ -486,7 +486,7 @@ namespace CIM.BusinessLogic.Services
                     // else reuse existing alert of first route and don't insert new other record
                     else
                     {
-                        alert = activeProductionPlan.ActiveProcesses[0].Alerts
+                        alert = activeProductionPlan.ActiveProcesses.First().Alerts
                             .Where(x =>
                                 x.ItemId == machineId &&
                                 x.StatusId == (int)Constans.AlertStatus.New &&
