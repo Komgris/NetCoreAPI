@@ -37,17 +37,19 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<PagingModel<UserModel>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
+        public async Task<ProcessReponseModel<PagingModel<UserModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
+            var output = new ProcessReponseModel<PagingModel<UserModel>>();
             try
             {
-                var result = await _service.List(keyword, page, howMany, isActive);
-                return result;
+                output.Data = await _service.List(keyword, page, howMany, isActive);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.Message;
             }
+            return output;
         }
 
         [HttpGet]
@@ -68,7 +70,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpPut]
-        [Route("api/[controller]/Update")]        
+        [Route("api/[controller]/Update")]
         public async Task<ProcessReponseModel<UserModel>> Update([FromBody] UserModel model)
         {
             var output = new ProcessReponseModel<UserModel>();
