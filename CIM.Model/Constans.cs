@@ -10,9 +10,6 @@ namespace CIM.Model
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
         public const string SIGNAL_R_CHANNEL_DASHBOARD = "dashboard";
 
-        public static int DEFAULT_LOSS_LV3 = 300;
-        public static int DEFAULT_IDLE = 42;
-
         public class RedisKey {
 
             public const string MACHINE = "machine";
