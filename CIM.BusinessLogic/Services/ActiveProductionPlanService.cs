@@ -443,15 +443,17 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
+
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var now = DateTime.Now;
 
             var cachedMachine = await _machineService.GetCached(machineId);
+            var firstRoute = cachedMachine.RouteIds.First();
             if (cachedMachine.RouteIds.Count() > 0)
             {
                 // create new alert and record only on first route of machine
-                var isFirstRoute = cachedMachine.RouteIds[0] == routeId;
+                var isFirstRoute = firstRoute == routeId;
                 if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
                 {
                     AlertModel alert;
@@ -464,7 +466,7 @@ namespace CIM.BusinessLogic.Services
                             ItemStatusId = statusId,
                             CreatedAt = now,
                             Id = Guid.NewGuid(),
-                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
                             ItemId = machineId,
                             ItemType = (int)Constans.AlertType.MACHINE,
                             RouteId = routeId
@@ -475,7 +477,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = CurrentUser.UserId,
                             Guid = alert.Id.ToString(),
                             IsAuto = isAuto,
-                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
                             MachineId = machineId,
                             ProductionPlanId = activeProductionPlan.ProductionPlanId,
                             StartedAt = now,
@@ -486,11 +488,13 @@ namespace CIM.BusinessLogic.Services
                     // else reuse existing alert of first route and don't insert new other record
                     else
                     {
-                        alert = activeProductionPlan.ActiveProcesses[0].Alerts
+                        alert = activeProductionPlan.ActiveProcesses[firstRoute].Alerts
                             .Where(x =>
                                 x.ItemId == machineId &&
                                 x.StatusId == (int)Constans.AlertStatus.New &&
                                 x.EndAt == null).OrderByDescending(x => x.CreatedAt).First();
+
+                        alert.RouteId = routeId;
                     }
 
                     activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);
