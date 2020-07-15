@@ -61,13 +61,7 @@ namespace CIM.BusinessLogic.Services
 
                 output.Add(appModel);
             }
-
-
-
-
-
             return output;
-
         }
 
     }
