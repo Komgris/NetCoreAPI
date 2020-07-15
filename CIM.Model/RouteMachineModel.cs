@@ -12,6 +12,7 @@ namespace CIM.Model
         public string MachineName { get; set; }
         public int MachineTypeId { get; set; }
         public string MachineTypeName { get; set; }
+        public bool? IsPointOfCounter { get; set; }
         public string Image { get; set; }
         public int Sequence { get; set; }
         public bool? IsActive { get; set; }

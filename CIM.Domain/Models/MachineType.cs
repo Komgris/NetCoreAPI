@@ -16,6 +16,7 @@ namespace CIM.Domain.Models
         public string Name { get; set; }
         public string Image { get; set; }
         public bool HasOee { get; set; }
+        public bool? IsCounterStd { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
