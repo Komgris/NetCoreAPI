@@ -383,7 +383,8 @@ namespace CIM.BusinessLogic.Services {
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
                                                                 , BoardcastType.ActiveMachineLossEvent
-                                                                , BoardcastType.ActiveProductionEvent}
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveTimeUtilisation}
                                                             , DataFrame.Default, paramsList);
                             break;
                     }
