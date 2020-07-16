@@ -58,6 +58,7 @@ namespace CIM.API.Controllers
                 {
                     item.Value.Alerts = LimitAlert(item.Value.Alerts);
                 }
+
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
             }
