@@ -29,7 +29,7 @@ namespace CIM.API.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="channel">transfer-message, "command-channel</param>
+        /// <param name="channel">transfer-message, command-channel</param>
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpGet]
