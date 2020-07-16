@@ -116,8 +116,10 @@ namespace CIM.BusinessLogic.Services
         public async Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
         {
             var output = new List<ActiveMachineModel>();
+            var seq = 0;
             foreach (var machine in machineList)
             {
+                seq++;
                 var key = CachedKey(machine.Key);
                 var cachedMachine = await GetCached(machine.Key);
                 if (cachedMachine == null)
@@ -125,6 +127,7 @@ namespace CIM.BusinessLogic.Services
                     cachedMachine = new ActiveMachineModel
                     {
                         Id = machine.Key,
+                        Sequence = seq,
                         RouteIds = new List<int> { routeId },
                         UserId = CurrentUser.UserId,
                         StartedAt = DateTime.Now,
@@ -140,6 +143,8 @@ namespace CIM.BusinessLogic.Services
 
                     if (!cachedMachine.RouteIds.Contains(routeId))
                         cachedMachine.RouteIds.Add(routeId);
+
+                    cachedMachine.Sequence = seq;
                 }
                 
                 if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
