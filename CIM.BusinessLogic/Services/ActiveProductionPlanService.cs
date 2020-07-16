@@ -159,6 +159,7 @@ namespace CIM.BusinessLogic.Services
                         }
 
                     }
+
                     activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
                     {
                         ProductionPlanId = planId,
@@ -170,6 +171,16 @@ namespace CIM.BusinessLogic.Services
                             MachineList = activeMachines,
                         }
                     };
+
+                    //update another route are use the same machines
+                    foreach (var mcmultiRoute in activeMachines.Where(a=> a.Value.RouteIds.Count > 1) )
+                    {
+                        foreach (var r in mcmultiRoute.Value.RouteIds)
+                        {
+                            if (r != routeId)
+                                activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Add(routeId);
+                        }
+                    }
 
                     var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
                     foreach (var machineId in runningMachineIds)
@@ -196,7 +207,7 @@ namespace CIM.BusinessLogic.Services
                         ProductionPlanId = planId,
                         RouteId = routeId,
                         LossLevelId = _config.GetValue<int>("DefaultIdlelv3Id"),
-                        IsAuto = false,
+                        IsAuto = false
                     };
                     foreach (var machine in activeMachines)
                     {
@@ -246,6 +257,17 @@ namespace CIM.BusinessLogic.Services
                         var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
                         activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                         var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
+
+                        //update another route are use the same machines
+                        foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
+                        {
+                            foreach (var r in mcmultiRoute.Value.RouteIds)
+                            {
+                                if (r != routeId)
+                                    activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                            }
+                        }
+
                         foreach (var machine in activeProcess.Route.MachineList)
                         {
                             machine.Value.RouteIds.Remove(routeId);
@@ -253,6 +275,7 @@ namespace CIM.BusinessLogic.Services
                             if (!isPlanActive) machine.Value.ProductionPlanId = null;
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
+
 
                         //stop counting output
                         await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
