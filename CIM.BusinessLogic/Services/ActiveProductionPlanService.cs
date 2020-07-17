@@ -159,6 +159,7 @@ namespace CIM.BusinessLogic.Services
                         }
 
                     }
+
                     activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
                     {
                         ProductionPlanId = planId,
@@ -170,6 +171,16 @@ namespace CIM.BusinessLogic.Services
                             MachineList = activeMachines,
                         }
                     };
+
+                    //update another route are use the same machines
+                    foreach (var mcmultiRoute in activeMachines.Where(a=> a.Value.RouteIds.Count > 1) )
+                    {
+                        foreach (var r in mcmultiRoute.Value.RouteIds)
+                        {
+                            if (r != routeId)
+                                activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Add(routeId);
+                        }
+                    }
 
                     var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
                     foreach (var machineId in runningMachineIds)
@@ -196,7 +207,7 @@ namespace CIM.BusinessLogic.Services
                         ProductionPlanId = planId,
                         RouteId = routeId,
                         LossLevelId = _config.GetValue<int>("DefaultIdlelv3Id"),
-                        IsAuto = false,
+                        IsAuto = false
                     };
                     foreach (var machine in activeMachines)
                     {
@@ -246,6 +257,17 @@ namespace CIM.BusinessLogic.Services
                         var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
                         activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                         var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
+
+                        //update another route are use the same machines
+                        foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
+                        {
+                            foreach (var r in mcmultiRoute.Value.RouteIds)
+                            {
+                                if (r != routeId)
+                                    activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                            }
+                        }
+
                         foreach (var machine in activeProcess.Route.MachineList)
                         {
                             machine.Value.RouteIds.Remove(routeId);
@@ -253,6 +275,7 @@ namespace CIM.BusinessLogic.Services
                             if (!isPlanActive) machine.Value.ProductionPlanId = null;
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
+
 
                         //stop counting output
                         await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
@@ -448,10 +471,11 @@ namespace CIM.BusinessLogic.Services
             var now = DateTime.Now;
 
             var cachedMachine = await _machineService.GetCached(machineId);
+            var firstRoute = cachedMachine.RouteIds.First();
             if (cachedMachine.RouteIds.Count() > 0)
             {
                 // create new alert and record only on first route of machine
-                var isFirstRoute = cachedMachine.RouteIds.OrderBy(x=>x)[0] == routeId;
+                var isFirstRoute = firstRoute == routeId;
                 if (!activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machineId].IsReady) // has unclosed record inside
                 {
                     AlertModel alert;
@@ -464,7 +488,7 @@ namespace CIM.BusinessLogic.Services
                             ItemStatusId = statusId,
                             CreatedAt = now,
                             Id = Guid.NewGuid(),
-                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
                             ItemId = machineId,
                             ItemType = (int)Constans.AlertType.MACHINE,
                             RouteId = routeId
@@ -475,7 +499,7 @@ namespace CIM.BusinessLogic.Services
                             CreatedBy = CurrentUser.UserId,
                             Guid = alert.Id.ToString(),
                             IsAuto = isAuto,
-                            LossLevel3Id = Constans.DEFAULT_LOSS_LV3,
+                            LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
                             MachineId = machineId,
                             ProductionPlanId = activeProductionPlan.ProductionPlanId,
                             StartedAt = now,
@@ -486,11 +510,13 @@ namespace CIM.BusinessLogic.Services
                     // else reuse existing alert of first route and don't insert new other record
                     else
                     {
-                        alert = activeProductionPlan.ActiveProcesses.First().Alerts
+                        alert = activeProductionPlan.ActiveProcesses[firstRoute].Alerts
                             .Where(x =>
                                 x.ItemId == machineId &&
                                 x.StatusId == (int)Constans.AlertStatus.New &&
                                 x.EndAt == null).OrderByDescending(x => x.CreatedAt).First();
+
+                        alert.RouteId = routeId;
                     }
 
                     activeProductionPlan.ActiveProcesses[routeId].Alerts.Add(alert);

@@ -382,7 +382,9 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = GenerateBoardcastData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineLossEvent}
+                                                                , BoardcastType.ActiveMachineLossEvent
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveTimeUtilisation}
                                                             , DataFrame.Default, paramsList);
                             break;
                     }
