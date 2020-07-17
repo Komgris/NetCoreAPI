@@ -26,8 +26,7 @@ namespace CIM.BusinessLogic.Services
             ICipherService cipherService,
             IUserRepository userRepository,
             IEmployeesRepository employeesRepository,
-
-        IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork
             )
         {
             _userAppTokenRepository = userAppTokenRepository;
