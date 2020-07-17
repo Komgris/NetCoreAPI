@@ -151,6 +151,8 @@ namespace CIM.API
             services.AddTransient<IMachineTeamService, MachineTeamService>();
             services.AddTransient<IUserGroupService, UserGroupService>();
             services.AddTransient<IAppService, AppService>();
+            services.AddTransient<IUserGroupAppService, UserGroupAppService>();
+            services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();
 
             services.AddControllers();
             services.AddSignalR();

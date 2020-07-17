@@ -41,6 +41,23 @@ namespace CIM.BusinessLogic.Services
                 IsActive = true,
                 IsDelete = false
             };
+            foreach (var app in model.AppList)
+            {
+                var userGroupAppDbModel = new UserGroupsApps
+                {
+                    AppId = app.Id,
+                    UserGroupId = dbModel.Id                    
+                };         
+                
+
+                //foreach (var feature in app.FeatureList)
+                //{
+                //    userGroupAppDbModel.UserGroupsAppFeatures.Add
+                //}
+
+                dbModel.UserGroupsApps.Add(userGroupAppDbModel);
+            }
+
             _userGroupRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
 
