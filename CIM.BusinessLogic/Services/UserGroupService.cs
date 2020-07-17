@@ -41,27 +41,28 @@ namespace CIM.BusinessLogic.Services
                 IsActive = true,
                 IsDelete = false
             };
+
             foreach (var app in model.AppList)
             {
                 var userGroupAppDbModel = new UserGroupsApps
                 {
                     AppId = app.Id,
                     UserGroupId = dbModel.Id                    
-                };         
-                
+                };
 
-                //foreach (var feature in app.FeatureList)
-                //{
-                //    userGroupAppDbModel.UserGroupsAppFeatures.Add
-                //}
+                foreach (var feature in app.FeatureList)
+                {
+                    userGroupAppDbModel.UserGroupsAppFeatures.Add(new UserGroupsAppFeatures { 
+                        FeatureId = feature.FeatureId,
+                        AppUserGroupId = userGroupAppDbModel.Id
+                    });
+                }
 
                 dbModel.UserGroupsApps.Add(userGroupAppDbModel);
             }
 
             _userGroupRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
-
-            await InsertAppAndFeatureMapping(model, dbModel.Id);
         }
 
         public async Task<PagingModel<UserGroupModel>> List(string keyword, int page, int howMany, bool isActive)
@@ -78,7 +79,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<UserGroupModel> Get(int id)
         {
-            var db_model = await _userGroupRepository.Where(x => x.Id == id)
+            var dbModel = await _userGroupRepository.Where(x => x.Id == id)
                 .Select(x => new UserGroupModel
                 {
                     Id = x.Id,
@@ -88,10 +89,10 @@ namespace CIM.BusinessLogic.Services
                 }).FirstOrDefaultAsync();
 
             var appList = new List<AppModel>();
-            var appDb_model = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == id);
-            foreach (var item in appDb_model)
+            var appDbModel = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == id);
+            foreach (var item in appDbModel)
             {
-                var feature_model = await _userGroupAppFeatureRepository.Where(x => x.AppUserGroupId == item.Id)
+                var featureDbModel = await _userGroupAppFeatureRepository.Where(x => x.AppUserGroupId == item.Id)
                     .Select(x => new AppFeatureModel
                     {
                         FeatureId = x.FeatureId,
@@ -102,54 +103,46 @@ namespace CIM.BusinessLogic.Services
                 var app_model = new AppModel
                 {
                     Id = item.AppId,
-                    FeatureList = feature_model
+                    FeatureList = featureDbModel
                 };
 
                 appList.Add(app_model);
             }
 
-            db_model.AppList = appList;
+            dbModel.AppList = appList;
 
-            return db_model;
+            return dbModel;
         }
 
         public async Task Update(UserGroupModel model)
         {
-            var db_model = MapperHelper.AsModel(model, new UserGroups());
-            _userGroupRepository.Edit(db_model);
-            await _unitOfWork.CommitAsync();
-
             await DeleteMapping(model.Id);
-            await InsertAppAndFeatureMapping(model, model.Id);
-        }
 
-        public async Task InsertAppAndFeatureMapping(UserGroupModel model, int userGroupId)
-        {
-            foreach (var item in model.AppList)
+            var dbModel = MapperHelper.AsModel(model, new UserGroups());
+
+            foreach (var app in model.AppList)
             {
-                var appDBModel = new UserGroupsApps
+                var userGroupAppDbModel = new UserGroupsApps
                 {
-                    AppId = item.Id,
-                    UserGroupId = userGroupId
+                    AppId = app.Id,
+                    UserGroupId = dbModel.Id
                 };
-                _userGroupAppRepository.Add(appDBModel);
-                await _unitOfWork.CommitAsync();
 
-                var appUserGroupId = appDBModel.Id;
-
-                foreach (var feature in item.FeatureList)
+                foreach (var feature in app.FeatureList)
                 {
-                    var appFeatureDBModel = new UserGroupsAppFeatures
+                    userGroupAppDbModel.UserGroupsAppFeatures.Add(new UserGroupsAppFeatures
                     {
                         FeatureId = feature.FeatureId,
-                        AppUserGroupId = appUserGroupId
-                    };
-                    _userGroupAppFeatureRepository.Add(appFeatureDBModel);
-                    await _unitOfWork.CommitAsync();
+                        AppUserGroupId = userGroupAppDbModel.Id
+                    });
                 }
-            }            
-        }
 
+                dbModel.UserGroupsApps.Add(userGroupAppDbModel);
+            }
+
+            _userGroupRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
+        }
         public async Task DeleteMapping(int userGroupId)
         {
             var appList = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == userGroupId);
