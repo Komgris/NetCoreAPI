@@ -33,31 +33,6 @@ namespace CIM.BusinessLogic.Services
             _userGroupAppFeatureRepository = userGroupAppFeatureRepository;
             _unitOfWork = unitOfWork;
         }
-        //public async Task Create(UserGroupModel model)
-        //{
-        //    var dbModel = new UserGroups
-        //    {
-        //        Name = model.Name,
-        //        IsActive = true,
-        //        IsDelete = false
-        //    };
-        //    _userGroupRepository.Add(dbModel);
-        //    await _unitOfWork.CommitAsync();
-
-        //    await InsertAppAndFeatureMapping(model, dbModel.Id);
-        //}
-
-        //public async Task<PagingModel<UserGroupModel>> List(string keyword, int page, int howMany, bool isActive)
-        //{
-        //    var output = await _userGroupRepository.ListAsPaging("sp_ListUserGroup", new Dictionary<string, object>()
-        //        {
-        //            {"@keyword", keyword},
-        //            {"@howmany", howMany},
-        //            {"@page", page},
-        //            {"@is_active", isActive}
-        //        }, page, howMany);
-        //    return output;
-        //}
 
         public async Task<List<UserGroupAppModel>> Get(int id)
         {
@@ -71,56 +46,5 @@ namespace CIM.BusinessLogic.Services
                 }).ToListAsync();
             return db_model;
         }
-
-        //public async Task Update(UserGroupModel model)
-        //{
-        //    var db_model = MapperHelper.AsModel(model, new UserGroups());
-        //    _userGroupRepository.Edit(db_model);
-        //    await _unitOfWork.CommitAsync();
-
-        //    await DeleteMapping(model.Id);
-        //    await InsertAppAndFeatureMapping(model, model.Id);
-        //}
-
-        //public async Task InsertAppAndFeatureMapping(UserGroupModel model, int userGroupId)
-        //{
-        //    foreach (var item in model.AppList)
-        //    {
-        //        var appDBModel = new UserGroupsApps
-        //        {
-        //            AppId = item.Id,
-        //            UserGroupId = userGroupId
-        //        };
-        //        _userGroupAppRepository.Add(appDBModel);
-        //        await _unitOfWork.CommitAsync();
-
-        //        var appUserGroupId = appDBModel.Id;
-
-        //        foreach (var feature in item.FeatureList)
-        //        {
-        //            var appFeatureDBModel = new UserGroupsAppFeatures
-        //            {
-        //                FeatureId = feature.FeatureId,
-        //                AppUserGroupId = appUserGroupId
-        //            };
-        //            _userGroupAppFeatureRepository.Add(appFeatureDBModel);
-        //            await _unitOfWork.CommitAsync();
-        //        }
-        //    }            
-        //}
-
-        //public async Task DeleteMapping(int userGroupId)
-        //{
-        //    var appList = await _userGroupAppRepository.WhereAsync(x => x.UserGroupId == userGroupId);
-        //    foreach (var item in appList)
-        //    {
-        //        var featureList = await _userGroupAppFeatureRepository.WhereAsync(x => x.AppUserGroupId == item.Id);
-        //        foreach (var featureItem in featureList)
-        //        {
-        //            _userGroupAppFeatureRepository.Delete(featureItem);
-        //        }
-        //        _userGroupAppRepository.Delete(item);
-        //    }
-        //}
     }
 }
