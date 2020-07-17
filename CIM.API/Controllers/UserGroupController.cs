@@ -47,7 +47,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }

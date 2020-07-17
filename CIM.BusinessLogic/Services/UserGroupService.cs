@@ -145,8 +145,6 @@ namespace CIM.BusinessLogic.Services
                 }
                 _userGroupAppRepository.Delete(item);
             }
-
-
         }
     }
 }
