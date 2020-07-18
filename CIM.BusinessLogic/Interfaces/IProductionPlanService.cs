@@ -19,7 +19,8 @@ namespace CIM.BusinessLogic.Interfaces
         Task<List<ProductionPlanModel>> Compare(List<ProductionPlanModel> import);
         List<ProductionPlanModel> ReadImport(string path);
         List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet);
-
+        Task<List<ProductionPlanListModel>> ListByMonth(int month, int year);
+        Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany);
         Task<ProductionPlanModel> Get(string id);
         Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds);
         Task<ProductionPlanOverviewModel> Load(string id,int routeId);
