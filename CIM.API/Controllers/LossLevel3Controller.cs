@@ -14,15 +14,17 @@ using System.Linq;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class LossLevel3Controller : ControllerBase
+    public class LossLevel3Controller : BaseController
     {
 
         private ILossLevel3Service _service;
         public LossLevel3Controller(
-            ILossLevel3Service service
+            ILossLevel3Service service,
+            IMasterDataService masterDataService
         )
         {
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [HttpGet]
@@ -54,6 +56,7 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 output.Data = await _service.Create(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
