@@ -188,5 +188,40 @@ namespace CIM.DAL.Implements
             });
         }
 
+        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@month", month},
+                                            {"@year", year}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanBYMonth", parameterList);
+
+                return (dt.ToModel<ProductionPlanListModel>());
+            });
+        }
+
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@date", date},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanByDate", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
+            });
+        }
     }
 }

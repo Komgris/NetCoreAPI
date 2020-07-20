@@ -419,6 +419,17 @@ namespace CIM.BusinessLogic.Services
             var output = _productionPlanRepository.FilterLoadProductionPlan(productId, routeId, statusId, planId);
             return output;
         }
-        
+
+        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year)
+        {
+            var output = await _productionPlanRepository.ListByMonth(month, year);
+            return output;
+        }
+
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany)
+        {
+            var output = await _productionPlanRepository.ListByDate(date, page, howmany);
+            return output;
+        }
     }
 }
