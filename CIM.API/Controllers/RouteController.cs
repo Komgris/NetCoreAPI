@@ -69,6 +69,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _routeService.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -86,6 +87,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _routeService.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

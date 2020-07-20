@@ -78,6 +78,7 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 output.Data = await _service.Update(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

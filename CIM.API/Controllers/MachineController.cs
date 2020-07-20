@@ -37,6 +37,7 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 await _service.Create(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -57,6 +58,7 @@ namespace CIM.API.Controllers
                 _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
 
                 await _service.Update(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -128,6 +130,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertMappingRouteMachine(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private IProductService _productService;
         private IUtilitiesService _utilitiesService;
@@ -51,6 +51,7 @@ namespace CIM.API.Controllers
                     list.Image = $"product/{list.Image}";
                 }
                 await _productService.Create(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -142,6 +143,7 @@ namespace CIM.API.Controllers
                     list.Image = $"product/{list.Image}";
                 }
                 await _productService.Update(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

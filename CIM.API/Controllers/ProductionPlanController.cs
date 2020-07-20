@@ -122,6 +122,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -140,6 +141,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

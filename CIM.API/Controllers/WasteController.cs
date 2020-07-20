@@ -46,6 +46,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _recordProductionPlanWasteService.Create(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.Waste);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -63,6 +64,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _recordProductionPlanWasteService.Update(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.Waste);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
