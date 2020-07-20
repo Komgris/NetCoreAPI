@@ -4,11 +4,12 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class AppModel
+    public class UserGroupModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Url { get; set; }
-        public List<AppFeatureModel> FeatureList { get; set; } = new List<AppFeatureModel>();
+        public bool IsActive { get; set; }
+        public bool IsDelete { get; set; }
+        public List<AppModel> AppList { get; set; }
     }
 }
