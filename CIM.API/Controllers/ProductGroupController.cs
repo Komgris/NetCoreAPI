@@ -14,10 +14,12 @@ namespace CIM.API.Controllers
     {
         private IProductGroupService _productGroupService;
         public ProductGroupController(
-            IProductGroupService productGroupService
+            IProductGroupService productGroupService,
+            IMasterDataService masterDataService
         )
         {
             _productGroupService = productGroupService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/List")]
@@ -46,6 +48,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productGroupService.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -82,6 +85,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productGroupService.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -116,6 +120,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productGroupService.InsertMappingRouteProductGroup(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

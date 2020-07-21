@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class ComponentTypeLossLevel3Controller : ControllerBase
+    public class ComponentTypeLossLevel3Controller : BaseController
     {
         private IComponentTypeLossLevel3Service _service;
         public ComponentTypeLossLevel3Controller(
@@ -43,7 +43,6 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(lossLevel3Ids, componentTypeId);
-
                 output.IsSuccess = true;
             }
             catch (Exception ex)

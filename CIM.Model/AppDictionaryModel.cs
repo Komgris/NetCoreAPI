@@ -4,11 +4,11 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class AppModel
+    public class AppDictionaryModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public List<AppFeatureModel> FeatureList { get; set; } = new List<AppFeatureModel>();
+        public Dictionary<int, string> FeatureDictionary { get; set; }
     }
 }

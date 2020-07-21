@@ -109,6 +109,10 @@ namespace CIM.API
             services.AddTransient<IEducationRepository, EducationRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
             services.AddTransient<IProcessTypeRepository, ProcessTypeRepository>();
+            services.AddTransient<IAppRepository, AppRepository>();
+            services.AddTransient<IAppFeatureRepository, AppFeatureRepository>();
+            services.AddTransient<IUserGroupAppRepository, UserGroupAppRepository>();
+            services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -145,6 +149,9 @@ namespace CIM.API
             services.AddTransient<ITeamService, TeamService>();
             services.AddTransient<IRecordMaintenancePlanService, RecordMaintenancePlanService>();
             services.AddTransient<IMachineTeamService, MachineTeamService>();
+            services.AddTransient<IUserGroupService, UserGroupService>();
+            services.AddTransient<IUserGroupAppService, UserGroupAppService>();
+            services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -157,7 +164,7 @@ namespace CIM.API
 
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
-            masterDataService.Refresh();
+            masterDataService.Refresh(Model.Constans.MasterDataType.All);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

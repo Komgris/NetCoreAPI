@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class RecordProductionPlanOutput
+    public partial class ViewProduceCounterCase
     {
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
@@ -13,17 +13,18 @@ namespace CIM.Domain.Models
         public int? CounterOut { get; set; }
         public int? TotalOut { get; set; }
         public bool? GoalByHour { get; set; }
-        public bool? IsCounterStd { get; set; }
         public string Remark { get; set; }
         public int? Hour { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
-        public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? FactorDivide { get; set; }
         public int? FactorMultiply { get; set; }
+        public int? CounterInCase { get; set; }
+        public int? TotalInCase { get; set; }
+        public int? CounterOutCase { get; set; }
+        public int? TotalOutCase { get; set; }
     }
 }

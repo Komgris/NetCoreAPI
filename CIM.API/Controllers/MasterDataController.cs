@@ -15,8 +15,7 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MasterDataController : BaseController
     {
-        private IMasterDataService _masterDataService;
-
+       
         public MasterDataController(
             IMasterDataService masterDataService 
             )
@@ -39,7 +38,7 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/Refresh")]
         public async Task<string> Refresh()
         {
-            await _masterDataService.Refresh();
+            await _masterDataService.Refresh(Constans.MasterDataType.All);
             return "OK";
         }
 

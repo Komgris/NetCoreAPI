@@ -20,11 +20,13 @@ namespace CIM.BusinessLogic.Services.Tests
             var userAppTokenRepository = new Mock<IUserAppTokenRepository>().Object;
             var cipherService = new Mock<ICipherService>().Object;
             var userRep = new Mock<IUserRepository>().Object;
+            var employee = new Mock<IEmployeesRepository>().Object;
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
             var service = new UserService(
                 userAppTokenRepository,
                 cipherService, 
-                userRep, 
+                userRep,
+                employee,
                 unitOfWork);
             var registerUserModel = new UserModel
             {

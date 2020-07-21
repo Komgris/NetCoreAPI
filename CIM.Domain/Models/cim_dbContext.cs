@@ -90,7 +90,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<UserPosition> UserPosition { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<ViewLossSummary> ViewLossSummary { get; set; }
         public virtual DbSet<ViewMasterLoss> ViewMasterLoss { get; set; }
+        public virtual DbSet<ViewProduceCounterCase> ViewProduceCounterCase { get; set; }
         public virtual DbSet<ViewProductInfo> ViewProductInfo { get; set; }
         public virtual DbSet<ViewProductRoute> ViewProductRoute { get; set; }
         public virtual DbSet<ViewRouteMachine> ViewRouteMachine { get; set; }
@@ -1858,6 +1860,10 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.FactorDivide).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.FactorMultiply).HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
@@ -2358,6 +2364,12 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.AppUserGroupId).HasColumnName("AppUserGroup_Id");
 
+                entity.HasOne(d => d.AppUserGroup)
+                    .WithMany(p => p.UserGroupsAppFeatures)
+                    .HasForeignKey(d => d.AppUserGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserGroups_AppFeatures_UserGroups_Apps");
+
                 entity.HasOne(d => d.Feature)
                     .WithMany(p => p.UserGroupsAppFeatures)
                     .HasForeignKey(d => d.FeatureId)
@@ -2368,8 +2380,6 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<UserGroupsApps>(entity =>
             {
                 entity.ToTable("UserGroups_Apps");
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.AppId).HasColumnName("App_Id");
 
@@ -2386,12 +2396,6 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.UserGroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserGroups_Apps_UserGroups");
-
-                entity.HasOne(d => d.UserGroupsAppFeatures)
-                    .WithMany(p => p.UserGroupsApps)
-                    .HasForeignKey(d => new { d.Id, d.UserGroupId })
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroups_Apps_UserGroups_AppFeatures");
             });
 
             modelBuilder.Entity<UserPosition>(entity =>
@@ -2475,6 +2479,28 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Users_UserGroups");
             });
 
+            modelBuilder.Entity<ViewLossSummary>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Loss_Summary");
+
+                entity.Property(e => e.LossLevel1Id).HasColumnName("LossLevel1_Id");
+
+                entity.Property(e => e.LossLevel2Id).HasColumnName("LossLevel2_Id");
+
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+            });
+
             modelBuilder.Entity<ViewMasterLoss>(entity =>
             {
                 entity.HasNoKey();
@@ -2513,6 +2539,34 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.LossLevel3Name)
                     .HasColumnName("LossLevel3_Name")
                     .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<ViewProduceCounterCase>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_Produce_Counter_Case");
+
+                entity.Property(e => e.CounterInCase).HasColumnName("CounterIn_Case");
+
+                entity.Property(e => e.CounterOutCase).HasColumnName("CounterOut_Case");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.TotalInCase).HasColumnName("TotalIn_Case");
+
+                entity.Property(e => e.TotalOutCase).HasColumnName("TotalOut_Case");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<ViewProductInfo>(entity =>

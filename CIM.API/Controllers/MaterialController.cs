@@ -13,7 +13,7 @@ namespace CIM.API.Controllers
 {
     //[MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     [ApiController]
-    public class MaterialController : ControllerBase
+    public class MaterialController : BaseController
     {
         private IMaterialService _service;
         private IUtilitiesService _utilitiesService;
