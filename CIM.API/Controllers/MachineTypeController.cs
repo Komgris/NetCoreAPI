@@ -14,21 +14,18 @@ using Newtonsoft.Json;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class MachineTypeController : BoardcastController
+    public class MachineTypeController : BaseController
     {
         private IMachineTypeService _machineTypeService;
         private IUtilitiesService _utilitiesService;
 
         public MachineTypeController(
-            IHubContext<GlobalHub> hub,
-            IResponseCacheService responseCacheService,
-            IReportService service,
-            IConfiguration config,
             IMachineTypeService machineTypeService,
             IUtilitiesService utilitiesService,
-            IActiveProductionPlanService activeProductionPlanService
-        ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            IMasterDataService masterDataService
+        ) 
         {
+            _masterDataService = masterDataService;
             _machineTypeService = machineTypeService;
             _utilitiesService = utilitiesService;
         }
@@ -51,6 +48,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _machineTypeService.Create(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -77,6 +75,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _machineTypeService.Update(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

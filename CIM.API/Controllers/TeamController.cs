@@ -17,11 +17,13 @@ namespace CIM.API.Controllers
 
         public TeamController(
             IResponseCacheService responseCacheService,
-            ITeamService service
+            ITeamService service,
+            IMasterDataService masterDataService
         )
         {
             _responseCacheService = responseCacheService;
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/List")]
@@ -66,6 +68,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -83,6 +86,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -117,7 +121,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _service.InsertEmployeesMappingByTeam(data);
+                await _service.InsertEmployeesMappingByTeam(data);               
                 output.IsSuccess = true;
             }
             catch (Exception ex)
