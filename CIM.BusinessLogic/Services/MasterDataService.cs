@@ -290,10 +290,12 @@ namespace CIM.BusinessLogic.Services
                     break;
                 case MasterDataType.Machines:
                     _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
                     masterData.Components = await GetComponents();
                     masterData.RouteMachines = await GetRouteMachine();
                     masterData.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
                     masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                    masterData.Dictionary.Machine = await GetMachineDictionary();
                     break;
                 case MasterDataType.Products:
                     _productBOM = await _materialRepository.ListProductBOM();
@@ -341,9 +343,6 @@ namespace CIM.BusinessLogic.Services
                     break;
                 case MasterDataType.ProductType:
                     masterData.Dictionary.ProductType = await GetProductTypeDictionary();
-                    break;
-                case MasterDataType.Machine:
-                    masterData.Dictionary.Machine = await GetMachineDictionary();
                     break;
                 case MasterDataType.MaterialType:
                     masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();

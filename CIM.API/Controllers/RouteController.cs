@@ -71,7 +71,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _routeService.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _routeService.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
+                await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

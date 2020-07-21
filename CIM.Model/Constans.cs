@@ -135,7 +135,6 @@ namespace CIM.Model
             , ProductFamily
             , ProductGroup
             , ProductType
-            , Machine
             , MaterialType
             , TeamType
             , Team
