@@ -119,8 +119,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _service.InsertEmployeesMappingByTeam(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Team);
+                await _service.InsertEmployeesMappingByTeam(data);               
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -48,7 +48,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _machineTypeService.Create(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
+                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _machineTypeService.Update(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
+                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

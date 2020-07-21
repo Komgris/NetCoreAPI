@@ -116,15 +116,34 @@ namespace CIM.Model
         {
             All
             , LossLevel3s
+            , RouteMachines
+            , Components
+            , Machines
+            , Routes
             , Products
             , ProductionPlan
+            , ProductGroupRoutes
+            , WastesByProductType
             , ProcessDriven
+            , ProductsByCode
+            , ProductionStatus
             , Units
+            , CompareResult
+            , WastesLevel2
+            , MachineType
+            , ComponentType
+            , ProductFamily
+            , ProductGroup
+            , ProductType
             , Machine
+            , MaterialType
+            , TeamType
             , Team
+            , UserPosition
+            , Education
+            , ProcessType
             , UserGroup
-            , Waste
-            , Employee
+            , Language
         }
 
         public enum ReportType

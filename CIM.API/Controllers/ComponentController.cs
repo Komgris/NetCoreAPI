@@ -86,7 +86,6 @@ namespace CIM.API.Controllers
             try
             {
                 await _componentService.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -104,7 +103,6 @@ namespace CIM.API.Controllers
             try
             {
                 await _componentService.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -122,7 +120,6 @@ namespace CIM.API.Controllers
             try
             {
                 await _componentService.InsertMappingMachineComponent(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machine);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
