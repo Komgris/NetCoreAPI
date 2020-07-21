@@ -12,8 +12,10 @@ namespace CIM.Domain.Models
         public int Sequence { get; set; }
         public int StatusId { get; set; }
         public string StatusName { get; set; }
+        public bool? IsPointOfCounter { get; set; }
         public int MachineTypeId { get; set; }
         public string MachineTypeName { get; set; }
+        public bool? IsCounterStd { get; set; }
         public string Image { get; set; }
     }
 }

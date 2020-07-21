@@ -93,7 +93,7 @@ namespace CIM.API.IntegrationTests
                             FirstName = "Hans",
                             LastName = "Meier",
                             DefaultLanguageId = "en",
-                            Image = null,
+                            //Image = null,
                             UserGroupId = adminGroup.Id,
                         };
                         userService.Create(registerUserModel);

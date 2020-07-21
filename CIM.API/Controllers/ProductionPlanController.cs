@@ -203,6 +203,41 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/ListByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ProductionPlanListModel>>> ListByMonth(int month, int year)
+        {
+            var output = new ProcessReponseModel<List<ProductionPlanListModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListByMonth(month, year);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany)
+        {
+            var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListByDate(date, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
         #endregion
 
         #region Production Process

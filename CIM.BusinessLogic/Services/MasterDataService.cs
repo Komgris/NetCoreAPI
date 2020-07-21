@@ -43,6 +43,8 @@ namespace CIM.BusinessLogic.Services
         private IEducationRepository _educationRepository;
         private IUserGroupRepository _userGroupRepository;
         private IProcessTypeRepository _processTypeRepository;
+        private IAppRepository _appRepository;
+        private IAppFeatureRepository _appFeatureRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -70,7 +72,9 @@ namespace CIM.BusinessLogic.Services
             IUserPositionRepository userPositionRepository,
             IEducationRepository educationRepository,
             IProcessTypeRepository processTypeRepository,
-            IUserGroupRepository userGroupRepository
+            IUserGroupRepository userGroupRepository,
+            IAppRepository appRepository,
+            IAppFeatureRepository appFeatureRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -100,6 +104,8 @@ namespace CIM.BusinessLogic.Services
             _educationRepository = educationRepository;
             _processTypeRepository = processTypeRepository;
             _userGroupRepository = userGroupRepository;
+            _appRepository = appRepository;
+            _appFeatureRepository = appFeatureRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -246,6 +252,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
                     masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.AppFeature = await GetAppFeature();
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
@@ -266,7 +273,8 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.Education = await GetEducationDictionary();
                     masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
                     masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
-                    masterData.Dictionary.Language = await GetLanguageDictionary();
+                    masterData.Dictionary.Language = await GetLanguageDictionary(); 
+                    masterData.Dictionary.App = await GetAppDictionary();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -494,6 +502,22 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async Task<IDictionary<int, AppFeatureModel>> GetAppFeature()
+        {
+            var output = new Dictionary<int, AppFeatureModel>();
+            var dbModel = await _appFeatureRepository.AllAsync();
+            foreach (var item in dbModel)
+            {
+                    output[item.FeatureId] = new AppFeatureModel
+                    {
+                        FeatureId = item.FeatureId,
+                        Name = item.Name,
+                        AppId = item.AppId
+                    };
+            }
+            return output;
+        }
+
         private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
         {
             var db = (await _componentTypeRepository.AllAsync()).OrderBy(x => x.Id);
@@ -643,6 +667,18 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<string, string>();
             output.Add("en", "EN");
             output.Add("th", "TH");
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetAppDictionary()
+        {
+            var db = (await _appRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
             return output;
         }
 
