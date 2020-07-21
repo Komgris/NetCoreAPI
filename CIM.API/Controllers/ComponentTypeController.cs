@@ -20,11 +20,13 @@ namespace CIM.API.Controllers
 
         public ComponentTypeController(
             IComponentTypeService componentTypeService,
-            IUtilitiesService utilitiesService
+            IUtilitiesService utilitiesService,
+            IMasterDataService masterDataService
         )
         {
             _componentTypeService = componentTypeService;
             _utilitiesService = utilitiesService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/GetByMachineType")]

@@ -14,10 +14,12 @@ namespace CIM.API.Controllers
     {
         private IProductGroupService _productGroupService;
         public ProductGroupController(
-            IProductGroupService productGroupService
+            IProductGroupService productGroupService,
+            IMasterDataService masterDataService
         )
         {
             _productGroupService = productGroupService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/List")]

@@ -24,11 +24,13 @@ namespace CIM.API.Controllers
 
         public ProductController(
             IProductService productService,
-            IUtilitiesService utilitiesService
+            IUtilitiesService utilitiesService,
+            IMasterDataService masterDataService
             )
         {
             _productService = productService;
             _utilitiesService = utilitiesService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/Create")]

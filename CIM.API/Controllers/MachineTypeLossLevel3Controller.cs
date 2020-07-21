@@ -12,10 +12,12 @@ namespace CIM.API.Controllers
     {
         private IMachineTypeLossLevel3Service _service;
         public MachineTypeLossLevel3Controller(
-            IMachineTypeLossLevel3Service service
+            IMachineTypeLossLevel3Service service,
+            IMasterDataService masterDataService
         )
         {
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [HttpGet]

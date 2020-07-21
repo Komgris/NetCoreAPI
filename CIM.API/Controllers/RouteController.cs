@@ -18,11 +18,13 @@ namespace CIM.API.Controllers
 
         public RouteController(
             IResponseCacheService responseCacheService,
-            IRouteService routeService
+            IRouteService routeService,
+            IMasterDataService masterDataService
         )
         {
             _responseCacheService = responseCacheService;
             _routeService = routeService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/List")]

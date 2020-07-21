@@ -20,10 +20,12 @@ namespace CIM.API.Controllers
         public MachineController(
             IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
-            IMachineService service
+            IMachineService service,
+            IMasterDataService masterDataService
         )
         {
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [HttpPost]

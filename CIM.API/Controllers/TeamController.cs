@@ -17,11 +17,13 @@ namespace CIM.API.Controllers
 
         public TeamController(
             IResponseCacheService responseCacheService,
-            ITeamService service
+            ITeamService service,
+            IMasterDataService masterDataService
         )
         {
             _responseCacheService = responseCacheService;
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/List")]

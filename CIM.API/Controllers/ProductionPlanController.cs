@@ -30,10 +30,12 @@ namespace CIM.API.Controllers
             IReportService service,
             IConfiguration config,
             IProductionPlanService productionPlanService,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IMasterDataService masterDataService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
+            _masterDataService = masterDataService;
         }
 
         #region Production plan mng 
