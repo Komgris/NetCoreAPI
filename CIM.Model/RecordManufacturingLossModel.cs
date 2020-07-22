@@ -23,6 +23,7 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public bool IsAuto { get; set; }
         public int LossLevel3Id { get; set; }
+        public int LossLevel2Id { get; set; }
         public DateTime StartedAt { get; set; }
         public DateTime? EndAt { get; set; }
         public int RouteId { get; set; }
