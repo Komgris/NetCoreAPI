@@ -30,10 +30,12 @@ namespace CIM.API.Controllers
             IReportService service,
             IConfiguration config,
             IProductionPlanService productionPlanService,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IMasterDataService masterDataService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
+            _masterDataService = masterDataService;
         }
 
         #region Production plan mng 
@@ -122,6 +124,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -140,6 +143,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -201,6 +205,41 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/ListByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ProductionPlanListModel>>> ListByMonth(int month, int year)
+        {
+            var output = new ProcessReponseModel<List<ProductionPlanListModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListByMonth(month, year);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany)
+        {
+            var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListByDate(date, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
         #endregion
 
         #region Production Process

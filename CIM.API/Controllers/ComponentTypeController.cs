@@ -20,11 +20,13 @@ namespace CIM.API.Controllers
 
         public ComponentTypeController(
             IComponentTypeService componentTypeService,
-            IUtilitiesService utilitiesService
+            IUtilitiesService utilitiesService,
+            IMasterDataService masterDataService
         )
         {
             _componentTypeService = componentTypeService;
             _utilitiesService = utilitiesService;
+            _masterDataService = masterDataService;
         }
 
         [Route("api/[controller]/GetByMachineType")]
@@ -96,6 +98,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _componentTypeService.Create(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -122,6 +125,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _componentTypeService.Update(list);
+                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

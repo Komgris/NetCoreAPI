@@ -8,20 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserGroupController : ControllerBase
     {
-        private IUserService _service;
+        private IUserGroupService _service;
 
-        public UserController(IUserService service)
+        public UserGroupController(IUserGroupService service)
         {
             _service = service;
         }
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<UserModel>> Create(UserModel model)
+        public async Task<ProcessReponseModel<UserGroupModel>> Create(UserGroupModel model)
         {
-            var output = new ProcessReponseModel<UserModel>();
+            var output = new ProcessReponseModel<UserGroupModel>();
             try
             {
                 await _service.Create(model);
@@ -37,9 +37,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<UserModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
+        public async Task<ProcessReponseModel<PagingModel<UserGroupModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
-            var output = new ProcessReponseModel<PagingModel<UserModel>>();
+            var output = new ProcessReponseModel<PagingModel<UserGroupModel>>();
             try
             {
                 output.Data = await _service.List(keyword, page, howMany, isActive);
@@ -54,9 +54,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/Get")]
-        public async Task<ProcessReponseModel<UserModel>> Get(string id)
+        public async Task<ProcessReponseModel<UserGroupModel>> Get(int id)
         {
-            var output = new ProcessReponseModel<UserModel>();
+            var output = new ProcessReponseModel<UserGroupModel>();
             try
             {
                 output.Data = await _service.Get(id);
@@ -71,29 +71,12 @@ namespace CIM.API.Controllers
 
         [HttpPut]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<UserModel>> Update([FromBody] UserModel model)
+        public async Task<ProcessReponseModel<UserGroupModel>> Update([FromBody] UserGroupModel model)
         {
-            var output = new ProcessReponseModel<UserModel>();
+            var output = new ProcessReponseModel<UserGroupModel>();
             try
             {
                 await _service.Update(model);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
-        [HttpGet]
-        [Route("api/[controller]/GetFromUserName")]
-        public async Task<ProcessReponseModel<UserModel>> GetFromUserName(string userName)
-        {
-            var output = new ProcessReponseModel<UserModel>();
-            try
-            {
-                output.Data = await _service.GetFromUserName(userName);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

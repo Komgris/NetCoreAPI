@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -42,6 +43,8 @@ namespace CIM.BusinessLogic.Services
         private IEducationRepository _educationRepository;
         private IUserGroupRepository _userGroupRepository;
         private IProcessTypeRepository _processTypeRepository;
+        private IAppRepository _appRepository;
+        private IAppFeatureRepository _appFeatureRepository;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -69,7 +72,9 @@ namespace CIM.BusinessLogic.Services
             IUserPositionRepository userPositionRepository,
             IEducationRepository educationRepository,
             IProcessTypeRepository processTypeRepository,
-            IUserGroupRepository userGroupRepository
+            IUserGroupRepository userGroupRepository,
+            IAppRepository appRepository,
+            IAppFeatureRepository appFeatureRepository
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -99,6 +104,8 @@ namespace CIM.BusinessLogic.Services
             _educationRepository = educationRepository;
             _processTypeRepository = processTypeRepository;
             _userGroupRepository = userGroupRepository;
+            _appRepository = appRepository;
+            _appFeatureRepository = appFeatureRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -214,54 +221,151 @@ namespace CIM.BusinessLogic.Services
 
                 if (Data == null)
                 {
-                    Data = await Refresh();
+                    Data = await Refresh(MasterDataType.All);
                 }
 
             }
             return Data;
         }
-        public async Task<MasterDataModel> Refresh()
+        public async Task<MasterDataModel> Refresh(MasterDataType masterdataType)
         {
+            var masterData = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
+            if(masterData == null) masterData = new MasterDataModel();
 
-            _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
-            _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
-            _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
-            _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
-            _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
-            _productBOM = await _materialRepository.ListProductBOM();
+            switch (masterdataType)
+            {
+                case MasterDataType.All:
+                    _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
+                    _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
+                    _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
+                    _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
+                    _productBOM = await _materialRepository.ListProductBOM();
 
-            var masterData = new MasterDataModel();
-            masterData.LossLevel3s = GetLossLevel3();
-            masterData.RouteMachines = await GetRouteMachine();
-            masterData.Components = await GetComponents();
-            masterData.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
-            masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
-            masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
-            masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
-            masterData.ProductGroupRoutes = await GetProductGroupRoutes();
-            masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
-            masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.LossLevel3s = GetLossLevel3();
+                    masterData.RouteMachines = await GetRouteMachine();
+                    masterData.Components = await GetComponents();
+                    masterData.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
+                    masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                    masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
+                    masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
+                    masterData.ProductGroupRoutes = await GetProductGroupRoutes();
+                    masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
+                    masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.AppFeature = await GetAppFeature();
 
-            masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
-            masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
-            masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
-            masterData.Dictionary.Units = await GetUnitsDictionary();
-            masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
-            masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
-            masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
-            masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
-            masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
-            masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
-            masterData.Dictionary.ProductType = await GetProductTypeDictionary();
-            masterData.Dictionary.Machine = await GetMachineDictionary();
-            masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
-            masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
-            masterData.Dictionary.Team = await GetTeamDictionary();
-            masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
-            masterData.Dictionary.Education = await GetEducationDictionary();
-            masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
-            masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
-            masterData.Dictionary.Language = await GetLanguageDictionary();
+                    masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
+                    masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
+                    masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
+                    masterData.Dictionary.Units = await GetUnitsDictionary();
+                    masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
+                    masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
+                    masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
+                    masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
+                    masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
+                    masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
+                    masterData.Dictionary.ProductType = await GetProductTypeDictionary();
+                    masterData.Dictionary.Machine = await GetMachineDictionary();
+                    masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
+                    masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
+                    masterData.Dictionary.Team = await GetTeamDictionary();
+                    masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
+                    masterData.Dictionary.Education = await GetEducationDictionary();
+                    masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
+                    masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
+                    masterData.Dictionary.Language = await GetLanguageDictionary(); 
+                    masterData.Dictionary.App = await GetAppDictionary();
+                    break;
+
+                case MasterDataType.LossLevel3s:
+                    _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    masterData.LossLevel3s = GetLossLevel3();
+                    break;
+                case MasterDataType.RouteMachines:
+                    masterData.RouteMachines = await GetRouteMachine();
+                    break;
+                case MasterDataType.Components:
+                    _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    masterData.Components = await GetComponents();
+                    break;
+                case MasterDataType.Machines:
+                    _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
+                    masterData.Components = await GetComponents();
+                    masterData.RouteMachines = await GetRouteMachine();
+                    masterData.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
+                    masterData.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                    masterData.Dictionary.Machine = await GetMachineDictionary();
+                    break;
+                case MasterDataType.Products:
+                    _productBOM = await _materialRepository.ListProductBOM();
+                    masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
+                    GetProductDictionary(masterData.Products);
+                    masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
+                    break;
+                case MasterDataType.ProductionPlan:
+                    _productBOM = await _materialRepository.ListProductBOM();
+                    masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
+                    masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
+                    break;
+                case MasterDataType.ProductGroupRoutes:
+                    masterData.ProductGroupRoutes = await GetProductGroupRoutes();
+                    break;
+                case MasterDataType.WastesByProductType:
+                    _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
+                    _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
+                    masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
+                    break;
+                case MasterDataType.ProcessDriven:
+                    masterData.ProcessDriven = await GetProcessDriven();
+                    break;
+                case MasterDataType.ProductionStatus:
+                    masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
+                    break;
+                case MasterDataType.Units:
+                    masterData.Dictionary.Units = await GetUnitsDictionary();
+                    break;
+                case MasterDataType.WastesLevel2:
+                    _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
+                    masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
+                    break;
+                case MasterDataType.MachineType:
+                    masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
+                    break;
+                case MasterDataType.ComponentType:
+                    masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
+                    break;
+                case MasterDataType.ProductFamily:
+                    masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
+                    break;
+                case MasterDataType.ProductGroup:
+                    masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
+                    break;
+                case MasterDataType.ProductType:
+                    masterData.Dictionary.ProductType = await GetProductTypeDictionary();
+                    break;
+                case MasterDataType.MaterialType:
+                    masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
+                    break;
+                case MasterDataType.TeamType:
+                    masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
+                    break;
+                case MasterDataType.Team:
+                    masterData.Dictionary.Team = await GetTeamDictionary();
+                    break;
+                case MasterDataType.UserPosition:
+                    masterData.Dictionary.UserPosition = await GetUserPositionDictionary();
+                    break;
+                case MasterDataType.Education:
+                    masterData.Dictionary.Education = await GetEducationDictionary();
+                    break;
+                case MasterDataType.ProcessType:
+                    masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
+                    break;
+                case MasterDataType.UserGroup:
+                    masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
+                    break;
+            }
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
@@ -393,6 +497,22 @@ namespace CIM.BusinessLogic.Services
                     Description = item.Description,
                     LossLevel3 = lossLevel3
                 });
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, AppFeatureModel>> GetAppFeature()
+        {
+            var output = new Dictionary<int, AppFeatureModel>();
+            var dbModel = await _appFeatureRepository.AllAsync();
+            foreach (var item in dbModel)
+            {
+                    output[item.FeatureId] = new AppFeatureModel
+                    {
+                        FeatureId = item.FeatureId,
+                        Name = item.Name,
+                        AppId = item.AppId
+                    };
             }
             return output;
         }
@@ -548,5 +668,18 @@ namespace CIM.BusinessLogic.Services
             output.Add("th", "TH");
             return output;
         }
+
+        private async Task<IDictionary<int, string>> GetAppDictionary()
+        {
+            var db = (await _appRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
     }
 }

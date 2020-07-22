@@ -112,6 +112,39 @@ namespace CIM.Model
             End
         }
 
+        public enum MasterDataType
+        {
+            All
+            , LossLevel3s
+            , RouteMachines
+            , Components
+            , Machines
+            , Routes
+            , Products
+            , ProductionPlan
+            , ProductGroupRoutes
+            , WastesByProductType
+            , ProcessDriven
+            , ProductsByCode
+            , ProductionStatus
+            , Units
+            , CompareResult
+            , WastesLevel2
+            , MachineType
+            , ComponentType
+            , ProductFamily
+            , ProductGroup
+            , ProductType
+            , MaterialType
+            , TeamType
+            , Team
+            , UserPosition
+            , Education
+            , ProcessType
+            , UserGroup
+            , Language
+        }
+
         public enum ReportType
         {
             Daily,
