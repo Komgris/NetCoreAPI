@@ -281,6 +281,8 @@ namespace CIM.BusinessLogic.Services
                 case MasterDataType.LossLevel3s:
                     _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
                     masterData.LossLevel3s = GetLossLevel3();
+                    masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.ManufacturingPerformance = await GetManufacturingPerformance();
                     break;
                 case MasterDataType.RouteMachines:
                     masterData.RouteMachines = await GetRouteMachine();
@@ -319,6 +321,7 @@ namespace CIM.BusinessLogic.Services
                     break;
                 case MasterDataType.ProcessDriven:
                     masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.ManufacturingPerformance = await GetManufacturingPerformance();
                     break;
                 case MasterDataType.ProductionStatus:
                     masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
