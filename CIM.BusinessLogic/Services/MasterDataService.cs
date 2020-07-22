@@ -252,6 +252,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
                     masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.ManufacturingPerformance = await GetManufacturingPerformance();
                     masterData.AppFeature = await GetAppFeature();
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
@@ -500,6 +501,28 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
+        private async Task<IDictionary<int, ManufacturingPerformanceModel>> GetManufacturingPerformance()
+        {
+            var output = new Dictionary<int, ManufacturingPerformanceModel>();
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => x.LossLevel1Id == 3 && x.IsActive && !x.IsDelete));
+
+            foreach (var item in lossLevel2Db)
+            {
+                var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete))
+                    .ToDictionary(x => x.Id, y => y.Description);
+
+                output.Add(item.Id, new ManufacturingPerformanceModel()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    LossLevel3 = lossLevel3
+                });
+            }
+            return output;
+        }
+        
 
         private async Task<IDictionary<int, AppFeatureModel>> GetAppFeature()
         {
