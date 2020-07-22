@@ -509,7 +509,7 @@ namespace CIM.BusinessLogic.Services
         {
             var output = new Dictionary<int, ManufacturingPerformanceNoMachineModel>();
             var losslv2MC = new List<int>() {13,14,15,16,20};
-            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => !losslv2MC.Contains(x.Id) && x.LossLevel1Id == 3 &&  x.IsActive && !x.IsDelete));
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => losslv2MC.Contains(x.Id) && x.LossLevel1Id == 3 &&  x.IsActive && !x.IsDelete));
 
             foreach (var item in lossLevel2Db)
             {
