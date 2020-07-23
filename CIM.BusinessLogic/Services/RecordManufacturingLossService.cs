@@ -95,6 +95,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
                 _recordManufacturingLossRepository.Edit(dbModel);
 
                 //Create new
@@ -130,6 +131,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
@@ -232,7 +234,7 @@ namespace CIM.BusinessLogic.Services
                     {"@route_id", routeId},
                     {"@keyword", keyword},
                     {"@howmany", howmany},
-                    { "@page", page}
+                    {"@page", page}
                 }, page, howmany);
         }
     }
