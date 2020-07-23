@@ -205,8 +205,9 @@ namespace CIM.BusinessLogic.Services
                     output = activeProductionPlan;
 
                     //get last plan with same route
-                    var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId).OrderByDescending(x => x.Start).FirstOrDefaultAsync();
-                    var preproductId = await _productionPlanRepository.Where(x => x.PlanId == preplan.ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync();
+                    var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date ).OrderByDescending(x => x.Start).Take(2).ToListAsync();
+                    var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
+                                                            : dbModel.ProductId;
 
                     //record time loss on process ramp-up #139
                     var rampupModel = new RecordManufacturingLossModel()
