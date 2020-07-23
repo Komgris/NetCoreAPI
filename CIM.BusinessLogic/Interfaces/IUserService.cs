@@ -13,6 +13,7 @@ namespace CIM.BusinessLogic.Interfaces
         CurrentUserModel GetCurrentUserModel(string token);
         string HashPassword(UserModel model);
         Task<string> CreateToken(string userId);
+        Task<string> VerifyToken(string token);
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<UserModel> Get(string id);
         Task Update(UserModel model);

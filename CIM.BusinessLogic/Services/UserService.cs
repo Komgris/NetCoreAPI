@@ -4,6 +4,8 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,13 +22,18 @@ namespace CIM.BusinessLogic.Services
         private IUserRepository _userRepository;
         private IEmployeesRepository _employeesRepository;
         private IUnitOfWorkCIM _unitOfWork;
-
+        private IResponseCacheService _responseCacheService;
+        private IConfiguration _configuration;
+        private IUserGroupAppRepository _userGroupAppRepository;
         public UserService(
             IUserAppTokenRepository userAppTokenRepository,
             ICipherService cipherService,
             IUserRepository userRepository,
             IEmployeesRepository employeesRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IResponseCacheService responseCacheService,
+            IConfiguration configuration,
+            IUserGroupAppRepository userGroupAppRepository
             )
         {
             _userAppTokenRepository = userAppTokenRepository;
@@ -34,6 +41,9 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _employeesRepository = employeesRepository;
             _unitOfWork = unitOfWork;
+            _responseCacheService = responseCacheService;
+            _configuration = configuration;
+            _userGroupAppRepository = userGroupAppRepository;
         }
         public async Task Create(UserModel model)
         {
@@ -118,13 +128,25 @@ namespace CIM.BusinessLogic.Services
             var userAppToken = new UserAppTokens
             {
                 UserId = userId,
-                ExpiredAt = DateTime.Now.AddYears(1),
+                ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)")),
             };
             var dataString = JsonConvert.SerializeObject(userAppToken);
             userAppToken.Token = _cipherService.Encrypt(dataString);
+            await _responseCacheService.SetAsync($"token-{userAppToken.UserId}", userAppToken);
 
             _userAppTokenRepository.Add(userAppToken);
             await _unitOfWork.CommitAsync();
+            return userAppToken.Token;
+        }
+
+        public async Task<string> VerifyToken(string token)
+        {
+            var tokenString = _cipherService.Decrypt(token);
+            var userAppToken = JsonConvert.DeserializeObject< UserAppTokens>(tokenString);
+
+            var cached = await _responseCacheService.GetAsync($"token-{userAppToken.UserId}");
+            var test = CurrentUser.AppId;
+
             return userAppToken.Token;
         }
 
@@ -157,14 +179,17 @@ namespace CIM.BusinessLogic.Services
                 {
                     Token = x.UserAppTokens.Token,
                     DefaultLanguageId = x.DefaultLanguageId,
+                    UserGroupId = x.UserGroupId
                 }).FirstOrDefault();
+            var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId).FirstOrDefault();
             var dbData = _cipherService.Decrypt(user.Token);
             var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
             var currentUserModel = new CurrentUserModel
             {
                 IsValid = user != null && tokenData.UserId == userAppToken.UserId,
                 UserId = tokenData.UserId,
-                LanguageId = user.DefaultLanguageId
+                LanguageId = user.DefaultLanguageId,
+                AppId = userGroupApp.AppId
             };
             return currentUserModel;
         }
