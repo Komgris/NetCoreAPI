@@ -279,7 +279,9 @@ namespace CIM.BusinessLogic.Services
                     break;
 
                 case MasterDataType.LossLevel3s:
+                    _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
                     _lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
+                    _lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
                     masterData.LossLevel3s = GetLossLevel3();
                     masterData.ProcessDriven = await GetProcessDriven();
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
