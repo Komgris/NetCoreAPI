@@ -34,6 +34,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineRepository _machineRepository;
         public IConfiguration _config;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordActiveProductionPlanRepository _activeproductionPlanRepository;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -49,7 +50,8 @@ namespace CIM.BusinessLogic.Services
             IReportService reportService,
             IMachineRepository machineRepository,
             IConfiguration config,
-            IRecordManufacturingLossService recordManufacturingLossService
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordActiveProductionPlanRepository activeproductionPlanRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -66,6 +68,7 @@ namespace CIM.BusinessLogic.Services
             _machineRepository = machineRepository;
             _config = config;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _activeproductionPlanRepository = activeproductionPlanRepository;
         }
 
         public string GetKey(string productionPLanId)
@@ -201,12 +204,18 @@ namespace CIM.BusinessLogic.Services
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 
+                    //get last plan with same route
+                    var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId).OrderByDescending(x => x.Start).FirstOrDefaultAsync();
+                    var preproductId = await _productionPlanRepository.Where(x => x.PlanId == preplan.ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync();
+
                     //record time loss on process ramp-up #139
                     var rampupModel = new RecordManufacturingLossModel()
                     {
                         ProductionPlanId = planId,
                         RouteId = routeId,
-                        LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                        LossLevelId = preproductId != dbModel.ProductId ? 
+                                                                      _config.GetValue<int>("DefaultChangeOverlv3Id")
+                                                                    : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
                         IsAuto = false
                     };
                     foreach (var machine in activeMachines)
