@@ -206,7 +206,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         ProductionPlanId = planId,
                         RouteId = routeId,
-                        LossLevelId = _config.GetValue<int>("DefaultIdlelv3Id"),
+                        LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
                         IsAuto = false
                     };
                     foreach (var machine in activeMachines)
