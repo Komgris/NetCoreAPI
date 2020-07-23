@@ -472,6 +472,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
+                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
                 _recordManufacturingLossRepository.Edit(dbModel);
             }
             return activeProductionPlan;
