@@ -50,7 +50,7 @@ namespace CIM.BusinessLogic.Services
             await DeleteMapping(data[0].ProductGroupId);
             foreach (var model in data)
             {
-                if(model.RouteId == 0)
+                if(model.RouteId != 0)
                 {
                     var db = MapperHelper.AsModel(model, new RouteProductGroup());
                     db.CreatedAt = DateTime.Now;
