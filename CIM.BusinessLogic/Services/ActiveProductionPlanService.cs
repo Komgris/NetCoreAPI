@@ -250,8 +250,11 @@ namespace CIM.BusinessLogic.Services
                     {"@routeid", routeId }
                 };
 
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_finish", paramsList);
-            if (isvalidatePass)
+            //get message for descripe error
+            var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_finish", paramsList);
+            if(message != "")throw (new Exception(message));
+
+            if (true)
             {
                 paramsList.Add("@user", CurrentUser.UserId);
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
@@ -644,6 +647,7 @@ namespace CIM.BusinessLogic.Services
                 {"@plan_id", productionPlanId }
             });
         }
+       
         public async Task<int[]> ListMachineLossRecording(string productionPlanId)
         {
             return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
