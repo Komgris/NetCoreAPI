@@ -34,6 +34,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineRepository _machineRepository;
         public IConfiguration _config;
         private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordActiveProductionPlanRepository _activeproductionPlanRepository;
 
         public ActiveProductionPlanService(
             IResponseCacheService responseCacheService,
@@ -49,7 +50,8 @@ namespace CIM.BusinessLogic.Services
             IReportService reportService,
             IMachineRepository machineRepository,
             IConfiguration config,
-            IRecordManufacturingLossService recordManufacturingLossService
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordActiveProductionPlanRepository activeproductionPlanRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -66,6 +68,7 @@ namespace CIM.BusinessLogic.Services
             _machineRepository = machineRepository;
             _config = config;
             _recordManufacturingLossService = recordManufacturingLossService;
+            _activeproductionPlanRepository = activeproductionPlanRepository;
         }
 
         public string GetKey(string productionPLanId)
@@ -201,12 +204,19 @@ namespace CIM.BusinessLogic.Services
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 
+                    //get last plan with same route
+                    var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date ).OrderByDescending(x => x.Start).Take(2).ToListAsync();
+                    var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
+                                                            : dbModel.ProductId;
+
                     //record time loss on process ramp-up #139
                     var rampupModel = new RecordManufacturingLossModel()
                     {
                         ProductionPlanId = planId,
                         RouteId = routeId,
-                        LossLevelId = _config.GetValue<int>("DefaultIdlelv3Id"),
+                        LossLevelId = preproductId != dbModel.ProductId ? 
+                                                                      _config.GetValue<int>("DefaultChangeOverlv3Id")
+                                                                    : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
                         IsAuto = false
                     };
                     foreach (var machine in activeMachines)
@@ -461,6 +471,8 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
+                dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
+                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
                 _recordManufacturingLossRepository.Edit(dbModel);
             }
             return activeProductionPlan;

@@ -19,6 +19,7 @@ namespace CIM.Domain.Models
         public DateTime StartedAt { get; set; }
         public DateTime? EndAt { get; set; }
         public long? Timespan { get; set; }
+        public bool IsBreakdown { get; set; }
         public int? WeekNumber { get; set; }
         public int? Month { get; set; }
         public int? Year { get; set; }
