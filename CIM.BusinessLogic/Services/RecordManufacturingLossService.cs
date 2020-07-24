@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace CIM.BusinessLogic.Services
         private IMachineService _machineService;
         private IMachineRepository _machineRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        public IConfiguration _config;
 
         public RecordManufacturingLossService(
             IResponseCacheService responseCacheService,
@@ -30,7 +32,8 @@ namespace CIM.BusinessLogic.Services
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
             IMachineService machineService,
             IMachineRepository machineRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IConfiguration config
             )
         {
             _responseCacheService = responseCacheService;
@@ -41,6 +44,7 @@ namespace CIM.BusinessLogic.Services
             _machineService = machineService;
             _unitOfWork = unitOfWork;
             _machineRepository = machineRepository;
+            _config = config;
 
         }
 
@@ -96,7 +100,8 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                _recordManufacturingLossRepository.Edit(dbModel);
+                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                 _recordManufacturingLossRepository.Edit(dbModel);
 
                 //Create new
                 await NewRecordManufacturingLoss(model, now, guid.ToString());
@@ -132,6 +137,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
+                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
