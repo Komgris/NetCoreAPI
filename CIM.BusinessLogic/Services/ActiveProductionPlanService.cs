@@ -251,11 +251,12 @@ namespace CIM.BusinessLogic.Services
                     {"@routeid", routeId }
                 };
 
-            //get message for descripe error
+            //get message for descripe validation result
             var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_finish", paramsList);
-            if(message != "")throw (new Exception(message));
-
-            if (true)
+            if (message != ""){
+                throw (new Exception(message));
+            }
+            else
             {
                 paramsList.Add("@user", CurrentUser.UserId);
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
@@ -295,7 +296,7 @@ namespace CIM.BusinessLogic.Services
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
-                        } 
+                        }
                         else
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
