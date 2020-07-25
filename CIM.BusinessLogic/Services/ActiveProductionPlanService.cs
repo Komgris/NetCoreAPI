@@ -543,6 +543,20 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
+        public async Task<int[]> ListMachineReady(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
+       
+        public async Task<int[]> ListMachineLossRecording(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
+
         public async Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour)
         {
             var machineList = new List<ActiveMachineModel>();
@@ -593,9 +607,9 @@ namespace CIM.BusinessLogic.Services
                             foreach (var routeid in cachedMachine.RouteIds)
                             {
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
-                                if(activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
+                                if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                 {
-                                    foreach(var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
+                                    foreach (var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
                                         if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady)
@@ -625,7 +639,7 @@ namespace CIM.BusinessLogic.Services
                     _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
 
                     //set cache
-                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
+                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour, Input = item.CounterIn, Output = item.CounterOut };
                     machineList.Add(cachedMachine);
                     await _machineService.SetCached(item.MachineId, cachedMachine);
                 }
@@ -644,18 +658,34 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlanList;
         }
 
-        public async Task<int[]> ListMachineReady(string productionPlanId)
+        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int machineId, int amount, int hour,string remark)
         {
-            return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
-                {"@plan_id", productionPlanId }
-            });
-        }
-       
-        public async Task<int[]> ListMachineLossRecording(string productionPlanId)
-        {
-            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
-                {"@plan_id", productionPlanId }
-            });
+            var now = DateTime.Now;
+            var cachedMachine = await _machineService.GetCached(machineId);
+            if (cachedMachine?.ProductionPlanId != null)
+            {
+                //inActiveproductionplan stuck in cache
+                if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                {
+                    await RemoveCached(cachedMachine.ProductionPlanId);
+                }
+
+                //store proc.
+                var paramsList = new Dictionary<string, object>() {
+                        {"@planid", cachedMachine.ProductionPlanId },
+                        {"@mcid", machineId },
+                        {"@user", CurrentUser.UserId},
+                        {"@hr", hour},
+                        {"@Add",  amount} ,
+                        {"@remark",  remark}
+                    };
+
+                //db execute
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
+            }
+
+            var activeProductionPlan = await GetCached(planId);
+            return activeProductionPlan;
         }
     }
 }
