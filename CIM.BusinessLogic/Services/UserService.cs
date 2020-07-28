@@ -132,21 +132,9 @@ namespace CIM.BusinessLogic.Services
             };
             var dataString = JsonConvert.SerializeObject(userAppToken);
             userAppToken.Token = _cipherService.Encrypt(dataString);
-            await _responseCacheService.SetAsync($"token-{userAppToken.UserId}", userAppToken);
 
             _userAppTokenRepository.Add(userAppToken);
             await _unitOfWork.CommitAsync();
-            return userAppToken.Token;
-        }
-
-        public async Task<string> VerifyToken(string token)
-        {
-            var tokenString = _cipherService.Decrypt(token);
-            var userAppToken = JsonConvert.DeserializeObject< UserAppTokens>(tokenString);
-
-            var cached = await _responseCacheService.GetAsync($"token-{userAppToken.UserId}");
-            var test = CurrentUser.AppId;
-
             return userAppToken.Token;
         }
 
@@ -170,7 +158,7 @@ namespace CIM.BusinessLogic.Services
             return isValid;
         }
 
-        public CurrentUserModel GetCurrentUserModel(string token)
+        public CurrentUserModel GetCurrentUserModel(string token, int appId)
         {
             var decryptedData = _cipherService.Decrypt(token);
             var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
@@ -181,15 +169,14 @@ namespace CIM.BusinessLogic.Services
                     DefaultLanguageId = x.DefaultLanguageId,
                     UserGroupId = x.UserGroupId
                 }).FirstOrDefault();
-            var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId).FirstOrDefault();
+            var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId && x.AppId == appId).FirstOrDefault();
             var dbData = _cipherService.Decrypt(user.Token);
             var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
             var currentUserModel = new CurrentUserModel
             {
-                IsValid = user != null && tokenData.UserId == userAppToken.UserId,
+                IsValid = user != null && tokenData.UserId == userAppToken.UserId && userGroupApp != null,
                 UserId = tokenData.UserId,
-                LanguageId = user.DefaultLanguageId,
-                AppId = userGroupApp.AppId
+                LanguageId = user.DefaultLanguageId
             };
             return currentUserModel;
         }

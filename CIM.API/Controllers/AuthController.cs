@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 
 namespace CIM.API.Controllers
-{    
+{
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -31,21 +31,5 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
-
-        [HttpGet]
-        [Route("VerifyToken")]
-        public async Task<string> VerifyToken(string token)
-        {
-            try
-            {
-                var result = await _userService.VerifyToken(token);
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
     }
 }

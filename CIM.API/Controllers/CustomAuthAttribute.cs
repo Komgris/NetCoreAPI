@@ -3,6 +3,7 @@ using CIM.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
@@ -23,10 +24,12 @@ namespace CIM.API.Controllers
         public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["token"];
+            var appId = Convert.ToInt32(context.Request.Headers["appId"]);
+            
             var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
             if (!string.IsNullOrEmpty(token.ToString()))
             {
-                var currentUserModel = userService.GetCurrentUserModel(token);
+                var currentUserModel = userService.GetCurrentUserModel(token, appId);
                 context.Items.Add(Constans.CURRENT_USER, currentUserModel);
                 if (currentUserModel.IsValid)
                 {

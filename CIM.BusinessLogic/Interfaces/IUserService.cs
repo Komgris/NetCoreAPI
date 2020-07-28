@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IUserService :  IBaseService
+    public interface IUserService : IBaseService
     {
         Task Create(UserModel model);
         Task<AuthModel> Auth(string username, string password);
-        CurrentUserModel GetCurrentUserModel(string token);
+        CurrentUserModel GetCurrentUserModel(string token, int appId);
         string HashPassword(UserModel model);
         Task<string> CreateToken(string userId);
-        Task<string> VerifyToken(string token);
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<UserModel> Get(string id);
         Task Update(UserModel model);
