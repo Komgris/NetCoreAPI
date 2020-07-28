@@ -30,10 +30,12 @@ namespace CIM.API.Controllers
             IReportService service,
             IConfiguration config,
             IProductionPlanService productionPlanService,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IMasterDataService masterDataService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
+            _masterDataService = masterDataService;
         }
 
         #region Production plan mng 
@@ -122,6 +124,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Create(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -140,6 +143,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Update(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -164,7 +164,7 @@ namespace CIM.API
 
             var sp = services.BuildServiceProvider();
             var masterDataService = sp.GetService<IMasterDataService>();
-            masterDataService.Refresh();
+            masterDataService.Refresh(Model.Constans.MasterDataType.All);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

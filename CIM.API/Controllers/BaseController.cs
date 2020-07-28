@@ -14,7 +14,9 @@ namespace CIM.API.Controllers
 {
     [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     public class BaseController : ControllerBase {
-                
+
+        internal IMasterDataService _masterDataService;
+
         #region general
 
         public JsonSerializerSettings JsonsSetting = new JsonSerializerSettings
@@ -22,6 +24,13 @@ namespace CIM.API.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
+        internal async Task<string> RefreshMasterData(MasterDataType masterdataType)
+        {
+            await _masterDataService.Refresh(masterdataType);
+            return "OK";
+        }
 
         #endregion
     }
