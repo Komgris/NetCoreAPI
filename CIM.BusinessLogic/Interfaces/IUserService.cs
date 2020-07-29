@@ -17,5 +17,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<UserModel> Get(string id);
         Task Update(UserModel model);
         Task<UserModel> GetFromUserName(string userName);
+        Task UpdateTokenExpire(string userId);
     }
 }

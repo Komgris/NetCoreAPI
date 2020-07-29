@@ -170,15 +170,28 @@ namespace CIM.BusinessLogic.Services
                     UserGroupId = x.UserGroupId
                 }).FirstOrDefault();
             var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId && x.AppId == appId).FirstOrDefault();
+            var existingToken = _userAppTokenRepository.Where(x => x.UserId == userAppToken.UserId).FirstOrDefault();
+            var checkExpire = existingToken.ExpiredAt >= DateTime.Now ? true : false;
             var dbData = _cipherService.Decrypt(user.Token);
             var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
             var currentUserModel = new CurrentUserModel
             {
-                IsValid = user != null && tokenData.UserId == userAppToken.UserId && userGroupApp != null,
+                IsValid = user != null && tokenData.UserId == userAppToken.UserId && userGroupApp != null && checkExpire,
                 UserId = tokenData.UserId,
                 LanguageId = user.DefaultLanguageId
             };
             return currentUserModel;
+        }
+
+        public async Task UpdateTokenExpire(string userId)
+        {
+            var existingToken = _userAppTokenRepository.Where(x => x.UserId == userId).ToList();
+            foreach (var item in existingToken)
+            {
+                item.ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)"));
+                _userAppTokenRepository.Add(item);
+            }                        
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howMany, bool isActive)
