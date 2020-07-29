@@ -23,6 +23,11 @@ namespace CIM.API.Controllers
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+        public JsonSerializerSettings JsonsFormatting = new JsonSerializerSettings
+        {
+            DateFormatString = "dd-MMM-yyyy HH:mm:ss"
+        };
+
         [ApiExplorerSettings(IgnoreApi = true)]
         [NonAction]
         internal async Task<string> RefreshMasterData(MasterDataType masterdataType)
