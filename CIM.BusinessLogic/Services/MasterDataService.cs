@@ -125,6 +125,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = $"{item.Name} - {item.Description}",
+                    LossLevel2Id = item.LossLevel2Id,
                     Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
             }
@@ -223,10 +224,35 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh(MasterDataType.All);
                 }
+                Data = PostProcess(Data);
 
             }
             return Data;
         }
+
+        private MasterDataModel PostProcess(MasterDataModel data)
+        {
+            //Map loss to process driven and mp
+            var processDrivenLoss = new List<int>();
+            foreach (var process in data.ProcessDriven)
+            {
+                processDrivenLoss.AddRange(process.Value.LossLevel3.Keys);
+            }
+
+            var mpList = new List<int>();
+            foreach (var mp in data.ManufacturingPerformance)
+            {
+                mpList.AddRange(mp.Value.LossLevel3.Keys);
+            }
+
+            foreach ( var loss in data.LossLevel3s)
+            {
+                loss.Value.IsProcessDriven = processDrivenLoss.Any(x=>x == loss.Key);
+                loss.Value.IsMP = mpList.Any(x => x == loss.Key); ;
+            }
+            return data;
+        }
+
         public async Task<MasterDataModel> Refresh(MasterDataType masterdataType)
         {
             var masterData = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
