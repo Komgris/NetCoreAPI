@@ -217,7 +217,7 @@ namespace CIM.BusinessLogic.Services
                         LossLevelId = preproductId != dbModel.ProductId ? 
                                                                       _config.GetValue<int>("DefaultChangeOverlv3Id")
                                                                     : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
-                        IsAuto = false
+                        IsAuto = true
                     };
                     foreach (var machine in activeMachines)
                     {
@@ -448,12 +448,14 @@ namespace CIM.BusinessLogic.Services
         {
             var losses = await _recordManufacturingLossRepository
                 .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
-                && x.IsAuto == true); //update only isAuto = true
+                                && x.IsAuto == true 
+                                && !(x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id"))
+                ); //update only isAuto = true && not rampUp
+
             var now = DateTime.Now;
 
             foreach (var dbModel in losses)
             {
- 
                 var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                 if(alert != null)
                     alert.EndAt = now;
@@ -594,7 +596,10 @@ namespace CIM.BusinessLogic.Services
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
                                 if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                 {
-                                    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) && x.IsAuto == true && x.EndAt.HasValue == false);
+                                    var dmodel = await _recordManufacturingLossRepository
+                                        .WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) 
+                                        && x.IsAuto == true && x.EndAt.HasValue == false);
+
                                     foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
