@@ -129,7 +129,6 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -148,7 +147,6 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -275,7 +273,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }

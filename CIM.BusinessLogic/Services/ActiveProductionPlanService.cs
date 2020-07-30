@@ -251,8 +251,12 @@ namespace CIM.BusinessLogic.Services
                     {"@routeid", routeId }
                 };
 
-            var isvalidatePass = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_finish", paramsList);
-            if (isvalidatePass)
+            //get message for descripe validation result
+            var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_finish", paramsList);
+            if (message != ""){
+                throw (new Exception(message));
+            }
+            else
             {
                 paramsList.Add("@user", CurrentUser.UserId);
                 var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
@@ -292,7 +296,7 @@ namespace CIM.BusinessLogic.Services
                         if (isPlanActive)
                         {
                             await SetCached(activeProductionPlan);
-                        } 
+                        }
                         else
                         {
                             await RemoveCached(activeProductionPlan.ProductionPlanId);
@@ -416,27 +420,12 @@ namespace CIM.BusinessLogic.Services
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
             cachedMachine.StatusId = recordMachineStatusId;
-            var lastRecordMachineStatus = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId)
-                .OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
-
-            if (lastRecordMachineStatus == null || lastRecordMachineStatus.MachineStatusId != recordMachineStatusId)
-            {
-                var recordMachineStatus = new RecordMachineStatus
-                {
-                    CreatedAt = DateTime.Now,
-                    MachineId = machineId,
-                    ProductionPlanId = cachedMachine.ProductionPlanId,
-                    MachineStatusId = recordMachineStatusId
+            var paramsList = new Dictionary<string, object>() {
+                    {"@planid", cachedMachine.ProductionPlanId },
+                    {"@mcid", machineId },
+                    {"@statusid", recordMachineStatusId }
                 };
-
-                _recordMachineStatusRepository.Add(recordMachineStatus);
-            }
-            
-            if(lastRecordMachineStatus != null && lastRecordMachineStatus.EndAt == null)
-            {
-                lastRecordMachineStatus.EndAt = now;
-                _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
-            }
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
@@ -539,6 +528,20 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
+        public async Task<int[]> ListMachineReady(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
+       
+        public async Task<int[]> ListMachineLossRecording(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId }
+            });
+        }
+
         public async Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour)
         {
             var machineList = new List<ActiveMachineModel>();
@@ -569,10 +572,10 @@ namespace CIM.BusinessLogic.Services
 
 
                     //db execute
-                    var dbOutput = _recordProductionPlanOutputRepository
+                    var dbOutput = await _recordProductionPlanOutputRepository
                                                             .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
                                                             .OrderByDescending(x => x.CreatedAt)
-                                                            .Take(2).ToList();
+                                                            .Take(2).ToListAsync();
 
                     if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
                     {
@@ -589,18 +592,19 @@ namespace CIM.BusinessLogic.Services
                             foreach (var routeid in cachedMachine.RouteIds)
                             {
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
-                                if(activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
+                                if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                 {
-                                    foreach(var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
+                                    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) && x.IsAuto == true && x.EndAt.HasValue == false);
+                                    foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
-                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady)
+                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady && dmodel.Where(x=>x.MachineId== activemc.Key).Any())
                                         {
                                             var model = new RecordManufacturingLossModel()
                                             {
                                                 ProductionPlanId = cachedMachine.ProductionPlanId,
                                                 MachineId = activemc.Key,
-                                                RouteId = routeid
+                                                RouteId = routeid,
                                             };
                                             await _recordManufacturingLossService.End(model);
                                             exemachineIds.Add(activemc.Key);
@@ -621,7 +625,7 @@ namespace CIM.BusinessLogic.Services
                     _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
 
                     //set cache
-                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour,  Input = item.CounterIn, Output = item.CounterOut };
+                    cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour, Input = item.CounterIn, Output = item.CounterOut };
                     machineList.Add(cachedMachine);
                     await _machineService.SetCached(item.MachineId, cachedMachine);
                 }
@@ -640,17 +644,34 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlanList;
         }
 
-        public async Task<int[]> ListMachineReady(string productionPlanId)
+        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int machineId, int amount, int hour,string remark)
         {
-            return await _recordManufacturingLossRepository.ListMachineReady(new Dictionary<string, object> {
-                {"@plan_id", productionPlanId }
-            });
-        }
-        public async Task<int[]> ListMachineLossRecording(string productionPlanId)
-        {
-            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
-                {"@plan_id", productionPlanId }
-            });
+            var now = DateTime.Now;
+            var cachedMachine = await _machineService.GetCached(machineId);
+            if (cachedMachine?.ProductionPlanId != null)
+            {
+                //inActiveproductionplan stuck in cache
+                if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                {
+                    await RemoveCached(cachedMachine.ProductionPlanId);
+                }
+
+                //store proc.
+                var paramsList = new Dictionary<string, object>() {
+                        {"@planid", cachedMachine.ProductionPlanId },
+                        {"@mcid", machineId },
+                        {"@user", CurrentUser.UserId},
+                        {"@hr", hour},
+                        {"@Add",  amount} ,
+                        {"@remark",  remark}
+                    };
+
+                //db execute
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
+            }
+
+            var activeProductionPlan = await GetCached(planId);
+            return activeProductionPlan;
         }
     }
 }
