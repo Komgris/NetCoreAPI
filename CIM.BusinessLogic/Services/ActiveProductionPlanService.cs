@@ -609,16 +609,17 @@ namespace CIM.BusinessLogic.Services
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
                                 if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                 {
-                                    foreach (var activemc in activeplan?.ActiveProcesses[routeid].Route.MachineList)
+                                    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.ContainsKey((int)x.MachineId) && x.IsAuto == true && x.EndAt.HasValue == false);
+                                    foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
-                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady)
+                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady && dmodel.Where(x=>x.MachineId== activemc.Key).Any())
                                         {
                                             var model = new RecordManufacturingLossModel()
                                             {
                                                 ProductionPlanId = cachedMachine.ProductionPlanId,
                                                 MachineId = activemc.Key,
-                                                RouteId = routeid
+                                                RouteId = routeid,
                                             };
                                             await _recordManufacturingLossService.End(model);
                                             exemachineIds.Add(activemc.Key);
