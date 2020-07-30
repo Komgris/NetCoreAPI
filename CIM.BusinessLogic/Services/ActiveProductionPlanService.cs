@@ -420,27 +420,12 @@ namespace CIM.BusinessLogic.Services
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
             cachedMachine.StatusId = recordMachineStatusId;
-            var lastRecordMachineStatus = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId)
-                .OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
-
-            if (lastRecordMachineStatus == null || lastRecordMachineStatus.MachineStatusId != recordMachineStatusId)
-            {
-                var recordMachineStatus = new RecordMachineStatus
-                {
-                    CreatedAt = DateTime.Now,
-                    MachineId = machineId,
-                    ProductionPlanId = cachedMachine.ProductionPlanId,
-                    MachineStatusId = recordMachineStatusId
+            var paramsList = new Dictionary<string, object>() {
+                    {"@planid", cachedMachine.ProductionPlanId },
+                    {"@mcid", machineId },
+                    {"@statusid", recordMachineStatusId }
                 };
-
-                _recordMachineStatusRepository.Add(recordMachineStatus);
-            }
-            
-            if(lastRecordMachineStatus != null && lastRecordMachineStatus.EndAt == null)
-            {
-                lastRecordMachineStatus.EndAt = now;
-                _recordMachineStatusRepository.Edit(lastRecordMachineStatus);
-            }
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
