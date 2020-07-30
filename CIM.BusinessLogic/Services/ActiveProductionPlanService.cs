@@ -587,10 +587,10 @@ namespace CIM.BusinessLogic.Services
 
 
                     //db execute
-                    var dbOutput = _recordProductionPlanOutputRepository
+                    var dbOutput = await _recordProductionPlanOutputRepository
                                                             .Where(x => x.MachineId == cachedMachine.Id && x.ProductionPlanId == cachedMachine.ProductionPlanId)
                                                             .OrderByDescending(x => x.CreatedAt)
-                                                            .Take(2).ToList();
+                                                            .Take(2).ToListAsync();
 
                     if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
                     {

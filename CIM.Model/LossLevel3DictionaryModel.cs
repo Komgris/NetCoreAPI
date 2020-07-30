@@ -11,5 +11,7 @@ namespace CIM.Model
         public string Description { get; set; }
         public int? LossLevel2Id { get; set; }
         public int[] Components { get; set; }
+        public bool IsProcessDriven { get; set; }
+        public bool IsMP { get; set; }
     }
 }
