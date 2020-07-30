@@ -132,7 +132,6 @@ namespace CIM.BusinessLogic.Services
             var now = DateTime.Now;
             if (dbModel != null)
             {
-
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);

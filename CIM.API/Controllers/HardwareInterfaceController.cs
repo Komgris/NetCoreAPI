@@ -133,7 +133,7 @@ namespace CIM.API.Controllers
 
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("api/[controller]/AdditionalMachineProduce")]
         public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int machineId, int amount, int? hour, string remark="")
         {
