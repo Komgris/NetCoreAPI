@@ -70,7 +70,7 @@ namespace CIM.BusinessLogic.Services
             newDbModel.Guid = guid;
             newDbModel.CreatedBy = CurrentUser.UserId;
             newDbModel.StartedAt = now;
-            newDbModel.IsAuto = false;
+            newDbModel.IsAuto = model.IsAuto;
             newDbModel.MachineId = model.MachineId;
             newDbModel.ProductionPlanId = model.ProductionPlanId;
             newDbModel.RouteId = model.RouteId;
