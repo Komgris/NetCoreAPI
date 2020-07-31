@@ -155,6 +155,7 @@ namespace CIM.BusinessLogic.Services
                 }
                 cachedMachine.ProductionPlanId = productionPlanId;
 
+                if (cachedMachine.StatusId == 1) cachedMachine.StatusId = 2;
                 await SetCached(machine.Key, cachedMachine);
                 output.Add(cachedMachine);
             }

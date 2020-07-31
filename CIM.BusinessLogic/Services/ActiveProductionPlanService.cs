@@ -419,13 +419,17 @@ namespace CIM.BusinessLogic.Services
             {
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
-            cachedMachine.StatusId = recordMachineStatusId;
-            var paramsList = new Dictionary<string, object>() {
+
+            if (cachedMachine.StatusId != recordMachineStatusId)
+            {
+                cachedMachine.StatusId = recordMachineStatusId;
+                var paramsList = new Dictionary<string, object>() {
                     {"@planid", cachedMachine.ProductionPlanId },
                     {"@mcid", machineId },
                     {"@statusid", recordMachineStatusId }
                 };
-            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+            }
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
