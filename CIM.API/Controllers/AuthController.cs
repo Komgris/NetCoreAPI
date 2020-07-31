@@ -31,5 +31,21 @@ namespace CIM.API.Controllers
                 throw e;
             }
         }
+
+        [HttpGet]
+        [Route("VerifyToken")]
+        public async Task<ProcessReponseModel<object>> VerifyToken(string token, int appId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output = await _userService.VerifyToken(token, appId);                
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
     }
 }

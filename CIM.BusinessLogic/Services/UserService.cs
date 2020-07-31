@@ -158,6 +158,23 @@ namespace CIM.BusinessLogic.Services
             return isValid;
         }
 
+        public async Task<ProcessReponseModel<object>> VerifyToken(string token, int appId)
+        {
+            var output = new ProcessReponseModel<object>();
+            var currentUserModel = GetCurrentUserModel(token, appId);
+            if (currentUserModel.IsValid)
+            {
+                await UpdateTokenExpire(currentUserModel.UserId);
+                output.IsSuccess = true;
+            }
+            else
+            {
+                output.IsSuccess = false;
+                output.Message = "Unauthorized";
+            }
+            return output;
+        }
+
         public CurrentUserModel GetCurrentUserModel(string token, int appId)
         {
             var decryptedData = _cipherService.Decrypt(token);
@@ -189,7 +206,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in existingToken)
             {
                 item.ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)"));
-                _userAppTokenRepository.Add(item);
+                _userAppTokenRepository.Edit(item);
             }                        
             await _unitOfWork.CommitAsync();
         }
