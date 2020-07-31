@@ -193,6 +193,7 @@ namespace CIM.BusinessLogic.Services
                             MachineId = machineId,
                             MachineStatusId = Constans.MACHINE_STATUS.Running,
                         });
+                        UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
                     }
 
                     //start counting output
@@ -397,11 +398,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         if (output.ActiveProcesses.ContainsKey(routeId))
                         {
-                            var dbmodel = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
-                            dbmodel.StatusId = statusId;
-                            dbmodel.UpdatedAt = now;
-                            dbmodel.UpdatedBy = CurrentUser.UserId;
-                            _machineRepository.Edit(dbmodel);
+                            UpdateMachineStatus(machineId, statusId);
                             activeRoute.Add(routeId);
 
                             output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
@@ -681,6 +678,18 @@ namespace CIM.BusinessLogic.Services
 
             var activeProductionPlan = await GetCached(planId);
             return activeProductionPlan;
+        }
+
+        private void UpdateMachineStatus(int machineId,int statusId)
+        {
+            var mc = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            if(mc != null)
+            {
+                mc.UpdatedAt = DateTime.Now;
+                mc.UpdatedBy = CurrentUser.UserId;
+                mc.StatusId = statusId;
+                _machineRepository.Edit(mc);
+            }
         }
     }
 }
