@@ -89,6 +89,12 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    if (model.WasteList.Count > 0)
+                    {
+                        await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, productionPlan.ProductionPlanId
+                            , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    }
                 }
                 output.IsSuccess = true;
             }

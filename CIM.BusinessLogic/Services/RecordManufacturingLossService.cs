@@ -212,7 +212,6 @@ namespace CIM.BusinessLogic.Services
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
             foreach (var item in model.WasteList)
             {
-
                 var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
                 foreach (var material in item.Materials)
                 {
