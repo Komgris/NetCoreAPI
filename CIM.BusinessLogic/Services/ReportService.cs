@@ -15,11 +15,28 @@ namespace CIM.BusinessLogic.Services {
     public class ReportService : BaseService, IReportService {
 
         private IDirectSqlRepository _directSqlRepository;
+        private IResponseCacheService _responseCacheService;
 
         private JsonSerializerSettings JsonSetting = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
+
+        private Dictionary<ManagementDashboardType, DashboardConfig> ManagementDashboardConfig
+            = new Dictionary<ManagementDashboardType, DashboardConfig>()
+            {
+                        { ManagementDashboardType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
+                        { ManagementDashboardType.ProductionSummary, new DashboardConfig("ProductionSummary","sp_Dashboard_Output")},
+                        { ManagementDashboardType.WasteByMaterial, new DashboardConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
+                        { ManagementDashboardType.WasteBySymptom, new DashboardConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
+                        { ManagementDashboardType.MachineLossTree, new DashboardConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
+                        { ManagementDashboardType.MachineLossLvl1, new DashboardConfig("MachineLossLvl1","-")},
+                        { ManagementDashboardType.MachineLossLvl2, new DashboardConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
+                        { ManagementDashboardType.MachineLossLvl3, new DashboardConfig("MachineLossLvl3","-")},
+                        { ManagementDashboardType.CapacityUtilization, new DashboardConfig("CapacityUtilization","sp_Dashboard_Utilization")},
+                        { ManagementDashboardType.MachineLossHighLight, new DashboardConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+            };
+
 
         private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
             = new Dictionary<BoardcastType, DashboardConfig>()
@@ -46,9 +63,10 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.ActiveMachineLossEvent, new DashboardConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
-        public ReportService(IDirectSqlRepository directSqlRepository)
+        public ReportService(IDirectSqlRepository directSqlRepository, IResponseCacheService responseCacheService)
         {
             _directSqlRepository = directSqlRepository;
+            _responseCacheService = responseCacheService;
         }
 
         #region  Cim-Oper Production overview
@@ -725,6 +743,79 @@ namespace CIM.BusinessLogic.Services {
             };
 
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Cost_Analysis", paramsList);
+        }
+
+
+        #endregion
+
+
+        #region CIM-Mng Dashboard
+        public async Task<DashboardModel> GetManagementDashboard(DataFrame frame)
+        {
+            var cacheKey = $"mngdashboard-{frame}";
+            var dashboard = await _responseCacheService.GetAsTypeAsync<DashboardModel>(cacheKey);
+            if (dashboard == null || dashboard.LastUpdate.AddMinutes(1) < DateTime.Now)
+            {
+                dashboard = new DashboardModel();
+                var paramsList = new Dictionary<string, object>() { { "@timeFrame", (int)frame } };
+                switch (frame)
+                {
+                    case DataFrame.Default:
+                        dashboard = GenerateDashboardData(
+                             new[]{ ManagementDashboardType.KPI
+                                 , ManagementDashboardType.WasteByMaterial
+                                 , ManagementDashboardType.ProductionSummary
+                                 , ManagementDashboardType.MachineLossTree
+                                 , ManagementDashboardType.MachineLossHighLight
+                                 , ManagementDashboardType.CapacityUtilization}
+                             ,frame, paramsList);
+                        break;
+                    case DataFrame.Daily:
+                        break;
+                    case DataFrame.Weekly:
+                        break;
+                    case DataFrame.Monthly:
+                        break;
+                    case DataFrame.Yearly:
+                        break;
+                    case DataFrame.Custom:
+                        break;
+                }
+            }
+
+
+            //return  _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_Management", null);
+            return dashboard;
+        }
+
+        private DashboardModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var managementData = new DashboardModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                managementData.Data.Add(
+                                        GetDashboardData(ManagementDashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return managementData;
+        }
+
+        private DashboardDataModel GetDashboardData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new DashboardDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
         }
 
         #endregion
