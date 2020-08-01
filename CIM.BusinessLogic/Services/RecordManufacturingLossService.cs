@@ -76,6 +76,7 @@ namespace CIM.BusinessLogic.Services
             newDbModel.RouteId = model.RouteId;
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
+            newDbModel.Remark = model.Remark;
             newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
@@ -118,7 +119,7 @@ namespace CIM.BusinessLogic.Services
                 ItemType = (int)Constans.AlertType.MACHINE,
                 LossLevel3Id = model.LossLevelId,
                 StatusId = Constans.MACHINE_STATUS.Stop,
-                Id = guid,
+                Id = guid
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
@@ -194,6 +195,7 @@ namespace CIM.BusinessLogic.Services
             }
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
+            dbModel.Remark = model.Remark;
             if (model.ComponentId > 0)
             {
                 dbModel.ComponentId = model.ComponentId;
