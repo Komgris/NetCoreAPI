@@ -1797,6 +1797,8 @@ namespace CIM.Domain.Models
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
                 entity.Property(e => e.StartedAt)
@@ -1849,7 +1851,9 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Output");
 
-                entity.Property(e => e.CounterOut).HasDefaultValueSql("((1))");
+                entity.Property(e => e.CounterIn).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CounterOut).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1874,6 +1878,10 @@ namespace CIM.Domain.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.TotalIn).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.TotalOut).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -1923,17 +1931,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
                 entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
-
-                entity.HasOne(d => d.RecordManufacturingLoss)
-                    .WithMany(p => p.RecordProductionPlanWaste)
-                    .HasForeignKey(d => d.RecordManufacturingLossId)
-                    .HasConstraintName("FK_Record_ProductionPlan_Waste_Record_Manufacturing_Loss");
-
-                entity.HasOne(d => d.WasteLevel2)
-                    .WithMany(p => p.RecordProductionPlanWaste)
-                    .HasForeignKey(d => d.WasteLevel2Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_ProductionPlan_Waste_WasteLevel2");
             });
 
             modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>
@@ -2204,7 +2201,7 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<Sysdiagrams>(entity =>
             {
                 entity.HasKey(e => e.DiagramId)
-                    .HasName("PK__sysdiagr__C2B05B61241CA7D3");
+                    .HasName("PK__sysdiagr__C2B05B6189960BF1");
 
                 entity.ToTable("sysdiagrams");
 
@@ -2364,12 +2361,6 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.AppUserGroupId).HasColumnName("AppUserGroup_Id");
 
-                entity.HasOne(d => d.AppUserGroup)
-                    .WithMany(p => p.UserGroupsAppFeatures)
-                    .HasForeignKey(d => d.AppUserGroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroups_AppFeatures_UserGroups_Apps");
-
                 entity.HasOne(d => d.Feature)
                     .WithMany(p => p.UserGroupsAppFeatures)
                     .HasForeignKey(d => d.FeatureId)
@@ -2390,12 +2381,6 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.AppId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserGroups_Apps_App");
-
-                entity.HasOne(d => d.UserGroup)
-                    .WithMany(p => p.UserGroupsApps)
-                    .HasForeignKey(d => d.UserGroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroups_Apps_UserGroups");
             });
 
             modelBuilder.Entity<UserPosition>(entity =>

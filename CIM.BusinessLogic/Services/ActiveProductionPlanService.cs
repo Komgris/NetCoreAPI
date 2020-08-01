@@ -193,6 +193,7 @@ namespace CIM.BusinessLogic.Services
                             MachineId = machineId,
                             MachineStatusId = Constans.MACHINE_STATUS.Running,
                         });
+                        UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
                     }
 
                     //start counting output
@@ -217,7 +218,7 @@ namespace CIM.BusinessLogic.Services
                         LossLevelId = preproductId != dbModel.ProductId ? 
                                                                       _config.GetValue<int>("DefaultChangeOverlv3Id")
                                                                     : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
-                        IsAuto = false
+                        IsAuto = true
                     };
                     foreach (var machine in activeMachines)
                     {
@@ -397,11 +398,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         if (output.ActiveProcesses.ContainsKey(routeId))
                         {
-                            var dbmodel = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
-                            dbmodel.StatusId = statusId;
-                            dbmodel.UpdatedAt = now;
-                            dbmodel.UpdatedBy = CurrentUser.UserId;
-                            _machineRepository.Edit(dbmodel);
+                            UpdateMachineStatus(machineId, statusId);
                             activeRoute.Add(routeId);
 
                             output.ActiveProcesses[routeId].Route.MachineList[machineId].StatusId = statusId;
@@ -419,13 +416,17 @@ namespace CIM.BusinessLogic.Services
             {
                 recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
             }
-            cachedMachine.StatusId = recordMachineStatusId;
-            var paramsList = new Dictionary<string, object>() {
+
+            if (cachedMachine.StatusId != recordMachineStatusId)
+            {
+                cachedMachine.StatusId = recordMachineStatusId;
+                var paramsList = new Dictionary<string, object>() {
                     {"@planid", cachedMachine.ProductionPlanId },
                     {"@mcid", machineId },
                     {"@statusid", recordMachineStatusId }
                 };
-            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+            }
 
             await _unitOfWork.CommitAsync();
             await _machineService.SetCached(machineId, cachedMachine);
@@ -448,12 +449,14 @@ namespace CIM.BusinessLogic.Services
         {
             var losses = await _recordManufacturingLossRepository
                 .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
-                && x.IsAuto == true); //update only isAuto = true
+                                && x.IsAuto == true 
+                                && !(x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id"))
+                ); //update only isAuto = true && not rampUp
+
             var now = DateTime.Now;
 
             foreach (var dbModel in losses)
             {
- 
                 var alert = activeProductionPlan.ActiveProcesses[routeId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                 if(alert != null)
                     alert.EndAt = now;
@@ -594,7 +597,10 @@ namespace CIM.BusinessLogic.Services
                                 var activeplan = await GetCached(cachedMachine.ProductionPlanId);
                                 if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                 {
-                                    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) && x.IsAuto == true && x.EndAt.HasValue == false);
+                                    var dmodel = await _recordManufacturingLossRepository
+                                        .WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) 
+                                        && x.IsAuto == true && x.EndAt.HasValue == false);
+
                                     foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
                                     {
                                         //close ramp-up records for front machine in the same route #139
@@ -672,6 +678,18 @@ namespace CIM.BusinessLogic.Services
 
             var activeProductionPlan = await GetCached(planId);
             return activeProductionPlan;
+        }
+
+        private void UpdateMachineStatus(int machineId,int statusId)
+        {
+            var mc = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
+            if(mc != null)
+            {
+                mc.UpdatedAt = DateTime.Now;
+                mc.UpdatedBy = CurrentUser.UserId;
+                mc.StatusId = statusId;
+                _machineRepository.Edit(mc);
+            }
         }
     }
 }

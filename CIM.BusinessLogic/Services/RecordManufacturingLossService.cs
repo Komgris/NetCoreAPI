@@ -70,12 +70,13 @@ namespace CIM.BusinessLogic.Services
             newDbModel.Guid = guid;
             newDbModel.CreatedBy = CurrentUser.UserId;
             newDbModel.StartedAt = now;
-            newDbModel.IsAuto = false;
+            newDbModel.IsAuto = model.IsAuto;
             newDbModel.MachineId = model.MachineId;
             newDbModel.ProductionPlanId = model.ProductionPlanId;
             newDbModel.RouteId = model.RouteId;
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
+            newDbModel.Remark = model.Remark;
             newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
@@ -118,7 +119,7 @@ namespace CIM.BusinessLogic.Services
                 ItemType = (int)Constans.AlertType.MACHINE,
                 LossLevel3Id = model.LossLevelId,
                 StatusId = Constans.MACHINE_STATUS.Stop,
-                Id = guid,
+                Id = guid
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
@@ -194,6 +195,7 @@ namespace CIM.BusinessLogic.Services
             }
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
+            dbModel.Remark = model.Remark;
             if (model.ComponentId > 0)
             {
                 dbModel.ComponentId = model.ComponentId;
@@ -212,7 +214,6 @@ namespace CIM.BusinessLogic.Services
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
             foreach (var item in model.WasteList)
             {
-
                 var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
                 foreach (var material in item.Materials)
                 {

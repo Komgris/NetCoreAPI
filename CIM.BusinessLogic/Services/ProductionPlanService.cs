@@ -156,7 +156,6 @@ namespace CIM.BusinessLogic.Services
             {
                 var paramsList = new Dictionary<string, object>() {
                             {"@planid", model.PlanId },
-                            {"@target", model.Target },
                             {"@user", CurrentUser.UserId}
                         };
                 _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_RecalcTarget", paramsList);

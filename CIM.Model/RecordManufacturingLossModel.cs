@@ -28,6 +28,7 @@ namespace CIM.Model
         public DateTime? EndAt { get; set; }
         public int RouteId { get; set; }
         public string Route { get; set; }
+        public string Remark { get; set; }
 
         public bool IsProcessDriven { get; set; }
         public List<RecordProductionPlanWasteModel> WasteList { get; set; } = new List<RecordProductionPlanWasteModel>();

@@ -2,22 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WasteController : BaseController
+    public class WasteController : BoardcastController
     {
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
 
         public WasteController(
-            IRecordProductionPlanWasteService recordProductionPlanWasteService
-            )
+            IRecordProductionPlanWasteService recordProductionPlanWasteService,
+            IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IReportService service,
+            IConfiguration config,
+            IRecordManufacturingLossService recordManufacturingLossService,
+            IActiveProductionPlanService activeProductionPlanService
+            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _recordProductionPlanWasteService = recordProductionPlanWasteService;
         }
@@ -46,6 +55,14 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _recordProductionPlanWasteService.Create(model);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, model.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
+
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -63,6 +80,14 @@ namespace CIM.API.Controllers
             try
             {
                 await _recordProductionPlanWasteService.Update(model);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, model.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
+
                 output.IsSuccess = true;
             }
             catch (Exception ex)
