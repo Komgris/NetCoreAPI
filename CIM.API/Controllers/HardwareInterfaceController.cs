@@ -137,7 +137,6 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/AdditionalMachineProduce")]
         public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId,int amount, int? hour, string remark="")
         {
-            //var hr = hour ?? DateTime.Now.Hour;
             var output = new ProcessReponseModel<object>();
             try
             {
