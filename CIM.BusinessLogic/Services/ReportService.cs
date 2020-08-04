@@ -37,7 +37,7 @@ namespace CIM.BusinessLogic.Services {
                         { ManagementDashboardType.MachineLossHighLight, new DashboardConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
             };
 
-
+        #region Config
         private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
             = new Dictionary<BoardcastType, DashboardConfig>()
             {
@@ -84,7 +84,7 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        public ReportService(IDirectSqlRepository directSqlRepository)
+        public ReportService(IDirectSqlRepository directSqlRepository, IResponseCacheService responseCacheService)
         {
             _directSqlRepository = directSqlRepository;
             _responseCacheService = responseCacheService;
