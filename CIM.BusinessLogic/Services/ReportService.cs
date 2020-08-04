@@ -63,7 +63,28 @@ namespace CIM.BusinessLogic.Services {
                 { BoardcastType.ActiveMachineLossEvent, new DashboardConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
-        public ReportService(IDirectSqlRepository directSqlRepository, IResponseCacheService responseCacheService)
+        private Dictionary<string, object> ReportCreiteria(ReportTimeCriteriaModel data)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@report_type", data.ReportType },
+                {"@date_from", data.DateFrom },
+                {"@date_to", data.DateTo },
+                {"@week_from", data.WeekFrom },
+                {"@week_to", data.WeekTo },
+                {"@month_from", data.MonthFrom },
+                {"@month_to", data.MonthTo },
+                {"@year_from", data.YearFrom },
+                {"@year_to", data.YearTo },
+                {"@ipd_from", data.IPDFrom },
+                {"@ipd_to", data.IPDTo },
+            };
+
+            return paramsList;
+        }
+
+        #endregion
+
+        public ReportService(IDirectSqlRepository directSqlRepository)
         {
             _directSqlRepository = directSqlRepository;
             _responseCacheService = responseCacheService;
@@ -516,232 +537,73 @@ namespace CIM.BusinessLogic.Services {
 
         public DataTable GetOEEReport(ReportTimeCriteriaModel data)
         {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_OEE", paramsList);
         }
 
         public DataTable GetOutputReport(ReportTimeCriteriaModel data)
         {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Output", paramsList);
         }
 
         public DataTable GetWasteReport(ReportTimeCriteriaModel data)
         {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
         }
 
         public DataTable GetMachineLossReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Loss", paramsList);
         }
 
         public DataTable GetQualityReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Quality", paramsList);
         }
 
         public DataTable GetSPCReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_SPC", paramsList);
         }
 
         public DataTable GetElectricityReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Electricity", paramsList);
         }
 
         public DataTable GetProductionSummaryReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Summary", paramsList);
         }
 
         public DataTable GetOperatingTimeReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Operating_Time", paramsList);
         }
 
         public DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Actual_Design_Speed", paramsList);
         }
 
         public DataTable GetMaintenanceReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Maintenance", paramsList);
         }
 
         public DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data)
         {
-            var paramsList = new Dictionary<string, object>() {
-                {"@report_type", data.ReportType },
-                {"@date_from", data.DateFrom },
-                {"@date_to", data.DateTo },
-                {"@week_from", data.WeekFrom },
-                {"@week_to", data.WeekTo },
-                {"@month_from", data.MonthFrom },
-                {"@month_to", data.MonthTo },
-                {"@year_from", data.YearFrom },
-                {"@year_to", data.YearTo },
-                {"@ipd_from", data.IPDFrom },
-                {"@ipd_to", data.IPDTo },
-            };
-
+            var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Cost_Analysis", paramsList);
         }
 

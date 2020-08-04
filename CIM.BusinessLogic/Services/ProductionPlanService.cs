@@ -24,10 +24,12 @@ namespace CIM.BusinessLogic.Services
         private IUnitOfWorkCIM _unitOfWork;
         private IActiveProductionPlanService _activeProductionPlanService;
         private IReportService _reportService;
+        private IDirectSqlRepository _directSqlRepository;
 
         public ProductionPlanService(
             IResponseCacheService responseCacheService,
             IMasterDataService masterDataService,
+            IDirectSqlRepository directSqlRepository,
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
             IActiveProductionPlanService activeProductionPlanService,
@@ -36,6 +38,7 @@ namespace CIM.BusinessLogic.Services
         {
             _responseCacheService = responseCacheService;
             _masterDataService = masterDataService;
+            _directSqlRepository = directSqlRepository;
             _productionPlanRepository = productionPlanRepository;
             _unitOfWork = unitOfWork;
             _activeProductionPlanService = activeProductionPlanService;
@@ -117,7 +120,7 @@ namespace CIM.BusinessLogic.Services
             {
                 if (productionPlanDict.ContainsKey(plan.PlanId))
                 {
-                     UpdatePlan(plan);
+                    await Update(plan);
                 }
                 else
                 {
@@ -138,8 +141,25 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(ProductionPlanModel model)
         {
-            UpdatePlan(model);
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
+
+            db_model.UnitId = model.Unit;
+            db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.IsActive = true;
+            db_model.UpdatedAt = DateTime.Now;
+            _productionPlanRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
+
+            //recalc target per active-route
+            var dbmodel = _productionPlanRepository.Where(x => x.PlanId == model.PlanId && x.StatusId == 2).FirstOrDefault();
+            if (dbmodel != null)
+            {
+                var paramsList = new Dictionary<string, object>() {
+                            {"@planid", model.PlanId },
+                            {"@user", CurrentUser.UserId}
+                        };
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_RecalcTarget", paramsList);
+            }
         }
 
         public ProductionPlanModel CreatePlan(ProductionPlanModel model)
@@ -152,16 +172,6 @@ namespace CIM.BusinessLogic.Services
             db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
             _productionPlanRepository.Add(db_model);
             return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
-        }
-
-        public void UpdatePlan(ProductionPlanModel model)
-        {
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
-            db_model.UnitId = model.Unit;
-            db_model.UpdatedBy = CurrentUser.UserId;
-            db_model.IsActive = true;
-            db_model.UpdatedAt = DateTime.Now;
-            _productionPlanRepository.Edit(db_model);
         }
 
         public async Task Delete(string id)
