@@ -23,7 +23,6 @@ namespace CIM.API.Controllers {
             IHubContext<GlobalHub> hub,
             IReportService service,
             IConfiguration config,
-            IReportService reportService,
             IActiveProductionPlanService activeProductionPlanService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {} 
@@ -618,6 +617,24 @@ namespace CIM.API.Controllers {
             return output;
         }
 
+        #endregion
+
+        #region Cim-Mng Process
+
+        [Route("api/[controller]/GetManagementDashboard")]
+        [HttpGet]
+        public async Task<string> GetManagementDashboard(DataFrame timeFrame)
+        {
+            var output = "";
+            try {             
+                output = JsonConvert.SerializeObject(await _service.GetManagementDashboard(timeFrame), JsonsSetting);
+            } 
+            catch (Exception ex)
+            {
+                output = ex.Message;
+            }
+            return output;
+        }
         #endregion
     }
 }

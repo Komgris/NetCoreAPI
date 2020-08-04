@@ -41,6 +41,7 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data);
         DataTable GetMaintenanceReport(ReportTimeCriteriaModel data);
         DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data);
+        Task<DashboardModel> GetManagementDashboard(DataFrame frame);
 
     }
 

@@ -83,7 +83,8 @@ namespace CIM.Model
             Daily,
             Weekly,
             Monthly,
-            Yearly
+            Yearly,
+            Custom
         }
 
         public enum BoardcastType {
@@ -152,6 +153,19 @@ namespace CIM.Model
             Monthly,
             Yearly,
             DoleCalendar
+        }
+        public enum ManagementDashboardType
+        {
+            KPI,
+            ProductionSummary,
+            WasteByMaterial,
+            WasteBySymptom,
+            MachineLossTree,
+            MachineLossLvl1,
+            MachineLossLvl2,
+            MachineLossLvl3,
+            MachineLossHighLight,
+            CapacityUtilization
         }
 
         public class DashboardConfig {
