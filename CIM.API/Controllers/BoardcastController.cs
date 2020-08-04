@@ -140,7 +140,7 @@ namespace CIM.API.Controllers
             }
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
-            activeModel.ActiveProcesses[routeId].Alerts = LimitAlert(activeModel.ActiveProcesses[routeId].Alerts);
+            //activeModel.ActiveProcesses[routeId].Alerts = LimitAlert(activeModel.ActiveProcesses[routeId].Alerts);
 
             return activeModel;
         }

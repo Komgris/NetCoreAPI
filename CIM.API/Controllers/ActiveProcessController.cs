@@ -54,10 +54,10 @@ namespace CIM.API.Controllers
                     productionPlan = new ActiveProductionPlanModel(productionPlanId);
                 }
 
-                foreach (var item in productionPlan.ActiveProcesses)
-                {
-                    item.Value.Alerts = LimitAlert(item.Value.Alerts);
-                }
+                //foreach (var item in productionPlan.ActiveProcesses)
+                //{
+                //    item.Value.Alerts = LimitAlert(item.Value.Alerts);
+                //}
 
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
