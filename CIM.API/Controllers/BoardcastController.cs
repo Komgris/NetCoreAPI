@@ -134,9 +134,14 @@ namespace CIM.API.Controllers
             }
 
             var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
+            var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
             foreach (var machine in activeModel.ActiveProcesses[routeId].Route.MachineList)
             {
                 machine.Value.IsReady = recordingMachines.Contains(machine.Key);
+                if (machine.Value.IsReady)
+                {
+                    machine.Value.IsAutoLossRecord = autorecordingMachines.Contains(machine.Key);
+                }
             }
 
             await _responseCacheService.SetAsync(channelKey, activeModel);

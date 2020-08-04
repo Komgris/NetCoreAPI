@@ -21,6 +21,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int machineId, int amount, int hour, string remark);
         Task<int[]> ListMachineReady(string productionPlanId);
         Task<int[]> ListMachineLossRecording(string productionPlanId);
+        Task<int[]> ListMachineLossAutoRecording(string productionPlanId);
     }
 
 }

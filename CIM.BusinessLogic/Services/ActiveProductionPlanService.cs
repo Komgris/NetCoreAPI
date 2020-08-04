@@ -554,6 +554,12 @@ namespace CIM.BusinessLogic.Services
                 {"@plan_id", productionPlanId }
             });
         }
+        public async Task<int[]> ListMachineLossAutoRecording(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId },{"@isauto", true }
+            });
+        }
 
         public async Task<List<ActiveProductionPlanModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour)
         {
