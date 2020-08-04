@@ -135,13 +135,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/AdditionalMachineProduce")]
-        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int machineId, int amount, int? hour, string remark="")
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId,int amount, int? hour, string remark="")
         {
-            var hr = hour ?? DateTime.Now.Hour;
+            //var hr = hour ?? DateTime.Now.Hour;
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, amount, hr, remark);
+                var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
                 if(productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId

@@ -650,31 +650,35 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlanList;
         }
 
-        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int machineId, int amount, int hour,string remark)
+        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int? machineId, int? routeId, int amount, int? hour,string remark)
         {
             var now = DateTime.Now;
-            var cachedMachine = await _machineService.GetCached(machineId);
-            if (cachedMachine?.ProductionPlanId != null)
+            if(machineId != null)
             {
-                //inActiveproductionplan stuck in cache
-                if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                var cachedMachine = await _machineService.GetCached((int)machineId);
+                if (cachedMachine?.ProductionPlanId != null)
                 {
-                    await RemoveCached(cachedMachine.ProductionPlanId);
+                    //inActiveproductionplan stuck in cache
+                    if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                    {
+                        await RemoveCached(cachedMachine.ProductionPlanId);
+                    }
                 }
+            }
 
-                //store proc.
-                var paramsList = new Dictionary<string, object>() {
-                        {"@planid", cachedMachine.ProductionPlanId },
+            //store proc.
+            var paramsList = new Dictionary<string, object>() {
+                        {"@planid", planId },
+                        {"@routeid", routeId },
                         {"@mcid", machineId },
                         {"@user", CurrentUser.UserId},
                         {"@hr", hour},
                         {"@Add",  amount} ,
                         {"@remark",  remark}
-                    };
+            };
 
-                //db execute
-                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
-            }
+            //db execute
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
 
             var activeProductionPlan = await GetCached(planId);
             return activeProductionPlan;
