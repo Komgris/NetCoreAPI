@@ -464,7 +464,17 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                if (dbModel.Timespan < 60 && dbModel.IsAuto)
+                {
+                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                    var sploss = activeProductionPlan.ActiveProcesses[routeId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //handle case alert is removed from redis
+                    if (sploss != null)
+                    {
+                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    }
+                }
                 _recordManufacturingLossRepository.Edit(dbModel);
             }
             return activeProductionPlan;
@@ -542,6 +552,12 @@ namespace CIM.BusinessLogic.Services
         {
             return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
                 {"@plan_id", productionPlanId }
+            });
+        }
+        public async Task<int[]> ListMachineLossAutoRecording(string productionPlanId)
+        {
+            return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
+                {"@plan_id", productionPlanId },{"@isauto", true }
             });
         }
 
