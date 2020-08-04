@@ -140,7 +140,7 @@ namespace CIM.API.Controllers
             }
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
-            //activeModel.ActiveProcesses[routeId].Alerts = LimitAlert(activeModel.ActiveProcesses[routeId].Alerts);
+            activeModel.ActiveProcesses[routeId].Alerts = LimitAlert(activeModel.ActiveProcesses[routeId].Alerts);
 
             return activeModel;
         }
@@ -150,11 +150,12 @@ namespace CIM.API.Controllers
         [NonAction]
         public List<AlertModel> LimitAlert(List<AlertModel> alerts)
         {
-            var alertLimit = _config.GetValue<int>("AlertLimit");
+            //var alertLimit = _config.GetValue<int>("AlertLimit");
             var defaultLoss = _config.GetValue<int>("DefaultLosslv3Id");
             return alerts.OrderByDescending(x => x.CreatedAt)
                 .Where(x => x.LossLevel3Id == defaultLoss)
-                .Take(alertLimit).ToList();
+                //.Take(alertLimit)
+                .ToList();
         }
         #endregion
 
