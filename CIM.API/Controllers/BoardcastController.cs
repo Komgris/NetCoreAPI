@@ -150,11 +150,9 @@ namespace CIM.API.Controllers
         [NonAction]
         public List<AlertModel> LimitAlert(List<AlertModel> alerts)
         {
-            //var alertLimit = _config.GetValue<int>("AlertLimit");
             var defaultLoss = _config.GetValue<int>("DefaultLosslv3Id");
             return alerts.OrderByDescending(x => x.CreatedAt)
                 .Where(x => x.LossLevel3Id == defaultLoss)
-                //.Take(alertLimit)
                 .ToList();
         }
         #endregion
