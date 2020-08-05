@@ -596,7 +596,11 @@ namespace CIM.BusinessLogic.Services
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToListAsync();
 
-                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
+                    if(dbOutput.Count > 0 && dbOutput[0].TotalOut >= item.CounterOut)
+                    {
+                        //do nothing
+                    }
+                    else if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
                     {
                         if (dbOutput.Count > 0)
                         {
