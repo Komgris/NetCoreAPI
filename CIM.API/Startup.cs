@@ -37,7 +37,7 @@ namespace CIM.API
             Configuration = configuration;
 
 #if (DEBUG)
-            BaseService.ImagePath = Directory.GetCurrentDirectory()+"\\Image";
+            BaseService.ImagePath = Directory.GetCurrentDirectory() + "\\Image";
 #else
             BaseService.ImagePath =  Configuration.GetValue<string>("ServerPath");
 #endif
@@ -180,7 +180,7 @@ namespace CIM.API
             app.UseRouting();
 
             app.UseCors(builder =>
-               builder.WithOrigins("http://localhost:4200")
+               builder.WithOrigins(new[] { "http://localhost:4200", "http://localhost:4401" })
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());

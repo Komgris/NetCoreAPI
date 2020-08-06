@@ -25,7 +25,7 @@ namespace CIM.API.Controllers
         {
             var token = context.Request.Headers["token"];
             var appId = Convert.ToInt32(context.Request.Headers["appId"]);
-            
+
             var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
             if (!string.IsNullOrEmpty(token.ToString()))
             {

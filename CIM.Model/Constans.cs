@@ -18,6 +18,7 @@ namespace CIM.Model
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
             public const string MASTER_DATA = "master-data";
+            public const string TOKEN = "token";
         }
 
         public enum PRODUCTION_PLAN_STATUS : int {
