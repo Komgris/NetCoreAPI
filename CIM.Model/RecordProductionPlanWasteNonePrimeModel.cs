@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CIM.Model {
+    public class RecordProductionPlanWasteNonePrimeModel {
+        public int Id { get; set; }
+        public string ProductionPlanId { get; set; }
+        public int RouteId { get; set; }
+        public List<RecordProductionPlanWasteNonePrimeItemModel> NonePrimeItems { get; set; }
+    }
+}

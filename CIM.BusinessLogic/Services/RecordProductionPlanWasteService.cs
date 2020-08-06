@@ -43,6 +43,22 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return model;
         }
+        public async Task<RecordProductionPlanWasteNonePrimeModel> NonPrimeCreate(RecordProductionPlanWasteNonePrimeModel model)
+        {
+            //var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWasteNonePrimeModel());
+            //dbModel.CreatedAt = DateTime.Now;
+            //dbModel.CreatedBy = CurrentUser.UserId;
+
+            //foreach (var material in model.Materials)
+            //{
+            //    var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+            //    dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            //}
+
+            //_recordProductionPlanWasteRepository.Add(dbModel);
+            //await _unitOfWork.CommitAsync();
+            return model;
+        }
 
         public async Task Delete(int id)
         {
