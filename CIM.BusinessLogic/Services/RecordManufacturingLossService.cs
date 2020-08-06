@@ -76,6 +76,7 @@ namespace CIM.BusinessLogic.Services
             newDbModel.RouteId = model.RouteId;
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
+            newDbModel.Remark = model.Remark;
             newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
@@ -84,6 +85,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
             var guid = Guid.NewGuid();
+            var activeProductionPlan = await GetCached(model.ProductionPlanId);
 
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
             // doesn't exist
@@ -100,16 +102,24 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                 _recordManufacturingLossRepository.Edit(dbModel);
+                if (dbModel.Timespan < 60 && dbModel.IsAuto)
+                {
+                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                    var sploss = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //handle case alert is removed from redis
+                    if (sploss != null)
+                    {
+                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    }
+                }
+                _recordManufacturingLossRepository.Edit(dbModel);
 
                 //Create new
                 await NewRecordManufacturingLoss(model, now, guid.ToString());
             }
 
             await _unitOfWork.CommitAsync();
-
-            var activeProductionPlan = await GetCached(model.ProductionPlanId);
             var alert = new AlertModel
             {
                 CreatedAt = now,
@@ -118,7 +128,7 @@ namespace CIM.BusinessLogic.Services
                 ItemType = (int)Constans.AlertType.MACHINE,
                 LossLevel3Id = model.LossLevelId,
                 StatusId = Constans.MACHINE_STATUS.Stop,
-                Id = guid,
+                Id = guid
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
@@ -136,7 +146,17 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto) dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                if (dbModel.Timespan < 60 && dbModel.IsAuto) {
+                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
+                    var sploss = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //handle case alert is removed from redis
+                    if (sploss != null)
+                    {
+                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    }
+                }
+
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
@@ -194,6 +214,7 @@ namespace CIM.BusinessLogic.Services
             }
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
+            dbModel.Remark = model.Remark;
             if (model.ComponentId > 0)
             {
                 dbModel.ComponentId = model.ComponentId;

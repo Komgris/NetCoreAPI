@@ -43,5 +43,6 @@ namespace CIM.DAL.Implements
             var output = await ExecStoreProcedure<MachineReadyModel>("[dbo].[sp_ListMachineLossRecording]", dictionaries);
             return output.Select(x => x.MachineId).ToArray();
         }
+
     }
 }
