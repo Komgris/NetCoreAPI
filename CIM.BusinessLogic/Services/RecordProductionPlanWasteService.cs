@@ -15,16 +15,19 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanWasteMaterialRepository _recordProductionPlanWasteMaterialRepository;
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IDirectSqlRepository _directSqlRepository;
 
         public RecordProductionPlanWasteService(
             IRecordProductionPlanWasteMaterialRepository recordProductionPlanWasteMaterialRepository,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IDirectSqlRepository directSqlRepository
             )
         {
             _recordProductionPlanWasteMaterialRepository = recordProductionPlanWasteMaterialRepository;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
             _unitOfWork = unitOfWork;
+            _directSqlRepository = directSqlRepository;
         }
 
         public async Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model)
@@ -43,21 +46,22 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return model;
         }
-        public async Task<RecordProductionPlanWasteNonePrimeModel> NonPrimeCreate(RecordProductionPlanWasteNonePrimeModel model)
+        public async Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
         {
-            //var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWasteNonePrimeModel());
-            //dbModel.CreatedAt = DateTime.Now;
-            //dbModel.CreatedBy = CurrentUser.UserId;
-
-            //foreach (var material in model.Materials)
-            //{
-            //    var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-            //    dbModel.RecordProductionPlanWasteMaterials.Add(mat);
-            //}
-
-            //_recordProductionPlanWasteRepository.Add(dbModel);
-            //await _unitOfWork.CommitAsync();
-            return model;
+            //store proc.
+            var paramsList = new Dictionary<string, object>();
+            foreach (var item in models)
+            {
+                 paramsList = new Dictionary<string, object>()
+                {
+                    {"@plan_id", item.ProductionPlanId},
+                    {"@route_id", item.RouteId},        
+                    {"@noneprime_id", item.NonePrimeId},
+                    {"@amount", item.Amount},
+                    {"@user", CurrentUserId},
+                };
+                await Task.Run(() => _directSqlRepository.ExecuteSPNonQuery("sp_Record_Waste_NonePrime", paramsList));
+            }
         }
 
         public async Task Delete(int id)

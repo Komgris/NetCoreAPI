@@ -74,20 +74,12 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<RecordProductionPlanWasteNonePrimeModel>> NonPrimeCreate(RecordProductionPlanWasteNonePrimeModel model)
+        public async Task<ProcessReponseModel<object>> NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
         {
-            var output = new ProcessReponseModel<RecordProductionPlanWasteNonePrimeModel>();
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await _recordProductionPlanWasteService.NonPrimeCreate(model);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
-                if (productionPlan != null)
-                {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, model.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-                }
-
+                await _recordProductionPlanWasteService.NonPrimeCreate(models);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

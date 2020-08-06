@@ -108,6 +108,7 @@ namespace CIM.DAL.Implements
                 }
             }
         }
+
         public void bulkCopy(string _destinationtable, DataTable _source)
         {
             var connectionString = _configuration.GetConnectionString("CIMDatabase");

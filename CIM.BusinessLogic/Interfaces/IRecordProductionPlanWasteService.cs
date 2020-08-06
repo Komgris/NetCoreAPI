@@ -13,7 +13,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<RecordProductionPlanWasteModel> Get(int id);
         Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);
         Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model);
-        Task<RecordProductionPlanWasteNonePrimeModel> NonPrimeCreate(RecordProductionPlanWasteNonePrimeModel model);
+        Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models);
         Task<PagingModel<RecordProductionPlanWasteModel>> List(string planId, int? routeId, string keyword, int page, int howmany);
         Task Delete(int id);
         Task Update(RecordProductionPlanWasteModel model);

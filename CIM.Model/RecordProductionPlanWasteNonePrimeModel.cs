@@ -7,6 +7,7 @@ namespace CIM.Model {
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int RouteId { get; set; }
-        public List<RecordProductionPlanWasteNonePrimeItemModel> NonePrimeItems { get; set; }
+        public int NonePrimeId { get; set; }
+        public decimal Amount { get; set; }
     }
 }

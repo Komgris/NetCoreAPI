@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
-using Microsoft.AspNetCore.Cors;
-using System.Net.Http;
-using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
-using CIM.BusinessLogic.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using CIM.API.HubConfig;
-using System.Reflection.Metadata;
 using Microsoft.Extensions.Configuration;
 
-namespace CIM.API.Controllers
-{
+namespace CIM.API.Controllers {
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
