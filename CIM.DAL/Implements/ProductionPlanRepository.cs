@@ -188,14 +188,15 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year)
+        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
                                             {"@month", month},
-                                            {"@year", year}
+                                            {"@year", year},
+                                            {"@status_id", statusIds},
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanBYMonth", parameterList);
@@ -204,7 +205,7 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany)
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds)
         {
             return await Task.Run(() =>
             {
@@ -212,7 +213,8 @@ namespace CIM.DAL.Implements
                                         {
                                             {"@date", date},
                                             {"@howmany", howmany},
-                                            { "@page", page}
+                                            { "@page", page},
+                                            {"@status_id", statusIds},
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanByDate", parameterList);
@@ -222,6 +224,64 @@ namespace CIM.DAL.Implements
 
                 return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
             });
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@keyword", keyword},
+                                            {"@is_active", isActive},
+                                            {"@status_id", statusIds},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan_Output", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
+            });
+        }
+
+        public async Task<List<ProductionOutputModel>> ListOutputByMonth(int month, int year)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@month", month},
+                                            {"@year", year}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYMonth", parameterList);
+
+                return (dt.ToModel<ProductionOutputModel>());
+            });
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany)
+        {
+            return await Task.Run(() =>
+            {
+            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@date", date},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYDate", parameterList);
+            var totalCount = 0;
+            if (dt.Rows.Count > 0)
+                totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+            return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
+        });
         }
     }
 }
