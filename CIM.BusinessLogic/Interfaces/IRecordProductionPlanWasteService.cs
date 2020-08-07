@@ -17,7 +17,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<RecordProductionPlanWasteModel>> List(string planId, int? routeId, string keyword, int page, int howmany);
         Task Delete(int id);
         Task Update(RecordProductionPlanWasteModel model);
-        Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models);
-        Task<DataTable> RecordNonPrimeList(string planId, int routeId);
+        Task NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models);
+        Task<DataTable> RecordNonePrimeList(string planId, int routeId);
     }
 }

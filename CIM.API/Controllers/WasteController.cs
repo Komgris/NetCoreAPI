@@ -13,8 +13,8 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class WasteController : BoardcastController
     {
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
@@ -33,6 +33,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
+        [Route("List")]
         public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>> List(string planId, int? routeId = null, string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>();
@@ -131,12 +132,13 @@ namespace CIM.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
+        [Route("NonePrimeCreate")]
+        public async Task<ProcessReponseModel<object>> NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _recordProductionPlanWasteService.NonPrimeCreate(models);
+                await _recordProductionPlanWasteService.NonePrimeCreate(models);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -147,14 +149,14 @@ namespace CIM.API.Controllers
             return output;
         }
 
-
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> RecordNonPrimeList(string planId, int routeId)
+        [Route("RecordNonePrimeList")]
+        public async Task<ProcessReponseModel<object>> RecordNonePrimeList(string planId, int routeId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _recordProductionPlanWasteService.RecordNonPrimeList(planId, routeId), JsonsFormatting); 
+                output.Data = JsonConvert.SerializeObject(await _recordProductionPlanWasteService.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
                 output.IsSuccess = true;
             }
             catch (Exception ex)
