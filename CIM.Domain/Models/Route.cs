@@ -12,7 +12,6 @@ namespace CIM.Domain.Models
             RecordActiveProductionPlan = new HashSet<RecordActiveProductionPlan>();
             RouteMachine = new HashSet<RouteMachine>();
             RouteProductGroup = new HashSet<RouteProductGroup>();
-            RecordProductionPlanWasteNonePrime = new HashSet<RecordProductionPlanWasteNonePrime>();
         }
 
         public int Id { get; set; }
@@ -30,6 +29,5 @@ namespace CIM.Domain.Models
         public virtual ICollection<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual ICollection<RouteMachine> RouteMachine { get; set; }
         public virtual ICollection<RouteProductGroup> RouteProductGroup { get; set; }
-        public virtual ICollection<RecordProductionPlanWasteNonePrime> RecordProductionPlanWasteNonePrime { get; set; }
     }
 }

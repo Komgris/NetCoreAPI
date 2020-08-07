@@ -71,7 +71,6 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
         public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
         public virtual DbSet<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
-        public virtual DbSet<RecordProductionPlanWasteNonePrime> RecordProductionPlanWasteNonePrime { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -1950,50 +1949,6 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Record_ProductionPlan_Waste_Materials_Record_ProductionPlan_Waste");
             });
 
-            modelBuilder.Entity<RecordProductionPlanWasteNonePrime>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("Record_ProductionPlan_Waste_NonePrime");
-
-                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.ProductionPlanPlanId)
-                    .IsRequired()
-                    .HasColumnName("Production_Plan_PlanId")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
-
-                entity.Property(e => e.WasteNonePrimeId).HasColumnName("WasteNonePrime_Id");
-
-                entity.HasOne(d => d.ProductionPlanPlan)
-                    .WithMany(p => p.RecordProductionPlanWasteNonePrime)
-                    .HasForeignKey(d => d.ProductionPlanPlanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Waste_NonePrime_Production_Plan");
-
-                entity.HasOne(d => d.Route)
-                    .WithMany(p => p.RecordProductionPlanWasteNonePrime)
-                    .HasForeignKey(d => d.RouteId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Waste_NonePrime_Route");
-
-                entity.HasOne(d => d.WasteNonePrime)
-                    .WithMany(p => p.RecordProductionPlanWasteNonePrime)
-                    .HasForeignKey(d => d.WasteNonePrimeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Waste_NonePrime_WasteNonePrime");
-            });
-
             modelBuilder.Entity<Route>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -2577,6 +2532,10 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))"); 
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class WasteController : BoardcastController
     {
@@ -32,7 +32,6 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("List")]
         public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>> List(string planId, int? routeId = null, string keyword = "", int page = 1, int howmany = 10)
         {
             var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>();

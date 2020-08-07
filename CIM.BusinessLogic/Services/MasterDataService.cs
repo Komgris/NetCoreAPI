@@ -46,6 +46,8 @@ namespace CIM.BusinessLogic.Services
         private IProcessTypeRepository _processTypeRepository;
         private IAppRepository _appRepository;
         private IAppFeatureRepository _appFeatureRepository;
+        private IWasteNonePrimeRepository _wastenoneprimeRepository;
+
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -76,7 +78,8 @@ namespace CIM.BusinessLogic.Services
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
             IAppFeatureRepository appFeatureRepository, 
-            IDirectSqlRepository directSqlRepository
+            IDirectSqlRepository directSqlRepository,
+            IWasteNonePrimeRepository wastenoneprimeRepository
             )
         {
             _directSqlRepository = directSqlRepository;
@@ -109,6 +112,7 @@ namespace CIM.BusinessLogic.Services
             _userGroupRepository = userGroupRepository;
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
+            _wastenoneprimeRepository = wastenoneprimeRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -305,6 +309,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
                     masterData.Dictionary.Language = await GetLanguageDictionary(); 
                     masterData.Dictionary.App = await GetAppDictionary();
+                    masterData.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -740,12 +745,12 @@ namespace CIM.BusinessLogic.Services
         }
         private async Task<IDictionary<int, string>> GetWasteNonePrime()
         {
-            var db = _directSqlRepository.ExecuteWithQuery("select Id, Name from WasteNonePrime");
+            var db = await Task.Run(()=> _wastenoneprimeRepository.Where(x=>x.IsActive).OrderBy(x=>x.Id));
             var output = new Dictionary<int, string>();
-            foreach (DataRow r in db.Rows)
+            foreach (var item in db)
             {
-                //if (!output.ContainsKey(r[0]))
-                //    output.Add(r[0], r[1].ToString());
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }
