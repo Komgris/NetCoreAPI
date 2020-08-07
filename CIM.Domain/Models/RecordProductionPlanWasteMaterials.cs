@@ -9,6 +9,7 @@ namespace CIM.Domain.Models
         public int MaterialId { get; set; }
         public decimal Amount { get; set; }
         public int WasteId { get; set; }
+        public decimal? Cost { get; set; }
 
         public virtual RecordProductionPlanWaste Waste { get; set; }
     }

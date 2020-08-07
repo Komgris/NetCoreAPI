@@ -744,8 +744,8 @@ namespace CIM.BusinessLogic.Services
             var output = new Dictionary<int, string>();
             foreach (DataRow r in db.Rows)
             {
-                if (!output.ContainsKey(r[0]))
-                    output.Add(r[0], r[1].ToString());
+                //if (!output.ContainsKey(r[0]))
+                //    output.Add(r[0], r[1].ToString());
             }
             return output;
         }
