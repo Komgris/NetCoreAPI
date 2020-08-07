@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
@@ -62,23 +63,6 @@ namespace CIM.API.Controllers
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-
-            return output;
-        }
-
-        [HttpPost]
-        public async Task<ProcessReponseModel<object>> NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                await _recordProductionPlanWasteService.NonPrimeCreate(models);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -146,5 +130,39 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _recordProductionPlanWasteService.NonPrimeCreate(models);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> RecordNonPrimeList(string planId, int routeId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _recordProductionPlanWasteService.RecordNonPrimeList(planId, routeId), JsonsFormatting); 
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
     }
 }

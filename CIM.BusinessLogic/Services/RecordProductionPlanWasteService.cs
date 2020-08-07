@@ -5,6 +5,7 @@ using CIM.Domain.Models;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +63,17 @@ namespace CIM.BusinessLogic.Services
                 };
                 await Task.Run(() => _directSqlRepository.ExecuteSPNonQuery("sp_Record_Waste_NonePrime", paramsList));
             }
+        }
+        public async Task<DataTable> RecordNonPrimeList(string planId, int routeId)
+        {
+            //store proc.
+            var paramsList = new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId}
+                };
+            return await Task.Run(() => _directSqlRepository.ExecuteSPWithQuery("sp_ListWasteNonePrime", paramsList));
+
         }
 
         public async Task Delete(int id)
