@@ -131,6 +131,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertByProduct(data);
+                await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

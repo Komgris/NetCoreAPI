@@ -132,5 +132,29 @@ namespace CIM.API.Controllers
             return output;
 
         }
+
+        [HttpGet]
+        [Route("api/[controller]/AdditionalMachineProduce")]
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId,int amount, int? hour, string remark="")
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
+                if(productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                                                                , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+
+        }
     }
 }

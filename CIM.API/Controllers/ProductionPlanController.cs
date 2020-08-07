@@ -97,6 +97,58 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/ProductionPlans/ListOutput")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<ProductionOutputModel>>> ListOutput(int howmany = 10, int page = 1, string keyword = "", string statusIds = null)
+        {
+            var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListOutput(page, howmany, keyword, true, statusIds);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/ListOutputByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<ProductionOutputModel>>> ListOutputByMonth(int month, int year)
+        {
+            var output = new ProcessReponseModel<List<ProductionOutputModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListOutputByMonth(month, year);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/ListOutputByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<ProductionOutputModel>>> ListOutputByDate(DateTime date, int page, int howmany)
+        {
+            var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.ListOutputByDate(date, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
 
         [Route("api/[controller]/Import")]
         [HttpPost]
@@ -129,7 +181,6 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -148,7 +199,6 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.IsSuccess = false;
                 output.Message = ex.Message;
             }
             return output;
@@ -207,12 +257,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListByMonth")]
         [HttpGet]
-        public async Task<ProcessReponseModel<List<ProductionPlanListModel>>> ListByMonth(int month, int year)
+        public async Task<ProcessReponseModel<List<ProductionPlanListModel>>> ListByMonth(int month, int year, string statusIds)
         {
             var output = new ProcessReponseModel<List<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListByMonth(month, year);
+                output.Data = await _productionPlanService.ListByMonth(month, year, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -225,12 +275,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListByDate")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany, string statusIds)
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListByDate(date, page, howmany);
+                output.Data = await _productionPlanService.ListByDate(date, page, howmany, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -275,7 +325,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }

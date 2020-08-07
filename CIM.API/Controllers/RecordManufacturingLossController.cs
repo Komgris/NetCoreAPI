@@ -41,7 +41,6 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.Create(model);
                 if (productionPlan != null)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
@@ -88,9 +87,14 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.Update(model);
                 if (productionPlan != null)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                     await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    if (model.WasteList.Count > 0)
+                    {
+                        await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, productionPlan.ProductionPlanId
+                            , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    }
                 }
                 output.IsSuccess = true;
             }
