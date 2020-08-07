@@ -5,6 +5,7 @@ using CIM.Model;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,8 +15,8 @@ using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class MasterDataService : BaseService, IMasterDataService
-    {
+    public class MasterDataService : BaseService, IMasterDataService {
+        private IDirectSqlRepository _directSqlRepository;
         private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
         private IResponseCacheService _responseCacheService;
@@ -74,9 +75,11 @@ namespace CIM.BusinessLogic.Services
             IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
-            IAppFeatureRepository appFeatureRepository
+            IAppFeatureRepository appFeatureRepository, 
+            IDirectSqlRepository directSqlRepository
             )
         {
+            _directSqlRepository = directSqlRepository;
             _lossLevel2Repository = lossLevel2Repository;
             _lossLevel3Repository = lossLevel3Repository;
             _responseCacheService = responseCacheService;
@@ -735,6 +738,16 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
-
+        private async Task<IDictionary<int, string>> GetWasteNonePrime()
+        {
+            var db = _directSqlRepository.ExecuteWithQuery("select Id, Name from WasteNonePrime");
+            var output = new Dictionary<int, string>();
+            foreach (DataRow r in db.Rows)
+            {
+                if (!output.ContainsKey(r[0]))
+                    output.Add(r[0], r[1].ToString());
+            }
+            return output;
+        }
     }
 }
