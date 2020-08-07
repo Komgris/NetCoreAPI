@@ -220,13 +220,11 @@ namespace CIM.BusinessLogic.Services
 
         public async Task UpdateTokenExpire(string userId)
         {
-
             var userAppToken = new UserAppTokens
             {
                 UserId = userId,
                 ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)")),
             };
-
 
             var existingToken = _userAppTokenRepository.Where(x => x.UserId == userId).ToList();
             foreach (var item in existingToken)
