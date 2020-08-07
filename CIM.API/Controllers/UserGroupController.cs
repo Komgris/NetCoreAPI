@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserGroupController : ControllerBase
+    public class UserGroupController : BaseController
     {
         private IUserGroupService _service;
 
-        public UserGroupController(IUserGroupService service)
+        public UserGroupController(IUserGroupService service, IMasterDataService masterDataService)
         {
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [HttpPost]
@@ -25,6 +26,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -77,6 +79,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
+                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
