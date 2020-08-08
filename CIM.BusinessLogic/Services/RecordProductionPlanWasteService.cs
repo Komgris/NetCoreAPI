@@ -17,35 +17,72 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IDirectSqlRepository _directSqlRepository;
+        private IMaterialRepository _materialRepository;
+        private IProductMaterialRepository _productmaterialRepository;
 
         public RecordProductionPlanWasteService(
             IRecordProductionPlanWasteMaterialRepository recordProductionPlanWasteMaterialRepository,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
             IUnitOfWorkCIM unitOfWork,
-            IDirectSqlRepository directSqlRepository
+            IDirectSqlRepository directSqlRepository,
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productmaterialRepository
             )
         {
             _recordProductionPlanWasteMaterialRepository = recordProductionPlanWasteMaterialRepository;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
             _unitOfWork = unitOfWork;
             _directSqlRepository = directSqlRepository;
+            _materialRepository = materialRepository;
+            _productmaterialRepository = productmaterialRepository;
         }
 
         public async Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model)
         {
+            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
             var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWaste());
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
 
+            var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit); 
+            var mats = _materialRepository.Where(x => model.IngredientsMaterials.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+
             foreach (var material in model.Materials)
             {
                 var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+                if(model.AmountUnit >0) mat.Amount += productMats[mat.Id] * model.AmountUnit;
+                mat.Cost = (mat.Amount * mats[mat.Id].Value);
                 dbModel.RecordProductionPlanWasteMaterials.Add(mat);
             }
 
             _recordProductionPlanWasteRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
             return model;
+        }
+        public async Task Update(RecordProductionPlanWasteModel model)
+        {
+            var dbModel = await _recordProductionPlanWasteRepository.Get(model.Id);
+            foreach (var item in dbModel.RecordProductionPlanWasteMaterials)
+            {
+                _recordProductionPlanWasteMaterialRepository.Delete(item);
+            }
+            
+            var mats = _materialRepository.Where(x => model.IngredientsMaterials.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+            foreach (var material in model.Materials)
+            {
+                var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials()); 
+                mat.Cost = (mat.Amount * mats[mat.Id]);
+                dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            }
+            dbModel.CauseMachineId = model.CauseMachineId;
+            dbModel.Reason = model.Reason;
+            dbModel.RouteId = model.RouteId;
+            dbModel.UpdatedAt = DateTime.Now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+            dbModel.WasteLevel2Id = model.WasteLevel2Id;
+            _recordProductionPlanWasteRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
+
         }
 
         public async Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
@@ -117,28 +154,5 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Update(RecordProductionPlanWasteModel model)
-        {
-            var dbModel = await _recordProductionPlanWasteRepository.Get(model.Id);
-            foreach (var item in dbModel.RecordProductionPlanWasteMaterials)
-            {
-                _recordProductionPlanWasteMaterialRepository.Delete(item);
-            }
-
-            foreach (var material in model.Materials)
-            {
-                var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                dbModel.RecordProductionPlanWasteMaterials.Add(mat);
-            }
-            dbModel.CauseMachineId = model.CauseMachineId;
-            dbModel.Reason = model.Reason;
-            dbModel.RouteId = model.RouteId;
-            dbModel.UpdatedAt = DateTime.Now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            dbModel.WasteLevel2Id = model.WasteLevel2Id;
-            _recordProductionPlanWasteRepository.Edit(dbModel);
-            await _unitOfWork.CommitAsync();
-
-        }
     }
 }
