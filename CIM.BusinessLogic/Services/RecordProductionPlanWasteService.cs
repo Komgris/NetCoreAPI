@@ -47,6 +47,7 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return model;
         }
+
         public async Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
         {
             //store proc.
@@ -64,6 +65,7 @@ namespace CIM.BusinessLogic.Services
                 await Task.Run(() => _directSqlRepository.ExecuteSPNonQuery("sp_Record_Waste_NonePrime", paramsList));
             }
         }
+
         public async Task<DataTable> RecordNonPrimeList(string planId, int routeId)
         {
             //store proc.

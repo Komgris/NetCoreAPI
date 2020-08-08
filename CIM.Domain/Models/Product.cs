@@ -7,23 +7,25 @@ namespace CIM.Domain.Models
     {
         public Product()
         {
+            ProductMaterial = new HashSet<ProductMaterial>();
             ProductionPlan = new HashSet<ProductionPlan>();
         }
 
         public int Id { get; set; }
         public string Code { get; set; }
+        public string Pid { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
         public int? UnitId { get; set; }
-        public string BriteItemPerUPCItem { get; set; }
-        public int ProductFamilyId { get; set; }
-        public int ProductGroupId { get; set; }
+        public string BriteItemPerUpcitem { get; set; }
+        public int? ProductFamilyId { get; set; }
+        public int? ProductGroupId { get; set; }
         public int ProductTypeId { get; set; }
         public string PackingMedium { get; set; }
         public decimal? NetWeight { get; set; }
-        public decimal? IGWeight { get; set; }
-        public decimal? PMWeight { get; set; }
-        public decimal? WeightPerUOM { get; set; }
+        public decimal? Igweight { get; set; }
+        public decimal? Pmweight { get; set; }
+        public decimal? WeightPerUom { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -34,6 +36,7 @@ namespace CIM.Domain.Models
         public virtual ProductFamily ProductFamily { get; set; }
         public virtual ProductGroup ProductGroup { get; set; }
         public virtual ProductType ProductType { get; set; }
+        public virtual ICollection<ProductMaterial> ProductMaterial { get; set; }
         public virtual ICollection<ProductionPlan> ProductionPlan { get; set; }
     }
 }
