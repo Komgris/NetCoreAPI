@@ -237,7 +237,8 @@ namespace CIM.BusinessLogic.Services
         private async Task<RecordManufacturingLoss> HandleWaste(RecordManufacturingLoss dbModel, RecordManufacturingLossModel model, DateTime now)
         {
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
-            var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            var productId = model.WasteList[0].ProductId;
+            var productMats = _productmaterialRepository.Where(x => x.ProductId == productId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
             var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
 
             foreach (var item in model.WasteList)
