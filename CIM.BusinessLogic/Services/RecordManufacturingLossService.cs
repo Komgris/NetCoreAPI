@@ -83,7 +83,8 @@ namespace CIM.BusinessLogic.Services
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
             newDbModel.Remark = model.Remark;
-            newDbModel = await HandleWaste(newDbModel, model, now);
+            if(model.IsWasteChanged) 
+                newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
 
@@ -227,7 +228,8 @@ namespace CIM.BusinessLogic.Services
             }
             _recordManufacturingLossRepository.Edit(dbModel);
 
-            dbModel = await HandleWaste(dbModel, model, now);
+            if(model.IsWasteChanged) 
+                dbModel = await HandleWaste(dbModel, model, now);
 
             await _unitOfWork.CommitAsync();
             await SetCached(activeProductionPlan);
