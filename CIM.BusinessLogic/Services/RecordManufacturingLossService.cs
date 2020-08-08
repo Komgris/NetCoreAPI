@@ -23,6 +23,8 @@ namespace CIM.BusinessLogic.Services
         private IMachineRepository _machineRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public IConfiguration _config;
+        private IMaterialRepository _materialRepository;
+        private IProductMaterialRepository _productmaterialRepository;
 
         public RecordManufacturingLossService(
             IResponseCacheService responseCacheService,
@@ -33,7 +35,9 @@ namespace CIM.BusinessLogic.Services
             IMachineService machineService,
             IMachineRepository machineRepository,
             IUnitOfWorkCIM unitOfWork,
-            IConfiguration config
+            IConfiguration config,
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productmaterialRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -45,6 +49,8 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
             _machineRepository = machineRepository;
             _config = config;
+            _materialRepository = materialRepository;
+            _productmaterialRepository = productmaterialRepository;
 
         }
 
@@ -231,13 +237,18 @@ namespace CIM.BusinessLogic.Services
         private async Task<RecordManufacturingLoss> HandleWaste(RecordManufacturingLoss dbModel, RecordManufacturingLossModel model, DateTime now)
         {
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
+            var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+
             foreach (var item in model.WasteList)
             {
                 var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
                 foreach (var material in item.Materials)
                 {
                     var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                    waste.RecordProductionPlanWasteMaterials.Add(mat);
+                    if (item.AmountUnit > 0 && item.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * item.AmountUnit;
+                    mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+                    if (mat.Amount > 0) waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
                 dbModel.RecordProductionPlanWaste.Add(waste);
