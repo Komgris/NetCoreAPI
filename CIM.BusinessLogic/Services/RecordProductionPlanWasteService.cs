@@ -85,7 +85,7 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task NonPrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
+        public async Task NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
         {
             //store proc.
             var paramsList = new Dictionary<string, object>();
@@ -103,7 +103,7 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        public async Task<DataTable> RecordNonPrimeList(string planId, int routeId)
+        public async Task<DataTable> RecordNonePrimeList(string planId, int routeId)
         {
             //store proc.
             var paramsList = new Dictionary<string, object>()
