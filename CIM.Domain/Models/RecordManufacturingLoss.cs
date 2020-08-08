@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CIM.Domain.Models
-{
-    public partial class RecordManufacturingLoss
-    {
+namespace CIM.Domain.Models {
+    public partial class RecordManufacturingLoss {
+        public RecordManufacturingLoss()
+        {
+            RecordProductionPlanWaste = new HashSet<RecordProductionPlanWaste>();
+        }
+
         public int Id { get; set; }
         public int? MachineId { get; set; }
         public int? ComponentId { get; set; }
@@ -32,5 +35,6 @@ namespace CIM.Domain.Models
         public virtual Machine Machine { get; set; }
         public virtual ProductionPlan ProductionPlan { get; set; }
         public virtual Users UpdatedByNavigation { get; set; }
+        public virtual ICollection<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
     }
 }
