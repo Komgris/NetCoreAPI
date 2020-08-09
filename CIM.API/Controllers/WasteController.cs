@@ -105,7 +105,15 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
+                var dbModel = await _recordProductionPlanWasteService.Get(id);
                 await _recordProductionPlanWasteService.Delete(id);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, dbModel.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception e)
