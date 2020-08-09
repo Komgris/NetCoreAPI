@@ -115,8 +115,6 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Accident_Category");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
