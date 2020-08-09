@@ -430,15 +430,33 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year)
+        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds)
         {
-            var output = await _productionPlanRepository.ListByMonth(month, year);
+            var output = await _productionPlanRepository.ListByMonth(month, year, statusIds);
             return output;
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany)
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds)
         {
-            var output = await _productionPlanRepository.ListByDate(date, page, howmany);
+            var output = await _productionPlanRepository.ListByDate(date, page, howmany, statusIds);
+            return output;
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds)
+        {
+            var output = await _productionPlanRepository.ListOutput(page, howmany, keyword, isActive, statusIds);
+            return output;
+        }
+
+        public async Task<List<ProductionOutputModel>> ListOutputByMonth(int month, int year)
+        {
+            var output = await _productionPlanRepository.ListOutputByMonth(month, year);
+            return output;
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany)
+        {
+            var output = await _productionPlanRepository.ListOutputByDate(date, page, howmany);
             return output;
         }
     }
