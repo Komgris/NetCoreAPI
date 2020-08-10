@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CIM.Domain.Models
-{
-    public partial class RecordManufacturingLoss
-    {
+namespace CIM.Domain.Models {
+    public partial class RecordManufacturingLoss {
         public RecordManufacturingLoss()
         {
             RecordProductionPlanWaste = new HashSet<RecordProductionPlanWaste>();

@@ -90,14 +90,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<UserPosition> UserPosition { get; set; }
         public virtual DbSet<UserProfiles> UserProfiles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-        public virtual DbSet<ViewLossSummary> ViewLossSummary { get; set; }
-        public virtual DbSet<ViewMasterLoss> ViewMasterLoss { get; set; }
-        public virtual DbSet<ViewProduceCounterCase> ViewProduceCounterCase { get; set; }
-        public virtual DbSet<ViewProductInfo> ViewProductInfo { get; set; }
-        public virtual DbSet<ViewProductRoute> ViewProductRoute { get; set; }
-        public virtual DbSet<ViewRouteMachine> ViewRouteMachine { get; set; }
         public virtual DbSet<WasteLevel1> WasteLevel1 { get; set; }
         public virtual DbSet<WasteLevel2> WasteLevel2 { get; set; }
+        public virtual DbSet<WasteNonePrime> WasteNonePrime { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -829,6 +824,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -1142,7 +1139,7 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.Property(e => e.BHTPerUnit)
+                entity.Property(e => e.BhtperUnit)
                     .HasColumnName("BHTPerUnit")
                     .HasColumnType("decimal(18, 2)");
 
@@ -1161,7 +1158,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Description).HasMaxLength(4000);
 
-                entity.Property(e => e.ICSGroup)
+                entity.Property(e => e.Icsgroup)
                     .HasColumnName("ICSGroup")
                     .HasMaxLength(50);
 
@@ -1173,7 +1170,9 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ProductCategory).HasMaxLength(50);
 
-                entity.Property(e => e.UOM)
+                entity.Property(e => e.UnitsId).HasColumnName("Units_Id");
+
+                entity.Property(e => e.Uom)
                     .HasColumnName("UOM")
                     .HasMaxLength(50);
 
@@ -1186,6 +1185,11 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.MaterialTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_MaterialType");
+
+                entity.HasOne(d => d.Units)
+                    .WithMany(p => p.Material)
+                    .HasForeignKey(d => d.UnitsId)
+                    .HasConstraintName("FK_Material_Unit");
             });
 
             modelBuilder.Entity<MaterialGroup>(entity =>
@@ -1296,7 +1300,9 @@ namespace CIM.Domain.Models
                     .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Code).HasMaxLength(50);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1321,6 +1327,11 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
+                entity.Property(e => e.PID)
+                    .IsRequired()
+                    .HasColumnName("PID")
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.PMWeight)
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 2)");
@@ -1344,13 +1355,11 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.ProductFamily)
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.ProductFamilyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductFamily");
 
                 entity.HasOne(d => d.ProductGroup)
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.ProductGroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductGroup");
 
                 entity.HasOne(d => d.ProductType)
@@ -1435,15 +1444,39 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Product_Material");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.IngredientPerUnit).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
                 entity.Property(e => e.ProductId).HasColumnName("Product_Id");
+
+                entity.Property(e => e.UnitsId).HasColumnName("Units_Id");
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Material");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Product");
+
+                entity.HasOne(d => d.Units)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.UnitsId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Unit");
             });
 
             modelBuilder.Entity<ProductType>(entity =>
@@ -1851,6 +1884,8 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Output");
 
+                entity.Property(e => e.AdditionalCounterOut).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.CounterIn).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.CounterOut).HasDefaultValueSql("((0))");
@@ -1939,6 +1974,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
                 entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
@@ -1968,6 +2005,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -2464,178 +2503,6 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Users_UserGroups");
             });
 
-            modelBuilder.Entity<ViewLossSummary>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Loss_Summary");
-
-                entity.Property(e => e.LossLevel1Id).HasColumnName("LossLevel1_Id");
-
-                entity.Property(e => e.LossLevel2Id).HasColumnName("LossLevel2_Id");
-
-                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
-
-                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
-
-                entity.Property(e => e.ProductionPlanId)
-                    .IsRequired()
-                    .HasColumnName("Production_Plan_Id")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
-            });
-
-            modelBuilder.Entity<ViewMasterLoss>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Master_Loss");
-
-                entity.Property(e => e.LossLevel1Desc)
-                    .IsRequired()
-                    .HasColumnName("LossLevel1_Desc")
-                    .HasMaxLength(4000);
-
-                entity.Property(e => e.LossLevel1Id).HasColumnName("LossLevel1_Id");
-
-                entity.Property(e => e.LossLevel1Name)
-                    .HasColumnName("LossLevel1_Name")
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.LossLevel2Desc)
-                    .IsRequired()
-                    .HasColumnName("LossLevel2_Desc")
-                    .HasMaxLength(4000);
-
-                entity.Property(e => e.LossLevel2Id).HasColumnName("LossLevel2_Id");
-
-                entity.Property(e => e.LossLevel2Name)
-                    .HasColumnName("LossLevel2_Name")
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.LossLevel3Desc)
-                    .IsRequired()
-                    .HasColumnName("LossLevel3_Desc")
-                    .HasMaxLength(4000);
-
-                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
-
-                entity.Property(e => e.LossLevel3Name)
-                    .HasColumnName("LossLevel3_Name")
-                    .HasMaxLength(500);
-            });
-
-            modelBuilder.Entity<ViewProduceCounterCase>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Produce_Counter_Case");
-
-                entity.Property(e => e.CounterInCase).HasColumnName("CounterIn_Case");
-
-                entity.Property(e => e.CounterOutCase).HasColumnName("CounterOut_Case");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
-
-                entity.Property(e => e.ProductionPlanId)
-                    .IsRequired()
-                    .HasColumnName("Production_Plan_Id")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Remark).HasMaxLength(200);
-
-                entity.Property(e => e.TotalInCase).HasColumnName("TotalIn_Case");
-
-                entity.Property(e => e.TotalOutCase).HasColumnName("TotalOut_Case");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<ViewProductInfo>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Product_Info");
-
-                entity.Property(e => e.Code).HasMaxLength(50);
-
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(4000);
-
-                entity.Property(e => e.GroupName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Image).HasMaxLength(200);
-
-                entity.Property(e => e.SizeOz).HasColumnName("Size(Oz)");
-            });
-
-            modelBuilder.Entity<ViewProductRoute>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Product_Route");
-
-                entity.Property(e => e.Code).HasMaxLength(50);
-
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(4000);
-
-                entity.Property(e => e.GroupName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Image).HasMaxLength(200);
-
-                entity.Property(e => e.ProductGroupId).HasColumnName("ProductGroup_Id");
-
-                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
-
-                entity.Property(e => e.RouteName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<ViewRouteMachine>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("View_Route_Machine");
-
-                entity.Property(e => e.Image).HasMaxLength(200);
-
-                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
-
-                entity.Property(e => e.MachineName)
-                    .IsRequired()
-                    .HasColumnName("Machine_Name")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
-
-                entity.Property(e => e.MachineTypeName)
-                    .IsRequired()
-                    .HasColumnName("MachineType_Name")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.StatusId).HasColumnName("Status_Id");
-
-                entity.Property(e => e.StatusName)
-                    .IsRequired()
-                    .HasColumnName("Status_Name")
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<WasteLevel1>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -2694,6 +2561,21 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.WasteLevel1Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WasteLevel2_WasteLevel1");
+            });
+
+            modelBuilder.Entity<WasteNonePrime>(entity =>
+            {
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(20);
             });
 
             OnModelCreatingPartial(modelBuilder);

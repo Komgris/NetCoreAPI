@@ -7,11 +7,13 @@ namespace CIM.Domain.Models
     {
         public Product()
         {
+            ProductMaterial = new HashSet<ProductMaterial>();
             ProductionPlan = new HashSet<ProductionPlan>();
         }
 
         public int Id { get; set; }
         public string Code { get; set; }
+        public string PID { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
         public int? UnitId { get; set; }
@@ -34,6 +36,7 @@ namespace CIM.Domain.Models
         public virtual ProductFamily ProductFamily { get; set; }
         public virtual ProductGroup ProductGroup { get; set; }
         public virtual ProductType ProductType { get; set; }
+        public virtual ICollection<ProductMaterial> ProductMaterial { get; set; }
         public virtual ICollection<ProductionPlan> ProductionPlan { get; set; }
     }
 }

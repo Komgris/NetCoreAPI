@@ -5,6 +5,7 @@ using CIM.Domain.Models;
 using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,33 +16,118 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanWasteMaterialRepository _recordProductionPlanWasteMaterialRepository;
         private IRecordProductionPlanWasteRepository _recordProductionPlanWasteRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IDirectSqlRepository _directSqlRepository;
+        private IMaterialRepository _materialRepository;
+        private IProductMaterialRepository _productmaterialRepository;
 
         public RecordProductionPlanWasteService(
             IRecordProductionPlanWasteMaterialRepository recordProductionPlanWasteMaterialRepository,
             IRecordProductionPlanWasteRepository recordProductionPlanWasteRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IDirectSqlRepository directSqlRepository,
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productmaterialRepository
             )
         {
             _recordProductionPlanWasteMaterialRepository = recordProductionPlanWasteMaterialRepository;
             _recordProductionPlanWasteRepository = recordProductionPlanWasteRepository;
             _unitOfWork = unitOfWork;
+            _directSqlRepository = directSqlRepository;
+            _materialRepository = materialRepository;
+            _productmaterialRepository = productmaterialRepository;
         }
 
         public async Task<RecordProductionPlanWasteModel> Create(RecordProductionPlanWasteModel model)
         {
+            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
             var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWaste());
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
 
+            var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit); 
+            var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+
             foreach (var material in model.Materials)
             {
                 var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+                if(model.AmountUnit >0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
+                mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+                if(mat.Amount>0)dbModel.RecordProductionPlanWasteMaterials.Add(mat);
             }
 
-            _recordProductionPlanWasteRepository.Add(dbModel);
+            if(dbModel.RecordProductionPlanWasteMaterials.Count > 0)
+            {
+                _recordProductionPlanWasteRepository.Add(dbModel);
+            }
             await _unitOfWork.CommitAsync();
             return model;
+        }
+        public async Task Update(RecordProductionPlanWasteModel model)
+        {
+            var dbModel = await _recordProductionPlanWasteRepository.Get(model.Id);
+            foreach (var item in dbModel.RecordProductionPlanWasteMaterials)
+            {
+                _recordProductionPlanWasteMaterialRepository.Delete(item);
+            }
+            dbModel.RecordProductionPlanWasteMaterials.Clear();
+
+           var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+            foreach (var material in model.Materials)
+            {
+                var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+                if (model.AmountUnit > 0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
+                mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+                if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            }
+
+            if (dbModel.RecordProductionPlanWasteMaterials.Count>0)
+            {
+                dbModel.CauseMachineId = model.CauseMachineId;
+                dbModel.Reason = model.Reason;
+                dbModel.RouteId = model.RouteId;
+                dbModel.UpdatedAt = DateTime.Now;
+                dbModel.UpdatedBy = CurrentUser.UserId;
+                dbModel.WasteLevel2Id = model.WasteLevel2Id;
+                _recordProductionPlanWasteRepository.Edit(dbModel);
+            }
+            else
+            {
+                dbModel.IsDelete = true;
+                _recordProductionPlanWasteRepository.Edit(dbModel);
+            }
+            await _unitOfWork.CommitAsync();
+
+        }
+
+        public async Task NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
+        {
+            //store proc.
+            var paramsList = new Dictionary<string, object>();
+            foreach (var item in models)
+            {
+                 paramsList = new Dictionary<string, object>()
+                {
+                    {"@plan_id", item.ProductionPlanId},
+                    {"@route_id", item.RouteId},        
+                    {"@noneprime_id", item.NonePrimeId},
+                    {"@amount", item.Amount},
+                    {"@user", CurrentUserId},
+                };
+                await Task.Run(() => _directSqlRepository.ExecuteSPNonQuery("sp_Record_Waste_NonePrime", paramsList));
+            }
+        }
+
+        public async Task<DataTable> RecordNonePrimeList(string planId, int routeId)
+        {
+            //store proc.
+            var paramsList = new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId}
+                };
+            return await Task.Run(() => _directSqlRepository.ExecuteSPWithQuery("sp_ListWasteNonePrime", paramsList));
+
         }
 
         public async Task Delete(int id)
@@ -83,28 +169,5 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task Update(RecordProductionPlanWasteModel model)
-        {
-            var dbModel = await _recordProductionPlanWasteRepository.Get(model.Id);
-            foreach (var item in dbModel.RecordProductionPlanWasteMaterials)
-            {
-                _recordProductionPlanWasteMaterialRepository.Delete(item);
-            }
-
-            foreach (var material in model.Materials)
-            {
-                var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                dbModel.RecordProductionPlanWasteMaterials.Add(mat);
-            }
-            dbModel.CauseMachineId = model.CauseMachineId;
-            dbModel.Reason = model.Reason;
-            dbModel.RouteId = model.RouteId;
-            dbModel.UpdatedAt = DateTime.Now;
-            dbModel.UpdatedBy = CurrentUser.UserId;
-            dbModel.WasteLevel2Id = model.WasteLevel2Id;
-            _recordProductionPlanWasteRepository.Edit(dbModel);
-            await _unitOfWork.CommitAsync();
-
-        }
     }
 }

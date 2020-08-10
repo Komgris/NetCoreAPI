@@ -29,7 +29,7 @@ namespace CIM.Model
         public int RouteId { get; set; }
         public string Route { get; set; }
         public string Remark { get; set; }
-
+        public bool IsWasteChanged { get; set; }
         public bool IsProcessDriven { get; set; }
         public List<RecordProductionPlanWasteModel> WasteList { get; set; } = new List<RecordProductionPlanWasteModel>();
     }

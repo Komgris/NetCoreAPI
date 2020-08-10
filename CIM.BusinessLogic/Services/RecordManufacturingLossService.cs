@@ -23,6 +23,8 @@ namespace CIM.BusinessLogic.Services
         private IMachineRepository _machineRepository;
         private IUnitOfWorkCIM _unitOfWork;
         public IConfiguration _config;
+        private IMaterialRepository _materialRepository;
+        private IProductMaterialRepository _productmaterialRepository;
 
         public RecordManufacturingLossService(
             IResponseCacheService responseCacheService,
@@ -33,7 +35,9 @@ namespace CIM.BusinessLogic.Services
             IMachineService machineService,
             IMachineRepository machineRepository,
             IUnitOfWorkCIM unitOfWork,
-            IConfiguration config
+            IConfiguration config,
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productmaterialRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -45,6 +49,8 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
             _machineRepository = machineRepository;
             _config = config;
+            _materialRepository = materialRepository;
+            _productmaterialRepository = productmaterialRepository;
 
         }
 
@@ -77,7 +83,8 @@ namespace CIM.BusinessLogic.Services
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
             newDbModel.Remark = model.Remark;
-            newDbModel = await HandleWaste(newDbModel, model, now);
+            if(model.IsWasteChanged) 
+                newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
 
@@ -221,7 +228,8 @@ namespace CIM.BusinessLogic.Services
             }
             _recordManufacturingLossRepository.Edit(dbModel);
 
-            dbModel = await HandleWaste(dbModel, model, now);
+            if(model.IsWasteChanged) 
+                dbModel = await HandleWaste(dbModel, model, now);
 
             await _unitOfWork.CommitAsync();
             await SetCached(activeProductionPlan);
@@ -231,20 +239,29 @@ namespace CIM.BusinessLogic.Services
         private async Task<RecordManufacturingLoss> HandleWaste(RecordManufacturingLoss dbModel, RecordManufacturingLossModel model, DateTime now)
         {
             await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
+            var productId = model.WasteList[0].ProductId;
+            var productMats = _productmaterialRepository.Where(x => x.ProductId == productId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+
             foreach (var item in model.WasteList)
             {
                 var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
                 foreach (var material in item.Materials)
                 {
                     var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                    waste.RecordProductionPlanWasteMaterials.Add(mat);
+                    if (item.AmountUnit > 0 && item.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * item.AmountUnit;
+                    mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+                    if (mat.Amount > 0) waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
-                dbModel.RecordProductionPlanWaste.Add(waste);
-                waste.CreatedAt = now;
-                waste.CreatedBy = CurrentUser.UserId;
-                waste.ProductionPlanId = model.ProductionPlanId;
-                waste.CauseMachineId = model.MachineId;
+                if (waste.RecordProductionPlanWasteMaterials.Count > 0)
+                {
+                    dbModel.RecordProductionPlanWaste.Add(waste);
+                    waste.CreatedAt = now;
+                    waste.CreatedBy = CurrentUser.UserId;
+                    waste.ProductionPlanId = model.ProductionPlanId;
+                    waste.CauseMachineId = model.MachineId;
+                }
 
             }
             return dbModel;

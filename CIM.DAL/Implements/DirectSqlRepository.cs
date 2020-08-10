@@ -109,6 +109,28 @@ namespace CIM.DAL.Implements
             }
         }
 
+        public void bulkCopy(string _destinationtable, DataTable _source)
+        {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection sqlConn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    sqlConn.Open();
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(sqlConn))
+                    {
+                        bulkCopy.DestinationTableName = _destinationtable;
+
+                        // Write from the source to the destination.
+                        bulkCopy.WriteToServer(_source);
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
         public T ExecuteFunction<T>(string sql, Dictionary<string, object> parameters) {
             var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
