@@ -17,7 +17,10 @@ namespace CIM.BusinessLogic.Interfaces
         Task<UserModel> Get(string id);
         Task Update(UserModel model);
         Task<UserModel> GetFromUserName(string userName);
+        Task<UserModel> GetFromToken(string token);
         Task UpdateTokenExpire(string userId);
-        Task<ProcessReponseModel<object>> VerifyToken(string token, int appId);
+        Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId);
+        Task<ProcessReponseModel<object>> VerifyToken(string token);
+        Task Logout(string token);
     }
 }

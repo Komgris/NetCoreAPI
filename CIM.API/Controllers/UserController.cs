@@ -103,5 +103,22 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetFromToken")]
+        public async Task<ProcessReponseModel<UserModel>> GetFromToken(string token)
+        {
+            var output = new ProcessReponseModel<UserModel>();
+            try
+            {
+                output.Data = await _service.GetFromToken(token);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
     }
 }

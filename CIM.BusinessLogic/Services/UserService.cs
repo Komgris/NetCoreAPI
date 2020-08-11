@@ -53,7 +53,7 @@ namespace CIM.BusinessLogic.Services
                 CreatedBy = CurrentUser.UserId,
                 IsActive = true,
                 Id = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
+                UserName = model.UserName.ToLower(),
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
                 UserGroupId = model.UserGroupId,
@@ -83,7 +83,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<AuthModel> Auth(string username, string password)
         {
             AuthModel result = new AuthModel();
-            var dbModel = await _userRepository.Where(x => x.UserName == username)
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower())
                 .Select(
                     x => new
                     {
@@ -95,6 +95,7 @@ namespace CIM.BusinessLogic.Services
                         Apps = x.UserGroup.UserGroupsApps.Where(x => x.App.IsActive)
                         .Select(app => new AppModel
                         {
+                            Id = app.App.Id,
                             Name = app.App.Name,
                             Url = app.App.Url
                         })
@@ -104,17 +105,16 @@ namespace CIM.BusinessLogic.Services
 
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
-
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
                 result.Token = await CreateToken(dbModel.Id);
                 result.Group = dbModel.Group;
                 result.Apps = dbModel.Apps.ToList();
+                result.ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)"));
 
-                await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{dbModel.Id}");
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.TOKEN}-{dbModel.Id}", result);
-            }            
+                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
+            }
 
             return result;
         }
@@ -161,36 +161,54 @@ namespace CIM.BusinessLogic.Services
             return isValid;
         }
 
-        public async Task<ProcessReponseModel<object>> VerifyToken(string token, int appId)
+        public async Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId)
         {
             var output = new ProcessReponseModel<object>();
-            output.IsSuccess = false;
-            output.Message = "Unauthorized";
-
-            var currentTokenDataString = _cipherService.Decrypt(token);
-            var currentUserAppToken = JsonConvert.DeserializeObject<UserAppTokens>(currentTokenDataString);            
-
-            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{currentUserAppToken.UserId}");
-            var tokenDataString = _cipherService.Decrypt(authModel.Token);
-            var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(tokenDataString);
-            var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
-            var checkExpire = userAppToken.ExpiredAt >= DateTime.Now ? true : false;
-
-            var currentUserModel = new CurrentUserModel
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
             {
-                IsValid = userAppToken != null && userGroupApp != null && checkExpire,
-                UserId = currentUserAppToken.UserId
-            };
-            
-            if (currentUserModel.IsValid)
-            {
-                authModel.Token = await CreateToken(authModel.UserId);
-                await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{currentUserAppToken.UserId}");
-                await _responseCacheService.SetAsync($"{Constans.RedisKey.TOKEN}-{currentUserAppToken.UserId}", authModel);
-                output.IsSuccess = true;
-                output.Message = "";
+                var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
+                if (userGroupApp != null)
+                {
+                    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel, _configuration.GetValue<int>("TokenExpire(Min)"));
+                    output.IsSuccess = true;
+                }
+                else
+                {
+                    output.Message = "Unauthorized";
+                }
             }
+            else
+            {
+                output.Message = "Unauthorized";
+            }
+
             return output;
+        }
+
+        public async Task<ProcessReponseModel<object>> VerifyToken(string token)
+        {
+            var output = new ProcessReponseModel<object>();
+
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
+            {
+                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel
+                    , _configuration.GetValue<int>("TokenExpire(Min)"));
+
+                output.IsSuccess = true;
+            }
+            else
+            {
+                output.Message = "Unauthorized";
+            }
+
+            return output;
+        }
+
+        public async Task Logout(string token)
+        {
+            await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{token}");
         }
 
         public CurrentUserModel GetCurrentUserModel(string token, int appId)
@@ -231,7 +249,7 @@ namespace CIM.BusinessLogic.Services
             {
                 item.ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)"));
                 _userAppTokenRepository.Edit(item);
-            }                        
+            }
             await _unitOfWork.CommitAsync();
         }
 
@@ -323,6 +341,16 @@ namespace CIM.BusinessLogic.Services
                     UserName = x.UserName,
                     IsActive = x.IsActive,
                     IsDelete = x.IsDelete
+                }).FirstOrDefaultAsync();
+        }
+
+        public async Task<UserModel> GetFromToken(string token)
+        {
+            return await _userAppTokenRepository.Where(x => x.Token == token)
+                .Select(x => new UserModel
+                {
+                    Id = x.UserId,
+                    UserName = x.User.UserName
                 }).FirstOrDefaultAsync();
         }
 

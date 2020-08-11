@@ -19,6 +19,8 @@ namespace CIM.Model
         public IDictionary<int, ProcessDrivenModel> ProcessDriven { get; set; }
         public IDictionary<int, ManufacturingPerformanceNoMachineModel> ManufacturingPerformance { get; set; }
         public IDictionary<int, AppFeatureModel> AppFeature { get; set; }
+        public string RedirectUrl { get; set; }
+
     }
 
 }

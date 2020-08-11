@@ -8,11 +8,11 @@ namespace CIM.Model
     {
 
         public string UserId { get; set; }
-
         public string FullName { get; set; }
         public bool IsSuccess { get; set; }
         public string Group { get; set; }
         public List<AppModel> Apps { get; set; }
         public string Token { get; set; }
+        public DateTime ExpiredAt { get; set; }
     }
 }

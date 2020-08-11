@@ -2,6 +2,7 @@
 using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,7 @@ namespace CIM.BusinessLogic.Services
         private IProcessTypeRepository _processTypeRepository;
         private IAppRepository _appRepository;
         private IAppFeatureRepository _appFeatureRepository;
+        private IConfiguration _configuration;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -74,7 +76,8 @@ namespace CIM.BusinessLogic.Services
             IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
-            IAppFeatureRepository appFeatureRepository
+            IAppFeatureRepository appFeatureRepository,
+            IConfiguration configuration
             )
         {
             _lossLevel2Repository = lossLevel2Repository;
@@ -106,6 +109,7 @@ namespace CIM.BusinessLogic.Services
             _userGroupRepository = userGroupRepository;
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
+            _configuration = configuration;
         }
         public MasterDataModel Data { get; set; }
 
@@ -280,6 +284,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProcessDriven = await GetProcessDriven();
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
                     masterData.AppFeature = await GetAppFeature();
+                    masterData.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
