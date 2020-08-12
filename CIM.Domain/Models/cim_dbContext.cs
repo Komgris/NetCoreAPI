@@ -39,7 +39,9 @@ namespace CIM.Domain.Models
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
+        public virtual DbSet<MachineMonitors> MachineMonitors { get; set; }
         public virtual DbSet<MachineOperators> MachineOperators { get; set; }
+        public virtual DbSet<MachinePanel> MachinePanel { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineTeam> MachineTeam { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
@@ -914,6 +916,27 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Machine_MachineStatus");
             });
 
+            modelBuilder.Entity<MachineMonitors>(entity =>
+            {
+                entity.ToTable("Machine_Monitors");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.PanelId).HasColumnName("Panel_Id");
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.MachineMonitors)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Monitors_Machine");
+
+                entity.HasOne(d => d.Panel)
+                    .WithMany(p => p.MachineMonitors)
+                    .HasForeignKey(d => d.PanelId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Monitors_Machine_Panel");
+            });
+
             modelBuilder.Entity<MachineOperators>(entity =>
             {
                 entity.ToTable("Machine_Operators");
@@ -929,6 +952,20 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.PlanId)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<MachinePanel>(entity =>
+            {
+                entity.ToTable("Machine_Panel");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
             });
 
             modelBuilder.Entity<MachineStatus>(entity =>
