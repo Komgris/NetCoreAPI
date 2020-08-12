@@ -192,7 +192,7 @@ namespace CIM.API {
 #if (DEBUG)
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
 #else
-                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                c.SwaggerEndpoint("/cim-api/swagger/v1/swagger.json", "CIM Data Service");
 #endif
             });
 

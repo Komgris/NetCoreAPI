@@ -254,11 +254,14 @@ namespace CIM.BusinessLogic.Services
                     if (mat.Amount > 0) waste.RecordProductionPlanWasteMaterials.Add(mat);
                 }
 
-                dbModel.RecordProductionPlanWaste.Add(waste);
-                waste.CreatedAt = now;
-                waste.CreatedBy = CurrentUser.UserId;
-                waste.ProductionPlanId = model.ProductionPlanId;
-                waste.CauseMachineId = model.MachineId;
+                if (waste.RecordProductionPlanWasteMaterials.Count > 0)
+                {
+                    dbModel.RecordProductionPlanWaste.Add(waste);
+                    waste.CreatedAt = now;
+                    waste.CreatedBy = CurrentUser.UserId;
+                    waste.ProductionPlanId = model.ProductionPlanId;
+                    waste.CauseMachineId = model.MachineId;
+                }
 
             }
             return dbModel;
