@@ -434,6 +434,7 @@ namespace CIM.API.Controllers {
         //    }
         //    return output;
         //}
+
         //[Route("api/[controller]/GetManagementDashboard")]
         //[HttpGet]
         //public async Task<string> GetManagementDashboard(DataFrame timeFrame)
