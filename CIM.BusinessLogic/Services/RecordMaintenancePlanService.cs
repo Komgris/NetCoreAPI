@@ -40,6 +40,17 @@ namespace CIM.BusinessLogic.Services
 
         }
 
+        public async Task<PagingModel<RecordMaintenancePlanModel>> List(string keyword, int page, int howMany)
+        {
+            var output = await _recordMaintenancePlanRepositiry.ListAsPaging("sp_ListRecordMaintenancePlan", new Dictionary<string, object>()
+                {
+                    {"@keyword", keyword},
+                    {"@howmany", howMany},
+                    { "@page", page}
+                }, page, howMany);
+            return output;
+        }
+
         public async Task<List<RecordMaintenancePlanModel>> ListByDate(DateTime date)
         {
             var output = await _recordMaintenancePlanRepositiry.List("sp_ListRecordMaintenancePlanByDate", new Dictionary<string, object>()

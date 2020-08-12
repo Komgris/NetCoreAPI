@@ -15,6 +15,7 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<AccidentCategory> AccidentCategory { get; set; }
         public virtual DbSet<AccidentParticipants> AccidentParticipants { get; set; }
         public virtual DbSet<Accidents> Accidents { get; set; }
         public virtual DbSet<App> App { get; set; }
@@ -110,6 +111,28 @@ namespace CIM.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccidentCategory>(entity =>
+            {
+                entity.ToTable("Accident_Category");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<AccidentParticipants>(entity =>
             {
                 entity.ToTable("Accident_Participants");
@@ -131,6 +154,8 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Accidents>(entity =>
             {
+                entity.Property(e => e.CategoryId).HasColumnName("Category_Id");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -151,6 +176,11 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Accidents)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_Accidents_Accident_Category");
             });
 
             modelBuilder.Entity<App>(entity =>
