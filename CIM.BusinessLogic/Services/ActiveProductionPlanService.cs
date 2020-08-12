@@ -1,24 +1,18 @@
 ﻿using CIM.BusinessLogic.Interfaces;
-using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using static CIM.Model.Constans;
 
-namespace CIM.BusinessLogic.Services
-{
+namespace CIM.BusinessLogic.Services {
     public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
     {
         private IResponseCacheService _responseCacheService;
