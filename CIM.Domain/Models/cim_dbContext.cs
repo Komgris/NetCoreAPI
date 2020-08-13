@@ -1363,7 +1363,9 @@ namespace CIM.Domain.Models
                     .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Code).HasMaxLength(50);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1388,6 +1390,11 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
+                entity.Property(e => e.Pid)
+                    .IsRequired()
+                    .HasColumnName("PID")
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.PMWeight)
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 2)");
@@ -1411,7 +1418,6 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.ProductFamily)
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.ProductFamilyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductFamily");
 
                 entity.HasOne(d => d.ProductGroup)
@@ -1934,7 +1940,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.FactorDivide).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.FactorMultiply).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
