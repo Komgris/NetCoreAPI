@@ -21,6 +21,24 @@ namespace CIM.API.Controllers
             _recordMaintenancePlanService = recordMaintenancePlanService;
         }
 
+        [Route("api/[controller]/List")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<RecordMaintenancePlanModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordMaintenancePlanModel>>();
+            try
+            {
+                output.Data = await _recordMaintenancePlanService.List(keyword, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
         [Route("api/[controller]/ListByMonth")]
         [HttpGet]
         public async Task<ProcessReponseModel<List<RecordMaintenancePlanModel>>> ListByMonth(int month, int year, bool isActive)
