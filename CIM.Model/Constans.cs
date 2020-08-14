@@ -178,5 +178,13 @@ namespace CIM.Model
                 StoreName = storeName;
             }
         }
+
+        public enum NetworkState {
+            VeryGood,
+            Good,
+            QuiteGood,
+            Poor,
+            Bad
+        }
     }
 }

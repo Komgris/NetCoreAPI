@@ -201,7 +201,6 @@ namespace CIM.API.Controllers
 
         #endregion
 
-
         #region Cim-oper mc status
 
         [HttpGet]
@@ -277,7 +276,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionLoss(string planId, int routeId, int lossLv, int? machineId, int? lossId)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -311,7 +309,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetWasteByCases(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -328,7 +325,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetWasteByMachines(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -345,7 +341,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetWasteCostByTime(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
