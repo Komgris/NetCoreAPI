@@ -13,7 +13,7 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string Code { get; set; }
-        public string Pid { get; set; }
+        public string PID { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
         public int? UnitId { get; set; }

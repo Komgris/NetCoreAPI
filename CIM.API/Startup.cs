@@ -1,35 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CIM.API.Installer;
 using CIM.API.HubConfig;
-using CIM.BusinessLogic;
 using CIM.BusinessLogic.Interfaces;
 using CIM.BusinessLogic.Services;
 using CIM.DAL.Implements;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
-using CIM.BusinessLogic.Utility;
 
-namespace CIM.API
-{
+namespace CIM.API {
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -114,6 +101,7 @@ namespace CIM.API
             services.AddTransient<IUserGroupAppRepository, UserGroupAppRepository>();
             services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
             services.AddTransient<IAccidentCategoryRepository, AccidentCategoryRepository>();
+            services.AddTransient<IWasteNonePrimeRepository, WasteNonePrimeRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -153,6 +141,7 @@ namespace CIM.API
             services.AddTransient<IUserGroupService, UserGroupService>();
             services.AddTransient<IUserGroupAppService, UserGroupAppService>();
             services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();
+            services.AddTransient<IHardwareInterfaceService, HardwareInterfaceService>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -205,7 +194,7 @@ namespace CIM.API
 #if (DEBUG)
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
 #else
-                c.SwaggerEndpoint("/cim-dev-api/swagger/v1/swagger.json", "CIM Data Service");
+                c.SwaggerEndpoint("/cim-api/swagger/v1/swagger.json", "CIM Data Service");
 #endif
             });
 

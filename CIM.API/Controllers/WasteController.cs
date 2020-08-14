@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class WasteController : BoardcastController
     {
         private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
@@ -104,7 +105,15 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
+                var dbModel = await _recordProductionPlanWasteService.Get(id);
                 await _recordProductionPlanWasteService.Delete(id);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, dbModel.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -130,5 +139,40 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpPost]
+        [Route("NonePrimeCreate")]
+        public async Task<ProcessReponseModel<object>> NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _recordProductionPlanWasteService.NonePrimeCreate(models);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpGet]
+        [Route("RecordNonePrimeList")]
+        public async Task<ProcessReponseModel<object>> RecordNonePrimeList(string planId, int routeId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _recordProductionPlanWasteService.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
     }
 }

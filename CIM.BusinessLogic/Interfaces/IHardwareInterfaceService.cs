@@ -8,6 +8,7 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IHardwareInterfaceService : IBaseService
     {
-        Task<bool> OutputUpdate(RecordOutputModel model);
+        Task UpdateNetworkStatus(List<NetworkStatusModel> listData);
+        Task<object> GetNetworkStatus();
     }
 }

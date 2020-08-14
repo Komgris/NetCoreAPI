@@ -5,6 +5,7 @@ using CIM.Model;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,8 +15,8 @@ using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class MasterDataService : BaseService, IMasterDataService
-    {
+    public class MasterDataService : BaseService, IMasterDataService {
+        private IDirectSqlRepository _directSqlRepository;
         private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
         private IResponseCacheService _responseCacheService;
@@ -47,6 +48,8 @@ namespace CIM.BusinessLogic.Services
         private IAppFeatureRepository _appFeatureRepository;
         private IAccidentCategoryRepository _accidentCategoryRepository;
 
+        private IWasteNonePrimeRepository _wastenoneprimeRepository;
+
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -76,10 +79,13 @@ namespace CIM.BusinessLogic.Services
             IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
-            IAppFeatureRepository appFeatureRepository,
+            IAppFeatureRepository appFeatureRepository, 
+            IDirectSqlRepository directSqlRepository,
+            IWasteNonePrimeRepository wastenoneprimeRepository,
             IAccidentCategoryRepository accidentCategoryRepository
             )
         {
+            _directSqlRepository = directSqlRepository;
             _lossLevel2Repository = lossLevel2Repository;
             _lossLevel3Repository = lossLevel3Repository;
             _responseCacheService = responseCacheService;
@@ -109,6 +115,7 @@ namespace CIM.BusinessLogic.Services
             _userGroupRepository = userGroupRepository;
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
+            _wastenoneprimeRepository = wastenoneprimeRepository;
             _accidentCategoryRepository = accidentCategoryRepository;
         }
         public MasterDataModel Data { get; set; }
@@ -307,6 +314,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.Language = await GetLanguageDictionary();
                     masterData.Dictionary.App = await GetAppDictionary();
                     masterData.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
+                    masterData.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -745,6 +753,16 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
-
+        private async Task<IDictionary<int, string>> GetWasteNonePrime()
+        {
+            var db = await Task.Run(()=> _wastenoneprimeRepository.Where(x=>x.IsActive).OrderBy(x=>x.Id));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
     }
 }

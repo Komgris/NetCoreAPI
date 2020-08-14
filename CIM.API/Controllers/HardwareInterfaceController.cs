@@ -15,6 +15,8 @@ namespace CIM.API.Controllers
     [ApiController]
     public class HardwareInterfaceController : BoardcastController {
         private IMachineService _machineService;
+        IHardwareInterfaceService _hwinterfaceService;
+
 
         public HardwareInterfaceController(
             IHubContext<GlobalHub> hub,
@@ -22,10 +24,12 @@ namespace CIM.API.Controllers
             IResponseCacheService responseCacheService,
             IReportService service,
             IConfiguration config,
-            IActiveProductionPlanService activeProductionPlanService
+            IActiveProductionPlanService activeProductionPlanService,
+            IHardwareInterfaceService hwinterfaceService
             ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
         {
             _machineService = machineService;
+            _hwinterfaceService = hwinterfaceService;
         }
 
         [HttpGet]
@@ -155,6 +159,35 @@ namespace CIM.API.Controllers
 
             return output;
 
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/UpdateNetworkStatus")]
+        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData)
+        {
+            try
+            {
+                await _hwinterfaceService.UpdateNetworkStatus(listData);
+            }
+            catch {
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetNetworkStatus")]
+        public async Task<ProcessReponseModel<object>> GetNetworkStatus()
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _hwinterfaceService.GetNetworkStatus(), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
         }
     }
 }

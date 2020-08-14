@@ -12,6 +12,7 @@ namespace CIM.Domain.Models
         public int? TotalIn { get; set; }
         public int? CounterOut { get; set; }
         public int? TotalOut { get; set; }
+        public int? AdditionalCounterOut { get; set; }
         public bool? GoalByHour { get; set; }
         public bool? IsCounterStd { get; set; }
         public string Remark { get; set; }

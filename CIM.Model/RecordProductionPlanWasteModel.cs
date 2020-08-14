@@ -5,7 +5,6 @@ namespace CIM.Model
 {
     public class RecordProductionPlanWasteModel
     {
-
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int RouteId { get; set; }
@@ -27,6 +26,10 @@ namespace CIM.Model
         public int Year { get; set; }
 
         public List<RecordProductionPlanWasteMaterialModel> Materials { get; set; }
+
+        public List<int> IngredientsMaterials { get; set; }
+        public decimal AmountUnit { get; set; }
+        public int ProductId { get; set; }
 
     }
 }

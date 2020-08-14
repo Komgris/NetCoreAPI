@@ -84,7 +84,8 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        public ReportService(IDirectSqlRepository directSqlRepository, IResponseCacheService responseCacheService)
+        public ReportService(IDirectSqlRepository directSqlRepository, 
+            IResponseCacheService responseCacheService)
         {
             _directSqlRepository = directSqlRepository;
             _responseCacheService = responseCacheService;

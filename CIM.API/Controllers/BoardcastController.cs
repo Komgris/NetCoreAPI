@@ -160,8 +160,8 @@ namespace CIM.API.Controllers
                 .Where(x => x.LossLevel3Id == defaultLoss)
                 .ToList();
         }
-        #endregion
 
+        #endregion
 
     }
 }
