@@ -10,8 +10,8 @@ namespace CIM.Model
         public string PlanId { get; set; }
         public int? RouteId { get; set; }
         public string Route { get; set; }
-
         public int ProductId { get; set; }
+        public string PID { get; set; }
         public string Product { get; set; }
         public int ProductGroupId { get; set; }
         public string ProductGroup { get; set; }

@@ -83,7 +83,7 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Image = x.Image,
                             Code = x.Code,
-                            Pid = x.PID,
+                            PID = x.PID,
                             Description = x.Description,
                             BriteItemPerUPCItem = x.BriteItemPerUPCItem,
                             ProductFamilyId = x.ProductFamilyId,
