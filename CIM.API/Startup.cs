@@ -113,6 +113,7 @@ namespace CIM.API
             services.AddTransient<IAppFeatureRepository, AppFeatureRepository>();
             services.AddTransient<IUserGroupAppRepository, UserGroupAppRepository>();
             services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
+            services.AddTransient<IAccidentCategoryRepository, AccidentCategoryRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();

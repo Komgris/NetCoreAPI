@@ -29,5 +29,6 @@ namespace CIM.Model
         public IDictionary<int, string> App { get; set; } = new Dictionary<int, string>();
 
         public IDictionary<int, string> ProcessType { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, string> AccidentCategory { get; set; } = new Dictionary<int, string>();
     }
 }
