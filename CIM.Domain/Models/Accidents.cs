@@ -18,7 +18,9 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public string Note { get; set; }
+        public int? CategoryId { get; set; }
 
+        public virtual AccidentCategory Category { get; set; }
         public virtual ICollection<AccidentParticipants> AccidentParticipants { get; set; }
     }
 }

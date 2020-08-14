@@ -46,6 +46,8 @@ namespace CIM.BusinessLogic.Services
         private IProcessTypeRepository _processTypeRepository;
         private IAppRepository _appRepository;
         private IAppFeatureRepository _appFeatureRepository;
+        private IAccidentCategoryRepository _accidentCategoryRepository;
+
         private IWasteNonePrimeRepository _wastenoneprimeRepository;
 
         public MasterDataService(
@@ -80,6 +82,7 @@ namespace CIM.BusinessLogic.Services
             IAppFeatureRepository appFeatureRepository, 
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository
+            IAccidentCategoryRepository accidentCategoryRepository
             )
         {
             _directSqlRepository = directSqlRepository;
@@ -113,6 +116,7 @@ namespace CIM.BusinessLogic.Services
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
             _wastenoneprimeRepository = wastenoneprimeRepository;
+            _accidentCategoryRepository = accidentCategoryRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -307,8 +311,9 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.Education = await GetEducationDictionary();
                     masterData.Dictionary.ProcessType = await GetProcessTypeDictionary();
                     masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
-                    masterData.Dictionary.Language = await GetLanguageDictionary(); 
+                    masterData.Dictionary.Language = await GetLanguageDictionary();
                     masterData.Dictionary.App = await GetAppDictionary();
+                    masterData.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
                     masterData.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 
@@ -409,6 +414,11 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
             return masterData;
 
+        }
+
+        private async Task<IDictionary<int, string>> GetAccidentCategoryDictionary()
+        {
+            return (await _accidentCategoryRepository.AllAsync()).ToDictionary(x => x.Id, x => x.Name);
         }
 
         private IDictionary<int, Dictionary<int, WasteDictionaryModel>> GetWastesByProductType(IList<WasteDictionaryModel> wastesLevel1, IList<WasteDictionaryModel> wastesLevel2)
