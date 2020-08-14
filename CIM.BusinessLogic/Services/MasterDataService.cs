@@ -81,7 +81,7 @@ namespace CIM.BusinessLogic.Services
             IAppRepository appRepository,
             IAppFeatureRepository appFeatureRepository, 
             IDirectSqlRepository directSqlRepository,
-            IWasteNonePrimeRepository wastenoneprimeRepository
+            IWasteNonePrimeRepository wastenoneprimeRepository,
             IAccidentCategoryRepository accidentCategoryRepository
             )
         {
