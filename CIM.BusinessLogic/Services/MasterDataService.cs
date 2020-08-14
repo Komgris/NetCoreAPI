@@ -289,6 +289,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
                     masterData.AppFeature = await GetAppFeature();
                     masterData.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
+                    masterData.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
