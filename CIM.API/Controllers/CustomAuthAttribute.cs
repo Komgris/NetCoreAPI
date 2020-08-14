@@ -33,7 +33,6 @@ namespace CIM.API.Controllers
                 context.Items.Add(Constans.CURRENT_USER, currentUserModel);
                 if (currentUserModel.IsValid)
                 {
-                    await userService.UpdateTokenExpire(currentUserModel.UserId);
                     await this.next.Invoke(context);
                 }
                 else
