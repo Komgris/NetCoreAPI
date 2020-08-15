@@ -25,8 +25,10 @@ namespace CIM.API {
 
 #if (DEBUG)
             BaseService.ImagePath = Directory.GetCurrentDirectory()+"\\Image";
+            BaseService.DocPath = Directory.GetCurrentDirectory() + "\\doc";
 #else
             BaseService.ImagePath =  Configuration.GetValue<string>("ServerPath");
+            BaseService.DocPath =  Configuration.GetValue<string>("DocPath");
 #endif
 
         }

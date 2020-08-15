@@ -42,7 +42,7 @@ namespace CIM.API.Controllers {
             {
                 var file = Request.Form.Files[0];
                 var folderName = Path.Combine("ProductionPlan");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var pathToSave = Path.Combine(DocPath, folderName);
                 if (!Directory.Exists(pathToSave))
                 {
                     Directory.CreateDirectory(pathToSave);

@@ -50,9 +50,8 @@ namespace CIM.BusinessLogic.Services
             public const int LINE = 1;
             public const int WBRT = 2;
             public const int PLAN = 3;
-            public const int ITEMBRITE = 4;
             public const int COUNTRY = 5;
-            public const int PRODUCT = 3;
+            public const int PRODUCT = 4;
             public const int RAWMATERIAL = 6;
             public const int INGREDIENT = 7;
             public const int BRIX = 8;
@@ -280,7 +279,6 @@ namespace CIM.BusinessLogic.Services
                 data.Line = oSheet.Cells[i, ExcelMapping.LINE].CellValToString();
                 data.Wbrt = oSheet.Cells[i, ExcelMapping.WBRT].CellValToString();
                 data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
-                data.ItemBrite = oSheet.Cells[i, ExcelMapping.ITEMBRITE].CellValToString();
                 data.Country = oSheet.Cells[i, ExcelMapping.COUNTRY].CellValToString();
                 data.RawMaterial = oSheet.Cells[i, ExcelMapping.RAWMATERIAL].CellValToString();
                 data.Ingredient = oSheet.Cells[i, ExcelMapping.INGREDIENT].CellValToString();
