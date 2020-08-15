@@ -22,22 +22,24 @@ namespace CIM.BusinessLogic.Services {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+
+        #region Config
+
         private Dictionary<ManagementDashboardType, DashboardConfig> ManagementDashboardConfig
             = new Dictionary<ManagementDashboardType, DashboardConfig>()
             {
-                        { ManagementDashboardType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
-                        { ManagementDashboardType.ProductionSummary, new DashboardConfig("ProductionSummary","sp_Dashboard_Output")},
-                        { ManagementDashboardType.WasteByMaterial, new DashboardConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
-                        { ManagementDashboardType.WasteBySymptom, new DashboardConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
-                        { ManagementDashboardType.MachineLossTree, new DashboardConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
-                        { ManagementDashboardType.MachineLossLvl1, new DashboardConfig("MachineLossLvl1","-")},
-                        { ManagementDashboardType.MachineLossLvl2, new DashboardConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
-                        { ManagementDashboardType.MachineLossLvl3, new DashboardConfig("MachineLossLvl3","-")},
-                        { ManagementDashboardType.CapacityUtilization, new DashboardConfig("CapacityUtilization","sp_Dashboard_Utilization")},
-                        { ManagementDashboardType.MachineLossHighLight, new DashboardConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+                                { ManagementDashboardType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
+                                { ManagementDashboardType.ProductionSummary, new DashboardConfig("ProductionSummary","sp_Dashboard_Output")},
+                                { ManagementDashboardType.WasteByMaterial, new DashboardConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
+                                { ManagementDashboardType.WasteBySymptom, new DashboardConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
+                                { ManagementDashboardType.MachineLossTree, new DashboardConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
+                                { ManagementDashboardType.MachineLossLvl1, new DashboardConfig("MachineLossLvl1","-")},
+                                { ManagementDashboardType.MachineLossLvl2, new DashboardConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
+                                { ManagementDashboardType.MachineLossLvl3, new DashboardConfig("MachineLossLvl3","-")},
+                                { ManagementDashboardType.CapacityUtilization, new DashboardConfig("CapacityUtilization","sp_Dashboard_Utilization")},
+                                { ManagementDashboardType.MachineLossHighLight, new DashboardConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
             };
 
-        #region Config
         private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
             = new Dictionary<BoardcastType, DashboardConfig>()
             {
@@ -91,93 +93,7 @@ namespace CIM.BusinessLogic.Services {
             _responseCacheService = responseCacheService;
         }
 
-        #region  Cim-Oper Production overview
-
-        public DataTable GetProductionEvents(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionevents", paramsList);
-        }
-
-        public DataTable GetProductionOperators(string planId, int routeId) {
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionoperators", paramsList);
-        }
-
-        public DataTable GetProductionPlanInfomation(string planId, int routeId) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productioninfo", paramsList);
-        }
-
-        public DataTable GetMachineSpeed(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_machinespeed", paramsList);
-        }
-
-        public DataTable GetCapacityUtilisation(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_capacity_ultilisation", paramsList);
-        }
-        
-        #endregion
-
         #region  Cim-Oper Mc-Loss
-
-        public DataTable GetProductionSummary(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_productionsummary", paramsList);
-        }
-
-        public DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? machineId,int? lossId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@losslv", lossLv },
-                {"@mcid", machineId },
-                {"@from", from },
-                {"@to", to },
-                {"@lossid", lossId }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
-        }
 
         public PagingModel<object> GetProductionWCMLossHistory(string planId, int routeId, DateTime? from, DateTime? to, int page) {
 
@@ -200,112 +116,14 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region  Cim-Oper dashboard
-        public DataTable GetProductionDasboard(string planId, int routeId, int machineId) {
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@mcid", machineId }
-            };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Dashboard", paramsList);
-        }
         public Dictionary<string, int> GetActiveProductionPlanOutput() {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
         }
 
         #endregion
 
-        #region Cim-oper waste
-
-        public DataTable GetWasteByMaterials(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_materials", paramsList);
-        }
-
-        public DataTable GetWasteByCases(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cases", paramsList);
-        }
-
-        public DataTable GetWasteByMachines(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_machines", paramsList);
-        }
-
-        public DataTable GetWasteCostByTime(string planId, int routeId, DateTime? from, DateTime? to) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_cost_time", paramsList);
-        }
-
-        public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to },
-                {"@page", page }
-            };
-
-            var dt =  _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
-            var totalcnt = dt.Rows[0].Field<int>("totalcount");
-            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
-            pagingmodel.DataObject = dt;
-
-            return pagingmodel;
-        }
-
-        #endregion
-
         #region Cim-oper mc status
-
-        public DataTable GetActiveMachineInfo(string planId, int routeId) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineinfo", paramsList);
-        }
-        
-        public DataTable GetActiveMachineEvents(string planId, int routeId) {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId }
-            };
-
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_active_machineevent", paramsList);
-        }
 
         public PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null) {
             var paramsList = new Dictionary<string, object>() {
@@ -326,212 +144,6 @@ namespace CIM.BusinessLogic.Services {
             return pagingmodel;
         }
         
-        #endregion
-
-        #region Cim-Oper boardcast data
-
-        public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
-        {
-            var boardcastData = await GenerateBoardcastData(updateType, productionPlan, routeId);
-            if (boardcastData.Data.Count > 0)
-            {
-                //to add data to activeproduction plan
-                var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
-            }
-            return null;
-        }
-
-        public async Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId)
-        {
-            var boardcastData = new BoardcastModel();
-            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    switch (updateType)
-                    {
-                        case BoardcastType.All:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveProductionSummary
-                                                                , BoardcastType.ActiveProductionOutput
-                                                                , BoardcastType.ActiveWasteMat
-                                                                , BoardcastType.ActiveWasteCase
-                                                                , BoardcastType.ActiveWasteMC
-                                                                , BoardcastType.ActiveWasteTime
-                                                                , BoardcastType.ActiveLoss
-                                                                , BoardcastType.ActiveTimeUtilisation
-                                                                , BoardcastType.ActiveProductionEvent
-                                                                , BoardcastType.ActiveOperator
-                                                                , BoardcastType.ActiveMachineInfo
-                                                                , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineLossEvent}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveKPI:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveKPI}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveProductionSummary:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveMachineInfo
-                                                                , BoardcastType.ActiveProductionSummary
-                                                                , BoardcastType.ActiveProductionOutput
-                                                                , BoardcastType.ActiveMachineSpeed}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveLoss:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveLoss
-                                                                , BoardcastType.ActiveTimeUtilisation
-                                                                , BoardcastType.ActiveProductionEvent
-                                                                , BoardcastType.ActiveMachineInfo}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveTimeUtilisation:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveTimeUtilisation}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveWaste:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveKPI
-                                                                , BoardcastType.ActiveWasteMat
-                                                                , BoardcastType.ActiveWasteCase
-                                                                , BoardcastType.ActiveWasteMC
-                                                                , BoardcastType.ActiveWasteTime}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveProductionEvent:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{BoardcastType.ActiveProductionEvent}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveOperator:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.ActiveOperator}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveMachineInfo:
-                        case BoardcastType.ActiveMachineSpeed:
-                        case BoardcastType.ActiveMachineLossEvent:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{BoardcastType.ActiveMachineInfo
-                                                                , BoardcastType.ActiveMachineSpeed
-                                                                , BoardcastType.ActiveMachineLossEvent
-                                                                , BoardcastType.ActiveProductionEvent
-                                                                , BoardcastType.ActiveTimeUtilisation}
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    boardcastData.IsSuccess = false;
-                    boardcastData.Message = ex.Message;
-                }
-
-                return boardcastData;
-            });
-        }
-        #endregion
-
-        #region Cim-Mng boardcast data
-
-        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
-        {
-            var boardcastData = new BoardcastModel(timeFrame);
-            var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    switch (updateType)
-                    {
-                        case BoardcastType.All:
-                                boardcastData = GenerateBoardcastData(
-                                                                new []{ BoardcastType.KPI
-                                                                , BoardcastType.Output
-                                                                , BoardcastType.Loss
-                                                                , BoardcastType.TimeUtilisation
-                                                                , BoardcastType.Waste}
-                                                                , timeFrame, paramsList);
-                                break;
-                            case BoardcastType.KPI:
-                                boardcastData = GenerateBoardcastData(
-                                                                new[]{ BoardcastType.KPI}
-                                                                , timeFrame, paramsList);
-                                break;
-                            case BoardcastType.Output:
-                                boardcastData = GenerateBoardcastData(
-                                                                new[] { BoardcastType.Output
-                                                                    , BoardcastType.KPI}
-                                                                , timeFrame, paramsList);
-                                break;
-                            case BoardcastType.Loss:
-                                boardcastData = GenerateBoardcastData(
-                                                                new[] { BoardcastType.Loss
-                                                                    , BoardcastType.KPI
-                                                                    , BoardcastType.TimeUtilisation}
-                                                                , timeFrame, paramsList);
-                                break;
-                        case BoardcastType.TimeUtilisation:
-                                boardcastData = GenerateBoardcastData(
-                                                                new[] { BoardcastType.TimeUtilisation}
-                                                                , timeFrame, paramsList);
-                                break;
-                            case BoardcastType.Waste:
-                                boardcastData = GenerateBoardcastData(
-                                                                new[] { BoardcastType.Waste }
-                                                                , timeFrame, paramsList);
-                                break;
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        boardcastData.IsSuccess = false;
-                        boardcastData.Message = ex.Message;
-                    }
-
-                    return boardcastData;
-            });
-        }
-
-        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var boardcastData = new BoardcastModel(timeFrame);
-            foreach (var dbtype in dashboardType)
-            {
-                boardcastData.SetData(
-                                        GetData(DashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
-            }
-            return boardcastData;
-        }
-
-        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var dashboarddata = new BoardcastDataModel();
-            try
-            {
-                dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-            }
-            catch (Exception ex)
-            {
-                dashboarddata.JsonData = null;
-                dashboarddata.IsSuccess = false;
-                dashboarddata.Message = ex.Message;
-            }
-            return dashboarddata;
-        }
-
         #endregion
 
         #region Cim-Mng Report
@@ -612,6 +224,120 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
 
+        #region Cim-Oper boardcast data
+
+        public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            var boardcastData = await GenerateBoardcastData(updateType, productionPlan, routeId);
+            if (boardcastData.Data.Count > 0)
+            {
+                //to add data to activeproduction plan
+                var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
+            }
+            return null;
+        }
+
+        public async Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId)
+        {
+            var boardcastData = new BoardcastModel();
+            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case BoardcastType.All:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveProductionSummary
+                                                                , BoardcastType.ActiveProductionOutput
+                                                                , BoardcastType.ActiveWasteMat
+                                                                , BoardcastType.ActiveWasteCase
+                                                                , BoardcastType.ActiveWasteMC
+                                                                , BoardcastType.ActiveWasteTime
+                                                                , BoardcastType.ActiveLoss
+                                                                , BoardcastType.ActiveTimeUtilisation
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveOperator
+                                                                , BoardcastType.ActiveMachineInfo
+                                                                , BoardcastType.ActiveMachineSpeed
+                                                                , BoardcastType.ActiveMachineLossEvent}
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveKPI:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.ActiveKPI }
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveProductionSummary:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveMachineInfo
+                                                                , BoardcastType.ActiveProductionSummary
+                                                                , BoardcastType.ActiveProductionOutput
+                                                                , BoardcastType.ActiveMachineSpeed}
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveLoss:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveLoss
+                                                                , BoardcastType.ActiveTimeUtilisation
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveMachineInfo}
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveTimeUtilisation:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.ActiveTimeUtilisation }
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveWaste:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.ActiveKPI
+                                                                , BoardcastType.ActiveWasteMat
+                                                                , BoardcastType.ActiveWasteCase
+                                                                , BoardcastType.ActiveWasteMC
+                                                                , BoardcastType.ActiveWasteTime}
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveProductionEvent:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.ActiveProductionEvent }
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveOperator:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.ActiveOperator }
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                        case BoardcastType.ActiveMachineInfo:
+                        case BoardcastType.ActiveMachineSpeed:
+                        case BoardcastType.ActiveMachineLossEvent:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{BoardcastType.ActiveMachineInfo
+                                                                , BoardcastType.ActiveMachineSpeed
+                                                                , BoardcastType.ActiveMachineLossEvent
+                                                                , BoardcastType.ActiveProductionEvent
+                                                                , BoardcastType.ActiveTimeUtilisation}
+                                                            , DataFrame.Default, paramsList);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+
+                return boardcastData;
+            });
+        }
+
+        #endregion
+
+
         #region CIM-Mng Dashboard
         public async Task<DashboardModel> GetManagementDashboard(DataFrame frame)
         {
@@ -631,7 +357,7 @@ namespace CIM.BusinessLogic.Services {
                                  , ManagementDashboardType.MachineLossTree
                                  , ManagementDashboardType.MachineLossHighLight
                                  , ManagementDashboardType.CapacityUtilization}
-                             ,frame, paramsList);
+                             , frame, paramsList);
                         break;
                     case DataFrame.Daily:
                         break;
@@ -646,10 +372,14 @@ namespace CIM.BusinessLogic.Services {
                 }
             }
 
-
             //return  _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_Management", null);
             return dashboard;
         }
+
+        #endregion
+
+        #region Cim-Mng boardcast data
+
 
         private DashboardModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
@@ -683,5 +413,113 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
+        public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page)
+        {
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page }
+            };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_history", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
+        }
+
+        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                boardcastData.SetData(
+                                        GetData(DashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return boardcastData;
+        }
+
+        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case BoardcastType.All:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.KPI
+                                                                , BoardcastType.Output
+                                                                , BoardcastType.Loss
+                                                                , BoardcastType.TimeUtilisation
+                                                                , BoardcastType.Waste}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.KPI:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.KPI }
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Output:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Output
+                                                                    , BoardcastType.KPI}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Loss:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Loss
+                                                                    , BoardcastType.KPI
+                                                                    , BoardcastType.TimeUtilisation}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.TimeUtilisation:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.TimeUtilisation }
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Waste:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Waste }
+                                                            , timeFrame, paramsList);
+                            break;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+
+                return boardcastData;
+            });
+        }
+
+        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new BoardcastDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
+        }
     }
 }

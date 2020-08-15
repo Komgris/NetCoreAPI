@@ -13,8 +13,9 @@ using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services {
-    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
-    {
+    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
+        IDashboardService _dashboardService;
+        IReportService _reportService;
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IDirectSqlRepository _directSqlRepository;
@@ -25,7 +26,6 @@ namespace CIM.BusinessLogic.Services {
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IMachineOperatorRepository _machineOperatorRepository;
         private IUnitOfWorkCIM _unitOfWork;
-        private IReportService _reportService;
         private IMachineRepository _machineRepository;
         public IConfiguration _config;
         private IRecordManufacturingLossService _recordManufacturingLossService;
@@ -42,6 +42,7 @@ namespace CIM.BusinessLogic.Services {
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
+            IDashboardService dashboardService,
             IReportService reportService,
             IMachineRepository machineRepository,
             IConfiguration config,
@@ -59,11 +60,12 @@ namespace CIM.BusinessLogic.Services {
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _machineOperatorRepository = machineOperatorRepository;
             _unitOfWork = unitOfWork;
-            _reportService = reportService;
             _machineRepository = machineRepository;
             _config = config;
             _recordManufacturingLossService = recordManufacturingLossService;
             _activeproductionPlanRepository = activeproductionPlanRepository;
+            _dashboardService = dashboardService;
+            _reportService = reportService;
         }
 
         public string GetKey(string productionPLanId)
