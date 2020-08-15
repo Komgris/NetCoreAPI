@@ -163,11 +163,11 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/UpdateNetworkStatus")]
-        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData)
+        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData,bool isReset)
         {
             try
             {
-                await _hwinterfaceService.UpdateNetworkStatus(listData);
+                await _hwinterfaceService.UpdateNetworkStatus(listData, isReset);
             }
             catch {
             }
