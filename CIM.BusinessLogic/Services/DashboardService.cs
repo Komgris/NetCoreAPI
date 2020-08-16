@@ -64,6 +64,54 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
+        #region General
+        private BoardcastModel GetOptionData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                boardcastData.SetData(
+                                       GetdData(DashboardConfig[dbtype]
+                                            , timeFrame, paramsList));
+            }
+            return boardcastData;
+        }
+
+        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new BoardcastDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                         _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
+        }
+
+        #endregion
+
+        #region CIM dashboard
+        public async Task<BoardcastModel> GenerateCustomDashboard(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var managementData = new BoardcastModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                managementData.Data.Add(
+                                        GetdData(ManagementDashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return managementData;
+        }
+
+        #endregion
+
         #region  Cim-Mng dashboard
 
         public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
@@ -77,7 +125,7 @@ namespace CIM.BusinessLogic.Services {
                     switch (updateType)
                     {
                         case BoardcastType.All:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.KPI
                                                                 , BoardcastType.Output
                                                                 , BoardcastType.Loss
@@ -86,30 +134,30 @@ namespace CIM.BusinessLogic.Services {
                                                             , timeFrame, paramsList);
                             break;
                         case BoardcastType.KPI:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.KPI }
                                                             , timeFrame, paramsList);
                             break;
                         case BoardcastType.Output:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.Output
                                                                     , BoardcastType.KPI}
                                                             , timeFrame, paramsList);
                             break;
                         case BoardcastType.Loss:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.Loss
                                                                     , BoardcastType.KPI
                                                                     , BoardcastType.TimeUtilisation}
                                                             , timeFrame, paramsList);
                             break;
                         case BoardcastType.TimeUtilisation:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.TimeUtilisation }
                                                             , timeFrame, paramsList);
                             break;
                         case BoardcastType.Waste:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.Waste }
                                                             , timeFrame, paramsList);
                             break;
@@ -137,14 +185,14 @@ namespace CIM.BusinessLogic.Services {
                 switch (frame)
                 {
                     case DataFrame.Default:
-                        dashboard = GenerateDashboardData(
-                             new[]{ ManagementDashboardType.KPI
-                                 , ManagementDashboardType.WasteByMaterial
-                                 , ManagementDashboardType.ProductionSummary
-                                 , ManagementDashboardType.MachineLossTree
-                                 , ManagementDashboardType.MachineLossHighLight
-                                 , ManagementDashboardType.CapacityUtilization}
-                             , frame, paramsList);
+                        dashboard = await GenerateDashboardData(
+                                             new[]{ ManagementDashboardType.KPI
+                                                 , ManagementDashboardType.WasteByMaterial
+                                                 , ManagementDashboardType.ProductionSummary
+                                                 , ManagementDashboardType.MachineLossTree
+                                                 , ManagementDashboardType.MachineLossHighLight
+                                                 , ManagementDashboardType.CapacityUtilization}
+                                             , frame, paramsList);
                         break;
                     case DataFrame.Daily:
                         break;
@@ -163,54 +211,17 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        private BoardcastModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private async Task<BoardcastModel> GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
             var managementData = new BoardcastModel(timeFrame);
             foreach (var dbtype in dashboardType)
             {
                 managementData.Data.Add(
-                                        GetDashboardData(ManagementDashboardConfig[dbtype]
+                                        GetdData(ManagementDashboardConfig[dbtype]
                                         , timeFrame, paramsList));
             }
             return managementData;
         }
-
-        private BoardcastDataModel GetDashboardData(getdataConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var dashboarddata = new BoardcastDataModel();
-            try
-            {
-                dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-            }
-            catch (Exception ex)
-            {
-                dashboarddata.JsonData = null;
-                dashboarddata.IsSuccess = false;
-                dashboarddata.Message = ex.Message;
-            }
-            return dashboarddata;
-        }
-
-        //private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        //{
-        //    var dashboarddata = new BoardcastDataModel();
-        //    try
-        //    {
-        //        dashboarddata.Name = dashboardConfig.Name;
-        //        dashboarddata.JsonData = JsonConvert.SerializeObject(
-        //                                _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        dashboarddata.JsonData = null;
-        //        dashboarddata.IsSuccess = false;
-        //        dashboarddata.Message = ex.Message;
-        //    }
-        //    return dashboarddata;
-        //}
-
 
         #endregion
 
@@ -218,7 +229,7 @@ namespace CIM.BusinessLogic.Services {
 
         public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
         {
-            var boardcastData = await GenerateBoardcastData(updateType, productionPlan, routeId);
+            var boardcastData = await GenerateBoardcast(updateType, productionPlan, routeId);
             if (boardcastData.Data.Count > 0)
             {
                 //to add data to activeproduction plan
@@ -227,7 +238,7 @@ namespace CIM.BusinessLogic.Services {
             return null;
         }
 
-        public async Task<BoardcastModel> GenerateBoardcastData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<BoardcastModel> GenerateBoardcast(BoardcastType relateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
             var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
@@ -235,10 +246,10 @@ namespace CIM.BusinessLogic.Services {
             {
                 try
                 {
-                    switch (updateType)
+                    switch (relateType)
                     {
                         case BoardcastType.All:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveProductionSummary
                                                                 , BoardcastType.ActiveProductionOutput
@@ -256,12 +267,12 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveKPI:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.ActiveKPI }
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveProductionSummary:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveProductionSummary
@@ -270,7 +281,7 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveLoss:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveLoss
                                                                 , BoardcastType.ActiveTimeUtilisation
@@ -279,12 +290,12 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveTimeUtilisation:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.ActiveTimeUtilisation }
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveWaste:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveWasteMat
                                                                 , BoardcastType.ActiveWasteCase
@@ -293,19 +304,19 @@ namespace CIM.BusinessLogic.Services {
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveProductionEvent:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.ActiveProductionEvent }
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveOperator:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[] { BoardcastType.ActiveOperator }
                                                             , DataFrame.Default, paramsList);
                             break;
                         case BoardcastType.ActiveMachineInfo:
                         case BoardcastType.ActiveMachineSpeed:
                         case BoardcastType.ActiveMachineLossEvent:
-                            boardcastData = GenerateBoardcastData(
+                            boardcastData = GetOptionData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed
                                                                 , BoardcastType.ActiveMachineLossEvent
@@ -324,24 +335,6 @@ namespace CIM.BusinessLogic.Services {
                 return boardcastData;
             });
         }
-
-        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var boardcastData = new BoardcastModel(timeFrame);
-            foreach (var dbtype in dashboardType)
-            {
-                boardcastData.SetData(
-                                        GetDashboardData(DashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
-            }
-            return boardcastData;
-        }
-
-
-        #endregion
-
-        #region Common fn
-
 
         #endregion
 

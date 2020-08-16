@@ -71,7 +71,16 @@ namespace CIM.API.Controllers
 
         #region Management
 
-        internal async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        internal async Task HandleBoardcastingManagementData(string channelKey, BoardcastModel boardcastData)
+        {
+            if (boardcastData != null)
+            {
+                await SetBoardcastDataCached(channelKey, boardcastData);
+                await BoardcastClientData(channelKey, boardcastData);
+            }
+        }
+
+        private async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
         {
             var cache = await GetCached<BoardcastModel>(channelKey);
             if (cache == null)
@@ -88,14 +97,6 @@ namespace CIM.API.Controllers
             await _responseCacheService.SetAsync(channelKey, cache);
         }
 
-        internal async Task HandleBoardcastingManagementData(string channelKey, BoardcastModel boardcastData)
-        {
-            if (boardcastData != null)
-            {
-                await SetBoardcastDataCached(channelKey, boardcastData);
-                await BoardcastClientData(channelKey, boardcastData);
-            }
-        }
 
         #endregion
 
@@ -109,7 +110,7 @@ namespace CIM.API.Controllers
             //generate data for boardcast
             foreach (var r in routeId)
             {
-                var boardcastData = await _dashboardService.GenerateBoardcastData(updateType, productionPlan, r);
+                var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, r);
                 if (boardcastData.Data.Count > 0)
                 {
                     activeModel = await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
@@ -120,7 +121,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        internal async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
             if (cache is null)

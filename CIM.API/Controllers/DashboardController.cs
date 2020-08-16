@@ -70,7 +70,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionDasboard(string planId, int routeId, int machineId)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -92,7 +91,7 @@ namespace CIM.API.Controllers
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
-                    await _dashboardService.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
+                    await _dashboardService.GenerateBoardcast(BoardcastType.All, productionPlan, routeId);
             }
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
@@ -339,7 +338,6 @@ namespace CIM.API.Controllers
         }
 
         #endregion
-
 
     }
 }
