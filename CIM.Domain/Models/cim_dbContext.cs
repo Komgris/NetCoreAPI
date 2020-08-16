@@ -1618,6 +1618,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.RawMaterial).HasMaxLength(300);
 
+                entity.Property(e => e.RouteGuideLine)
+                .HasColumnName("Route_GuideLine")
+                .HasMaxLength(50);
+
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
                 entity.Property(e => e.StatusId)

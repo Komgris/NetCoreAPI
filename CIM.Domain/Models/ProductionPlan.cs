@@ -15,6 +15,8 @@ namespace CIM.Domain.Models
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int? RouteId { get; set; }
+        public string RouteGuideLine { get; set; }
+
         public int Target { get; set; }
         public int? UnitId { get; set; }
         public DateTime? PlanStart { get; set; }
