@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using CIM.Model;
 
 namespace CIM.API {
     public class Startup
@@ -22,11 +23,14 @@ namespace CIM.API {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
+            BaseService.ExcelMapping = new ExcelMappingModel();
+            Configuration.GetSection(nameof(ExcelMappingModel)).Bind(BaseService.ExcelMapping);//.Bind(BaseService.ExcelMapping);
 #if (DEBUG)
             BaseService.ImagePath = Directory.GetCurrentDirectory()+"\\Image";
+            BaseService.DocPath = Directory.GetCurrentDirectory() + "\\doc";
 #else
             BaseService.ImagePath =  Configuration.GetValue<string>("ServerPath");
+            BaseService.DocPath =  Configuration.GetValue<string>("DocPath");
 #endif
 
         }
