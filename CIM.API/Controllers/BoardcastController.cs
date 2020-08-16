@@ -43,7 +43,7 @@ namespace CIM.API.Controllers
 
         internal string CachedCHKey(DashboardCachedCH cachedCH)
         {
-            return $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-CachedCH{cachedCH.ToString()}";
+            return $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-CachedCH-{cachedCH.ToString()}";//Ex. dashboard-CachedCH-Dole_Custom_Dashboard
         }
 
         internal string CacheForBoardcast<T>(string cache)

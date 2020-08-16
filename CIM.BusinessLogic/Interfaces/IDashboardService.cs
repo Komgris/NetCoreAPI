@@ -26,7 +26,7 @@ namespace CIM.BusinessLogic.Interfaces {
         Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType);
         Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(DataTypeGroup updateType, string productionPlan, int routeId);
         Task<BoardcastModel> GetManagementDashboard(DataFrame frame);
-        Task<BoardcastModel> GenerateCustomDashboard(ManagementDashboardType[] dashboardType);
+        Task<BoardcastModel> GenerateCustomDashboard(DataTypeGroup updateType);
 
     }
 }

@@ -30,10 +30,7 @@ namespace CIM.Model
         }
 
         public enum DashboardCachedCH {
-            Dole_Production_Cup = 0,
-            Dole_Production_PKO = 1,
-            Dole_Overview_Cup = 2,
-            Dole_Overview_PKO = 3,
+            Dole_Custom_Dashboard = 0
         }
 
         #endregion

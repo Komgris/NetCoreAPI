@@ -25,41 +25,56 @@ namespace CIM.BusinessLogic.Services {
         private Dictionary<ManagementDashboardType, getdataConfig> ManagementDashboardConfig
             = new Dictionary<ManagementDashboardType, getdataConfig>()
             {
-                                { ManagementDashboardType.KPI, new getdataConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
-                                { ManagementDashboardType.ProductionSummary, new getdataConfig("ProductionSummary","sp_Dashboard_Output")},
-                                { ManagementDashboardType.WasteByMaterial, new getdataConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
-                                { ManagementDashboardType.WasteBySymptom, new getdataConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
-                                { ManagementDashboardType.MachineLossTree, new getdataConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
-                                { ManagementDashboardType.MachineLossLvl1, new getdataConfig("MachineLossLvl1","-")},
-                                { ManagementDashboardType.MachineLossLvl2, new getdataConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
-                                { ManagementDashboardType.MachineLossLvl3, new getdataConfig("MachineLossLvl3","-")},
-                                { ManagementDashboardType.CapacityUtilization, new getdataConfig("CapacityUtilization","sp_Dashboard_Utilization")},
-                                { ManagementDashboardType.MachineLossHighLight, new getdataConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+                                { ManagementDashboardType.KPI                   , new getdataConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
+                                { ManagementDashboardType.ProductionSummary     , new getdataConfig("ProductionSummary","sp_Dashboard_Output")},
+                                { ManagementDashboardType.WasteByMaterial       , new getdataConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
+                                { ManagementDashboardType.WasteBySymptom        , new getdataConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
+                                { ManagementDashboardType.MachineLossTree       , new getdataConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
+                                { ManagementDashboardType.MachineLossLvl1       , new getdataConfig("MachineLossLvl1","-")},
+                                { ManagementDashboardType.MachineLossLvl2       , new getdataConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
+                                { ManagementDashboardType.MachineLossLvl3       , new getdataConfig("MachineLossLvl3","-")},
+                                { ManagementDashboardType.CapacityUtilization   , new getdataConfig("CapacityUtilization","sp_Dashboard_Utilization")},
+                                { ManagementDashboardType.MachineLossHighLight  , new getdataConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+            };
+
+        private Dictionary<CustomDashboardType, getdataConfig> CustomDashboardConfig
+            = new Dictionary<CustomDashboardType, getdataConfig>()
+            {
+                                { CustomDashboardType.OEE           , new getdataConfig("OEE","-")},
+                                { CustomDashboardType.Production    , new getdataConfig("Production","-")},
+                                { CustomDashboardType.HSE           , new getdataConfig("HSE","-")},
+                                { CustomDashboardType.Quality       , new getdataConfig("Quality","-")},
+                                { CustomDashboardType.Delivery      , new getdataConfig("Delivery","-")},
+                                { CustomDashboardType.Spoilage      , new getdataConfig("Spoilage","-")},
+                                { CustomDashboardType.NonePrime     , new getdataConfig("NonePrime","-")},
+                                { CustomDashboardType.Attendance    , new getdataConfig("Attendance","-")},
+                                { CustomDashboardType.MachineStatus , new getdataConfig("MachineStatus","-")},
+                                { CustomDashboardType.PlanvsActual  , new getdataConfig("PlanvsActual","-")},
             };
 
         private Dictionary<BoardcastType, getdataConfig> DashboardConfig
             = new Dictionary<BoardcastType, getdataConfig>()
             {
-                { BoardcastType.KPI, new getdataConfig("KPI","sp_dashboard_kpi")},
-                { BoardcastType.Output, new getdataConfig("Output","sp_dashboard_output")},
-                { BoardcastType.Waste, new getdataConfig("Waste","sp_dashboard_waste")},
-                { BoardcastType.Loss, new getdataConfig("MachineLoss","sp_dashboard_machineLoss")},
-                { BoardcastType.TimeUtilisation, new getdataConfig("Utilization","sp_dashboard_utilization")},
-                { BoardcastType.ActiveKPI, new getdataConfig("KPI","sp_Report_Production_Dashboard")},
-                { BoardcastType.ActiveProductionSummary, new getdataConfig("ProductionSummary","sp_report_productionsummary")},
-                { BoardcastType.ActiveProductionOutput, new getdataConfig("ProductionOutput","sp_dashboard_output")},
-                { BoardcastType.ActiveWasteMat, new getdataConfig("WastebyMat","sp_report_waste_materials")},
-                { BoardcastType.ActiveWasteCase, new getdataConfig("WastebyCase","sp_report_waste_cases")},
-                { BoardcastType.ActiveWasteMC, new getdataConfig("WastebyMC","sp_report_waste_machines")},
-                { BoardcastType.ActiveWasteTime, new getdataConfig("WastebyTime","sp_report_waste_cost_time")},
-                { BoardcastType.ActiveLoss, new getdataConfig("MachineLoss","sp_Report_WCMLosses")},
-                { BoardcastType.ActiveTimeUtilisation, new getdataConfig("Utilization","sp_report_capacity_ultilisation")},
-                { BoardcastType.ActiveProductionEvent, new getdataConfig("ProductionEvent","sp_report_productionevents")},
-                { BoardcastType.ActiveOperator, new getdataConfig("Operator","sp_report_productionoperators")},
-                { BoardcastType.ActiveMachineInfo, new getdataConfig("MachineInfo","sp_report_active_machineinfo")},
-                { BoardcastType.ActiveMachineSpeed, new getdataConfig("MachineSpeed","sp_report_machinespeed")},
-                { BoardcastType.ActiveMachineStatus, new getdataConfig("MachineStatus","sp_Report_Machine_Status")},
-                { BoardcastType.ActiveMachineLossEvent, new getdataConfig("MachineLossEvent","sp_report_active_machineevent")},
+                { BoardcastType.KPI                     , new getdataConfig("KPI","sp_dashboard_kpi")},
+                { BoardcastType.Output                  , new getdataConfig("Output","sp_dashboard_output")},
+                { BoardcastType.Waste                   , new getdataConfig("Waste","sp_dashboard_waste")},
+                { BoardcastType.Loss                    , new getdataConfig("MachineLoss","sp_dashboard_machineLoss")},
+                { BoardcastType.TimeUtilisation         , new getdataConfig("Utilization","sp_dashboard_utilization")},
+                { BoardcastType.ActiveKPI               , new getdataConfig("KPI","sp_Report_Production_Dashboard")},
+                { BoardcastType.ActiveProductionSummary , new getdataConfig("ProductionSummary","sp_report_productionsummary")},
+                { BoardcastType.ActiveProductionOutput  , new getdataConfig("ProductionOutput","sp_dashboard_output")},
+                { BoardcastType.ActiveWasteMat          , new getdataConfig("WastebyMat","sp_report_waste_materials")},
+                { BoardcastType.ActiveWasteCase         , new getdataConfig("WastebyCase","sp_report_waste_cases")},
+                { BoardcastType.ActiveWasteMC           , new getdataConfig("WastebyMC","sp_report_waste_machines")},
+                { BoardcastType.ActiveWasteTime         , new getdataConfig("WastebyTime","sp_report_waste_cost_time")},
+                { BoardcastType.ActiveLoss              , new getdataConfig("MachineLoss","sp_Report_WCMLosses")},
+                { BoardcastType.ActiveTimeUtilisation   , new getdataConfig("Utilization","sp_report_capacity_ultilisation")},
+                { BoardcastType.ActiveProductionEvent   , new getdataConfig("ProductionEvent","sp_report_productionevents")},
+                { BoardcastType.ActiveOperator          , new getdataConfig("Operator","sp_report_productionoperators")},
+                { BoardcastType.ActiveMachineInfo       , new getdataConfig("MachineInfo","sp_report_active_machineinfo")},
+                { BoardcastType.ActiveMachineSpeed      , new getdataConfig("MachineSpeed","sp_report_machinespeed")},
+                { BoardcastType.ActiveMachineStatus     , new getdataConfig("MachineStatus","sp_Report_Machine_Status")},
+                { BoardcastType.ActiveMachineLossEvent  , new getdataConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
         #endregion
@@ -100,13 +115,92 @@ namespace CIM.BusinessLogic.Services {
 
         #region CIM dashboard
 
-        public async Task<BoardcastModel> GenerateCustomDashboard(ManagementDashboardType[] dashboardType)
+        public async Task<BoardcastModel> GenerateCustomDashboard(DataTypeGroup updateType)
+        {
+            var boardcastData = new BoardcastModel();
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case DataTypeGroup.All:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Production
+                                                                , CustomDashboardType.HSE
+                                                                , CustomDashboardType.Quality
+                                                                , CustomDashboardType.Delivery
+                                                                , CustomDashboardType.Spoilage
+                                                                , CustomDashboardType.NonePrime
+                                                                , CustomDashboardType.Attendance
+                                                                , CustomDashboardType.MachineStatus
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
+                        case DataTypeGroup.HSE:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.HSE});
+                            break;
+                        case DataTypeGroup.Waste:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Spoilage
+                                                                , CustomDashboardType.NonePrime
+                                                                , CustomDashboardType.Quality});
+                            break;
+                        case DataTypeGroup.Operators:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Attendance});
+                            break;
+                        case DataTypeGroup.Produce:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Production
+                                                                , CustomDashboardType.Delivery});
+                            break;
+                        case DataTypeGroup.Process:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Attendance
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
+                        case DataTypeGroup.Machine:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Production
+                                                                , CustomDashboardType.HSE
+                                                                , CustomDashboardType.Quality
+                                                                , CustomDashboardType.Delivery
+                                                                , CustomDashboardType.Spoilage
+                                                                , CustomDashboardType.NonePrime
+                                                                , CustomDashboardType.Attendance
+                                                                , CustomDashboardType.MachineStatus
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
+                        case DataTypeGroup.Loss:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Delivery
+                                                                , CustomDashboardType.MachineStatus});
+                            break;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
+
+                return boardcastData;
+            });
+        }
+
+        private BoardcastModel CustomDashboard(CustomDashboardType[] dashboardType)
         {
             var customtData = new BoardcastModel();
             foreach (var dbtype in dashboardType)
             {
                 customtData.Data.Add(
-                                        GetdData(ManagementDashboardConfig[dbtype], null));
+                                        GetdData(CustomDashboardConfig[dbtype], null));
             }
             return customtData;
         }
