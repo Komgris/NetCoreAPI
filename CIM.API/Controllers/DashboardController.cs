@@ -21,7 +21,6 @@ namespace CIM.API.Controllers
         IResponseCacheService responseCacheService,
         IHubContext<GlobalHub> hub,
         IDashboardService dashboardService,
-        IReportService service,
         IConfiguration config,
         IActiveProductionPlanService activeProductionPlanService
         ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
@@ -31,10 +30,9 @@ namespace CIM.API.Controllers
         #region Management
 
         [HttpGet]
-        public async Task<string> GetDashboardCached(string channel)
+        public async Task<string> GetDashboardCached(DashboardCachedCH cachedCH)
         {
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            return CacheForBoardcast<BoardcastModel>(await GetCached(channelKey));
+            return CacheForBoardcast<BoardcastModel>(await GetCached(CachedCHKey(cachedCH)));
         }
 
         [HttpGet]
@@ -67,7 +65,7 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Operation
+        #region Active Operation
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionDasboard(string planId, int routeId, int machineId)
@@ -115,7 +113,7 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Production
+        #region apart of Production data
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)

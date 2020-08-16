@@ -41,6 +41,10 @@ namespace CIM.API.Controllers
 
         #region general
 
+        internal string CachedCHKey(DashboardCachedCH cachedCH)
+        {
+            return $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-CachedCH{cachedCH.ToString()}";
+        }
 
         internal string CacheForBoardcast<T>(string cache)
         {

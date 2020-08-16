@@ -22,61 +22,49 @@ namespace CIM.BusinessLogic.Services {
 
         #region Config
 
-        private Dictionary<ManagementDashboardType, DashboardConfig> ManagementDashboardConfig
-            = new Dictionary<ManagementDashboardType, DashboardConfig>()
+        private Dictionary<ManagementDashboardType, getdataConfig> ManagementDashboardConfig
+            = new Dictionary<ManagementDashboardType, getdataConfig>()
             {
-                                { ManagementDashboardType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
-                                { ManagementDashboardType.ProductionSummary, new DashboardConfig("ProductionSummary","sp_Dashboard_Output")},
-                                { ManagementDashboardType.WasteByMaterial, new DashboardConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
-                                { ManagementDashboardType.WasteBySymptom, new DashboardConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
-                                { ManagementDashboardType.MachineLossTree, new DashboardConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
-                                { ManagementDashboardType.MachineLossLvl1, new DashboardConfig("MachineLossLvl1","-")},
-                                { ManagementDashboardType.MachineLossLvl2, new DashboardConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
-                                { ManagementDashboardType.MachineLossLvl3, new DashboardConfig("MachineLossLvl3","-")},
-                                { ManagementDashboardType.CapacityUtilization, new DashboardConfig("CapacityUtilization","sp_Dashboard_Utilization")},
-                                { ManagementDashboardType.MachineLossHighLight, new DashboardConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+                                { ManagementDashboardType.KPI, new getdataConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
+                                { ManagementDashboardType.ProductionSummary, new getdataConfig("ProductionSummary","sp_Dashboard_Output")},
+                                { ManagementDashboardType.WasteByMaterial, new getdataConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
+                                { ManagementDashboardType.WasteBySymptom, new getdataConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
+                                { ManagementDashboardType.MachineLossTree, new getdataConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
+                                { ManagementDashboardType.MachineLossLvl1, new getdataConfig("MachineLossLvl1","-")},
+                                { ManagementDashboardType.MachineLossLvl2, new getdataConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
+                                { ManagementDashboardType.MachineLossLvl3, new getdataConfig("MachineLossLvl3","-")},
+                                { ManagementDashboardType.CapacityUtilization, new getdataConfig("CapacityUtilization","sp_Dashboard_Utilization")},
+                                { ManagementDashboardType.MachineLossHighLight, new getdataConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
             };
 
-        private Dictionary<BoardcastType, DashboardConfig> DashboardConfig
-            = new Dictionary<BoardcastType, DashboardConfig>()
+        private Dictionary<BoardcastType, getdataConfig> DashboardConfig
+            = new Dictionary<BoardcastType, getdataConfig>()
             {
-                { BoardcastType.KPI, new DashboardConfig("KPI","sp_dashboard_kpi")},
-                { BoardcastType.Output, new DashboardConfig("Output","sp_dashboard_output")},
-                { BoardcastType.Waste, new DashboardConfig("Waste","sp_dashboard_waste")},
-                { BoardcastType.Loss, new DashboardConfig("MachineLoss","sp_dashboard_machineLoss")},
-                { BoardcastType.TimeUtilisation, new DashboardConfig("Utilization","sp_dashboard_utilization")},
-                { BoardcastType.ActiveKPI, new DashboardConfig("KPI","sp_Report_Production_Dashboard")},
-                { BoardcastType.ActiveProductionSummary, new DashboardConfig("ProductionSummary","sp_report_productionsummary")},
-                { BoardcastType.ActiveProductionOutput, new DashboardConfig("ProductionOutput","sp_dashboard_output")},
-                { BoardcastType.ActiveWasteMat, new DashboardConfig("WastebyMat","sp_report_waste_materials")},
-                { BoardcastType.ActiveWasteCase, new DashboardConfig("WastebyCase","sp_report_waste_cases")},
-                { BoardcastType.ActiveWasteMC, new DashboardConfig("WastebyMC","sp_report_waste_machines")},
-                { BoardcastType.ActiveWasteTime, new DashboardConfig("WastebyTime","sp_report_waste_cost_time")},
-                { BoardcastType.ActiveLoss, new DashboardConfig("MachineLoss","sp_Report_WCMLosses")},
-                { BoardcastType.ActiveTimeUtilisation, new DashboardConfig("Utilization","sp_report_capacity_ultilisation")},
-                { BoardcastType.ActiveProductionEvent, new DashboardConfig("ProductionEvent","sp_report_productionevents")},
-                { BoardcastType.ActiveOperator, new DashboardConfig("Operator","sp_report_productionoperators")},
-                { BoardcastType.ActiveMachineInfo, new DashboardConfig("MachineInfo","sp_report_active_machineinfo")},
-                { BoardcastType.ActiveMachineSpeed, new DashboardConfig("MachineSpeed","sp_report_machinespeed")},
-                { BoardcastType.ActiveMachineStatus, new DashboardConfig("MachineStatus","sp_Report_Machine_Status")},
-                { BoardcastType.ActiveMachineLossEvent, new DashboardConfig("MachineLossEvent","sp_report_active_machineevent")},
+                { BoardcastType.KPI, new getdataConfig("KPI","sp_dashboard_kpi")},
+                { BoardcastType.Output, new getdataConfig("Output","sp_dashboard_output")},
+                { BoardcastType.Waste, new getdataConfig("Waste","sp_dashboard_waste")},
+                { BoardcastType.Loss, new getdataConfig("MachineLoss","sp_dashboard_machineLoss")},
+                { BoardcastType.TimeUtilisation, new getdataConfig("Utilization","sp_dashboard_utilization")},
+                { BoardcastType.ActiveKPI, new getdataConfig("KPI","sp_Report_Production_Dashboard")},
+                { BoardcastType.ActiveProductionSummary, new getdataConfig("ProductionSummary","sp_report_productionsummary")},
+                { BoardcastType.ActiveProductionOutput, new getdataConfig("ProductionOutput","sp_dashboard_output")},
+                { BoardcastType.ActiveWasteMat, new getdataConfig("WastebyMat","sp_report_waste_materials")},
+                { BoardcastType.ActiveWasteCase, new getdataConfig("WastebyCase","sp_report_waste_cases")},
+                { BoardcastType.ActiveWasteMC, new getdataConfig("WastebyMC","sp_report_waste_machines")},
+                { BoardcastType.ActiveWasteTime, new getdataConfig("WastebyTime","sp_report_waste_cost_time")},
+                { BoardcastType.ActiveLoss, new getdataConfig("MachineLoss","sp_Report_WCMLosses")},
+                { BoardcastType.ActiveTimeUtilisation, new getdataConfig("Utilization","sp_report_capacity_ultilisation")},
+                { BoardcastType.ActiveProductionEvent, new getdataConfig("ProductionEvent","sp_report_productionevents")},
+                { BoardcastType.ActiveOperator, new getdataConfig("Operator","sp_report_productionoperators")},
+                { BoardcastType.ActiveMachineInfo, new getdataConfig("MachineInfo","sp_report_active_machineinfo")},
+                { BoardcastType.ActiveMachineSpeed, new getdataConfig("MachineSpeed","sp_report_machinespeed")},
+                { BoardcastType.ActiveMachineStatus, new getdataConfig("MachineStatus","sp_Report_Machine_Status")},
+                { BoardcastType.ActiveMachineLossEvent, new getdataConfig("MachineLossEvent","sp_report_active_machineevent")},
             };
 
         #endregion
 
         #region  Cim-Mng dashboard
-
-        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var boardcastData = new BoardcastModel(timeFrame);
-            foreach (var dbtype in dashboardType)
-            {
-                boardcastData.SetData(
-                                        GetData(DashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
-            }
-            return boardcastData;
-        }
 
         public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
         {
@@ -138,30 +126,13 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var dashboarddata = new BoardcastDataModel();
-            try
-            {
-                dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-            }
-            catch (Exception ex)
-            {
-                dashboarddata.JsonData = null;
-                dashboarddata.IsSuccess = false;
-                dashboarddata.Message = ex.Message;
-            }
-            return dashboarddata;
-        }
-        public async Task<DashboardModel> GetManagementDashboard(DataFrame frame)
+        public async Task<BoardcastModel> GetManagementDashboard(DataFrame frame)
         {
             var cacheKey = $"mngdashboard-{frame}";
-            var dashboard = await _responseCacheService.GetAsTypeAsync<DashboardModel>(cacheKey);
+            var dashboard = await _responseCacheService.GetAsTypeAsync<BoardcastModel>(cacheKey);
             if (dashboard == null || dashboard.LastUpdate.AddMinutes(1) < DateTime.Now)
             {
-                dashboard = new DashboardModel();
+                dashboard = new BoardcastModel();
                 var paramsList = new Dictionary<string, object>() { { "@timeFrame", (int)frame } };
                 switch (frame)
                 {
@@ -192,9 +163,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        private DashboardModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private BoardcastModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
-            var managementData = new DashboardModel(timeFrame);
+            var managementData = new BoardcastModel(timeFrame);
             foreach (var dbtype in dashboardType)
             {
                 managementData.Data.Add(
@@ -204,9 +175,9 @@ namespace CIM.BusinessLogic.Services {
             return managementData;
         }
 
-        private DashboardDataModel GetDashboardData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private BoardcastDataModel GetDashboardData(getdataConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new DashboardDataModel();
+            var dashboarddata = new BoardcastDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -221,6 +192,25 @@ namespace CIM.BusinessLogic.Services {
             }
             return dashboarddata;
         }
+
+        //private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        //{
+        //    var dashboarddata = new BoardcastDataModel();
+        //    try
+        //    {
+        //        dashboarddata.Name = dashboardConfig.Name;
+        //        dashboarddata.JsonData = JsonConvert.SerializeObject(
+        //                                _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dashboarddata.JsonData = null;
+        //        dashboarddata.IsSuccess = false;
+        //        dashboarddata.Message = ex.Message;
+        //    }
+        //    return dashboarddata;
+        //}
+
 
         #endregion
 
@@ -334,6 +324,24 @@ namespace CIM.BusinessLogic.Services {
                 return boardcastData;
             });
         }
+
+        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                boardcastData.SetData(
+                                        GetDashboardData(DashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return boardcastData;
+        }
+
+
+        #endregion
+
+        #region Common fn
+
 
         #endregion
 

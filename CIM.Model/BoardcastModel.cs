@@ -15,6 +15,7 @@ namespace CIM.Model {
         }
         public DataFrame Type { get; set; } = DataFrame.Default;
         public List<BoardcastDataModel> Data { get; private set; } = new List<BoardcastDataModel>();
+        public DateTime LastUpdate { get; set; } = DateTime.Now;
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
 
@@ -32,5 +33,16 @@ namespace CIM.Model {
         public string JsonData { get; set; }
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
+    }
+
+    public class getdataConfig {
+        public string Name { get; set; }
+        public string StoreName { get; set; }
+        public getdataConfig() { }
+        public getdataConfig(string name, string storeName)
+        {
+            Name = name;
+            StoreName = storeName;
+        }
     }
 }
