@@ -45,30 +45,6 @@ namespace CIM.BusinessLogic.Services
             _reportService = reportService;
         }
 
-        private static class ExcelMapping
-        {
-            public const int LINE = 1;
-            public const int ROUTE_GUILDLINE = 2;
-            public const int WBRT = 3;
-            public const int PRODUCT = 5;
-            public const int COUNTRY = 6;
-            public const int RAWMATERIAL = 7;
-            public const int INGREDIENT = 8;
-            public const int BRIX = 9;
-            public const int ACID = 10;
-            public const int PH = 11;
-            public const int WEIGHT = 12;
-            public const int PM = 13;
-            public const int TOTALLINE = 14;
-            public const int TARGET = 15;
-            public const int UNIT = 16;
-            public const int PLANSTART = 17;
-            public const int PLANFINISH = 18;
-            public const int NOTE = 19;
-            public const int OFFSET_TOP_ROW = 5;
-            public const int OFFSET_BOTTOM_ROW = 2;
-        }
-
         public List<ProductionPlanModel> Get()
         {
             var db = _productionPlanRepository.All().ToList();
