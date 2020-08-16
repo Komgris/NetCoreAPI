@@ -48,23 +48,23 @@ namespace CIM.BusinessLogic.Services
         private static class ExcelMapping
         {
             public const int LINE = 1;
-            public const int WBRT = 2;
-            public const int PLAN = 3;
-            public const int COUNTRY = 5;
-            public const int PRODUCT = 4;
-            public const int RAWMATERIAL = 6;
-            public const int INGREDIENT = 7;
-            public const int BRIX = 8;
-            public const int ACID = 9;
-            public const int PH = 10;
-            public const int WEIGHT = 11;
-            public const int PM = 12;
-            public const int TOTALLINE = 13;
-            public const int TARGET = 14;
-            public const int UNIT = 15;
-            public const int PLANSTART = 16;
-            public const int PLANFINISH = 17;
-            public const int NOTE = 18;
+            public const int ROUTE_GUILDLINE = 2;
+            public const int WBRT = 3;
+            public const int PRODUCT = 5;
+            public const int COUNTRY = 6;
+            public const int RAWMATERIAL = 7;
+            public const int INGREDIENT = 8;
+            public const int BRIX = 9;
+            public const int ACID = 10;
+            public const int PH = 11;
+            public const int WEIGHT = 12;
+            public const int PM = 13;
+            public const int TOTALLINE = 14;
+            public const int TARGET = 15;
+            public const int UNIT = 16;
+            public const int PLANSTART = 17;
+            public const int PLANFINISH = 18;
+            public const int NOTE = 19;
             public const int OFFSET_TOP_ROW = 5;
             public const int OFFSET_BOTTOM_ROW = 2;
         }
@@ -278,6 +278,7 @@ namespace CIM.BusinessLogic.Services
                 ProductionPlanModel data = new ProductionPlanModel();             
                 data.Line = oSheet.Cells[i, ExcelMapping.LINE].CellValToString();
                 data.Wbrt = oSheet.Cells[i, ExcelMapping.WBRT].CellValToString();
+                data.RouteGuideLine = oSheet.Cells[i, ExcelMapping.ROUTE_GUILDLINE].CellValToString();
                 data.ProductCode = oSheet.Cells[i, ExcelMapping.PRODUCT].CellValToString();
                 data.Country = oSheet.Cells[i, ExcelMapping.COUNTRY].CellValToString();
                 data.RawMaterial = oSheet.Cells[i, ExcelMapping.RAWMATERIAL].CellValToString();
@@ -293,7 +294,7 @@ namespace CIM.BusinessLogic.Services
                 data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
                 data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 data.Note = oSheet.Cells[i, ExcelMapping.NOTE].CellValToString();
-                data.PlanId = data.PlanStart.Value.ToString("yyyy") + data.PlanStart.Value.ToString("MM") + data.PlanStart.Value.ToString("dd") + '.' + i.ToString();
+                data.PlanId = data.PlanStart.HasValue ? (data.PlanStart.Value.ToString("yyyy") + data.PlanStart.Value.ToString("MM") + data.PlanStart.Value.ToString("dd") + '.' + i.ToString()) : string.Empty;
                 listImport.Add(data);
             }
             return listImport;
@@ -362,6 +363,7 @@ namespace CIM.BusinessLogic.Services
                         {
                             PlanId = x.PlanId,
                             ProductId = x.ProductId,
+                            RouteGuideLine = x.RouteGuideLine,
                             ProductCode = x.Product.Code,
                             ProductGroupId = x.Product.ProductGroupId,
                             ProductGroup = x.Product.ProductGroup.Name,
