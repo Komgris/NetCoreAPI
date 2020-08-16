@@ -5,10 +5,19 @@ using System.Text;
 namespace CIM.Model
 {
     public class Constans {
+
         public const string CURRENT_USER = "CurrentUser";
+
+        #region redis
 
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
         public const string SIGNAL_R_CHANNEL_DASHBOARD = "dashboard";
+
+        public class SIGNAL_R_CHANNEL {
+            public const string CHANNEL_MESSAGE = "transfer-message";
+            public const string CHANNEL_COMMAND = "command-channel";
+            public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
+        }
 
         public class RedisKey {
 
@@ -19,6 +28,17 @@ namespace CIM.Model
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
             public const string MASTER_DATA = "master-data";
         }
+
+        public enum DashboardCachedCH {
+            Dole_Production_Cup = 0,
+            Dole_Production_PKO = 1,
+            Dole_Overview_Cup = 2,
+            Dole_Overview_PKO = 3,
+        }
+
+        #endregion
+
+        #region State
 
         public enum PRODUCTION_PLAN_STATUS : int {
             New = 1,
@@ -43,11 +63,6 @@ namespace CIM.Model
             public const int NA = 5;
         }
 
-        public enum AlertType : int {
-            Component = 0,
-            MACHINE = 1
-        }
-
         public enum AlertStatus : int {
             New = 0,
             Processing = 1,
@@ -56,6 +71,12 @@ namespace CIM.Model
 
         public enum ComponentStatus : int {
             Ready = 1
+        }
+
+        public enum NetworkState {
+            Good,
+            Poor,
+            Bad
         }
 
         public enum ProductionPlanBuffer : int {
@@ -72,10 +93,12 @@ namespace CIM.Model
             public const int Inprocess = 6;
         }
 
-        public class SIGNAL_R_CHANNEL {
-            public const string CHANNEL_MESSAGE = "transfer-message";
-            public const string CHANNEL_COMMAND = "command-channel";
-            public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
+        #endregion
+
+        #region Typeof
+        public enum AlertType : int {
+            Component = 0,
+            MACHINE = 1
         }
 
         public enum DataFrame {
@@ -113,8 +136,7 @@ namespace CIM.Model
             End
         }
 
-        public enum MasterDataType
-        {
+        public enum MasterDataType {
             All
             , LossLevel3s
             , RouteMachines
@@ -146,16 +168,15 @@ namespace CIM.Model
             , Language
         }
 
-        public enum ReportType
-        {
+        public enum ReportType {
             Daily,
             Weekly,
             Monthly,
             Yearly,
             DoleCalendar
         }
-        public enum ManagementDashboardType
-        {
+
+        public enum ManagementDashboardType {
             KPI,
             ProductionSummary,
             WasteByMaterial,
@@ -168,21 +189,7 @@ namespace CIM.Model
             CapacityUtilization
         }
 
-        public class DashboardConfig {
-            public string Name { get; set; }
-            public string StoreName { get; set; }
-            public DashboardConfig(){}
-            public DashboardConfig(string name,string storeName)
-            {
-                Name = name;
-                StoreName = storeName;
-            }
-        }
+        #endregion
 
-        public enum NetworkState {
-            Good,
-            Poor,
-            Bad
-        }
     }
 }

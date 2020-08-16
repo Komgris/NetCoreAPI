@@ -17,33 +17,29 @@ namespace CIM.API.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class DashboardController : BoardcastController {
-        IDashboardService _dashboardService;
         public DashboardController(
         IResponseCacheService responseCacheService,
         IHubContext<GlobalHub> hub,
         IDashboardService dashboardService,
-        IReportService service,
         IConfiguration config,
         IActiveProductionPlanService activeProductionPlanService
-        ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+        ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _dashboardService = dashboardService;
         }
 
         #region Management
 
         [HttpGet]
-        public async Task<string> GetDashboardCached(string channel)
+        public async Task<string> GetDashboardCached(DashboardCachedCH cachedCH)
         {
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            return CacheForBoardcast<BoardcastModel>(await GetCached(channelKey));
+            return CacheForBoardcast<BoardcastModel>(await GetCached(CachedCHKey(cachedCH)));
         }
 
         [HttpGet]
         public async Task<string> BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
         {
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = await _service.GenerateBoardcastManagementData(dataFrame, updateType);
+            var boardcastData = await _dashboardService.GenerateBoardcastManagementData(dataFrame, updateType);
             if (boardcastData.Data.Count > 0)
             {
                 await HandleBoardcastingManagementData(channelKey, boardcastData);
@@ -58,7 +54,7 @@ namespace CIM.API.Controllers
             var output = "";
             try
             {
-                output = JsonConvert.SerializeObject(await _service.GetManagementDashboard(timeFrame), JsonsSetting);
+                output = JsonConvert.SerializeObject(await _dashboardService.GetManagementDashboard(timeFrame), JsonsSetting);
             }
             catch (Exception ex)
             {
@@ -69,7 +65,7 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Operation
+        #region Active Operation
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionDasboard(string planId, int routeId, int machineId)
@@ -96,7 +92,7 @@ namespace CIM.API.Controllers
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
-                    await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
+                    await _dashboardService.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
             }
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
@@ -117,7 +113,7 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Production
+        #region apart of Production data
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)

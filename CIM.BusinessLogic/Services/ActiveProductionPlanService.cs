@@ -15,7 +15,6 @@ using static CIM.Model.Constans;
 namespace CIM.BusinessLogic.Services {
     public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
         IDashboardService _dashboardService;
-        IReportService _reportService;
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IDirectSqlRepository _directSqlRepository;
@@ -43,7 +42,6 @@ namespace CIM.BusinessLogic.Services {
             IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
             IDashboardService dashboardService,
-            IReportService reportService,
             IMachineRepository machineRepository,
             IConfiguration config,
             IRecordManufacturingLossService recordManufacturingLossService,
@@ -65,7 +63,6 @@ namespace CIM.BusinessLogic.Services {
             _recordManufacturingLossService = recordManufacturingLossService;
             _activeproductionPlanRepository = activeproductionPlanRepository;
             _dashboardService = dashboardService;
-            _reportService = reportService;
         }
 
         public string GetKey(string productionPLanId)
@@ -198,7 +195,7 @@ namespace CIM.BusinessLogic.Services {
                     await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                     //generate -> BoardcastData
-                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
+                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 

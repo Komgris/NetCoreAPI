@@ -23,11 +23,11 @@ namespace CIM.API.Controllers
             IRecordProductionPlanWasteService recordProductionPlanWasteService,
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IRecordManufacturingLossService recordManufacturingLossService,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _recordProductionPlanWasteService = recordProductionPlanWasteService;
         }

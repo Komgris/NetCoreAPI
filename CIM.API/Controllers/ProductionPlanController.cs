@@ -20,12 +20,12 @@ namespace CIM.API.Controllers {
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService,
             IMasterDataService masterDataService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;

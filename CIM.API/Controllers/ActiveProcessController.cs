@@ -26,10 +26,10 @@ namespace CIM.API.Controllers
         public ActiveProcessController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
         }
