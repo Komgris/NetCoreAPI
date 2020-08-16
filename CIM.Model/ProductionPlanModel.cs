@@ -13,6 +13,7 @@ namespace CIM.Model
         public string ProductGroup { get; set; }
         public int? RouteId { get; set; }
         public string Route { get; set; }
+        public string RouteGuideLine { get; set; }
         public int Target { get; set; }
         public int? Unit { get; set; }
         public string UnitName { get; set; }
