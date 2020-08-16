@@ -43,5 +43,18 @@ namespace CIM.DAL.Implements.Tests
 
         }
 
+        [Fact]
+        public void ExecuteSPWithQueryDSetTest()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(InMemorySettings)
+            .Build();
+
+            var repo = new DirectSqlRepository(configuration);
+            var result = repo.ExecuteSPWithQueryDSet("sp_custom_dashboard_x", null);
+            result.Should().NotBeNull();
+
+        }
+
     }
 }

@@ -71,7 +71,7 @@ namespace CIM.API.Controllers
 
         #region Management
 
-        internal async Task HandleBoardcastingManagementData(string channelKey, BoardcastModel boardcastData)
+        internal async Task HandleBoardcastingData(string channelKey, BoardcastModel boardcastData)
         {
             if (boardcastData != null)
             {

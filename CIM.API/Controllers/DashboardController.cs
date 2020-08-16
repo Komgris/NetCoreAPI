@@ -36,16 +36,22 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<string> BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
+        public async Task<string> BoardcastingCustomDashboard(DataTypeGroup updateType)
         {
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = await _dashboardService.GenerateBoardcastManagementData(dataFrame, updateType);
-            if (boardcastData.Data.Count > 0)
+            var output = "";
+            try
             {
-                await HandleBoardcastingManagementData(channelKey, boardcastData);
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(updateType);
+                if (boardcastData.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
             }
-
-            return JsonConvert.SerializeObject(boardcastData, JsonsSetting);
+            catch (Exception ex)
+            {
+                output = ex.Message;
+            }
+            return output;
         }
 
         [HttpGet]
@@ -107,7 +113,7 @@ namespace CIM.API.Controllers
                 return JsonConvert.SerializeObject(
                     await HandleBoardcastingActiveProcess(updateType, productionPlan, new int[] { routeId }, activeProductionPlan));
             }
-            return "";
+            return "OK";
         }
 
         #endregion

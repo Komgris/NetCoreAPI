@@ -25,31 +25,31 @@ namespace CIM.BusinessLogic.Services {
         private Dictionary<ManagementDashboardType, getdataConfig> ManagementDashboardConfig
             = new Dictionary<ManagementDashboardType, getdataConfig>()
             {
-                                { ManagementDashboardType.KPI                   , new getdataConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
-                                { ManagementDashboardType.ProductionSummary     , new getdataConfig("ProductionSummary","sp_Dashboard_Output")},
-                                { ManagementDashboardType.WasteByMaterial       , new getdataConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
-                                { ManagementDashboardType.WasteBySymptom        , new getdataConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
-                                { ManagementDashboardType.MachineLossTree       , new getdataConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
-                                { ManagementDashboardType.MachineLossLvl1       , new getdataConfig("MachineLossLvl1","-")},
-                                { ManagementDashboardType.MachineLossLvl2       , new getdataConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
-                                { ManagementDashboardType.MachineLossLvl3       , new getdataConfig("MachineLossLvl3","-")},
-                                { ManagementDashboardType.CapacityUtilization   , new getdataConfig("CapacityUtilization","sp_Dashboard_Utilization")},
-                                { ManagementDashboardType.MachineLossHighLight  , new getdataConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
+                { ManagementDashboardType.KPI                   , new getdataConfig("KPI","sp_dashboard_kpi")},//MachineLossHighLight
+                { ManagementDashboardType.ProductionSummary     , new getdataConfig("ProductionSummary","sp_Dashboard_Output")},
+                { ManagementDashboardType.WasteByMaterial       , new getdataConfig("WasteByMaterial","sp_Dashboard_WasteByMaterial")},
+                { ManagementDashboardType.WasteBySymptom        , new getdataConfig("WasteBySymptom","sp_Dashboard_WasteBySymptom")},
+                { ManagementDashboardType.MachineLossTree       , new getdataConfig("MachineLossTree","sp_Dashboard_MachineLossTree")},
+                { ManagementDashboardType.MachineLossLvl1       , new getdataConfig("MachineLossLvl1","-")},
+                { ManagementDashboardType.MachineLossLvl2       , new getdataConfig("MachineLossLvl2","sp_Dashboard_MachineLossLvl2")},
+                { ManagementDashboardType.MachineLossLvl3       , new getdataConfig("MachineLossLvl3","-")},
+                { ManagementDashboardType.CapacityUtilization   , new getdataConfig("CapacityUtilization","sp_Dashboard_Utilization")},
+                { ManagementDashboardType.MachineLossHighLight  , new getdataConfig("MachineLossHighLight","sp_Dashboard_MachineLoss_Highlight")},
             };
 
         private Dictionary<CustomDashboardType, getdataConfig> CustomDashboardConfig
             = new Dictionary<CustomDashboardType, getdataConfig>()
             {
-                                { CustomDashboardType.OEE           , new getdataConfig("OEE","-")},
-                                { CustomDashboardType.Production    , new getdataConfig("Production","-")},
-                                { CustomDashboardType.HSE           , new getdataConfig("HSE","-")},
-                                { CustomDashboardType.Quality       , new getdataConfig("Quality","-")},
-                                { CustomDashboardType.Delivery      , new getdataConfig("Delivery","-")},
-                                { CustomDashboardType.Spoilage      , new getdataConfig("Spoilage","-")},
-                                { CustomDashboardType.NonePrime     , new getdataConfig("NonePrime","-")},
-                                { CustomDashboardType.Attendance    , new getdataConfig("Attendance","-")},
-                                { CustomDashboardType.MachineStatus , new getdataConfig("MachineStatus","-")},
-                                { CustomDashboardType.PlanvsActual  , new getdataConfig("PlanvsActual","-")},
+                { CustomDashboardType.OEE           , new getdataConfig("OEE","sp_custom_dashboard_oee")},
+                { CustomDashboardType.Production    , new getdataConfig("Production","sp_custom_dashboard_production")},
+                { CustomDashboardType.HSE           , new getdataConfig("HSE","sp_custom_dashboard_hse")},
+                { CustomDashboardType.Quality       , new getdataConfig("Quality","sp_custom_dashboard_quality")},
+                { CustomDashboardType.Delivery      , new getdataConfig("Delivery","sp_custom_dashboard_delivery")},
+                { CustomDashboardType.Spoilage      , new getdataConfig("Spoilage","sp_custom_dashboard_spoilage")},
+                { CustomDashboardType.NonePrime     , new getdataConfig("NonePrime","sp_custom_dashboard_noneprime")},
+                { CustomDashboardType.Attendance    , new getdataConfig("Attendance","sp_custom_dashboard_attendance")},
+                { CustomDashboardType.MachineStatus , new getdataConfig("MachineStatus","sp_custom_dashboard_machine")},
+                { CustomDashboardType.PlanvsActual  , new getdataConfig("PlanvsActual","sp_custom_dashboard_planactual")},
             };
 
         private Dictionary<BoardcastType, getdataConfig> DashboardConfig
@@ -101,6 +101,26 @@ namespace CIM.BusinessLogic.Services {
                 dashboarddata.Name = dashboardConfig.Name;
                 dashboarddata.JsonData = JsonConvert.SerializeObject(
                                          _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
+        }
+
+        private BoardcastDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new BoardcastDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                var dSet = _directSqlRepository.ExecuteSPWithQueryDSet(dashboardConfig.StoreName, paramsList);
+
+                if(dSet.Tables.Count > 0) dashboarddata.JsonData = JsonConvert.SerializeObject(dSet.Tables[0]);
+                if(dSet.Tables.Count > 1) dashboarddata.JsonSpecificData = JsonConvert.SerializeObject(dSet.Tables[1]);
             }
             catch (Exception ex)
             {
@@ -200,7 +220,7 @@ namespace CIM.BusinessLogic.Services {
             foreach (var dbtype in dashboardType)
             {
                 customtData.Data.Add(
-                                        GetdData(CustomDashboardConfig[dbtype], null));
+                                        GetdDataSpecific(CustomDashboardConfig[dbtype], null));
             }
             return customtData;
         }

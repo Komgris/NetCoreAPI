@@ -93,6 +93,28 @@ namespace CIM.DAL.Implements
             }
         }
 
+        public DataSet ExecuteSPWithQueryDSet(string sql, Dictionary<string, object> parameters)
+        {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    if (parameters != null)
+                        foreach (var p in parameters)
+                            if (p.Value != null) command.Parameters.AddWithValue(p.Key, p.Value);
+
+                    connection.Open();
+                    SqlDataAdapter da = new SqlDataAdapter(command);
+                    command.CommandType = CommandType.StoredProcedure;
+                    var ds = new DataSet();
+                    da.Fill(ds);
+
+                    return ds;
+                }
+            }
+        }
+
         public DataTable ExecuteWithQuery(string sql) {
             var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
