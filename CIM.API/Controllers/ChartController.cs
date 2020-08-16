@@ -20,10 +20,10 @@ namespace CIM.API.Controllers
         public ChartController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
         }
 

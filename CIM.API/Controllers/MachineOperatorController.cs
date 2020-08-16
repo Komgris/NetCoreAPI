@@ -23,12 +23,12 @@ namespace CIM.API.Controllers
         public MachineOperatorController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService,
             IMachineOperatorService machineOperatorService,
             IMachineService machineService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _machineOperatorService = machineOperatorService;
             _productionPlanService = productionPlanService;

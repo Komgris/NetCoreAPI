@@ -20,21 +20,21 @@ namespace CIM.API.Controllers
 
         public IHubContext<GlobalHub> _hub;
         public IResponseCacheService _responseCacheService;
-        public IReportService _service;
+        public IDashboardService _dashboardService;
         public IConfiguration _config;
         public IActiveProductionPlanService _activeProductionPlanService;
 
         public BoardcastController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService service,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
             ) 
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
-            _service = service;
+            _dashboardService = service;
             _config = config;
             _activeProductionPlanService = activeProductionPlanService;
         }
@@ -105,7 +105,7 @@ namespace CIM.API.Controllers
             //generate data for boardcast
             foreach (var r in routeId)
             {
-                var boardcastData = await _service.GenerateBoardcastData(updateType, productionPlan, r);
+                var boardcastData = await _dashboardService.GenerateBoardcastData(updateType, productionPlan, r);
                 if (boardcastData.Data.Count > 0)
                 {
                     activeModel = await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);

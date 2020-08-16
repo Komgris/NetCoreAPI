@@ -22,11 +22,11 @@ namespace CIM.API.Controllers
             IHubContext<GlobalHub> hub,
             IMachineService machineService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService,
             IHardwareInterfaceService hwinterfaceService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _machineService = machineService;
             _hwinterfaceService = hwinterfaceService;
