@@ -1,13 +1,8 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Interfaces;
-using CIM.Model;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using System.Threading.Tasks;
-using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services {
     public class DashboardService: BaseService, IDashboardService {

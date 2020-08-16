@@ -22,6 +22,12 @@ namespace CIM.BusinessLogic.Services {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+        public ReportService(IDirectSqlRepository directSqlRepository, 
+            IResponseCacheService responseCacheService)
+        {
+            _directSqlRepository = directSqlRepository;
+            _responseCacheService = responseCacheService;
+        }
 
         #region Config
 
@@ -86,143 +92,166 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        public ReportService(IDirectSqlRepository directSqlRepository, 
-            IResponseCacheService responseCacheService)
+
+        #region  Cim-Mng dashboard
+
+        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
-            _directSqlRepository = directSqlRepository;
-            _responseCacheService = responseCacheService;
+            var boardcastData = new BoardcastModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                boardcastData.SetData(
+                                        GetData(DashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return boardcastData;
         }
 
-        #region  Cim-Oper Mc-Loss
+        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
+        {
+            var boardcastData = new BoardcastModel(timeFrame);
+            var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    switch (updateType)
+                    {
+                        case BoardcastType.All:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[]{ BoardcastType.KPI
+                                                                , BoardcastType.Output
+                                                                , BoardcastType.Loss
+                                                                , BoardcastType.TimeUtilisation
+                                                                , BoardcastType.Waste}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.KPI:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.KPI }
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Output:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Output
+                                                                    , BoardcastType.KPI}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Loss:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Loss
+                                                                    , BoardcastType.KPI
+                                                                    , BoardcastType.TimeUtilisation}
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.TimeUtilisation:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.TimeUtilisation }
+                                                            , timeFrame, paramsList);
+                            break;
+                        case BoardcastType.Waste:
+                            boardcastData = GenerateBoardcastData(
+                                                            new[] { BoardcastType.Waste }
+                                                            , timeFrame, paramsList);
+                            break;
+                    }
 
-        public PagingModel<object> GetProductionWCMLossHistory(string planId, int routeId, DateTime? from, DateTime? to, int page) {
+                }
+                catch (Exception ex)
+                {
+                    boardcastData.IsSuccess = false;
+                    boardcastData.Message = ex.Message;
+                }
 
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@from", from },
-                {"@to", to },
-                {"@page", page }
-            };
+                return boardcastData;
+            });
+        }
 
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
-            var totalcnt = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("totalcount") : 0;
-            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
-            pagingmodel.DataObject = dt;
+        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new BoardcastDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
+        }
+        public async Task<DashboardModel> GetManagementDashboard(DataFrame frame)
+        {
+            var cacheKey = $"mngdashboard-{frame}";
+            var dashboard = await _responseCacheService.GetAsTypeAsync<DashboardModel>(cacheKey);
+            if (dashboard == null || dashboard.LastUpdate.AddMinutes(1) < DateTime.Now)
+            {
+                dashboard = new DashboardModel();
+                var paramsList = new Dictionary<string, object>() { { "@timeFrame", (int)frame } };
+                switch (frame)
+                {
+                    case DataFrame.Default:
+                        dashboard = GenerateDashboardData(
+                             new[]{ ManagementDashboardType.KPI
+                                 , ManagementDashboardType.WasteByMaterial
+                                 , ManagementDashboardType.ProductionSummary
+                                 , ManagementDashboardType.MachineLossTree
+                                 , ManagementDashboardType.MachineLossHighLight
+                                 , ManagementDashboardType.CapacityUtilization}
+                             , frame, paramsList);
+                        break;
+                    case DataFrame.Daily:
+                        break;
+                    case DataFrame.Weekly:
+                        break;
+                    case DataFrame.Monthly:
+                        break;
+                    case DataFrame.Yearly:
+                        break;
+                    case DataFrame.Custom:
+                        break;
+                }
+            }
 
-            return pagingmodel;
+            //return  _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_Management", null);
+            return dashboard;
+        }
+
+        private DashboardModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var managementData = new DashboardModel(timeFrame);
+            foreach (var dbtype in dashboardType)
+            {
+                managementData.Data.Add(
+                                        GetDashboardData(ManagementDashboardConfig[dbtype]
+                                        , timeFrame, paramsList));
+            }
+            return managementData;
+        }
+
+        private DashboardDataModel GetDashboardData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        {
+            var dashboarddata = new DashboardDataModel();
+            try
+            {
+                dashboarddata.Name = dashboardConfig.Name;
+                dashboarddata.JsonData = JsonConvert.SerializeObject(
+                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
+            }
+            catch (Exception ex)
+            {
+                dashboarddata.JsonData = null;
+                dashboarddata.IsSuccess = false;
+                dashboarddata.Message = ex.Message;
+            }
+            return dashboarddata;
         }
 
         #endregion
-
-        #region  Cim-Oper dashboard
-
-        public Dictionary<string, int> GetActiveProductionPlanOutput() {
-            return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
-        }
-
-        #endregion
-
-        #region Cim-oper mc status
-
-        public PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null) {
-            var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId },
-                {"@routeid", routeId },
-                {"@mcid", machineId },
-                {"@from", from },
-                {"@to", to },
-                {"@page", page },
-                {"@howmany", howMany }
-            };
-
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Status", paramsList);
-            var totalcnt = dt.Rows[0].Field<int>("totalcount");
-            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, howMany);
-            pagingmodel.DataObject = dt;
-
-            return pagingmodel;
-        }
-        
-        #endregion
-
-        #region Cim-Mng Report
-
-        public DataTable GetOEEReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_OEE", paramsList);
-        }
-
-        public DataTable GetOutputReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Output", paramsList);
-        }
-
-        public DataTable GetWasteReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
-        }
-
-        public DataTable GetMachineLossReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Loss", paramsList);
-        }
-
-        public DataTable GetQualityReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Quality", paramsList);
-        }
-
-        public DataTable GetSPCReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_SPC", paramsList);
-        }
-
-        public DataTable GetElectricityReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Electricity", paramsList);
-        }
-
-        public DataTable GetProductionSummaryReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Summary", paramsList);
-        }
-
-        public DataTable GetOperatingTimeReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Operating_Time", paramsList);
-        }
-
-        public DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Actual_Design_Speed", paramsList);
-        }
-
-        public DataTable GetMaintenanceReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Maintenance", paramsList);
-        }
-
-        public DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data)
-        {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Cost_Analysis", paramsList);
-        }
-
-
-        #endregion
-
 
         #region Cim-Oper boardcast data
 
@@ -337,81 +366,7 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-
-        #region CIM-Mng Dashboard
-        public async Task<DashboardModel> GetManagementDashboard(DataFrame frame)
-        {
-            var cacheKey = $"mngdashboard-{frame}";
-            var dashboard = await _responseCacheService.GetAsTypeAsync<DashboardModel>(cacheKey);
-            if (dashboard == null || dashboard.LastUpdate.AddMinutes(1) < DateTime.Now)
-            {
-                dashboard = new DashboardModel();
-                var paramsList = new Dictionary<string, object>() { { "@timeFrame", (int)frame } };
-                switch (frame)
-                {
-                    case DataFrame.Default:
-                        dashboard = GenerateDashboardData(
-                             new[]{ ManagementDashboardType.KPI
-                                 , ManagementDashboardType.WasteByMaterial
-                                 , ManagementDashboardType.ProductionSummary
-                                 , ManagementDashboardType.MachineLossTree
-                                 , ManagementDashboardType.MachineLossHighLight
-                                 , ManagementDashboardType.CapacityUtilization}
-                             , frame, paramsList);
-                        break;
-                    case DataFrame.Daily:
-                        break;
-                    case DataFrame.Weekly:
-                        break;
-                    case DataFrame.Monthly:
-                        break;
-                    case DataFrame.Yearly:
-                        break;
-                    case DataFrame.Custom:
-                        break;
-                }
-            }
-
-            //return  _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_Management", null);
-            return dashboard;
-        }
-
-        #endregion
-
-        #region Cim-Mng boardcast data
-
-
-        private DashboardModel GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var managementData = new DashboardModel(timeFrame);
-            foreach (var dbtype in dashboardType)
-            {
-                managementData.Data.Add(
-                                        GetDashboardData(ManagementDashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
-            }
-            return managementData;
-        }
-
-        private DashboardDataModel GetDashboardData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
-        {
-            var dashboarddata = new DashboardDataModel();
-            try
-            {
-                dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-            }
-            catch (Exception ex)
-            {
-                dashboarddata.JsonData = null;
-                dashboarddata.IsSuccess = false;
-                dashboarddata.Message = ex.Message;
-            }
-            return dashboarddata;
-        }
-
-        #endregion
+        #region Cim-oper active operation info
 
         public PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page)
         {
@@ -431,95 +386,128 @@ namespace CIM.BusinessLogic.Services {
 
             return pagingmodel;
         }
-
-        private BoardcastModel GenerateBoardcastData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        public PagingModel<object> GetProductionWCMLossHistory(string planId, int routeId, DateTime? from, DateTime? to, int page)
         {
-            var boardcastData = new BoardcastModel(timeFrame);
-            foreach (var dbtype in dashboardType)
-            {
-                boardcastData.SetData(
-                                        GetData(DashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
-            }
-            return boardcastData;
+
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page }
+            };
+
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
+            var totalcnt = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("totalcount") : 0;
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, 10);
+            pagingmodel.DataObject = dt;
+
+            return pagingmodel;
         }
 
-        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
+        public PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null)
         {
-            var boardcastData = new BoardcastModel(timeFrame);
-            var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    switch (updateType)
-                    {
-                        case BoardcastType.All:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[]{ BoardcastType.KPI
-                                                                , BoardcastType.Output
-                                                                , BoardcastType.Loss
-                                                                , BoardcastType.TimeUtilisation
-                                                                , BoardcastType.Waste}
-                                                            , timeFrame, paramsList);
-                            break;
-                        case BoardcastType.KPI:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[] { BoardcastType.KPI }
-                                                            , timeFrame, paramsList);
-                            break;
-                        case BoardcastType.Output:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[] { BoardcastType.Output
-                                                                    , BoardcastType.KPI}
-                                                            , timeFrame, paramsList);
-                            break;
-                        case BoardcastType.Loss:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[] { BoardcastType.Loss
-                                                                    , BoardcastType.KPI
-                                                                    , BoardcastType.TimeUtilisation}
-                                                            , timeFrame, paramsList);
-                            break;
-                        case BoardcastType.TimeUtilisation:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[] { BoardcastType.TimeUtilisation }
-                                                            , timeFrame, paramsList);
-                            break;
-                        case BoardcastType.Waste:
-                            boardcastData = GenerateBoardcastData(
-                                                            new[] { BoardcastType.Waste }
-                                                            , timeFrame, paramsList);
-                            break;
-                    }
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+                {"@routeid", routeId },
+                {"@mcid", machineId },
+                {"@from", from },
+                {"@to", to },
+                {"@page", page },
+                {"@howmany", howMany }
+            };
 
-                }
-                catch (Exception ex)
-                {
-                    boardcastData.IsSuccess = false;
-                    boardcastData.Message = ex.Message;
-                }
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Status", paramsList);
+            var totalcnt = dt.Rows[0].Field<int>("totalcount");
+            var pagingmodel = ToPagingModel<object>(null, totalcnt, page, howMany);
+            pagingmodel.DataObject = dt;
 
-                return boardcastData;
-            });
+            return pagingmodel;
         }
 
-        private BoardcastDataModel GetData(DashboardConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        public Dictionary<string, int> GetActiveProductionPlanOutput()
         {
-            var dashboarddata = new BoardcastDataModel();
-            try
-            {
-                dashboarddata.Name = dashboardConfig.Name;
-                dashboarddata.JsonData = JsonConvert.SerializeObject(
-                                        _directSqlRepository.ExecuteSPWithQuery(dashboardConfig.StoreName, paramsList));
-            }
-            catch (Exception ex)
-            {
-                dashboarddata.JsonData = null;
-                dashboarddata.IsSuccess = false;
-                dashboarddata.Message = ex.Message;
-            }
-            return dashboarddata;
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
         }
+
+        #endregion
+
+        #region Cim-Mng Report
+
+        public DataTable GetOEEReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_OEE", paramsList);
+        }
+
+        public DataTable GetOutputReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Output", paramsList);
+        }
+
+        public DataTable GetWasteReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
+        }
+
+        public DataTable GetMachineLossReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Loss", paramsList);
+        }
+
+        public DataTable GetQualityReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Quality", paramsList);
+        }
+
+        public DataTable GetSPCReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_SPC", paramsList);
+        }
+
+        public DataTable GetElectricityReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Electricity", paramsList);
+        }
+
+        public DataTable GetProductionSummaryReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Production_Summary", paramsList);
+        }
+
+        public DataTable GetOperatingTimeReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Operating_Time", paramsList);
+        }
+
+        public DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Actual_Design_Speed", paramsList);
+        }
+
+        public DataTable GetMaintenanceReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Maintenance", paramsList);
+        }
+
+        public DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Cost_Analysis", paramsList);
+        }
+
+
+        #endregion
+
     }
 }
