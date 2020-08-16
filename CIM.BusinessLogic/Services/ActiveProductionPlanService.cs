@@ -599,15 +599,15 @@ namespace CIM.BusinessLogic.Services {
                     }
                     else if (cachedMachine != null)
                     {
-                        if (dbOutput.Count == 0 || cachedMachine.RecordProductionPlanOutput == null || cachedMachine.RecordProductionPlanOutput.Hour != hour)
+                        if (dbOutput.Count == 0 || cachedMachine.RecordProductionPlanOutput == null || dbOutput[0].Hour != hour)
                         {
                             if (dbOutput.Count > 0)
                             {
                                 paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
                                 paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                File.AppendAllText("CounterAdd_logging"
-                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{hour} | RecordsCnt:{dbOutput.Count}");
+                                File.AppendAllText("C:/log/CounterAdd_logging"
+                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
                             }
                             else//close ramp-up records and start to operating time #139
                             {
