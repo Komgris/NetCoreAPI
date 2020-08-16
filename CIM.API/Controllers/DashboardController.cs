@@ -91,14 +91,14 @@ namespace CIM.API.Controllers
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
-                    await _dashboardService.GenerateBoardcast(BoardcastType.All, productionPlan, routeId);
+                    await _dashboardService.GenerateBoardcast(DataTypeGroup.All, productionPlan, routeId);
             }
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
 
         [HttpGet]
-        public async Task<string> BoardcastingActiveOperation(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<string> BoardcastingActiveOperation(DataTypeGroup updateType, string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = await GetCached<ActiveProductionPlanModel>(channelKey);

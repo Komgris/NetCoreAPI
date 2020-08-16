@@ -65,6 +65,7 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region General
+
         private BoardcastModel GetOptionData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
             var boardcastData = new BoardcastModel(timeFrame);
@@ -72,12 +73,12 @@ namespace CIM.BusinessLogic.Services {
             {
                 boardcastData.SetData(
                                        GetdData(DashboardConfig[dbtype]
-                                            , timeFrame, paramsList));
+                                            , paramsList));
             }
             return boardcastData;
         }
 
-        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
             var dashboarddata = new BoardcastDataModel();
             try
@@ -98,16 +99,16 @@ namespace CIM.BusinessLogic.Services {
         #endregion
 
         #region CIM dashboard
-        public async Task<BoardcastModel> GenerateCustomDashboard(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+
+        public async Task<BoardcastModel> GenerateCustomDashboard(ManagementDashboardType[] dashboardType)
         {
-            var managementData = new BoardcastModel(timeFrame);
+            var customtData = new BoardcastModel();
             foreach (var dbtype in dashboardType)
             {
-                managementData.Data.Add(
-                                        GetdData(ManagementDashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
+                customtData.Data.Add(
+                                        GetdData(ManagementDashboardConfig[dbtype], null));
             }
-            return managementData;
+            return customtData;
         }
 
         #endregion
@@ -218,7 +219,7 @@ namespace CIM.BusinessLogic.Services {
             {
                 managementData.Data.Add(
                                         GetdData(ManagementDashboardConfig[dbtype]
-                                        , timeFrame, paramsList));
+                                        , paramsList));
             }
             return managementData;
         }
@@ -227,7 +228,7 @@ namespace CIM.BusinessLogic.Services {
 
         #region Cim-Oper boardcast data
 
-        public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(DataTypeGroup updateType, string productionPlan, int routeId)
         {
             var boardcastData = await GenerateBoardcast(updateType, productionPlan, routeId);
             if (boardcastData.Data.Count > 0)
@@ -238,7 +239,7 @@ namespace CIM.BusinessLogic.Services {
             return null;
         }
 
-        public async Task<BoardcastModel> GenerateBoardcast(BoardcastType relateType, string productionPlan, int routeId)
+        public async Task<BoardcastModel> GenerateBoardcast(DataTypeGroup relateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
             var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
@@ -248,7 +249,7 @@ namespace CIM.BusinessLogic.Services {
                 {
                     switch (relateType)
                     {
-                        case BoardcastType.All:
+                        case DataTypeGroup.All:
                             boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveProductionSummary
@@ -266,12 +267,7 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveMachineLossEvent}
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveKPI:
-                            boardcastData = GetOptionData(
-                                                            new[] { BoardcastType.ActiveKPI }
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveProductionSummary:
+                        case DataTypeGroup.Produce:
                             boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveMachineInfo
@@ -280,7 +276,7 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveMachineSpeed}
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveLoss:
+                        case DataTypeGroup.Loss:
                             boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveLoss
@@ -289,12 +285,8 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveMachineInfo}
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveTimeUtilisation:
-                            boardcastData = GetOptionData(
-                                                            new[] { BoardcastType.ActiveTimeUtilisation }
-                                                            , DataFrame.Default, paramsList);
-                            break;
-                        case BoardcastType.ActiveWaste:
+
+                        case DataTypeGroup.Waste:
                             boardcastData = GetOptionData(
                                                             new[]{ BoardcastType.ActiveKPI
                                                                 , BoardcastType.ActiveWasteMat
@@ -303,19 +295,19 @@ namespace CIM.BusinessLogic.Services {
                                                                 , BoardcastType.ActiveWasteTime}
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveProductionEvent:
+                        case DataTypeGroup.Process:
                             boardcastData = GetOptionData(
-                                                            new[] { BoardcastType.ActiveProductionEvent }
+                                                            new[] {  BoardcastType.ActiveKPI
+                                                                  , BoardcastType.ActiveProductionEvent
+                                                                  , BoardcastType.ActiveTimeUtilisation}
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveOperator:
+                        case DataTypeGroup.Operators:
                             boardcastData = GetOptionData(
                                                             new[] { BoardcastType.ActiveOperator }
                                                             , DataFrame.Default, paramsList);
                             break;
-                        case BoardcastType.ActiveMachineInfo:
-                        case BoardcastType.ActiveMachineSpeed:
-                        case BoardcastType.ActiveMachineLossEvent:
+                        case DataTypeGroup.Machine:
                             boardcastData = GetOptionData(
                                                             new[]{BoardcastType.ActiveMachineInfo
                                                                 , BoardcastType.ActiveMachineSpeed

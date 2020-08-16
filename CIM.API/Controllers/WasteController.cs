@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -60,7 +61,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, model.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
@@ -85,7 +86,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, model.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
@@ -111,7 +112,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, dbModel.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;

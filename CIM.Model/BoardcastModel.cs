@@ -31,6 +31,7 @@ namespace CIM.Model {
         public string Name { get; set; }
         public DateTime LastUpdate { get; set; } = DateTime.Now;
         public string JsonData { get; set; }
+        public string JsonSpecificData { get; set; }
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
     }

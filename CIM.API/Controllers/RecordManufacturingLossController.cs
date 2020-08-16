@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -41,7 +42,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.Create(model);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
@@ -64,7 +65,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.End(model);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
@@ -87,12 +88,12 @@ namespace CIM.API.Controllers
                 var productionPlan = await _recordManufacturingLossService.Update(model);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
                     if (model.WasteList.Count > 0)
                     {
-                        await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveWaste, productionPlan.ProductionPlanId
+                        await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, productionPlan.ProductionPlanId
                             , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     }
                 }

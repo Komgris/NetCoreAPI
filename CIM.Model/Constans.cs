@@ -102,38 +102,12 @@ namespace CIM.Model
         }
 
         public enum DataFrame {
-            Default,
-            Daily,
-            Weekly,
-            Monthly,
-            Yearly,
-            Custom
-        }
-
-        public enum BoardcastType {
-            All,
-            KPI,
-            Output,
-            Waste,
-            Loss,
-            TimeUtilisation,
-            ActiveKPI,
-            ActiveProductionSummary,
-            ActiveProductionOutput,
-            ActiveWaste,
-            ActiveWasteMat,
-            ActiveWasteCase,
-            ActiveWasteMC,
-            ActiveWasteTime,
-            ActiveLoss,
-            ActiveTimeUtilisation,
-            ActiveProductionEvent,
-            ActiveOperator,
-            ActiveMachineInfo,
-            ActiveMachineSpeed,
-            ActiveMachineLossEvent,
-            ActiveMachineStatus,
-            End
+            Default=0,
+            Daily=1,
+            Weekly=2,
+            Monthly=3,
+            Yearly=4,
+            Custom=5
         }
 
         public enum MasterDataType {
@@ -176,17 +150,69 @@ namespace CIM.Model
             DoleCalendar
         }
 
+        public enum BoardcastType {
+            All =0,
+            KPI =1,
+            Output=2,
+            Waste=3,
+            Loss=4,
+            TimeUtilisation =5,
+            ActiveKPI =6,
+            ActiveProductionSummary =7,
+            ActiveProductionOutput =8,
+            ActiveWaste =9,
+            ActiveWasteMat =10,
+            ActiveWasteCase = 11,
+            ActiveWasteMC = 12,
+            ActiveWasteTime = 13,
+            ActiveLoss = 14,
+            ActiveTimeUtilisation = 15,
+            ActiveProductionEvent = 16,
+            ActiveOperator = 17,
+            ActiveMachineInfo = 18,
+            ActiveMachineSpeed = 19,
+            ActiveMachineLossEvent = 20,
+            ActiveMachineStatus = 21,
+            End = 99
+        }
+
         public enum ManagementDashboardType {
-            KPI,
-            ProductionSummary,
-            WasteByMaterial,
-            WasteBySymptom,
-            MachineLossTree,
-            MachineLossLvl1,
-            MachineLossLvl2,
-            MachineLossLvl3,
-            MachineLossHighLight,
-            CapacityUtilization
+            KPI=0,
+            ProductionSummary =1,
+            WasteByMaterial =2,
+            WasteBySymptom =3,
+            MachineLossTree =4,
+            MachineLossLvl1 =5,
+            MachineLossLvl2 =6,
+            MachineLossLvl3 =7,
+            MachineLossHighLight =8,
+            CapacityUtilization =9
+        }
+
+        public enum CustomDashboardType {
+            OEE =0,
+            Production =1,
+            HSE =2,
+            Quality =3,
+            Delivery =4,
+            Spoilage =5,
+            NonePrime =6,
+            Attendance =7,
+
+            MachineStatus =10,
+            PlanvsActual =11
+        }
+
+        public enum DataTypeGroup {
+            Machine       =0,
+            Loss          =1,
+            Waste         =2,
+            Operators     =3,
+            Produce       =4,
+            Process       =5,
+            HSE           =6,
+            All           =99,
+            None          =100
         }
 
         #endregion

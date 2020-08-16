@@ -195,7 +195,7 @@ namespace CIM.BusinessLogic.Services {
                     await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                     //generate -> BoardcastData
-                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(BoardcastType.All, planId, routeId);
+                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 

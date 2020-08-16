@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -105,7 +106,7 @@ namespace CIM.API.Controllers
             if (productionPlan != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
             return "OK";
@@ -123,7 +124,7 @@ namespace CIM.API.Controllers
 
                 foreach (var productionPlan in productionPlans)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
@@ -147,7 +148,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
                 if(productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
