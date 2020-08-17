@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private IUserService _service;
 
@@ -24,6 +25,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
+                if (!BaseService.IsVerifyTokenPass)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 await _service.Create(model);
                 output.IsSuccess = true;
             }
@@ -42,6 +49,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<UserModel>>();
             try
             {
+                if (!BaseService.IsVerifyTokenPass)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -59,6 +72,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
+                if (!BaseService.IsVerifyTokenPass)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -76,6 +95,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
+                if (!BaseService.IsVerifyTokenPass)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 await _service.Update(model);
                 output.IsSuccess = true;
             }
@@ -93,6 +118,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
+                if (!BaseService.IsVerifyTokenPass)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.GetFromUserName(userName);
                 output.IsSuccess = true;
             }
@@ -102,23 +133,5 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
-        [HttpGet]
-        [Route("api/[controller]/GetFromToken")]
-        public async Task<ProcessReponseModel<UserModel>> GetFromToken(string token)
-        {
-            var output = new ProcessReponseModel<UserModel>();
-            try
-            {
-                output.Data = await _service.GetFromToken(token);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
-
     }
 }

@@ -10,14 +10,14 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task Create(UserModel model);
         Task<AuthModel> Auth(string username, string password);
-        CurrentUserModel GetCurrentUserModel(string token, int appId);
+        Task<CurrentUserModel> GetCurrentUserModel(string token, int appId);
+        //CurrentUserModel GetCurrentUserModel(string token, int appId);
         string HashPassword(UserModel model);
         Task<string> CreateToken(string userId);
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);
         Task<UserModel> Get(string id);
         Task Update(UserModel model);
         Task<UserModel> GetFromUserName(string userName);
-        Task<UserModel> GetFromToken(string token);
         Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId);
         Task<ProcessReponseModel<object>> VerifyToken(string token);
         Task Logout(string token);

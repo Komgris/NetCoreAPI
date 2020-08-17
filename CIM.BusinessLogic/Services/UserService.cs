@@ -211,29 +211,57 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{token}");
         }
 
-        public CurrentUserModel GetCurrentUserModel(string token, int appId)
+        public async Task<CurrentUserModel> GetCurrentUserModel(string token, int appId)
         {
-            var decryptedData = _cipherService.Decrypt(token);
-            var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
-            var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
-                .Select(x => new
-                {
-                    Token = x.UserAppTokens.Token,
-                    DefaultLanguageId = x.DefaultLanguageId,
-                    UserGroupId = x.UserGroupId
-                }).FirstOrDefault();
-            var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId && x.AppId == appId).FirstOrDefault();
-            var existingToken = _userAppTokenRepository.Where(x => x.UserId == userAppToken.UserId).FirstOrDefault();
-            var dbData = _cipherService.Decrypt(user.Token);
-            var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
-            var currentUserModel = new CurrentUserModel
+            var currentUserModel = new CurrentUserModel();
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
             {
-                IsValid = user != null && tokenData.UserId == userAppToken.UserId && userGroupApp != null,
-                UserId = tokenData.UserId,
-                LanguageId = user.DefaultLanguageId
-            };
+                var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
+                if (userGroupApp != null)
+                {
+                    currentUserModel.UserId = authModel.UserId;
+                    IsVerifyTokenPass = true;
+
+                    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel
+                        , _configuration.GetValue<int>("TokenExpire(Min)"));                    
+                }
+                else
+                {
+                    IsVerifyTokenPass = false;
+                }
+            }
+            else
+            {
+                IsVerifyTokenPass = false;
+            }
+
             return currentUserModel;
         }
+
+        //public CurrentUserModel GetCurrentUserModel(string token, int appId)
+        //{
+        //    var decryptedData = _cipherService.Decrypt(token);
+        //    var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
+        //    var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
+        //        .Select(x => new
+        //        {
+        //            Token = x.UserAppTokens.Token,
+        //            DefaultLanguageId = x.DefaultLanguageId,
+        //            UserGroupId = x.UserGroupId
+        //        }).FirstOrDefault();
+        //    var userGroupApp = _userGroupAppRepository.Where(x => x.UserGroupId == user.UserGroupId && x.AppId == appId).FirstOrDefault();
+        //    var existingToken = _userAppTokenRepository.Where(x => x.UserId == userAppToken.UserId).FirstOrDefault();
+        //    var dbData = _cipherService.Decrypt(user.Token);
+        //    var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
+        //    var currentUserModel = new CurrentUserModel
+        //    {
+        //        IsValid = user != null && tokenData.UserId == userAppToken.UserId && userGroupApp != null,
+        //        UserId = tokenData.UserId,
+        //        LanguageId = user.DefaultLanguageId
+        //    };
+        //    return currentUserModel;
+        //}
 
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howMany, bool isActive)
         {
@@ -325,16 +353,5 @@ namespace CIM.BusinessLogic.Services
                     IsDelete = x.IsDelete
                 }).FirstOrDefaultAsync();
         }
-
-        public async Task<UserModel> GetFromToken(string token)
-        {
-            return await _userAppTokenRepository.Where(x => x.Token == token)
-                .Select(x => new UserModel
-                {
-                    Id = x.UserId,
-                    UserName = x.User.UserName
-                }).FirstOrDefaultAsync();
-        }
-
     }
 }
