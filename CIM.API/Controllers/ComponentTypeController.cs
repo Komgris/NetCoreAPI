@@ -91,7 +91,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                    list.Image = await _utilitiesService.UploadImage(file, "componentType",false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
@@ -118,7 +118,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                    list.Image = await _utilitiesService.UploadImage(file, "componentType", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {

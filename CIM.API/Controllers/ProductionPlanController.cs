@@ -18,6 +18,7 @@ namespace CIM.API.Controllers {
     public class ProductionPlanController : BoardcastController
     {
         private IProductionPlanService _productionPlanService;
+        private IUtilitiesService _utilitiesService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
@@ -25,11 +26,13 @@ namespace CIM.API.Controllers {
             IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService,
+            IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
+            _utilitiesService = utilitiesService;
         }
 
         #region Production plan mng 
@@ -42,22 +45,10 @@ namespace CIM.API.Controllers {
             try
             {
                 var file = Request.Form.Files[0];
-                var folderName = Path.Combine("ProductionPlan");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                if (!Directory.Exists(pathToSave))
+                if (file != null)
                 {
-                    Directory.CreateDirectory(pathToSave);
-                }
-                if (file.Length > 0)
-                {
-                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-
-                    var fromExcel = _productionPlanService.ReadImport(fullPath);
+                    var fullpath = await _utilitiesService.UploadImage(file, "productionPlan", true);
+                    var fromExcel = _productionPlanService.ReadImport(fullpath);
                     var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
