@@ -15,19 +15,39 @@ using Microsoft.Extensions.Configuration;
 namespace CIM.API.Controllers {
 
     [ApiController]
-    public class ReportController : BoardcastController
-    {
-
+    public class ReportController : BoardcastController {
+        IReportService _reposrtService;
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
-            IReportService service,
+            IDashboardService dashboardService,
+            IReportService reposrtService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
-        {} 
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
+        {
+            _reposrtService = reposrtService;
+        }
 
         #region Cim-Oper Mc-Loss
+
+        [HttpGet]
+        [Route("api/[controller]/GetMachineStatusHistory")]
+        public async Task<ProcessReponseModel<object>> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null)
+        {
+
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetMachineStatusHistory(howMany, page, planId, routeId, machineId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
 
         [HttpGet]
         [Route("api/[controller]/GetProductionLossHistory")]
@@ -37,7 +57,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLossHistory(planId, routeId, null, null, page), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetProductionWCMLossHistory(planId, routeId, null, null, page), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -60,7 +80,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to, page)));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetWasteHistory(planId, routeId, from, to, page)));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -81,7 +101,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOEEReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetOEEReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -98,7 +118,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOutputReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetOutputReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -115,7 +135,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetWasteReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -132,7 +152,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineLossReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetMachineLossReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -149,7 +169,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetQualityReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetQualityReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -166,7 +186,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetSPCReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetSPCReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -183,7 +203,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetElectricityReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetElectricityReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -200,7 +220,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionSummaryReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetProductionSummaryReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -217,7 +237,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOperatingTimeReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetOperatingTimeReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -234,7 +254,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActualDesignSpeedReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetActualDesignSpeedReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -251,7 +271,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMaintenanceReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetMaintenanceReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -268,7 +288,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetCostAnalysisReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_reposrtService.GetCostAnalysisReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)

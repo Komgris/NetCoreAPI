@@ -17,36 +17,41 @@ namespace CIM.API.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class DashboardController : BoardcastController {
-
         public DashboardController(
         IResponseCacheService responseCacheService,
         IHubContext<GlobalHub> hub,
-        IReportService service,
+        IDashboardService dashboardService,
         IConfiguration config,
         IActiveProductionPlanService activeProductionPlanService
-        ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
-        { }
+        ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
+        {
+        }
 
         #region Management
 
         [HttpGet]
-        public async Task<string> GetDashboardCached(string channel)
+        public async Task<string> GetDashboardCached(DashboardCachedCH cachedCH)
         {
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            return CacheForBoardcast<BoardcastModel>(await GetCached(channelKey));
+            return CacheForBoardcast<BoardcastModel>(await GetCached(CachedCHKey(cachedCH)));
         }
 
         [HttpGet]
-        public async Task<string> BoardcastingDashboard(DataFrame dataFrame, BoardcastType updateType, string channel)
+        public async Task<string> BoardcastingCustomDashboard(DataTypeGroup updateType)
         {
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-{channel}";
-            var boardcastData = await _service.GenerateBoardcastManagementData(dataFrame, updateType);
-            if (boardcastData.Data.Count > 0)
+            var output = "";
+            try
             {
-                await HandleBoardcastingManagementData(channelKey, boardcastData);
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(updateType);
+                if (boardcastData.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
             }
-
-            return JsonConvert.SerializeObject(boardcastData, JsonsSetting);
+            catch (Exception ex)
+            {
+                output = ex.Message;
+            }
+            return output;
         }
 
         [HttpGet]
@@ -55,7 +60,7 @@ namespace CIM.API.Controllers
             var output = "";
             try
             {
-                output = JsonConvert.SerializeObject(await _service.GetManagementDashboard(timeFrame), JsonsSetting);
+                output = JsonConvert.SerializeObject(await _dashboardService.GetManagementDashboard(timeFrame), JsonsSetting);
             }
             catch (Exception ex)
             {
@@ -66,16 +71,15 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Operation
+        #region Active Operation
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionDasboard(string planId, int routeId, int machineId)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionDasboard(planId, routeId, machineId), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionDasboard(planId, routeId, machineId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -93,14 +97,14 @@ namespace CIM.API.Controllers
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId) && activeProductionPlan.ActiveProcesses[routeId].BoardcastData == null)
             {
                 activeProductionPlan.ActiveProcesses[routeId].BoardcastData =
-                    await _service.GenerateBoardcastData(BoardcastType.All, productionPlan, routeId);
+                    await _dashboardService.GenerateBoardcast(DataTypeGroup.All, productionPlan, routeId);
             }
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
 
         [HttpGet]
-        public async Task<string> BoardcastingActiveOperation(BoardcastType updateType, string productionPlan, int routeId)
+        public async Task<string> BoardcastingActiveOperation(DataTypeGroup updateType, string productionPlan, int routeId)
         {
             var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = await GetCached<ActiveProductionPlanModel>(channelKey);
@@ -109,12 +113,12 @@ namespace CIM.API.Controllers
                 return JsonConvert.SerializeObject(
                     await HandleBoardcastingActiveProcess(updateType, productionPlan, new int[] { routeId }, activeProductionPlan));
             }
-            return "";
+            return "OK";
         }
 
         #endregion
 
-        #region Cim-Oper Production overview
+        #region apart of Production data
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetProductionSummary(string planId, int routeId, DateTime? from = null, DateTime? to = null)
@@ -123,7 +127,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionSummary(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionSummary(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -141,7 +145,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionPlanInfomation(planId, routeId), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionPlanInfomation(planId, routeId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -157,7 +161,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionOperators(planId, routeId), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionOperators(planId, routeId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -173,7 +177,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionEvents(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionEvents(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -189,7 +193,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetCapacityUtilisation(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetCapacityUtilisation(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -201,7 +205,76 @@ namespace CIM.API.Controllers
 
         #endregion
 
-        #region Cim-oper mc status
+        #region Waste
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetWasteByMaterials(string planId, int routeId, DateTime? from = null, DateTime? to = null)
+        {
+
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetWasteByMaterials(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetWasteByCases(string planId, int routeId, DateTime? from = null, DateTime? to = null)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetWasteByCases(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetWasteByMachines(string planId, int routeId, DateTime? from = null, DateTime? to = null)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetWasteByMachines(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetWasteCostByTime(string planId, int routeId, DateTime? from = null, DateTime? to = null)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetWasteCostByTime(planId, routeId, from, to), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        #endregion
+
+        #region Machine & loss
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetActiveMachineInfo(string planId, int routeId)
@@ -210,7 +283,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActiveMachineInfo(planId, routeId), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetActiveMachineInfo(planId, routeId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -227,7 +300,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActiveMachineEvents(planId, routeId), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetActiveMachineEvents(planId, routeId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -236,25 +309,6 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null)
-        {
-
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineStatusHistory(howMany, page, planId, routeId, machineId, from, to), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
-        }
-
-        #endregion
 
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetMachineSpeed(string planId, int routeId, DateTime? from = null, DateTime? to = null)
@@ -263,7 +317,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineSpeed(planId, routeId, from, to), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetMachineSpeed(planId, routeId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -279,7 +333,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLoss(planId, routeId, lossLv, machineId, lossId, null, null), JsonsSetting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetProductionWCMLoss(planId, routeId, lossLv, machineId, lossId, null, null), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -289,70 +343,7 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetWasteByMaterials(string planId, int routeId, DateTime? from = null, DateTime? to = null)
-        {
-
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByMaterials(planId, routeId, from, to), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
-        }
-
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetWasteByCases(string planId, int routeId, DateTime? from = null, DateTime? to = null)
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByCases(planId, routeId, from, to), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
-        }
-
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetWasteByMachines(string planId, int routeId, DateTime? from = null, DateTime? to = null)
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteByMachines(planId, routeId, from, to), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
-        }
-
-        [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetWasteCostByTime(string planId, int routeId, DateTime? from = null, DateTime? to = null)
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteCostByTime(planId, routeId, from, to), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
-        }
+        #endregion
 
     }
 }

@@ -128,6 +128,7 @@ namespace CIM.API {
 
             services.AddTransient<IMasterDataService, MasterDataService>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<ILossLevel1Service, LossLevel1Service>();
             services.AddTransient<ILossLevel2Service, LossLevel2Service>();
             services.AddTransient<ILossLevel3Service, LossLevel3Service>();

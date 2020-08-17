@@ -24,11 +24,13 @@ namespace CIM.BusinessLogic.Services
             return network;
         }
 
-        public async Task UpdateNetworkStatus(List<NetworkStatusModel> listData)
+        public async Task UpdateNetworkStatus(List<NetworkStatusModel> listData, bool isReset)
         {
-            var network = await _responseCacheService.GetAsTypeAsync<Dictionary<string, NetworkStatusModel>>(networkKey)
+            var network = 
+                await _responseCacheService.GetAsTypeAsync<Dictionary<string, NetworkStatusModel>>(networkKey)
                 ?? new Dictionary<string, NetworkStatusModel>();
 
+            if (isReset) network.Clear();
             foreach (var device in listData)
             {
                 network[device.Ip] = device;

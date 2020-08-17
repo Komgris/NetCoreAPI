@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services {
-    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
-    {
+    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
+        IDashboardService _dashboardService;
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IDirectSqlRepository _directSqlRepository;
@@ -25,7 +25,6 @@ namespace CIM.BusinessLogic.Services {
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IMachineOperatorRepository _machineOperatorRepository;
         private IUnitOfWorkCIM _unitOfWork;
-        private IReportService _reportService;
         private IMachineRepository _machineRepository;
         public IConfiguration _config;
         private IRecordManufacturingLossService _recordManufacturingLossService;
@@ -42,7 +41,7 @@ namespace CIM.BusinessLogic.Services {
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
-            IReportService reportService,
+            IDashboardService dashboardService,
             IMachineRepository machineRepository,
             IConfiguration config,
             IRecordManufacturingLossService recordManufacturingLossService,
@@ -59,11 +58,11 @@ namespace CIM.BusinessLogic.Services {
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _machineOperatorRepository = machineOperatorRepository;
             _unitOfWork = unitOfWork;
-            _reportService = reportService;
             _machineRepository = machineRepository;
             _config = config;
             _recordManufacturingLossService = recordManufacturingLossService;
             _activeproductionPlanRepository = activeproductionPlanRepository;
+            _dashboardService = dashboardService;
         }
 
         public string GetKey(string productionPLanId)
@@ -196,7 +195,7 @@ namespace CIM.BusinessLogic.Services {
                     await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                     //generate -> BoardcastData
-                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
+                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 
@@ -597,15 +596,15 @@ namespace CIM.BusinessLogic.Services {
                     }
                     else if (cachedMachine != null)
                     {
-                        if (dbOutput.Count == 0 || cachedMachine.RecordProductionPlanOutput == null || cachedMachine.RecordProductionPlanOutput.Hour != hour)
+                        if (dbOutput.Count == 0 || cachedMachine.RecordProductionPlanOutput == null || dbOutput[0].Hour != hour)
                         {
                             if (dbOutput.Count > 0)
                             {
                                 paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
                                 paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                File.AppendAllText("CounterAdd_logging"
-                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{hour} | RecordsCnt:{dbOutput.Count}");
+                                File.AppendAllText("C:/log/CounterAdd_logging"
+                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
                             }
                             else//close ramp-up records and start to operating time #139
                             {

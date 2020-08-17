@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using CIM.API.HubConfig;
 using Microsoft.Extensions.Configuration;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers {
     [ApiController]
@@ -20,12 +21,12 @@ namespace CIM.API.Controllers {
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService,
             IMasterDataService masterDataService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
@@ -312,7 +313,7 @@ namespace CIM.API.Controllers {
             try
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.End, planId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
                         , new int[] {routeId }, result);
                 output.IsSuccess = true;
             }
@@ -396,7 +397,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             if (model != null)
             {
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.All, model.ProductionPlanId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.All, model.ProductionPlanId
                     , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
 
                 output.IsSuccess = true;
