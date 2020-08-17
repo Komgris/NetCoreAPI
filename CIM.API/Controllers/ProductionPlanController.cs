@@ -53,28 +53,6 @@ namespace CIM.API.Controllers {
                     output.Data = result;
                     output.IsSuccess = true;
                 }
-                //var docPath = "C:\\CIMSystem\\doc";
-                //var file = Request.Form.Files[0];
-                //var folderName = Path.Combine("ProductionPlan");
-                //var pathToSave = Path.Combine(docPath, folderName);
-                //if (!Directory.Exists(pathToSave))
-                //{
-                //    Directory.CreateDirectory(pathToSave);
-                //}
-                //if (file.Length > 0)
-                //{
-                //    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                //    var fullPath = Path.Combine(pathToSave, fileName);
-                //    using (var stream = new FileStream(fullPath, FileMode.Create))
-                //    {
-                //        file.CopyTo(stream);
-                //    }
-
-                //    var fromExcel = _productionPlanService.ReadImport(fullPath);
-                //    var result = await _productionPlanService.Compare(fromExcel);
-                //    output.Data = result;
-                //    output.IsSuccess = true;
-                //}
                 else
                 {
                     output.IsSuccess = false;
