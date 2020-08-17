@@ -603,7 +603,7 @@ namespace CIM.BusinessLogic.Services {
                                 paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
                                 paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                File.AppendAllText("C:/log/CounterAdd_logging"
+                                File.AppendAllText(@"C:\log\CounterAdd_logging"
                                     , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
                             }
                             else//close ramp-up records and start to operating time #139
