@@ -36,7 +36,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                    list.Image = await _utilitiesService.UploadImage(file, "material", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
@@ -61,7 +61,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                    list.Image = await _utilitiesService.UploadImage(file, "material", false);
                 }
                 else if(list.Image != "" && list.Image != null)
                 {

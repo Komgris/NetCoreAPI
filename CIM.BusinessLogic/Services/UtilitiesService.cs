@@ -21,20 +21,23 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<string> UploadImage(IFormFile image, string pathName)
+        public async Task<string> UploadImage(IFormFile image, string pathName,bool isPlanDoc)
         {
             string toDbPath = "";
+            string pathToSave = "";
+
             if (image != null)
             {
                 if (image.Length > 0)
                 {
-                    var folderName = Path.Combine(ImagePath, pathName);
+                    var savePath = isPlanDoc ? DocPath : ImagePath;
+                    var folderName = Path.Combine(savePath, pathName);
                     if (!Directory.Exists(folderName))
                     {
                         Directory.CreateDirectory(folderName);
                     }
                     var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"');
-                    var pathToSave = Path.Combine(folderName, fileName);
+                    pathToSave = Path.Combine(folderName, fileName);
                     toDbPath = (Path.Combine(pathName, fileName)).Replace(@"\", "/" );
                     using (var stream = new FileStream(pathToSave, FileMode.Create))
                     {
@@ -42,7 +45,7 @@ namespace CIM.BusinessLogic.Services
                     }
                 }
             }
-            return toDbPath;
+            return isPlanDoc? pathToSave: toDbPath;
         }
     }
 }

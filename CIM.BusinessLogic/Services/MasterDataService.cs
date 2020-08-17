@@ -520,7 +520,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetMachineTypeDictionary()
         {
-            var db = (await _machineTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _machineTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -592,7 +592,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
         {
-            var db = (await _componentTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _componentTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -604,7 +604,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductTypeDictionary()
         {
-            var db = (await _productTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productTypeRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -616,7 +616,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductFamilyDictionary()
         {
-            var db = (await _productFamilyRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productFamilyRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -628,7 +628,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductGroupDictionary()
         {
-            var db = (await _productGroupRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productGroupRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -640,7 +640,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetMachineDictionary()
         {
-            var db = (await _machineRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _machineRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {

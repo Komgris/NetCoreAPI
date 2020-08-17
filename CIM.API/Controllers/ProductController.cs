@@ -46,7 +46,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                    list.Image = await _utilitiesService.UploadImage(file, "product", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
@@ -138,7 +138,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "product");
+                    list.Image = await _utilitiesService.UploadImage(file, "product", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
