@@ -93,6 +93,28 @@ namespace CIM.DAL.Implements
             }
         }
 
+        public DataSet ExecuteSPWithQueryDSet(string sql, Dictionary<string, object> parameters)
+        {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    if (parameters != null)
+                        foreach (var p in parameters)
+                            if (p.Value != null) command.Parameters.AddWithValue(p.Key, p.Value);
+
+                    connection.Open();
+                    SqlDataAdapter da = new SqlDataAdapter(command);
+                    command.CommandType = CommandType.StoredProcedure;
+                    var ds = new DataSet();
+                    da.Fill(ds);
+
+                    return ds;
+                }
+            }
+        }
+
         public DataTable ExecuteWithQuery(string sql) {
             var connectionString = _configuration.GetConnectionString("CIMDatabase");
             using (SqlConnection connection = new SqlConnection(connectionString)) {
@@ -105,6 +127,28 @@ namespace CIM.DAL.Implements
                     dt.Load(command.ExecuteReader());
 
                     return dt;
+                }
+            }
+        }
+
+        public void bulkCopy(string _destinationtable, DataTable _source)
+        {
+            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+            using (SqlConnection sqlConn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    sqlConn.Open();
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(sqlConn))
+                    {
+                        bulkCopy.DestinationTableName = _destinationtable;
+
+                        // Write from the source to the destination.
+                        bulkCopy.WriteToServer(_source);
+                    }
+                }
+                catch
+                {
                 }
             }
         }

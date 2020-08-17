@@ -37,7 +37,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "employees");
+                    list.Image = await _utilitiesService.UploadImage(file, "employees",false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
@@ -66,7 +66,7 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "employees");
+                    list.Image = await _utilitiesService.UploadImage(file, "employees", false);
                 }
                 else if(list.Image != "" && list.Image != null)
                 {

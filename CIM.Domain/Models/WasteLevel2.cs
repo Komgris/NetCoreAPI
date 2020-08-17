@@ -5,11 +5,6 @@ namespace CIM.Domain.Models
 {
     public partial class WasteLevel2
     {
-        public WasteLevel2()
-        {
-            RecordProductionPlanWaste = new HashSet<RecordProductionPlanWaste>();
-        }
-
         public int Id { get; set; }
         public string Description { get; set; }
         public int WasteLevel1Id { get; set; }
@@ -21,6 +16,5 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual WasteLevel1 WasteLevel1 { get; set; }
-        public virtual ICollection<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
     }
 }

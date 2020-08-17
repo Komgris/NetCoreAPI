@@ -20,5 +20,9 @@ namespace CIM.DAL.Interfaces
         T ExecuteFunction<T>(string sql, Dictionary<string, object> parameters);
 
         DataTable ExecuteWithQuery(string sql);
+
+        void bulkCopy(string _destinationtable, DataTable _source);
+
+        DataSet ExecuteSPWithQueryDSet(string sql, Dictionary<string, object> parameters);
     }
 }

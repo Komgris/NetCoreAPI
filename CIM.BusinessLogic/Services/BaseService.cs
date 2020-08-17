@@ -9,6 +9,8 @@ namespace CIM.BusinessLogic.Services
     {
         public string CurrentLanguage { get; set; } = "en";
         public static string ImagePath { get; set; }
+        public static string DocPath { get; set; }
+        public static ExcelMappingModel  ExcelMapping { get; set; }
         public static string CurrentUserId { get; set; }
         public static bool IsVerifyTokenPass { get; set; }
 

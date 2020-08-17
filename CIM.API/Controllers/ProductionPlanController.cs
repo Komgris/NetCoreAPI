@@ -2,40 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
-using Microsoft.AspNetCore.Cors;
-using System.Net.Http;
-using System.Text.Json;
 using System.IO;
 using System.Net.Http.Headers;
-using CIM.BusinessLogic.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using CIM.API.HubConfig;
-using System.Reflection.Metadata;
 using Microsoft.Extensions.Configuration;
+using static CIM.Model.Constans;
 
-namespace CIM.API.Controllers
-{
+namespace CIM.API.Controllers {
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
         private IProductionPlanService _productionPlanService;
+        private IUtilitiesService _utilitiesService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService,
+            IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
+            _utilitiesService = utilitiesService;
         }
 
         #region Production plan mng 
@@ -48,22 +45,10 @@ namespace CIM.API.Controllers
             try
             {
                 var file = Request.Form.Files[0];
-                var folderName = Path.Combine("ProductionPlan");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                if (!Directory.Exists(pathToSave))
+                if (file != null)
                 {
-                    Directory.CreateDirectory(pathToSave);
-                }
-                if (file.Length > 0)
-                {
-                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-
-                    var fromExcel = _productionPlanService.ReadImport(fullPath);
+                    var fullpath = await _utilitiesService.UploadImage(file, "productionPlan", true);
+                    var fromExcel = _productionPlanService.ReadImport(fullpath);
                     var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
@@ -319,7 +304,7 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.End, planId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
                         , new int[] {routeId }, result);
                 output.IsSuccess = true;
             }
@@ -403,7 +388,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             if (model != null)
             {
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.All, model.ProductionPlanId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.All, model.ProductionPlanId
                     , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
 
                 output.IsSuccess = true;

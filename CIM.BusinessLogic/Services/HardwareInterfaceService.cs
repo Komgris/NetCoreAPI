@@ -9,4 +9,35 @@ using CIM.Model;
 
 namespace CIM.BusinessLogic.Services
 {
+    public class HardwareInterfaceService : BaseService, IHardwareInterfaceService {
+
+        string networkKey = "network";
+        IResponseCacheService _responseCacheService;
+        public HardwareInterfaceService(
+            IResponseCacheService responseCacheService)
+        {
+            _responseCacheService = responseCacheService;
+        }
+        public async Task<object> GetNetworkStatus()
+        {
+            var network = await _responseCacheService.GetAsTypeAsync<Dictionary<string, NetworkStatusModel>>(networkKey);
+            return network;
+        }
+
+        public async Task UpdateNetworkStatus(List<NetworkStatusModel> listData, bool isReset)
+        {
+            var network = 
+                await _responseCacheService.GetAsTypeAsync<Dictionary<string, NetworkStatusModel>>(networkKey)
+                ?? new Dictionary<string, NetworkStatusModel>();
+
+            if (isReset) network.Clear();
+            foreach (var device in listData)
+            {
+                network[device.Ip] = device;
+            }
+
+            await _responseCacheService.SetAsync(networkKey, network);
+        }
+    }
+
 }

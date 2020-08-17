@@ -9,23 +9,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
     [ApiController]
     public class HardwareInterfaceController : BoardcastController {
         private IMachineService _machineService;
+        IHardwareInterfaceService _hwinterfaceService;
+
 
         public HardwareInterfaceController(
             IHubContext<GlobalHub> hub,
             IMachineService machineService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
-            IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            IActiveProductionPlanService activeProductionPlanService,
+            IHardwareInterfaceService hwinterfaceService
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _machineService = machineService;
+            _hwinterfaceService = hwinterfaceService;
         }
 
         [HttpGet]
@@ -101,7 +106,7 @@ namespace CIM.API.Controllers
             if (productionPlan != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
-                await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
             return "OK";
@@ -119,7 +124,7 @@ namespace CIM.API.Controllers
 
                 foreach (var productionPlan in productionPlans)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
@@ -143,7 +148,7 @@ namespace CIM.API.Controllers
                 var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
                 if(productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveProductionSummary, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
                 output.IsSuccess = true;
@@ -155,6 +160,35 @@ namespace CIM.API.Controllers
 
             return output;
 
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/UpdateNetworkStatus")]
+        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData,bool isReset)
+        {
+            try
+            {
+                await _hwinterfaceService.UpdateNetworkStatus(listData, isReset);
+            }
+            catch {
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetNetworkStatus")]
+        public async Task<ProcessReponseModel<object>> GetNetworkStatus()
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = JsonConvert.SerializeObject(await _hwinterfaceService.GetNetworkStatus(), JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
         }
     }
 }

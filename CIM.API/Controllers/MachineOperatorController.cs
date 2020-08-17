@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -23,12 +24,12 @@ namespace CIM.API.Controllers
         public MachineOperatorController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService,
             IMachineOperatorService machineOperatorService,
             IMachineService machineService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _machineOperatorService = machineOperatorService;
             _productionPlanService = productionPlanService;
@@ -66,7 +67,7 @@ namespace CIM.API.Controllers
                 // Production plan of this component doesn't started yet
                 if (activeProductionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveOperator, model.PlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Operators, model.PlanId
                     ,listRoute, activeProductionPlan);
                 }
                 output.IsSuccess = true;

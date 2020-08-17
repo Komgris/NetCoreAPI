@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,8 +16,8 @@ using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class MasterDataService : BaseService, IMasterDataService
-    {
+    public class MasterDataService : BaseService, IMasterDataService {
+        private IDirectSqlRepository _directSqlRepository;
         private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
         private IResponseCacheService _responseCacheService;
@@ -48,6 +49,8 @@ namespace CIM.BusinessLogic.Services
         private IAppFeatureRepository _appFeatureRepository;
         private IAccidentCategoryRepository _accidentCategoryRepository;
 
+        private IWasteNonePrimeRepository _wastenoneprimeRepository;
+
         private IConfiguration _configuration;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
@@ -78,11 +81,14 @@ namespace CIM.BusinessLogic.Services
             IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
-            IAppFeatureRepository appFeatureRepository,
+            IAppFeatureRepository appFeatureRepository, 
+            IDirectSqlRepository directSqlRepository,
+            IWasteNonePrimeRepository wastenoneprimeRepository,
             IAccidentCategoryRepository accidentCategoryRepository,
             IConfiguration configuration
             )
         {
+            _directSqlRepository = directSqlRepository;
             _lossLevel2Repository = lossLevel2Repository;
             _lossLevel3Repository = lossLevel3Repository;
             _responseCacheService = responseCacheService;
@@ -112,6 +118,7 @@ namespace CIM.BusinessLogic.Services
             _userGroupRepository = userGroupRepository;
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
+            _wastenoneprimeRepository = wastenoneprimeRepository;
             _accidentCategoryRepository = accidentCategoryRepository;
             _configuration = configuration;
         }
@@ -313,6 +320,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.Language = await GetLanguageDictionary();
                     masterData.Dictionary.App = await GetAppDictionary();
                     masterData.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
+                    masterData.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -518,7 +526,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetMachineTypeDictionary()
         {
-            var db = (await _machineTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _machineTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -590,7 +598,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
         {
-            var db = (await _componentTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _componentTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -602,7 +610,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductTypeDictionary()
         {
-            var db = (await _productTypeRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productTypeRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -614,7 +622,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductFamilyDictionary()
         {
-            var db = (await _productFamilyRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productFamilyRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -626,7 +634,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetProductGroupDictionary()
         {
-            var db = (await _productGroupRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _productGroupRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -638,7 +646,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetMachineDictionary()
         {
-            var db = (await _machineRepository.AllAsync()).OrderBy(x => x.Id);
+            var db = (await _machineRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -751,6 +759,16 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
-
+        private async Task<IDictionary<int, string>> GetWasteNonePrime()
+        {
+            var db = await Task.Run(()=> _wastenoneprimeRepository.Where(x=>x.IsActive).OrderBy(x=>x.Id));
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
     }
 }

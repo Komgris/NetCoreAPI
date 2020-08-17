@@ -1,25 +1,20 @@
 ﻿using CIM.BusinessLogic.Interfaces;
-using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using static CIM.Model.Constans;
 
-namespace CIM.BusinessLogic.Services
-{
-    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
-    {
+namespace CIM.BusinessLogic.Services {
+    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
+        IDashboardService _dashboardService;
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
         private IDirectSqlRepository _directSqlRepository;
@@ -30,7 +25,6 @@ namespace CIM.BusinessLogic.Services
         private IRecordProductionPlanOutputRepository _recordProductionPlanOutputRepository;
         private IMachineOperatorRepository _machineOperatorRepository;
         private IUnitOfWorkCIM _unitOfWork;
-        private IReportService _reportService;
         private IMachineRepository _machineRepository;
         public IConfiguration _config;
         private IRecordManufacturingLossService _recordManufacturingLossService;
@@ -47,7 +41,7 @@ namespace CIM.BusinessLogic.Services
             IRecordProductionPlanOutputRepository recordProductionPlanOutputRepository,
             IMachineOperatorRepository machineOperatorRepository,
             IUnitOfWorkCIM unitOfWork,
-            IReportService reportService,
+            IDashboardService dashboardService,
             IMachineRepository machineRepository,
             IConfiguration config,
             IRecordManufacturingLossService recordManufacturingLossService,
@@ -64,11 +58,11 @@ namespace CIM.BusinessLogic.Services
             _recordProductionPlanOutputRepository = recordProductionPlanOutputRepository;
             _machineOperatorRepository = machineOperatorRepository;
             _unitOfWork = unitOfWork;
-            _reportService = reportService;
             _machineRepository = machineRepository;
             _config = config;
             _recordManufacturingLossService = recordManufacturingLossService;
             _activeproductionPlanRepository = activeproductionPlanRepository;
+            _dashboardService = dashboardService;
         }
 
         public string GetKey(string productionPLanId)
@@ -201,7 +195,7 @@ namespace CIM.BusinessLogic.Services
                     await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                     //generate -> BoardcastData
-                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _reportService.GenerateBoardcastData(BoardcastType.All, planId, routeId);
+                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
                     await SetCached(activeProductionPlan);
                     output = activeProductionPlan;
 
@@ -596,56 +590,66 @@ namespace CIM.BusinessLogic.Services
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToListAsync();
 
-                    if (dbOutput.Count == 0 || cachedMachine?.RecordProductionPlanOutput == null || cachedMachine?.RecordProductionPlanOutput.Hour != hour)
+                    if (dbOutput.Count > 0 && dbOutput[0].TotalOut >= item.CounterOut)
                     {
-                        if (dbOutput.Count > 0)
+                        //do nothing
+                    }
+                    else if (cachedMachine != null)
+                    {
+                        if (dbOutput.Count == 0 || cachedMachine.RecordProductionPlanOutput == null || dbOutput[0].Hour != hour)
                         {
-                            paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
-                            paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
-                        }
-                        else//close ramp-up records and start to operating time #139
-                        {
-                            paramsList.Add("@cIn", item.CounterIn);
-                            paramsList.Add("@cOut", item.CounterOut);
-
-                            foreach (var routeid in cachedMachine.RouteIds)
+                            if (dbOutput.Count > 0)
                             {
-                                var activeplan = await GetCached(cachedMachine.ProductionPlanId);
-                                if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
-                                {
-                                    var dmodel = await _recordManufacturingLossRepository
-                                        .WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId) 
-                                        && x.IsAuto == true && x.EndAt.HasValue == false);
+                                paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
+                                paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                    foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
+                                File.AppendAllText("C:/log/CounterAdd_logging"
+                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
+                            }
+                            else//close ramp-up records and start to operating time #139
+                            {
+                                paramsList.Add("@cIn", item.CounterIn);
+                                paramsList.Add("@cOut", item.CounterOut);
+
+                                foreach (var routeid in cachedMachine.RouteIds)
+                                {
+                                    var activeplan = await GetCached(cachedMachine.ProductionPlanId);
+                                    if (activeplan?.ActiveProcesses[routeid]?.Route.MachineList != null)
                                     {
-                                        //close ramp-up records for front machine in the same route #139
-                                        if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady && dmodel.Where(x=>x.MachineId== activemc.Key).Any())
+                                        var dmodel = await _recordManufacturingLossRepository
+                                            .WhereAsync(x => activeplan.ActiveProcesses[routeid].Route.MachineList.Keys.Contains((int)x.MachineId)
+                                            && x.IsAuto == true && x.EndAt.HasValue == false);
+
+                                        foreach (var activemc in activeplan.ActiveProcesses[routeid].Route.MachineList)
                                         {
-                                            var model = new RecordManufacturingLossModel()
+                                            //close ramp-up records for front machine in the same route #139
+                                            if (!exemachineIds.Contains(activemc.Key) && activemc.Value.IsReady && dmodel.Where(x => x.MachineId == activemc.Key).Any())
                                             {
-                                                ProductionPlanId = cachedMachine.ProductionPlanId,
-                                                MachineId = activemc.Key,
-                                                RouteId = routeid,
-                                            };
-                                            await _recordManufacturingLossService.End(model);
-                                            exemachineIds.Add(activemc.Key);
+                                                var model = new RecordManufacturingLossModel()
+                                                {
+                                                    ProductionPlanId = cachedMachine.ProductionPlanId,
+                                                    MachineId = activemc.Key,
+                                                    RouteId = routeid,
+                                                };
+                                                await _recordManufacturingLossService.End(model);
+                                                exemachineIds.Add(activemc.Key);
+                                            }
+                                            if (activemc.Key == item.MachineId) break;
                                         }
-                                        if (activemc.Key == item.MachineId) break;
                                     }
                                 }
                             }
                         }
+                        else
+                        {
+                            //update
+                            paramsList.Add("@id", dbOutput[0].Id);
+                            paramsList.Add("@cIn", item.CounterIn - (dbOutput.Count > 1 ? dbOutput[1].TotalIn : 0));
+                            paramsList.Add("@cOut", item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0));
+                        }
+                        _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
                     }
-                    else
-                    {
-                        //update
-                        paramsList.Add("@id", dbOutput[0].Id);
-                        paramsList.Add("@cIn", item.CounterIn - (dbOutput.Count > 1 ? dbOutput[1].TotalIn : 0));
-                        paramsList.Add("@cOut", item.CounterOut - (dbOutput.Count > 1 ? dbOutput[1].TotalOut : 0));
-                    }
-                    _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
-
+                   
                     //set cache
                     cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour, Input = item.CounterIn, Output = item.CounterOut };
                     machineList.Add(cachedMachine);

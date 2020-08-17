@@ -8,7 +8,6 @@ namespace CIM.Domain.Models
         public int FeatureId { get; set; }
         public int AppUserGroupId { get; set; }
 
-        public virtual UserGroupsApps AppUserGroup { get; set; }
         public virtual AppFeatures Feature { get; set; }
     }
 }
