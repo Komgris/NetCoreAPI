@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
@@ -26,10 +27,10 @@ namespace CIM.API.Controllers
         public ActiveProcessController(IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
             IResponseCacheService responseCacheService,
-            IReportService service,
+            IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) : base(hub, responseCacheService, service, config, activeProductionPlanService)
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
             _productionPlanService = productionPlanService;
         }
@@ -84,7 +85,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await HandleBoardcastingActiveProcess(Constans.BoardcastType.ActiveMachineInfo, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 

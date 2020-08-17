@@ -363,6 +363,7 @@ namespace CIM.BusinessLogic.Services
                             {
                                 Id = x.Product.Id,
                                 Code = x.Product.Code,
+                                PID = x.Product.PID,
                                 Description = x.Product.Description,
                                 BriteItemPerUPCItem = x.Product.BriteItemPerUPCItem,
                                 ProductFamilyId = x.Product.ProductFamilyId,
@@ -376,6 +377,7 @@ namespace CIM.BusinessLogic.Services
                                 IGWeight = x.Product.IGWeight,
                                 PMWeight = x.Product.PMWeight,
                                 WeightPerUOM = x.Product.WeightPerUOM,
+                                Image = x.Product.Image,
                                 IsActive = x.Product.IsActive,
                                 IsDelete = x.Product.IsDelete,
                                 CreatedAt = x.Product.CreatedAt,
