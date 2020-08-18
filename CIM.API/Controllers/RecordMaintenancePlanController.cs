@@ -12,13 +12,13 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordMaintenancePlanController : BaseController
     {
-        private IRecordMaintenancePlanService _recordMaintenancePlanService;
+        private IRecordMaintenancePlanService _service;
 
         public RecordMaintenancePlanController(
-                IRecordMaintenancePlanService recordMaintenancePlanService
+                IRecordMaintenancePlanService service
             )
         {
-            _recordMaintenancePlanService = recordMaintenancePlanService;
+            _service = service;
         }
 
         [Route("api/[controller]/List")]
@@ -28,7 +28,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordMaintenancePlanModel>>();
             try
             {
-                output.Data = await _recordMaintenancePlanService.List(keyword, page, howmany);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -46,7 +52,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
             try
             {
-                output.Data = await _recordMaintenancePlanService.ListByMonth(month, year, isActive);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListByMonth(month, year, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -64,7 +76,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
             try
             {
-                output.Data = await _recordMaintenancePlanService.ListByDate(date);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListByDate(date);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -82,7 +100,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                await _recordMaintenancePlanService.Create(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -100,7 +124,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                await _recordMaintenancePlanService.Update(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -119,7 +149,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                output.Data = await _recordMaintenancePlanService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

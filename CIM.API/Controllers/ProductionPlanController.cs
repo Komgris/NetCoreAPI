@@ -17,20 +17,20 @@ namespace CIM.API.Controllers {
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
-        private IProductionPlanService _productionPlanService;
+        private IProductionPlanService _service;
         private IUtilitiesService _utilitiesService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
             IConfiguration config,
-            IProductionPlanService productionPlanService,
+            IProductionPlanService service,
             IActiveProductionPlanService activeProductionPlanService,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _productionPlanService = productionPlanService;
+            _service = service;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
         }
@@ -44,12 +44,18 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var file = Request.Form.Files[0];
                 if (file != null)
                 {
                     var fullpath = await _utilitiesService.UploadImage(file, "productionPlan", true);
-                    var fromExcel = _productionPlanService.ReadImport(fullpath);
-                    var result = await _productionPlanService.Compare(fromExcel);
+                    var fromExcel = _service.ReadImport(fullpath);
+                    var result = await _service.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
                 }
@@ -72,7 +78,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -89,7 +101,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListOutput(page, howmany, keyword, true, statusIds);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListOutput(page, howmany, keyword, true, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -106,7 +124,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionOutputModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListOutputByMonth(month, year);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListOutputByMonth(month, year);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -124,7 +148,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListOutputByDate(date, page, howmany);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListOutputByDate(date, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -142,7 +172,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
-                output.Data = await _productionPlanService.CheckDuplicate(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -160,7 +196,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _productionPlanService.Create(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
@@ -178,7 +220,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _productionPlanService.Update(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
@@ -196,7 +244,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                await _productionPlanService.Delete(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -213,7 +267,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = JsonConvert.SerializeObject(( await _service.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -230,7 +290,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = await _productionPlanService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -247,7 +313,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListByMonth(month, year, statusIds);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListByMonth(month, year, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -265,7 +337,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListByDate(date, page, howmany, statusIds);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListByDate(date, page, howmany, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -286,6 +364,12 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var result = await _activeProductionPlanService.Start(planId, routeId, target);
                 output = await HandleResult(result);
             }
@@ -303,6 +387,12 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
                 await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
                         , new int[] {routeId }, result);
@@ -322,6 +412,12 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var result = await _activeProductionPlanService.Pause(planId, routeId, lossLevel3Id);
                 output = await HandleResult(result);
             }
@@ -339,6 +435,12 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var result = await _activeProductionPlanService.Resume(planId, routeId);
                 output = await HandleResult(result);
             }
@@ -356,7 +458,13 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = JsonConvert.SerializeObject(_service.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -373,6 +481,12 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<int>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select( x=>x.Key).ToList();
                 output.IsSuccess = true;
             }

@@ -49,6 +49,12 @@ namespace CIM.API.Controllers
 
             try
             {
+                if (!_productionPlanService.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId);
                 if (productionPlan == null)
                 {
@@ -79,6 +85,12 @@ namespace CIM.API.Controllers
 
             try
             {
+                if (!_productionPlanService.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var productionPlan = await _productionPlanService.TakeAction(productionPlanId, routeId);
 
                 // Production plan of this component doesn't started yet

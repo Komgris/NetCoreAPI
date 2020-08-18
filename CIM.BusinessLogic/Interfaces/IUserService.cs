@@ -10,8 +10,7 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task Create(UserModel model);
         Task<AuthModel> Auth(string username, string password);
-        Task<CurrentUserModel> GetCurrentUserModel(string token, int appId);
-        //CurrentUserModel GetCurrentUserModel(string token, int appId);
+        Task GetCurrentUserModel(string token, int appId);
         string HashPassword(UserModel model);
         Task<string> CreateToken(string userId);
         Task<PagingModel<UserModel>> List(string keyword, int page, int howmany, bool isActive);

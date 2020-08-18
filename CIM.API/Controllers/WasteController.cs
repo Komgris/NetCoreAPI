@@ -18,10 +18,10 @@ namespace CIM.API.Controllers
     [Route("api/[controller]")]
     public class WasteController : BoardcastController
     {
-        private IRecordProductionPlanWasteService _recordProductionPlanWasteService;
+        private IRecordProductionPlanWasteService _service;
 
         public WasteController(
-            IRecordProductionPlanWasteService recordProductionPlanWasteService,
+            IRecordProductionPlanWasteService service,
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
@@ -30,7 +30,7 @@ namespace CIM.API.Controllers
             IActiveProductionPlanService activeProductionPlanService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _recordProductionPlanWasteService = recordProductionPlanWasteService;
+            _service = service;
         }
 
         [HttpGet]
@@ -40,7 +40,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>();
             try
             {
-                output.Data = await _recordProductionPlanWasteService.List(planId, routeId, keyword, page, howmany);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(planId, routeId, keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -56,7 +62,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                output.Data = await _recordProductionPlanWasteService.Create(model);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Create(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -81,7 +93,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                await _recordProductionPlanWasteService.Update(model);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -106,8 +124,14 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var dbModel = await _recordProductionPlanWasteService.Get(id);
-                await _recordProductionPlanWasteService.Delete(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                var dbModel = await _service.Get(id);
+                await _service.Delete(id);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -130,7 +154,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                output.Data = await _recordProductionPlanWasteService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -147,7 +177,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _recordProductionPlanWasteService.NonePrimeCreate(models);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.NonePrimeCreate(models);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -165,7 +201,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _recordProductionPlanWasteService.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = JsonConvert.SerializeObject(await _service.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
                 output.IsSuccess = true;
             }
             catch (Exception ex)

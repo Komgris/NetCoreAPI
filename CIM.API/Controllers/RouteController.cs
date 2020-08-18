@@ -13,17 +13,17 @@ namespace CIM.API.Controllers
     public class RouteController : BaseController
     {
         private IResponseCacheService _responseCacheService;
-        private IRouteService _routeService;
+        private IRouteService _service;
 
 
         public RouteController(
             IResponseCacheService responseCacheService,
-            IRouteService routeService,
+            IRouteService service,
             IMasterDataService masterDataService
         )
         {
             _responseCacheService = responseCacheService;
-            _routeService = routeService;
+            _service = service;
             _masterDataService = masterDataService;
         }
 
@@ -34,7 +34,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RouteListModel>>();
             try
             {
-                output.Data = await _routeService.List(keyword, page, howmany, isActive);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -51,9 +57,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _routeService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,7 +80,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                await _routeService.Update(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
@@ -88,7 +104,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                await _routeService.Create(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }

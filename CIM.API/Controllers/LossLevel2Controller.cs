@@ -32,6 +32,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<LossLevel2ListModel>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }

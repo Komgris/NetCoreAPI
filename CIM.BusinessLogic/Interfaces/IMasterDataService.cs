@@ -7,7 +7,7 @@ using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IMasterDataService
+    public interface IMasterDataService : IBaseService
     {
         Task<MasterDataModel> GetData();
         Task<MasterDataModel> Refresh(MasterDataType masterdataType);

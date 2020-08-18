@@ -1,5 +1,7 @@
 ﻿using CIM.Model;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -7,17 +9,24 @@ namespace CIM.BusinessLogic.Services
 {
     public class BaseService
     {
-        public string CurrentLanguage { get; set; } = "en";
         public static string ImagePath { get; set; }
         public static string DocPath { get; set; }
-        public static ExcelMappingModel  ExcelMapping { get; set; }
+        public static ExcelMappingModel ExcelMapping { get; set; }
         public static string CurrentUserId { get; set; }
         public static bool IsVerifyTokenPass { get; set; }
 
-        public CurrentUserModel CurrentUser { get; set; } = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" }; //testadmin
-        
+        public JsonSerializerSettings JsonsSetting { get; } = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+        public CurrentUserModel CurrentUser
+        {
+            get => new CurrentUserModel { UserId = CurrentUserId, IsValid = IsVerifyTokenPass };
+        }
+
         public PagingModel<T> ToPagingModel<T>(List<T> data, int total, int page, int howmany)
-        where T : new() {
+        where T : new()
+        {
             var output = new PagingModel<T>();
             howmany = howmany <= 0 ? 1000000 : howmany;
             output.Total = total;

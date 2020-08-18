@@ -15,12 +15,12 @@ namespace CIM.API.Controllers
     [ApiController]
     public class BomController : BaseController
     {
-        private IBomService _bomService;
+        private IBomService _service;
         public BomController(
-            IBomService bomService
+            IBomService service
         ) 
         {
-            _bomService = bomService;
+            _service = service;
         }
 
         [Route("api/[controller]/List")]
@@ -30,7 +30,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MaterialGroupModel>>();
             try
             {
-                output.Data = await _bomService.List(keyword, page, howMany, isActive);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex) 
@@ -47,7 +53,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<MaterialGroupMaterialModel>>();
             try
             {
-                output.Data = await _bomService.ListBomMapping(bomId);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.ListBomMapping(bomId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -64,7 +76,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialGroupMaterialModel>();
             try
             {
-                await _bomService.InsertMapping(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.InsertMapping(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -81,7 +99,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _bomService.Create(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -99,7 +123,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _bomService.Update(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -117,7 +147,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _bomService.Delete(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -135,7 +171,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialGroupModel>();
             try
             {
-                output.Data =   await _bomService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data =   await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -13,12 +13,12 @@ namespace CIM.API.Controllers
     [ApiController]
     public class AccidentController : ControllerBase
     {
-        private IAccidentService _accidentService;
+        private IAccidentService _service;
 
         public AccidentController(
-            IAccidentService accidentService)
+            IAccidentService service)
         {
-            _accidentService = accidentService;
+            _service = service;
         }
 
         [HttpGet]
@@ -28,7 +28,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<AccidentModel>>();
             try
             {
-                output.Data = await _accidentService.List(keyword, page, howmany);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -45,7 +51,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                output.Data = await _accidentService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -62,7 +74,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Create(model);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -79,7 +97,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Update(model);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -97,7 +121,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Delete(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

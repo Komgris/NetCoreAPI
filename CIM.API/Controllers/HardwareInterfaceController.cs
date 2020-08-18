@@ -145,6 +145,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_activeProductionPlanService.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
                 if(productionPlan != null)
                 {

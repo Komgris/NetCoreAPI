@@ -13,15 +13,15 @@ namespace CIM.API.Controllers
     public class ComponentController : BaseController
     {
         private IResponseCacheService _responseCacheService;
-        private IComponentService _componentService;
+        private IComponentService _service;
 
         public ComponentController(
         IResponseCacheService responseCacheService,
-        IComponentService componentService
+        IComponentService service
     )
         {
             _responseCacheService = responseCacheService;
-            _componentService = componentService;
+            _service = service;
         }
 
 
@@ -32,7 +32,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentModel>>();
             try
             {
-                output.Data = await _componentService.GetComponentByMachine(machineId);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.GetComponentByMachine(machineId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -49,7 +55,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentModel>>();
             try
             {
-                output.Data = await _componentService.List(keyword, page, howMany, isActive);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -66,9 +78,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _componentService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -85,7 +101,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                await _componentService.Create(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Create(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -102,7 +124,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                await _componentService.Update(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.Update(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -119,7 +147,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                await _componentService.InsertMappingMachineComponent(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.InsertMappingMachineComponent(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -136,7 +170,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentModel>> ();
             try
             {
-                output.Data = await _componentService.GetComponentNoMachineId(keyword);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.GetComponentNoMachineId(keyword);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

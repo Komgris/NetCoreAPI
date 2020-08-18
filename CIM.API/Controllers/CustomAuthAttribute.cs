@@ -17,7 +17,8 @@ namespace CIM.API.Controllers
         private IConfiguration _configuration;
         public CustomAuthenticationMiddleware(
             RequestDelegate next,
-            IConfiguration configuration)
+            IConfiguration configuration
+            )
         {
             this.next = next;
             _configuration = configuration;
@@ -34,24 +35,12 @@ namespace CIM.API.Controllers
                 var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
                 if (!string.IsNullOrEmpty(token.ToString()))
                 {
-                    var currentUserModel = await userService.GetCurrentUserModel(token, appId);
-                    //context.Items.Add(Constans.CURRENT_USER, currentUserModel);
-                    //if (currentUserModel.IsValid)
-                    //{
-                    //    await this.next.Invoke(context);
-                    //}
-                    //else
-                    //{
-                    //    context.Response.StatusCode = 401;
-                    //}
+                    await userService.GetCurrentUserModel(token, appId);
                 }
-                //else
-                //{
-                    //context.Response.StatusCode = 401;
-                //}
             }
             else
             {
+                BaseService.CurrentUserId = _configuration.GetValue<string>("DefaultUserId");
                 BaseService.IsVerifyTokenPass = true;
             }
 

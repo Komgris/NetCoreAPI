@@ -34,6 +34,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<LossLevel3ListModel>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
@@ -51,9 +57,11 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
 
                 output.Data = await _service.Create(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
@@ -73,9 +81,11 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
 
                 output.Data = await _service.Update(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
@@ -95,6 +105,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<LossLevel3Model>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }

@@ -14,17 +14,17 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ComponentTypeController : BaseController
     {
-        private IComponentTypeService _componentTypeService;
+        private IComponentTypeService _service;
         private IUtilitiesService _utilitiesService;
 
 
         public ComponentTypeController(
-            IComponentTypeService componentTypeService,
+            IComponentTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         )
         {
-            _componentTypeService = componentTypeService;
+            _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;
         }
@@ -36,7 +36,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentTypeModel>>();
             try
             {
-                output.Data = await _componentTypeService.GetComponentTypesByMachineType(machineTypeId);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.GetComponentTypesByMachineType(machineTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -53,7 +59,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentTypeModel>>();
             try
             {
-                output.Data = await _componentTypeService.List(keyword, page, howmany, isActive);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,7 +82,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                await _componentTypeService.InsertByMachineId(data);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                await _service.InsertByMachineId(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -88,6 +106,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
@@ -97,7 +121,7 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"componentType/{list.Image}";
                 }
-                await _componentTypeService.Create(list);
+                await _service.Create(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
@@ -115,6 +139,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
@@ -124,7 +154,7 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"componentType/{list.Image}";
                 }
-                await _componentTypeService.Update(list);
+                await _service.Update(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
@@ -142,9 +172,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _componentTypeService.Get(id);
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

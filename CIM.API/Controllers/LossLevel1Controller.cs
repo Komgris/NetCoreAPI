@@ -14,7 +14,7 @@ using System.Linq;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class LossLevel1Controller : ControllerBase
+    public class LossLevel1Controller : BaseController
     {
 
         private ILossLevel1Service _service;
@@ -32,6 +32,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<LossLevel1Model>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }

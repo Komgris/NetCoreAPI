@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
-using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +24,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                if (!BaseService.IsVerifyTokenPass)
+                if (!_service.CurrentUser.IsValid)
                 {
                     output.Message = "Unauthorized";
                     return output;
@@ -49,7 +48,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<UserModel>>();
             try
             {
-                if (!BaseService.IsVerifyTokenPass)
+                if (!_service.CurrentUser.IsValid)
                 {
                     output.Message = "Unauthorized";
                     return output;
@@ -72,7 +71,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                if (!BaseService.IsVerifyTokenPass)
+                if (!_service.CurrentUser.IsValid)
                 {
                     output.Message = "Unauthorized";
                     return output;
@@ -95,7 +94,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                if (!BaseService.IsVerifyTokenPass)
+                if (!_service.CurrentUser.IsValid)
                 {
                     output.Message = "Unauthorized";
                     return output;
@@ -118,7 +117,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                if (!BaseService.IsVerifyTokenPass)
+                if (!_service.CurrentUser.IsValid)
                 {
                     output.Message = "Unauthorized";
                     return output;

@@ -33,6 +33,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<TeamModel>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -50,6 +56,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<TeamModel>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -67,6 +79,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<TeamModel>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
@@ -85,6 +103,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<TeamModel>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
@@ -103,6 +127,11 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<TeamEmployeesModel>>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
 
                 output.Data = await _service.GetEmployeesByTeam(teamId);
                 output.IsSuccess = true;
@@ -121,6 +150,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
+                if (!_service.CurrentUser.IsValid)
+                {
+                    output.Message = "Unauthorized";
+                    return output;
+                }
+
                 await _service.InsertEmployeesMappingByTeam(data);               
                 output.IsSuccess = true;
             }
