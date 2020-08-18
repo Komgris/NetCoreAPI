@@ -143,6 +143,7 @@ namespace CIM.API.Controllers {
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
