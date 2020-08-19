@@ -270,7 +270,7 @@ namespace CIM.BusinessLogic.Services
                 data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
                 data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 data.Note = oSheet.Cells[i, ExcelMapping.NOTE].CellValToString();
-                data.PlanId = $"{DateTime.Now.ToString("yyMMddmm")}-{data.ProductCode}-{i.ToString("00")}" ;
+                data.PlanId = $"{DateTime.Now.ToString("yyMMddHHmm")}-{data.ProductCode}-{i.ToString("00")}" ;
                 listImport.Add(data);
             }
 
