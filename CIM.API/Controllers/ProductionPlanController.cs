@@ -48,7 +48,7 @@ namespace CIM.API.Controllers {
                 if (file != null)
                 {
                     var fullpath = await _utilitiesService.UploadImage(file, "productionPlan", true);
-                    var fromExcel = _productionPlanService.ReadImport(fullpath);
+                    var fromExcel = await _productionPlanService.ReadImport(fullpath);
                     var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
@@ -143,6 +143,7 @@ namespace CIM.API.Controllers {
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
+                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
