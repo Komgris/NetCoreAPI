@@ -231,19 +231,19 @@ namespace CIM.BusinessLogic.Services
                 return 0;
         }
 
-        public List<ProductionPlanModel> ReadImport(string path)
+        public async Task<List<ProductionPlanModel>> ReadImport(string path)
         {
             FileInfo excel = new FileInfo(path);
             using (var package = new ExcelPackage(excel))
             {
                 var workbook = package.Workbook;
                 var worksheet = workbook.Worksheets.First();
-                List<ProductionPlanModel> intList = ConvertImportToList(worksheet);
+                List<ProductionPlanModel> intList = await ConvertImportToList(worksheet);
                 return intList;
             }
         }
 
-        public List<ProductionPlanModel> ConvertImportToList(ExcelWorksheet oSheet)
+        public async Task<List<ProductionPlanModel>> ConvertImportToList(ExcelWorksheet oSheet)
         {
             int totalRows = oSheet.Dimension.End.Row;
             List<ProductionPlanModel> listImport = new List<ProductionPlanModel>();
@@ -270,9 +270,10 @@ namespace CIM.BusinessLogic.Services
                 data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
                 data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 data.Note = oSheet.Cells[i, ExcelMapping.NOTE].CellValToString();
-                data.PlanId = data.PlanStart.HasValue ? (data.PlanStart.Value.ToString("yyyy") + data.PlanStart.Value.ToString("MM") + data.PlanStart.Value.ToString("dd") + '.' + i.ToString()) : string.Empty;
+                data.PlanId = $"{DateTime.Now.ToString("yyMMddmm")}-{data.ProductCode}-{i.ToString("00")}" ;
                 listImport.Add(data);
             }
+
             return listImport;
         }
 

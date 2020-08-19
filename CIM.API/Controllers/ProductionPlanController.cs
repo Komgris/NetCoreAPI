@@ -48,7 +48,7 @@ namespace CIM.API.Controllers {
                 if (file != null)
                 {
                     var fullpath = await _utilitiesService.UploadImage(file, "productionPlan", true);
-                    var fromExcel = _productionPlanService.ReadImport(fullpath);
+                    var fromExcel = await _productionPlanService.ReadImport(fullpath);
                     var result = await _productionPlanService.Compare(fromExcel);
                     output.Data = result;
                     output.IsSuccess = true;
