@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IComponentService
+    public interface IComponentService : IBaseService
     {
         Task<List<ComponentModel>> GetComponentByMachine(int machineId);
         Task<PagingModel<ComponentModel>> List(string keyword, int page, int howMany, bool isActive);

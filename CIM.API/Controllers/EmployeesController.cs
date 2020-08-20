@@ -13,7 +13,7 @@ namespace CIM.API.Controllers
 {
     //[MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     [ApiController]
-    public class EmployeesController : ControllerBase
+    public class EmployeesController : BaseController
     {
         private IEmployeesService _service;
         private IUtilitiesService _utilitiesService;
@@ -32,8 +32,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {
@@ -61,8 +59,6 @@ namespace CIM.API.Controllers
 
             try
             {
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {

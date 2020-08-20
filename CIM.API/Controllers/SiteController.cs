@@ -26,8 +26,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public List<SiteModel> Get()
         {
-
-
             var output = _siteService.List();
             return output;
 

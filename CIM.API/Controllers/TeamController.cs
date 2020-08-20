@@ -103,7 +103,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<TeamEmployeesModel>>();
             try
             {
-
                 output.Data = await _service.GetEmployeesByTeam(teamId);
                 output.IsSuccess = true;
             }

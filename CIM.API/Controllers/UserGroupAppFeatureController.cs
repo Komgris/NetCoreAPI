@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserGroupAppFeatureController : ControllerBase
+    public class UserGroupAppFeatureController : BaseController
     {
         private IUserGroupAppFeatureService _service;
 
