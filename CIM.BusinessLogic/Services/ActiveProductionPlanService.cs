@@ -443,8 +443,11 @@ namespace CIM.BusinessLogic.Services {
         {
             var losses = await _recordManufacturingLossRepository
                 .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
-                                && x.IsAuto == true 
-                                && !(x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id"))
+                                && x.IsAuto == true
+                                && !(
+                                        (x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id")) 
+                                        && x.UpdatedAt == null
+                                    )
                 ); //update only isAuto = true && not rampUp
 
             var now = DateTime.Now;
