@@ -30,7 +30,6 @@ namespace CIM.API.Controllers
 
         public async Task Invoke(HttpContext context)
         {
-            bool isValidationPass = false;
             var token = context.Request.Headers["token"];
             var appId = Convert.ToInt32(context.Request.Headers["appId"]);
 
@@ -38,34 +37,25 @@ namespace CIM.API.Controllers
             if (enabledVerifyToken)
             {
                 var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
-                if (!string.IsNullOrEmpty(token.ToString()))
+                if (userService.GetCurrentUserModel(token, appId).Result)
                 {
-                    isValidationPass = await userService.GetCurrentUserModel(token, appId);
-                    if (isValidationPass)
-                        await this.next.Invoke(context);
-                    else
+                    await this.next.Invoke(context);
+                }
+                else
+                {
+                    var model = new ProcessReponseModel<object>
                     {
-                        var model = new ProcessReponseModel<object>
-                        {
-                            IsSuccess = false,
-                            Message = "Unauthorized"
-                        };
-                        var result = new ObjectResult(model);
-                        await context.WriteResultAsync(result);
-                    }
+                        IsSuccess = false,
+                        Message = "Unauthorized"
+                    };
+                    var result = new ObjectResult(model);
+                    await context.WriteResultAsync(result);
                 }
             }
             else
             {
-                var model = new ProcessReponseModel<object>
-                {
-                    IsSuccess = false,
-                    Message = "Unauthorized"
-                };
-                var result = new ObjectResult(model);
-                await context.WriteResultAsync(result);
+                await this.next.Invoke(context);
             }
-
         }
     }
 

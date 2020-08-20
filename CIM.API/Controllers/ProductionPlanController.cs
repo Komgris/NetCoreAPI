@@ -17,20 +17,20 @@ namespace CIM.API.Controllers {
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
-        private IProductionPlanService _service;
+        private IProductionPlanService _productionPlanService;
         private IUtilitiesService _utilitiesService;
         public ProductionPlanController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
             IConfiguration config,
-            IProductionPlanService service,
+            IProductionPlanService productionPlanService,
             IActiveProductionPlanService activeProductionPlanService,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _service = service;
+            _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
         }
@@ -72,7 +72,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _service.List(page, howmany, keyword, productId, routeId, true, statusIds);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
             try
             {
-                output.Data = await _service.ListOutput(page, howmany, keyword, true, statusIds);
+                output.Data = await _productionPlanService.ListOutput(page, howmany, keyword, true, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -106,7 +106,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionOutputModel>>();
             try
             {
-                output.Data = await _service.ListOutputByMonth(month, year);
+                output.Data = await _productionPlanService.ListOutputByMonth(month, year);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -124,7 +124,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionOutputModel>>();
             try
             {
-                output.Data = await _service.ListOutputByDate(date, page, howmany);
+                output.Data = await _productionPlanService.ListOutputByDate(date, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace CIM.API.Controllers {
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
-                output.Data = await _service.CheckDuplicate(data);
+                output.Data = await _productionPlanService.CheckDuplicate(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -162,7 +162,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _service.Create(data);
+                await _productionPlanService.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
@@ -180,7 +180,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                await _service.Update(data);
+                await _productionPlanService.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
@@ -198,7 +198,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanListModel>();
             try
             {
-                await _service.Delete(id);
+                await _productionPlanService.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -215,7 +215,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(( await _service.Load(id, routeId)), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -232,7 +232,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<ProductionPlanModel>();
             try
             {
-                output.Data = await _service.Get(id);
+                output.Data = await _productionPlanService.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -249,7 +249,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _service.ListByMonth(month, year, statusIds);
+                output.Data = await _productionPlanService.ListByMonth(month, year, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -267,7 +267,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _service.ListByDate(date, page, howmany, statusIds);
+                output.Data = await _productionPlanService.ListByDate(date, page, howmany, statusIds);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -358,7 +358,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_service.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
