@@ -18,7 +18,7 @@ namespace CIM.Model
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
         }
-
+        
         public class RedisKey {
 
             public const string MACHINE = "machine";
