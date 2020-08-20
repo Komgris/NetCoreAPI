@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CIM.API.HubConfig;
-using CIM.BusinessLogic.Interfaces;
+﻿using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CIM.API.Controllers
 {
@@ -30,12 +25,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MaterialGroupModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -53,12 +42,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<MaterialGroupMaterialModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.ListBomMapping(bomId);
                 output.IsSuccess = true;
             }
@@ -76,12 +59,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialGroupMaterialModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.InsertMapping(data);
                 output.IsSuccess = true;
             }
@@ -99,12 +76,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 output.IsSuccess = true;
             }
@@ -123,12 +94,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 output.IsSuccess = true;
             }
@@ -147,12 +112,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Delete(id);
                 output.IsSuccess = true;
             }
@@ -171,12 +130,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data =   await _service.Get(id);
                 output.IsSuccess = true;
             }

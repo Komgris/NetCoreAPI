@@ -39,12 +39,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineStatusHistory(howMany, page, planId, routeId, machineId, from, to), JsonsSetting));
                 output.IsSuccess = true;
             }
@@ -63,12 +57,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionWCMLossHistory(planId, routeId, null, null, page), JsonsSetting));
                 output.IsSuccess = true;
             }
@@ -92,12 +80,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteHistory(planId, routeId, from, to, page)));
                 output.IsSuccess = true;
             }
@@ -119,12 +101,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOEEReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -142,12 +118,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOutputReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -165,12 +135,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetWasteReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -188,12 +152,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMachineLossReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -211,12 +169,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetQualityReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -234,12 +186,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetSPCReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -257,12 +203,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetElectricityReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -280,12 +220,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionSummaryReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -303,12 +237,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetOperatingTimeReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -326,12 +254,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActualDesignSpeedReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -349,12 +271,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetMaintenanceReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
@@ -372,12 +288,6 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetCostAnalysisReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }

@@ -42,12 +42,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(model);
                 output.IsSuccess = true;
             }
@@ -65,12 +59,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(model);
                 var listRoute = _machineService.GetCached(model.MachineId).Result.RouteIds.ToArray();
 
@@ -98,12 +86,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Delete(id);
                 output.IsSuccess = true;
             }

@@ -11,7 +11,7 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccidentController : ControllerBase
+    public class AccidentController : BaseController
     {
         private IAccidentService _service;
 
@@ -28,12 +28,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<AccidentModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
@@ -51,12 +45,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -74,12 +62,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(model);
                 output.IsSuccess = true;
             }
@@ -97,12 +79,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(model);
                 output.IsSuccess = true;
             }
@@ -121,12 +97,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Delete(id);
                 output.IsSuccess = true;
             }

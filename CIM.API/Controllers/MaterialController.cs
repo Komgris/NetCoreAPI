@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    //[MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     [ApiController]
     public class MaterialController : BaseController
     {
@@ -32,12 +31,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
@@ -64,12 +57,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
@@ -96,12 +83,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MaterialModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -119,12 +100,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -142,12 +117,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ProductMaterialModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.ListMaterialByProduct(productId);
                 output.IsSuccess = true;
             }
@@ -165,12 +134,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductMaterialModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.InsertByProduct(data);
                 await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;

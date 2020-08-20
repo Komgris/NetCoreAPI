@@ -34,12 +34,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RouteListModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
@@ -57,12 +51,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -80,12 +68,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
@@ -104,12 +86,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteListModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;

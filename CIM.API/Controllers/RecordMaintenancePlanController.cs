@@ -28,12 +28,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordMaintenancePlanModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
@@ -52,12 +46,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.ListByMonth(month, year, isActive);
                 output.IsSuccess = true;
             }
@@ -76,12 +64,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RecordMaintenancePlanModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.ListByDate(date);
                 output.IsSuccess = true;
             }
@@ -100,12 +82,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 output.IsSuccess = true;
             }
@@ -124,12 +100,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 output.IsSuccess = true;
             }
@@ -149,12 +119,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordMaintenancePlanModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }

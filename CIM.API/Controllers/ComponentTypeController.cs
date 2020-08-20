@@ -36,12 +36,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentTypeModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.GetComponentTypesByMachineType(machineTypeId);
                 output.IsSuccess = true;
             }
@@ -59,12 +53,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentTypeModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
@@ -82,12 +70,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.InsertByMachineId(data);
                 output.IsSuccess = true;
             }
@@ -106,12 +88,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
@@ -139,12 +115,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
@@ -172,12 +142,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }

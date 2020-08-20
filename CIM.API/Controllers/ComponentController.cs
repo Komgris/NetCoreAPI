@@ -32,12 +32,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.GetComponentByMachine(machineId);
                 output.IsSuccess = true;
             }
@@ -55,12 +49,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -78,12 +66,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -101,12 +83,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 output.IsSuccess = true;
             }
@@ -124,12 +100,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 output.IsSuccess = true;
             }
@@ -147,12 +117,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.InsertMappingMachineComponent(data);
                 output.IsSuccess = true;
             }
@@ -170,12 +134,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentModel>> ();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.GetComponentNoMachineId(keyword);
                 output.IsSuccess = true;
             }

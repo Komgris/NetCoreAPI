@@ -83,7 +83,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<AuthModel> Auth(string username, string password)
         {
             AuthModel result = new AuthModel();
-            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower())
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
                 .Select(
                     x => new
                     {
@@ -211,7 +211,7 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{token}");
         }
 
-        public async Task GetCurrentUserModel(string token, int appId)
+        public async Task<bool> GetCurrentUserModel(string token, int appId)
         {
             var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
             if (authModel != null)
@@ -236,6 +236,8 @@ namespace CIM.BusinessLogic.Services
                 CurrentUserId = _configuration.GetValue<string>("DefaultUserId");
                 IsVerifyTokenPass = false;
             }
+
+            return IsVerifyTokenPass;
         }
 
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howMany, bool isActive)

@@ -40,12 +40,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {
@@ -74,12 +68,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Delete(id);
                 output.IsSuccess = true;
             }
@@ -98,12 +86,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -122,12 +104,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ProductModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -146,12 +122,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {

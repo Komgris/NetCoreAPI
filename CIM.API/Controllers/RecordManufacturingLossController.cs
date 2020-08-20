@@ -39,12 +39,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var productionPlan = await _service.Create(model);
                 if (productionPlan != null)
                 {
@@ -68,12 +62,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var productionPlan = await _service.End(model);
                 if (productionPlan != null)
                 {
@@ -97,12 +85,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var productionPlan = await _service.Update(model);
                 if (productionPlan != null)
                 {
@@ -132,12 +114,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordManufacturingLossModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.GetByGuid(guid);
                 output.IsSuccess = true;
             }
@@ -156,12 +132,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(planId, routeId, keyword, page, howmany);
                 output.IsSuccess = true;
             } 

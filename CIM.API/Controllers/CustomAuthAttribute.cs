@@ -4,7 +4,11 @@ using CIM.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
@@ -26,6 +30,7 @@ namespace CIM.API.Controllers
 
         public async Task Invoke(HttpContext context)
         {
+            bool isValidationPass = false;
             var token = context.Request.Headers["token"];
             var appId = Convert.ToInt32(context.Request.Headers["appId"]);
 
@@ -35,16 +40,61 @@ namespace CIM.API.Controllers
                 var userService = (IUserService)context.RequestServices.GetService(typeof(IUserService));
                 if (!string.IsNullOrEmpty(token.ToString()))
                 {
-                    await userService.GetCurrentUserModel(token, appId);
+                    isValidationPass = await userService.GetCurrentUserModel(token, appId);
+                    if (isValidationPass)
+                        await this.next.Invoke(context);
+                    else
+                    {
+                        var model = new ProcessReponseModel<object>
+                        {
+                            IsSuccess = false,
+                            Message = "Unauthorized"
+                        };
+                        var result = new ObjectResult(model);
+                        await context.WriteResultAsync(result);
+                    }
                 }
             }
             else
             {
-                BaseService.CurrentUserId = _configuration.GetValue<string>("DefaultUserId");
-                BaseService.IsVerifyTokenPass = true;
+                var model = new ProcessReponseModel<object>
+                {
+                    IsSuccess = false,
+                    Message = "Unauthorized"
+                };
+                var result = new ObjectResult(model);
+                await context.WriteResultAsync(result);
             }
 
-            await this.next.Invoke(context);
+        }
+    }
+
+    public static class HttpContextExtensions
+    {
+        private static readonly RouteData EmptyRouteData = new RouteData();
+
+        private static readonly ActionDescriptor EmptyActionDescriptor = new ActionDescriptor();
+
+        public static Task WriteResultAsync<TResult>(this HttpContext context, TResult result)
+            where TResult : IActionResult
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var executor = context.RequestServices.GetService<IActionResultExecutor<TResult>>();
+
+            if (executor == null)
+            {
+                throw new InvalidOperationException($"No result executor for '{typeof(TResult).FullName}' has been registered.");
+            }
+
+            var routeData = context.GetRouteData() ?? EmptyRouteData;
+
+            var actionContext = new ActionContext(context, routeData, EmptyActionDescriptor);
+
+            return executor.ExecuteAsync(actionContext, result);
         }
     }
 

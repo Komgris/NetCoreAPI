@@ -25,12 +25,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentTypeLossLevel3ListModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(componentTypeId, lossLevel3Id, page, howmany);
                 output.IsSuccess = true;
             }
@@ -48,12 +42,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(lossLevel3Ids, componentTypeId);
                 output.IsSuccess = true;
             }

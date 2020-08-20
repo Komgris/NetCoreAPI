@@ -32,12 +32,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {
@@ -65,12 +59,6 @@ namespace CIM.API.Controllers
 
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 var list = JsonConvert.DeserializeObject<EmployeesModel>(data);
                 if (file != null)
                 {
@@ -97,12 +85,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<EmployeesModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -120,12 +102,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -143,12 +119,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<EmployeesModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.GetFromEmployeeNo(no);
                 output.IsSuccess = true;
             }

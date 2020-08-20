@@ -31,12 +31,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MachineTeamModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -54,12 +48,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTeamModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -77,12 +65,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTeamModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 output.IsSuccess = true;
             }
@@ -100,12 +82,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTeamModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 output.IsSuccess = true;
             }

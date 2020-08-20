@@ -28,13 +28,7 @@ namespace CIM.API.Controllers
         {
             var output = new ProcessReponseModel<PagingModel<ProductGroupModel>>();
             try
-            {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
+            {              
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -53,12 +47,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
@@ -77,12 +65,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -100,12 +82,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
@@ -124,12 +100,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.Delete(id);
                 output.IsSuccess = true;
             }
@@ -147,12 +117,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteProductGroupModel>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 await _service.InsertMappingRouteProductGroup(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
@@ -171,12 +135,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RouteProductGroupModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.ListRouteByProductGroup(productGroupId);
                 output.IsSuccess = true;
             }

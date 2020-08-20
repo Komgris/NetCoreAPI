@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserGroupAppController : ControllerBase
+    public class UserGroupAppController : BaseController
     {
         private IUserGroupAppService _service;
 
@@ -24,12 +24,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<UserGroupAppModel>>();
             try
             {
-                if (!_service.CurrentUser.IsValid)
-                {
-                    output.Message = "Unauthorized";
-                    return output;
-                }
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
