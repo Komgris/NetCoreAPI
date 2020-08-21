@@ -4,6 +4,8 @@ using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,13 +22,18 @@ namespace CIM.BusinessLogic.Services
         private IUserRepository _userRepository;
         private IEmployeesRepository _employeesRepository;
         private IUnitOfWorkCIM _unitOfWork;
-
+        private IResponseCacheService _responseCacheService;
+        private IConfiguration _configuration;
+        private IUserGroupAppRepository _userGroupAppRepository;
         public UserService(
             IUserAppTokenRepository userAppTokenRepository,
             ICipherService cipherService,
             IUserRepository userRepository,
             IEmployeesRepository employeesRepository,
-            IUnitOfWorkCIM unitOfWork
+            IUnitOfWorkCIM unitOfWork,
+            IResponseCacheService responseCacheService,
+            IConfiguration configuration,
+            IUserGroupAppRepository userGroupAppRepository
             )
         {
             _userAppTokenRepository = userAppTokenRepository;
@@ -34,6 +41,9 @@ namespace CIM.BusinessLogic.Services
             _userRepository = userRepository;
             _employeesRepository = employeesRepository;
             _unitOfWork = unitOfWork;
+            _responseCacheService = responseCacheService;
+            _configuration = configuration;
+            _userGroupAppRepository = userGroupAppRepository;
         }
         public async Task Create(UserModel model)
         {
@@ -43,7 +53,7 @@ namespace CIM.BusinessLogic.Services
                 CreatedBy = CurrentUser.UserId,
                 IsActive = true,
                 Id = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
+                UserName = model.UserName.ToLower().Trim(),
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
                 UserGroupId = model.UserGroupId,
@@ -73,7 +83,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<AuthModel> Auth(string username, string password)
         {
             AuthModel result = new AuthModel();
-            var dbModel = await _userRepository.Where(x => x.UserName == username)
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
                 .Select(
                     x => new
                     {
@@ -85,6 +95,7 @@ namespace CIM.BusinessLogic.Services
                         Apps = x.UserGroup.UserGroupsApps.Where(x => x.App.IsActive)
                         .Select(app => new AppModel
                         {
+                            Id = app.App.Id,
                             Name = app.App.Name,
                             Url = app.App.Url
                         })
@@ -94,7 +105,6 @@ namespace CIM.BusinessLogic.Services
 
             if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
             {
-
                 result.FullName = dbModel.FullName;
                 result.UserId = dbModel.Id;
                 result.IsSuccess = true;
@@ -102,7 +112,9 @@ namespace CIM.BusinessLogic.Services
                 result.Group = dbModel.Group;
                 result.Apps = dbModel.Apps.ToList();
 
+                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
             }
+
             return result;
         }
 
@@ -118,7 +130,7 @@ namespace CIM.BusinessLogic.Services
             var userAppToken = new UserAppTokens
             {
                 UserId = userId,
-                ExpiredAt = DateTime.Now.AddYears(1),
+                ExpiredAt = DateTime.Now.AddMinutes(_configuration.GetValue<int>("TokenExpire(Min)")),
             };
             var dataString = JsonConvert.SerializeObject(userAppToken);
             userAppToken.Token = _cipherService.Encrypt(dataString);
@@ -148,25 +160,84 @@ namespace CIM.BusinessLogic.Services
             return isValid;
         }
 
-        public CurrentUserModel GetCurrentUserModel(string token)
+        public async Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId)
         {
-            var decryptedData = _cipherService.Decrypt(token);
-            var userAppToken = JsonConvert.DeserializeObject<UserAppTokens>(decryptedData);
-            var user = _userRepository.Where(x => x.Id == userAppToken.UserId)
-                .Select(x => new
-                {
-                    Token = x.UserAppTokens.Token,
-                    DefaultLanguageId = x.DefaultLanguageId,
-                }).FirstOrDefault();
-            var dbData = _cipherService.Decrypt(user.Token);
-            var tokenData = JsonConvert.DeserializeObject<UserAppTokens>(dbData);
-            var currentUserModel = new CurrentUserModel
+            var output = new ProcessReponseModel<object>();
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
             {
-                IsValid = user != null && tokenData.UserId == userAppToken.UserId,
-                UserId = tokenData.UserId,
-                LanguageId = user.DefaultLanguageId
-            };
-            return currentUserModel;
+                var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
+                if (userGroupApp != null)
+                {
+                    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel
+                        , _configuration.GetValue<int>("TokenExpire(Min)"));
+                    output.IsSuccess = true;
+                }
+                else
+                {
+                    output.Message = "Unauthorized";
+                }
+            }
+            else
+            {
+                output.Message = "Unauthorized";
+            }
+
+            return output;
+        }
+
+        public async Task<ProcessReponseModel<object>> VerifyToken(string token)
+        {
+            var output = new ProcessReponseModel<object>();
+
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
+            {
+                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel
+                    , _configuration.GetValue<int>("TokenExpire(Min)"));
+
+                output.IsSuccess = true;
+            }
+            else
+            {
+                output.Message = "Unauthorized";
+            }
+
+            return output;
+        }
+
+        public async Task Logout(string token)
+        {
+            await _responseCacheService.RemoveAsync($"{Constans.RedisKey.TOKEN}-{token}");
+        }
+
+        public async Task<bool> GetCurrentUserModel(string token, int appId)
+        {
+            var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
+            if (authModel != null)
+            {
+                var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
+                if (userGroupApp != null)
+                {
+                    CurrentUserId = authModel.UserId;
+                    IsVerifyTokenPass = true;
+                    
+                    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{token}", authModel
+                        , _configuration.GetValue<int>("TokenExpire(Min)"));                    
+                }
+                else
+                {
+                    CurrentUserId = authModel.UserId;
+                    IsVerifyTokenPass = false;
+                }
+            }
+            else
+            {
+                CurrentUserId = _configuration.GetValue<string>("DefaultUserId");
+                IsVerifyTokenPass = false;
+            }
+
+            return IsVerifyTokenPass;
         }
 
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howMany, bool isActive)
@@ -250,7 +321,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<UserModel> GetFromUserName(string userName)
         {
-            return await _userRepository.Where(x => x.UserName == userName)
+            return await _userRepository.Where(x => x.UserName == userName.ToLower().Trim())
                 .Select(x => new UserModel
                 {
                     Id = x.Id,
@@ -259,6 +330,5 @@ namespace CIM.BusinessLogic.Services
                     IsDelete = x.IsDelete
                 }).FirstOrDefaultAsync();
         }
-
     }
 }

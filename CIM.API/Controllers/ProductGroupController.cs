@@ -12,13 +12,13 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductGroupController : BaseController
     {
-        private IProductGroupService _productGroupService;
+        private IProductGroupService _service;
         public ProductGroupController(
-            IProductGroupService productGroupService,
+            IProductGroupService service,
             IMasterDataService masterDataService
         )
         {
-            _productGroupService = productGroupService;
+            _service = service;
             _masterDataService = masterDataService;
         }
 
@@ -28,8 +28,8 @@ namespace CIM.API.Controllers
         {
             var output = new ProcessReponseModel<PagingModel<ProductGroupModel>>();
             try
-            {
-                output.Data = await _productGroupService.List(keyword, page, howMany, isActive);
+            {              
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                await _productGroupService.Create(data);
+                await _service.Create(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
@@ -65,9 +65,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _productGroupService.Get(id);
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -84,7 +82,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                await _productGroupService.Update(data);
+                await _service.Update(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
@@ -102,7 +100,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductGroupModel>();
             try
             {
-                await _productGroupService.Delete(id);
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -119,7 +117,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RouteProductGroupModel>();
             try
             {
-                await _productGroupService.InsertMappingRouteProductGroup(data);
+                await _service.InsertMappingRouteProductGroup(data);
                 await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
@@ -137,7 +135,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RouteProductGroupModel>>();
             try
             {
-                output.Data = await _productGroupService.ListRouteByProductGroup(productGroupId);
+                output.Data = await _service.ListRouteByProductGroup(productGroupId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -2,6 +2,7 @@
 using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,7 @@ namespace CIM.BusinessLogic.Services
 
         private IWasteNonePrimeRepository _wastenoneprimeRepository;
 
+        private IConfiguration _configuration;
         public MasterDataService(
             ILossLevel2Repository lossLevel2Repository,
             ILossLevel3Repository lossLevel3Repository,
@@ -82,7 +84,8 @@ namespace CIM.BusinessLogic.Services
             IAppFeatureRepository appFeatureRepository, 
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository,
-            IAccidentCategoryRepository accidentCategoryRepository
+            IAccidentCategoryRepository accidentCategoryRepository,
+            IConfiguration configuration
             )
         {
             _directSqlRepository = directSqlRepository;
@@ -117,6 +120,7 @@ namespace CIM.BusinessLogic.Services
             _appFeatureRepository = appFeatureRepository;
             _wastenoneprimeRepository = wastenoneprimeRepository;
             _accidentCategoryRepository = accidentCategoryRepository;
+            _configuration = configuration;
         }
         public MasterDataModel Data { get; set; }
 
@@ -291,6 +295,8 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProcessDriven = await GetProcessDriven();
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
                     masterData.AppFeature = await GetAppFeature();
+                    masterData.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
+                    masterData.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);

@@ -19,16 +19,16 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ProductController : BaseController
     {
-        private IProductService _productService;
+        private IProductService _service;
         private IUtilitiesService _utilitiesService;
 
         public ProductController(
-            IProductService productService,
+            IProductService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
             )
         {
-            _productService = productService;
+            _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;
         }
@@ -40,9 +40,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {
@@ -52,7 +49,7 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"product/{list.Image}";
                 }
-                await _productService.Create(list);
+                await _service.Create(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
@@ -71,11 +68,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
-                await _productService.Delete(id);
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -93,9 +86,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _productService.Get(id);
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -113,9 +104,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ProductModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _productService.List(keyword, page, howMany, isActive);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -133,8 +122,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                _productService.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 var list = JsonConvert.DeserializeObject<ProductModel>(data);
                 if (file != null)
                 {
@@ -144,7 +131,7 @@ namespace CIM.API.Controllers
                 {
                     list.Image = $"product/{list.Image}";
                 }
-                await _productService.Update(list);
+                await _service.Update(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
