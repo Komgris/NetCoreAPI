@@ -45,7 +45,7 @@ namespace CIM.API.Controllers
                 {
                     var model = new ProcessReponseModel<object>
                     {
-                        IsSuccess = false,
+                        IsAuthorized = false,
                         Message = "Unauthorized"
                     };
                     var result = new ObjectResult(model);
@@ -54,6 +54,7 @@ namespace CIM.API.Controllers
             }
             else
             {
+                BaseService.CurrentUserId = _configuration.GetValue<string>("DefaultUserId");
                 await this.next.Invoke(context);
             }
         }
