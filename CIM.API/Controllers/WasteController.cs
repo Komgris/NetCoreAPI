@@ -148,7 +148,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>();
             try
             {
-                output.Data = await _recordProductionPlanWasteService.NonePrimeOutputList(keyword, page, howmany);
+                output.Data = await _service.NonePrimeOutputList(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception e)
