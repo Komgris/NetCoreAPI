@@ -140,6 +140,24 @@ namespace CIM.API.Controllers
             return output;
         }
 
+
+        [HttpGet]
+        [Route("NonePrimeOutputList")]
+        public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>> NonePrimeOutputList(string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>();
+            try
+            {
+                output.Data = await _recordProductionPlanWasteService.NonePrimeOutputList(keyword, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
         [Route("NonePrimeCreate")]
         public async Task<ProcessReponseModel<object>> NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)

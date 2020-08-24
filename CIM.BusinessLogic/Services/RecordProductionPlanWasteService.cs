@@ -169,5 +169,10 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        public async Task<PagingModel<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputList(string keyword, int page, int howmany)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputList(keyword, page, howmany);
+            return output;
+        }
     }
 }
