@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IRecordProductionPlanWasteService
+    public interface IRecordProductionPlanWasteService : IBaseService
     {
         Task<RecordProductionPlanWasteModel> Get(int id);
         Task<List<RecordProductionPlanWasteModel>> ListByLoss(int id);

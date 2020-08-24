@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private IUserService _service;
 
@@ -102,6 +102,5 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
     }
 }

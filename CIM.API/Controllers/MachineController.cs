@@ -35,9 +35,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _service.Create(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
@@ -56,9 +53,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _service.Update(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
@@ -77,7 +71,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
-
                 output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
@@ -95,7 +88,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineListModel>();
             try
             {
-
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
@@ -113,7 +105,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<RouteMachineModel>>();
             try
             {
-
                 output.Data = await _service.GetMachineByRoute(routeId);
                 output.IsSuccess = true;
             }

@@ -50,6 +50,21 @@ namespace CIM.BusinessLogic.Services
                 await _distributedCache.SetStringAsync(key, stringJson);
             }
         }
+        public async Task SetAsyncExpire(string key, object model,int ttlMin)
+        {
+            if (model == null)
+            {
+                _distributedCache.Remove(key);
+            }
+            else
+            {
+                var option = new DistributedCacheEntryOptions(){
+                    SlidingExpiration = new TimeSpan(0, ttlMin, 0)
+                };
+                var stringJson = JsonConvert.SerializeObject(model);
+                await _distributedCache.SetStringAsync(key, stringJson, option);
+            }
+        }
         public async Task RemoveAsync(string key)
         {
             _distributedCache.Remove(key);

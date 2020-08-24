@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IMachineOperatorService
+    public interface IMachineOperatorService : IBaseService
     {
 
         Task Create(MachineOperatorModel model);

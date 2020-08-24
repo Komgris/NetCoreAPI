@@ -13,9 +13,9 @@ namespace CIM.API.Controllers
 {
 
     [ApiController]
-    public class MasterDataController : BaseController
+    public class MasterDataController : ControllerBase
     {
-       
+        private IMasterDataService _masterDataService;
         public MasterDataController(
             IMasterDataService masterDataService 
             )
@@ -29,7 +29,7 @@ namespace CIM.API.Controllers
         public async Task<string> Get()
         {
             var result = await _masterDataService.GetData();
-            var stringOut = JsonConvert.SerializeObject( new { data = result }, JsonsSetting);
+            var stringOut = JsonConvert.SerializeObject( new { data = result }, _masterDataService.JsonsSetting);
             return stringOut;
 
         }

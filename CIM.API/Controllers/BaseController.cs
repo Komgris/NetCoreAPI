@@ -12,6 +12,7 @@ using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
+    [MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     public class BaseController : ControllerBase {
 
         internal IMasterDataService _masterDataService;

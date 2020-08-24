@@ -11,14 +11,14 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccidentController : ControllerBase
+    public class AccidentController : BaseController
     {
-        private IAccidentService _accidentService;
+        private IAccidentService _service;
 
         public AccidentController(
-            IAccidentService accidentService)
+            IAccidentService service)
         {
-            _accidentService = accidentService;
+            _service = service;
         }
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<AccidentModel>>();
             try
             {
-                output.Data = await _accidentService.List(keyword, page, howmany);
+                output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                output.Data = await _accidentService.Get(id);
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Create(model);
+                await _service.Create(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Update(model);
+                await _service.Update(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<AccidentModel>();
             try
             {
-                await _accidentService.Delete(id);
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

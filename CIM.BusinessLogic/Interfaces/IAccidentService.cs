@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Interfaces
 {
-    public interface IAccidentService
+    public interface IAccidentService : IBaseService
     {
         Task<AccidentModel> Get(int id);
         Task<PagingModel<AccidentModel>> List(string keyword = "", int page = 1, int howmany = 10);
