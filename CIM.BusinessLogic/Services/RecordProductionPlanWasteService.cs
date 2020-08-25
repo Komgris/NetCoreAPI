@@ -174,5 +174,17 @@ namespace CIM.BusinessLogic.Services
             var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputList(keyword, page, howmany);
             return output;
         }
+
+        public async Task<List<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByMonth(int month, int year)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputListByMonth(month, year);
+            return output;
+        }
+
+        public async Task<PagingModel<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByDate(DateTime date, int page, int howmany)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputListByDate(date, page, howmany);
+            return output;
+        }
     }
 }

@@ -52,5 +52,41 @@ namespace CIM.DAL.Implements
                 return ToPagingModel(dt.ToModel<RecordProductionPlanWasteNonePrimeModel>(), totalCount, page, howmany);
             });
         }
+
+        public async Task<PagingModel<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByDate(DateTime date, int page, int howmany)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@date", date},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListNonPrimeOutputByDate", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<RecordProductionPlanWasteNonePrimeModel>(), totalCount, page, howmany);
+            });
+        }
+
+        public async Task<List<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByMonth(int month, int year)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@month", month},
+                                            {"@year", year}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListNonPrimeOutputByMonth", parameterList);
+
+                return (dt.ToModel<RecordProductionPlanWasteNonePrimeModel>());
+            });
+        }
     }
 }
