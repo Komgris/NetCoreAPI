@@ -202,14 +202,14 @@ namespace CIM.Model
         }
 
         public enum DataTypeGroup {
-            Machine       =0,
+            All = 0,
             Loss          =1,
             Waste         =2,
             Operators     =3,
             Produce       =4,
             Process       =5,
             HSE           =6,
-            All           =99,
+            Machine       =7,
             None          =100
         }
 
