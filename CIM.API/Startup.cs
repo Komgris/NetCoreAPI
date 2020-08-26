@@ -175,11 +175,10 @@ namespace CIM.API {
             app.UseRouting();
 
             app.UseCors(builder =>
-               builder.WithOrigins(new[]{ "http://localhost:4200","http://localhost:4401"})
+               builder.WithOrigins(new[] { "http://localhost:4200", "http://localhost:4401", "http://localhost:4402" })
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
-
 
             app.UseAuthorization();
 

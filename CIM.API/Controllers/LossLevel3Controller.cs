@@ -51,10 +51,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 output.Data = await _service.Create(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
@@ -73,10 +69,6 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 output.Data = await _service.Update(model);
                 await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;

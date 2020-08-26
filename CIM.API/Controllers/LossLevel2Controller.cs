@@ -14,7 +14,7 @@ using System.Linq;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class LossLevel2Controller : ControllerBase
+    public class LossLevel2Controller : BaseController
     {
 
         private ILossLevel2Service _service;

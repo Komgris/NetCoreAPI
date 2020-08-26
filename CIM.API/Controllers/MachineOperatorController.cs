@@ -17,7 +17,7 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineOperatorController : BoardcastController
     {
-        private IMachineOperatorService _machineOperatorService;
+        private IMachineOperatorService _service;
         private IProductionPlanService _productionPlanService;
         private IMachineService _machineService;
 
@@ -27,11 +27,11 @@ namespace CIM.API.Controllers
             IDashboardService dashboardService,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService,
-            IMachineOperatorService machineOperatorService,
+            IMachineOperatorService service,
             IMachineService machineService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _machineOperatorService = machineOperatorService;
+            _service = service;
             _productionPlanService = productionPlanService;
             _machineService = machineService;
         }
@@ -42,7 +42,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                await _machineOperatorService.Create(model);
+                await _service.Create(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                await _machineOperatorService.Update(model);
+                await _service.Update(model);
                 var listRoute = _machineService.GetCached(model.MachineId).Result.RouteIds.ToArray();
 
                 var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.PlanId}";
@@ -86,7 +86,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineOperatorModel>();
             try
             {
-                await _machineOperatorService.Delete(id);
+                await _service.Delete(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

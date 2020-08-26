@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    //[MiddlewareFilter(typeof(CustomAuthenticationMiddlewarePipeline))]
     [ApiController]
     public class MaterialController : BaseController
     {
@@ -27,52 +26,54 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<MaterialModel> Create([FromForm] IFormFile file, [FromForm] string data)
+        public async Task<ProcessReponseModel<MaterialModel>> Create([FromForm] IFormFile file, [FromForm] string data)
         {
+            var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                    list.Image = await _utilitiesService.UploadImage(file, "material", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"material/{list.Image}";
                 }
-                return await _service.Create(list);
+                output.Data = await _service.Create(list);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<MaterialModel> Update([FromForm] IFormFile file, [FromForm] string data)
+        public async Task<ProcessReponseModel<MaterialModel>> Update([FromForm] IFormFile file, [FromForm] string data)
         {
+            var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 var list = JsonConvert.DeserializeObject<MaterialModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "material");
+                    list.Image = await _utilitiesService.UploadImage(file, "material", false);
                 }
-                else if(list.Image != "" && list.Image != null)
+                else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"material/{list.Image}";
                 }
-                return await _service.Update(list);
+                output.Data = await _service.Update(list);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [HttpGet]
@@ -87,23 +88,26 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }
 
         [HttpGet]
         [Route("api/[controller]/Get")]
-        public async Task<MaterialModel> Get(int id)
+        public async Task<ProcessReponseModel<MaterialModel>> Get(int id)
         {
+            var output = new ProcessReponseModel<MaterialModel>();
             try
             {
-                return await _service.Get(id);
+                output.Data = await _service.Get(id);
+                output.IsSuccess = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                output.Message = ex.ToString();
             }
+            return output;
         }
 
         [Route("api/[controller]/ListByProduct")]
@@ -118,7 +122,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }
@@ -136,7 +140,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.Message;
+                output.Message = ex.ToString();
             }
             return output;
         }

@@ -14,17 +14,17 @@ namespace CIM.API.Controllers
     [ApiController]
     public class ComponentTypeController : BaseController
     {
-        private IComponentTypeService _componentTypeService;
+        private IComponentTypeService _service;
         private IUtilitiesService _utilitiesService;
 
 
         public ComponentTypeController(
-            IComponentTypeService componentTypeService,
+            IComponentTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         )
         {
-            _componentTypeService = componentTypeService;
+            _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;
         }
@@ -36,7 +36,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<List<ComponentTypeModel>>();
             try
             {
-                output.Data = await _componentTypeService.GetComponentTypesByMachineType(machineTypeId);
+                output.Data = await _service.GetComponentTypesByMachineType(machineTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<ComponentTypeModel>>();
             try
             {
-                output.Data = await _componentTypeService.List(keyword, page, howmany, isActive);
+                output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                await _componentTypeService.InsertByMachineId(data);
+                await _service.InsertByMachineId(data);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -91,13 +91,13 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                    list.Image = await _utilitiesService.UploadImage(file, "componentType",false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"componentType/{list.Image}";
                 }
-                await _componentTypeService.Create(list);
+                await _service.Create(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
@@ -118,13 +118,13 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<ComponentTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "componentType");
+                    list.Image = await _utilitiesService.UploadImage(file, "componentType", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"componentType/{list.Image}";
                 }
-                await _componentTypeService.Update(list);
+                await _service.Update(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
@@ -142,9 +142,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ComponentTypeModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _componentTypeService.Get(id);
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

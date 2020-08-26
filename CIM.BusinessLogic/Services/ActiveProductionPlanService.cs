@@ -443,8 +443,11 @@ namespace CIM.BusinessLogic.Services {
         {
             var losses = await _recordManufacturingLossRepository
                 .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
-                                && x.IsAuto == true 
-                                && !(x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id"))
+                                && x.IsAuto == true
+                                && !(
+                                        (x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id")) 
+                                        && x.UpdatedAt == null
+                                    )
                 ); //update only isAuto = true && not rampUp
 
             var now = DateTime.Now;
@@ -590,7 +593,7 @@ namespace CIM.BusinessLogic.Services {
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToListAsync();
 
-                    if (dbOutput.Count > 0 && dbOutput[0].TotalOut >= item.CounterOut)
+                    if (dbOutput.Count > 0 && dbOutput[0].TotalOut > item.CounterOut )
                     {
                         //do nothing
                     }
@@ -603,7 +606,7 @@ namespace CIM.BusinessLogic.Services {
                                 paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
                                 paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                File.AppendAllText("C:/log/CounterAdd_logging"
+                                File.AppendAllText(@"C:\log\CounterAdd_logging"
                                     , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
                             }
                             else//close ramp-up records and start to operating time #139

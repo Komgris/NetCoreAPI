@@ -8,7 +8,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IResponseCacheService
     {
         Task SetAsync(string key, object model);
-
+        Task SetAsyncExpire(string key, object model, int ttlSec);
         Task<string> GetAsync(string key);
         Task<T> GetAsTypeAsync<T>(string key);
         Task RemoveAsync(string key);

@@ -18,18 +18,18 @@ namespace CIM.API.Controllers
     [ApiController]
     public class RecordManufacturingLossController : BoardcastController
     {
-        private IRecordManufacturingLossService _recordManufacturingLossService;
+        private IRecordManufacturingLossService _service;
 
         public RecordManufacturingLossController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
             IConfiguration config,
-            IRecordManufacturingLossService recordManufacturingLossService,
+            IRecordManufacturingLossService service,
             IActiveProductionPlanService activeProductionPlanService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
-            _recordManufacturingLossService = recordManufacturingLossService;
+            _service = service;
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _recordManufacturingLossService.Create(model);
+                var productionPlan = await _service.Create(model);
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
@@ -62,7 +62,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _recordManufacturingLossService.End(model);
+                var productionPlan = await _service.End(model);
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
@@ -85,7 +85,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _recordManufacturingLossService.Update(model);
+                var productionPlan = await _service.Update(model);
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
@@ -114,7 +114,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordManufacturingLossModel>();
             try
             {
-                output.Data = await _recordManufacturingLossService.GetByGuid(guid);
+                output.Data = await _service.GetByGuid(guid);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -132,7 +132,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
             try
             {
-                output.Data = await _recordManufacturingLossService.List(planId, routeId, keyword, page, howmany);
+                output.Data = await _service.List(planId, routeId, keyword, page, howmany);
                 output.IsSuccess = true;
             } 
             catch( Exception e)

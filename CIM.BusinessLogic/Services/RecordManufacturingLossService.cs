@@ -222,6 +222,7 @@ namespace CIM.BusinessLogic.Services
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
             dbModel.Remark = model.Remark;
+            dbModel.UpdatedAt = DateTime.Now;
             if (model.ComponentId > 0)
             {
                 dbModel.ComponentId = model.ComponentId;

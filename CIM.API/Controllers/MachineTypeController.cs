@@ -16,17 +16,17 @@ namespace CIM.API.Controllers
     [ApiController]
     public class MachineTypeController : BaseController
     {
-        private IMachineTypeService _machineTypeService;
+        private IMachineTypeService _service;
         private IUtilitiesService _utilitiesService;
 
         public MachineTypeController(
-            IMachineTypeService machineTypeService,
+            IMachineTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         ) 
         {
             _masterDataService = masterDataService;
-            _machineTypeService = machineTypeService;
+            _service = service;
             _utilitiesService = utilitiesService;
         }
 
@@ -41,13 +41,13 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<MachineTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "machineType");
+                    list.Image = await _utilitiesService.UploadImage(file, "machineType", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"machineType/{list.Image}";
                 }
-                await _machineTypeService.Create(list);
+                await _service.Create(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
@@ -68,13 +68,13 @@ namespace CIM.API.Controllers
                 var list = JsonConvert.DeserializeObject<MachineTypeModel>(data);
                 if (file != null)
                 {
-                    list.Image = await _utilitiesService.UploadImage(file, "machineType");
+                    list.Image = await _utilitiesService.UploadImage(file, "machineType", false);
                 }
                 else if (list.Image != "" && list.Image != null)
                 {
                     list.Image = $"machineType/{list.Image}";
                 }
-                await _machineTypeService.Update(list);
+                await _service.Update(list);
                 await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
@@ -92,7 +92,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<MachineTypeModel>>();
             try
             {
-                output.Data = await _machineTypeService.List(keyword, page, howmany, isActive);
+                output.Data = await _service.List(keyword, page, howmany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -109,7 +109,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineTypeModel>();
             try
             {
-                output.Data = await _machineTypeService.Get(id);
+                output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

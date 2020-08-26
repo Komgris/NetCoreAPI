@@ -55,16 +55,17 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<string> GetStandardManagementDashboard(DataFrame timeFrame)
+        public async Task<ProcessReponseModel<object>> GetStandardManagementDashboard(DataFrame timeFrame)
         {
-            var output = "";
+            var output = new ProcessReponseModel<object>();
             try
             {
-                output = JsonConvert.SerializeObject(await _dashboardService.GetManagementDashboard(timeFrame), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _dashboardService.GetManagementDashboard(timeFrame), JsonsSetting);
+                output.IsSuccess = true;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                output = ex.Message;
+                output.Message = e.ToString();
             }
             return output;
         }
@@ -279,7 +280,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetActiveMachineInfo(string planId, int routeId)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -296,7 +296,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetActiveMachineEvents(string planId, int routeId)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {
@@ -313,7 +312,6 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetMachineSpeed(string planId, int routeId, DateTime? from = null, DateTime? to = null)
         {
-
             var output = new ProcessReponseModel<object>();
             try
             {

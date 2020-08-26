@@ -18,7 +18,7 @@ namespace CIM.Model
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
         }
-
+        
         public class RedisKey {
 
             public const string MACHINE = "machine";
@@ -27,6 +27,7 @@ namespace CIM.Model
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
             public const string MASTER_DATA = "master-data";
+            public const string TOKEN = "token";
         }
 
         public enum DashboardCachedCH {
