@@ -118,6 +118,7 @@ namespace CIM.BusinessLogic.Services
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Product", "Status", "Unit" });
 
+            db_model.PlanId = model.PlanId.Trim();
             db_model.UnitId = model.Unit;
             db_model.UpdatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
@@ -140,6 +141,7 @@ namespace CIM.BusinessLogic.Services
         public ProductionPlanModel CreatePlan(ProductionPlanModel model)
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Unit" });
+            db_model.PlanId = model.PlanId.Trim();
             db_model.UnitId = model.Unit;
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.CreatedAt = DateTime.Now;
