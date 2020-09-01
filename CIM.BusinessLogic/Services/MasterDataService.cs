@@ -204,6 +204,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         Id = item.Id,
                         Name = item.Name,
+                        ProcessTypeId = item.ProcessTypeId,
                         MachineList = routeMachines[item.Id].Distinct().ToDictionary(x => x, x => machines[x])
                     };
                 }
