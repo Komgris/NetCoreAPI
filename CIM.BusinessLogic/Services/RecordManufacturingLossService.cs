@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class RecordManufacturingLossService : BaseService, IRecordManufacturingLossService {
+    public class RecordManufacturingLossService : BaseService, IRecordManufacturingLossService
+    {
         private IResponseCacheService _responseCacheService;
         private IRecordManufacturingLossRepository _recordManufacturingLossRepository;
         private IMasterDataService _masterDataService;
@@ -83,7 +84,7 @@ namespace CIM.BusinessLogic.Services
             newDbModel.LossLevel3Id = model.LossLevelId;
             newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
             newDbModel.Remark = model.Remark;
-            if(model.IsWasteChanged) 
+            if (model.IsWasteChanged)
                 newDbModel = await HandleWaste(newDbModel, model, now);
             _recordManufacturingLossRepository.Add(newDbModel);
         }
@@ -96,13 +97,13 @@ namespace CIM.BusinessLogic.Services
 
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
             // doesn't exist
-            if (dbModel  == null)
+            if (dbModel == null)
             {
                 await NewRecordManufacturingLoss(model, now, guid.ToString());
             }
 
             // already exist and and processing manually
-            if (dbModel != null && model.IsAuto == false )
+            if (dbModel != null && model.IsAuto == false)
             {
                 //End current loss
                 dbModel.EndAt = now;
@@ -139,7 +140,7 @@ namespace CIM.BusinessLogic.Services
             };
             activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.Add(alert);
 
-            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan); 
+            return await UpdateActiveProductionPlanMachine(model.RouteId, model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan);
         }
 
         public async Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model)
@@ -153,7 +154,8 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto) {
+                if (dbModel.Timespan < 60 && dbModel.IsAuto)
+                {
                     dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
                     var sploss = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                     //handle case alert is removed from redis
@@ -212,12 +214,16 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Guid == model.Guid);
             var now = DateTime.Now;
             var activeProductionPlan = await GetCached(model.ProductionPlanId);
-            var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
-            //handle case alert is removed from redis
-            if (alert != null)
+            if (activeProductionPlan != null)
             {
-                alert.LossLevel3Id = model.LossLevelId;
-                alert.StatusId = (int)Constans.AlertStatus.Edited;
+                var alert = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
+                //handle case alert is removed from redis
+                if (alert != null)
+                {
+                    alert.LossLevel3Id = model.LossLevelId;
+                    alert.StatusId = (int)Constans.AlertStatus.Edited;
+                }
+                await SetCached(activeProductionPlan);
             }
             dbModel.LossLevel3Id = model.LossLevelId;
             dbModel.MachineId = model.MachineId;
@@ -229,11 +235,11 @@ namespace CIM.BusinessLogic.Services
             }
             _recordManufacturingLossRepository.Edit(dbModel);
 
-            if(model.IsWasteChanged) 
+            if (model.IsWasteChanged)
                 dbModel = await HandleWaste(dbModel, model, now);
 
             await _unitOfWork.CommitAsync();
-            await SetCached(activeProductionPlan);
+           
             return activeProductionPlan;
         }
 
@@ -275,6 +281,28 @@ namespace CIM.BusinessLogic.Services
                 {
                     {"@plan_id", planId},
                     {"@route_id", routeId},
+                    {"@keyword", keyword},
+                    {"@howmany", howmany},
+                    {"@page", page}
+                }, page, howmany);
+        }
+        public async Task<List<RecordManufacturingLossModel>> ListByMonth(int month, int year, string planId, int? routeId = null)
+        {
+            return await _recordManufacturingLossRepository.List("sp_ListManufacturingLossByMonth", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId},
+                    {"@month", month},
+                    {"@year", year}
+                });
+        }
+        public async Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page , int howmany, string planId, int? routeId = null)
+        {
+            return await _recordManufacturingLossRepository.ListAsPaging("sp_ListManufacturingLossByDate", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId},
+                    {"@date", date},
                     {"@keyword", keyword},
                     {"@howmany", howmany},
                     {"@page", page}
