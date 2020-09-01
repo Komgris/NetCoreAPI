@@ -70,7 +70,7 @@ namespace CIM.API.IntegrationTests
                             Name = "Admin"
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
-                        userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
+                        //userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
                         db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
                         var registerUserModel = new UserModel
