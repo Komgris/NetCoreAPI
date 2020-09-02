@@ -54,7 +54,7 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId)
         {
             return await Task.Run(() =>
                                     {
@@ -66,7 +66,8 @@ namespace CIM.DAL.Implements
                                             {"@is_active", isActive},
                                             {"@status_id", statusIds},
                                             {"@howmany", howmany},
-                                            { "@page", page}
+                                            { "@page", page},
+                                            { "@processtypeid", processTypeId}
                                         };
 
                                         var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan", parameterList);
@@ -139,7 +140,7 @@ namespace CIM.DAL.Implements
             }
         }
 
-        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string? planId)
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string? planId, int? processTypeId)
         {
             var output = new FilterLoadProductionPlanListModel();
             Dictionary<string, object> parameterList = new Dictionary<string, object>()
@@ -147,7 +148,8 @@ namespace CIM.DAL.Implements
                     {"@routeid", routeId},
                     {"@productid", productId},
                     {"@statusid", statusId},
-                    {"@planid", planId }
+                    {"@planid", planId },
+                    {"@processtypeid", processTypeId }
                 };
             var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", parameterList);
             if (dt.Rows.Count > 0)
@@ -156,7 +158,7 @@ namespace CIM.DAL.Implements
                 output.Routes = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename") }).Distinct().ToDictionary(x => x.id, y => y.name);
                 output.Status = dt.AsEnumerable().Select(x => new { id = x.Field<int>("statusid"), name = x.Field<string>("statusname") }).Distinct().ToDictionary(x => x.id, y => y.name);
 
-                var routeList = dt.AsEnumerable().Where(x=>x.Field<string>("PlanId") == planId || string.IsNullOrEmpty(planId)).Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename"), inProcess = Convert.ToBoolean(x.Field<Int32>("inprocess")) }).Distinct().ToList();
+                var routeList = dt.AsEnumerable().Where(x => x.Field<string>("PlanId") == planId || string.IsNullOrEmpty(planId)).Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename"), inProcess = Convert.ToBoolean(x.Field<Int32>("inprocess")) }).Distinct().ToList();
                 output.Route = new List<RouteModel>();
                 foreach (var item in routeList)
                 {
@@ -268,20 +270,20 @@ namespace CIM.DAL.Implements
         {
             return await Task.Run(() =>
             {
-            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
                                         {
                                             {"@date", date},
                                             {"@howmany", howmany},
                                             { "@page", page}
                                         };
 
-            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYDate", parameterList);
-            var totalCount = 0;
-            if (dt.Rows.Count > 0)
-                totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYDate", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-            return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
-        });
+                return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
+            });
         }
     }
 }
