@@ -79,9 +79,9 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId)
         {
-            var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive, statusIds);
+            var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive, statusIds, processTypeId);
             return output;
         }
 
@@ -99,7 +99,7 @@ namespace CIM.BusinessLogic.Services
                 }
                 else
                 {
-                    var model =  CreatePlan(plan);
+                    var model = CreatePlan(plan);
                     db_list.Add(model);
                 }
             }
@@ -253,7 +253,7 @@ namespace CIM.BusinessLogic.Services
             int offsetBottom = ExcelMapping.OFFSET_BOTTOM_ROW;
             for (int i = offsetTop; i <= totalRows - offsetBottom; i++)
             {
-                ProductionPlanModel data = new ProductionPlanModel();             
+                ProductionPlanModel data = new ProductionPlanModel();
                 data.Line = oSheet.Cells[i, ExcelMapping.LINE].CellValToString();
                 data.Wbrt = oSheet.Cells[i, ExcelMapping.WBRT].CellValToString();
                 data.RouteGuideLine = oSheet.Cells[i, ExcelMapping.ROUTE_GUILDLINE].CellValToString();
@@ -272,7 +272,7 @@ namespace CIM.BusinessLogic.Services
                 data.PlanStart = oSheet.Cells[i, ExcelMapping.PLANSTART].CellValToDateTimeNull();
                 data.PlanFinish = oSheet.Cells[i, ExcelMapping.PLANFINISH].CellValToDateTimeNull();
                 data.Note = oSheet.Cells[i, ExcelMapping.NOTE].CellValToString();
-                data.PlanId = $"{DateTime.Now.ToString("yyMMddHHmm")}-{data.ProductCode}-{i.ToString("00")}" ;
+                data.PlanId = $"{DateTime.Now.ToString("yyMMddHHmm")}-{data.ProductCode}-{i.ToString("00")}";
                 listImport.Add(data);
             }
 
@@ -311,7 +311,7 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(productionPlanKey, null);
         }
 
-        public async Task<ProductionPlanOverviewModel> Load(string id,int routeId)
+        public async Task<ProductionPlanOverviewModel> Load(string id, int routeId)
         {
             var productionPlan = await _productionPlanRepository.Load(id, routeId);
             var activeProductionPlan = await _activeProductionPlanService.GetCached(id);
@@ -319,7 +319,7 @@ namespace CIM.BusinessLogic.Services
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
                 route = activeProductionPlan?.ActiveProcesses[routeId];
-            } 
+            }
             else
             {
                 route = new ActiveProcessModel
@@ -332,12 +332,12 @@ namespace CIM.BusinessLogic.Services
             {
                 ProductionPlan = productionPlan,
                 Route = route
-            };            
+            };
         }
 
         public async Task<ProductionPlanModel> Get(string planId)
         {
-            var output = await _productionPlanRepository.Where( x=>x.PlanId == planId).Select(
+            var output = await _productionPlanRepository.Where(x => x.PlanId == planId).Select(
                         x => new ProductionPlanModel
                         {
                             PlanId = x.PlanId,

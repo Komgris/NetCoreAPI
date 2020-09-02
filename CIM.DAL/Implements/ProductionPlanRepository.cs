@@ -54,7 +54,7 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId)
         {
             return await Task.Run(() =>
                                     {
@@ -66,7 +66,8 @@ namespace CIM.DAL.Implements
                                             {"@is_active", isActive},
                                             {"@status_id", statusIds},
                                             {"@howmany", howmany},
-                                            { "@page", page}
+                                            { "@page", page},
+                                            { "@processtypeid", processTypeId}
                                         };
 
                                         var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan", parameterList);
