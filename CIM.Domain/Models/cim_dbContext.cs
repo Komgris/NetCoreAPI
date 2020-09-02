@@ -1619,8 +1619,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.RawMaterial).HasMaxLength(300);
 
                 entity.Property(e => e.RouteGuideLine)
-                .HasColumnName("Route_GuideLine")
-                .HasMaxLength(50);
+                    .HasColumnName("Route_GuideLine")
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
@@ -1778,11 +1778,6 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.RecordMachineComponentLoss)
                     .HasForeignKey(d => d.ProductionPlanId)
                     .HasConstraintName("FK_Record_Machine_Component_Loss_Production_Plan");
-
-                entity.HasOne(d => d.RecordMachineComponentStatus)
-                    .WithMany(p => p.RecordMachineComponentLoss)
-                    .HasForeignKey(d => d.RecordMachineComponentStatusId)
-                    .HasConstraintName("FK_Record_Machine_Component_Loss_Record_Machine_Component_Status");
 
                 entity.HasOne(d => d.UpdatedByNavigation)
                     .WithMany(p => p.RecordMachineComponentLossUpdatedByNavigation)
@@ -2588,11 +2583,18 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
+
                 entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.ProcessType)
+                    .WithMany(p => p.WasteLevel1)
+                    .HasForeignKey(d => d.ProcessTypeId)
+                    .HasConstraintName("FK_WasteLevel1_ProcessType");
 
                 entity.HasOne(d => d.ProductType)
                     .WithMany(p => p.WasteLevel1)

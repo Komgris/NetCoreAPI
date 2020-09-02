@@ -12,6 +12,7 @@ namespace CIM.Model
         public string Description { get; set; }
 
         public int? ProductTypeId { get; set; }
+        public int? ProcessTypeId { get; set; }
 
         public int Level { get; set; }
         public int ParentId { get; set; }
