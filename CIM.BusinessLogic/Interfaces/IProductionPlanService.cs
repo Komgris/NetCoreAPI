@@ -29,6 +29,6 @@ namespace CIM.BusinessLogic.Interfaces
 
         Task<ProductionPlanOverviewModel> Load(string id,int routeId);
         Task<ActiveProductionPlanModel> TakeAction(string id, int routeId);
-        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId);
+        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId,string planId, int? processTypeId);
     }
 }

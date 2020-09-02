@@ -13,7 +13,8 @@ using CIM.API.HubConfig;
 using Microsoft.Extensions.Configuration;
 using static CIM.Model.Constans;
 
-namespace CIM.API.Controllers {
+namespace CIM.API.Controllers
+{
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
@@ -137,7 +138,7 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody] List<ProductionPlanModel> data)
         {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
@@ -214,7 +215,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -306,7 +307,7 @@ namespace CIM.API.Controllers {
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
                 await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
-                        , new int[] {routeId }, result);
+                        , new int[] { routeId }, result);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -352,12 +353,12 @@ namespace CIM.API.Controllers {
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId = "")
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, int? processTypeId, string planId = "")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId, processTypeId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -374,7 +375,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<int>>();
             try
             {
-                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select( x=>x.Key).ToList();
+                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select(x => x.Key).ToList();
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -390,7 +391,7 @@ namespace CIM.API.Controllers {
             if (model != null)
             {
                 await HandleBoardcastingActiveProcess(DataTypeGroup.All, model.ProductionPlanId
-                    , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
+                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
 
                 output.IsSuccess = true;
             }
