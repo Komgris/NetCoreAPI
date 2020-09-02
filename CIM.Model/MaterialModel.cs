@@ -13,6 +13,8 @@ namespace CIM.Model
         public string ProductCategory { get; set; }
         public string ICSGroup { get; set; }
         public string MaterialGroup { get; set; }
+        public int UnitsId { get; set; }
+        public string UnitsName { get; set; }
         public string UOM { get; set; }
         public decimal? BHTPerUnit { get; set; }
         public int MaterialTypeId { get; set; }

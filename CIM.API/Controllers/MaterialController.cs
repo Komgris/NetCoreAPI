@@ -18,10 +18,12 @@ namespace CIM.API.Controllers
         private IUtilitiesService _utilitiesService;
         public MaterialController(
             IMaterialService service,
-            IUtilitiesService utilitiesService)
+            IUtilitiesService utilitiesService,
+            IMasterDataService masterDataService)
         {
             _service = service;
             _utilitiesService = utilitiesService;
+            _masterDataService = masterDataService;
         }
 
         [HttpPost]
@@ -135,7 +137,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertByProduct(data);
-                await RefreshMasterData(Constans.MasterDataType.Products);
+                await _masterDataService.Refresh(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
