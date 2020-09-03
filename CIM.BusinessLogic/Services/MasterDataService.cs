@@ -379,7 +379,7 @@ namespace CIM.BusinessLogic.Services
                     //masterDataOper.Dictionary.Team = await GetTeamDictionary();
                     //masterDataOper.Dictionary.UserPosition = await GetUserPositionDictionary();
                     //masterDataOper.Dictionary.Education = await GetEducationDictionary();
-                    //masterDataOper.Dictionary.ProcessType = await GetProcessTypeDictionary();
+                    masterDataOper.Dictionary.ProcessType = await GetProcessTypeDictionary();
                     //masterDataOper.Dictionary.UserGroup = await GetUserGroupDictionary();
                     //masterDataOper.Dictionary.Language = await GetLanguageDictionary();
                     //masterDataOper.Dictionary.App = await GetAppDictionary();
