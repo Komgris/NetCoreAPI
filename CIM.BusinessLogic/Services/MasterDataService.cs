@@ -314,7 +314,9 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
                     masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.ProcessDrivenByProcessType = await GetProcessDrivenByProcessType();
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
+                    masterData.ManufacturingPerformanceByProcessType = await GetManufacturingPerformanceNoMachineByProcessType();
                     masterData.AppFeature = await GetAppFeature();
                     masterData.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
                     masterData.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
