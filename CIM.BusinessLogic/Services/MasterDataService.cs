@@ -359,7 +359,7 @@ namespace CIM.BusinessLogic.Services
                     masterDataOper.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
                     masterDataOper.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
                     //masterDataOper.Products = await _productsRepository.ListAsDictionary(_productBOM);
-                    masterDataOper.ProductionPlan = await GetProductionPlan(masterData.Products);
+                    //masterDataOper.ProductionPlan = await GetProductionPlan(masterData.Products);
                     //masterDataOper.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterDataOper.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
                     masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
