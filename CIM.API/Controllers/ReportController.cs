@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.Controllers {
 
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ReportController : BoardcastController {
         IReportService _service;
@@ -32,7 +33,6 @@ namespace CIM.API.Controllers {
         #region Cim-Oper Mc-Loss
 
         [HttpGet]
-        [Route("api/[controller]/GetMachineStatusHistory")]
         public async Task<ProcessReponseModel<object>> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null)
         {
 
@@ -50,7 +50,6 @@ namespace CIM.API.Controllers {
         }
 
         [HttpGet]
-        [Route("api/[controller]/GetProductionLossHistory")]
         public async Task<ProcessReponseModel<object>> GetProductionLossHistory(string planId, int routeId, int page)
         {
 
@@ -67,13 +66,29 @@ namespace CIM.API.Controllers {
             return output;
         }
 
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetActiveMachineInfo(string planId, int routeId, int machineId)
+        {
+
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetActiveMachineInfo(planId, routeId, machineId), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
 
         #endregion
 
         #region Cim-oper waste
 
         [HttpGet]
-        [Route("api/[controller]/GetWasteHistory")]
         public async Task<ProcessReponseModel<object>> GetWasteHistory(string planId, int routeId, int page, DateTime? from = null, DateTime? to = null)
         {
 
@@ -94,7 +109,6 @@ namespace CIM.API.Controllers {
 
         #region Cim-Mng Report
 
-        [Route("api/[controller]/OEEReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> OEEReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -111,9 +125,8 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/OutPutReport")]
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> GetOutputReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> OutputReport([FromBody]ReportTimeCriteriaModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -128,7 +141,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/WasteReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> WasteReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -145,7 +157,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/MachineLossReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> MachineLossReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -162,7 +173,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/QualityReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> QualityReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -179,7 +189,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/SPCReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> SPCReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -196,7 +205,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/ElectricityReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> ElectricityReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -213,7 +221,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/ProductionSummaryReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> ProductionSummaryReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -230,7 +237,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/OperatingTimeReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>>OperatingTimeReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -247,7 +253,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/ActualDesignSpeedReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> ActualDesignSpeedReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -264,7 +269,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/MaintenanceReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> MaintenanceReport([FromBody]ReportTimeCriteriaModel data)
         {
@@ -281,7 +285,6 @@ namespace CIM.API.Controllers {
             return output;
         }
 
-        [Route("api/[controller]/CostAnalysisReport")]
         [HttpPost]
         public async Task<ProcessReponseModel<object>> CostAnalysisReport([FromBody]ReportTimeCriteriaModel data)
         {

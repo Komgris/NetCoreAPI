@@ -186,14 +186,8 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.OEE
                                                                 , CustomDashboardType.Production
-                                                                , CustomDashboardType.HSE
-                                                                , CustomDashboardType.Quality
                                                                 , CustomDashboardType.Delivery
-                                                                , CustomDashboardType.Spoilage
-                                                                , CustomDashboardType.NonePrime
-                                                                , CustomDashboardType.Attendance
-                                                                , CustomDashboardType.MachineStatus
-                                                                , CustomDashboardType.PlanvsActual});
+                                                                , CustomDashboardType.MachineStatus});
                             break;
                         case DataTypeGroup.Loss:
                             boardcastData = CustomDashboard(
