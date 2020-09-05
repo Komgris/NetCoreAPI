@@ -35,6 +35,16 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
+        [Route("api/[controller]/Operation")]
+        public async Task<string> GetOperation()
+        {
+            var result = await _masterDataService.GetDataOperation();
+            var stringOut = JsonConvert.SerializeObject(new { data = result }, _masterDataService.JsonsSetting);
+            return stringOut;
+
+        }
+
+        [HttpGet]
         [Route("api/[controller]/Refresh")]
         public async Task<string> Refresh()
         {

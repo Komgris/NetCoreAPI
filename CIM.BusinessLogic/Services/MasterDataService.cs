@@ -16,7 +16,8 @@ using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class MasterDataService : BaseService, IMasterDataService {
+    public class MasterDataService : BaseService, IMasterDataService
+    {
         private IDirectSqlRepository _directSqlRepository;
         private ILossLevel2Repository _lossLevel2Repository;
         private ILossLevel3Repository _lossLevel3Repository;
@@ -81,7 +82,7 @@ namespace CIM.BusinessLogic.Services
             IProcessTypeRepository processTypeRepository,
             IUserGroupRepository userGroupRepository,
             IAppRepository appRepository,
-            IAppFeatureRepository appFeatureRepository, 
+            IAppFeatureRepository appFeatureRepository,
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository,
             IAccidentCategoryRepository accidentCategoryRepository,
@@ -140,6 +141,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = $"{item.Name} - {item.Description}",
+                    ProcessTypeId = item.ProcessTypeId,
                     LossLevel2Id = item.LossLevel2Id,
                     Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
@@ -172,7 +174,7 @@ namespace CIM.BusinessLogic.Services
         {
             var output = new Dictionary<int, MachineModel>();
             var activeMachines = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
-            var machineTypes = (await _machineTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).ToDictionary( x=>x.Id, x=>x);
+            var machineTypes = (await _machineTypeRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).ToDictionary(x => x.Id, x => x);
 
             foreach (var item in activeMachines)
             {
@@ -204,6 +206,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         Id = item.Id,
                         Name = item.Name,
+                        ProcessTypeId = item.ProcessTypeId,
                         MachineList = routeMachines[item.Id].Distinct().ToDictionary(x => x, x => machines[x])
                     };
                 }
@@ -245,24 +248,47 @@ namespace CIM.BusinessLogic.Services
             return Data;
         }
 
+        public async Task<MasterDataModel> GetDataOperation()
+        {
+
+            if (Data == null)
+            {
+                Data = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA_Oper}");
+
+                if (Data == null)
+                {
+                    Data = await Refresh(MasterDataType.All);
+                }
+                Data = PostProcess(Data);
+
+            }
+            return Data;
+        }
+
         private MasterDataModel PostProcess(MasterDataModel data)
         {
             //Map loss to process driven and mp
             var processDrivenLoss = new List<int>();
-            foreach (var process in data.ProcessDriven)
+            foreach (var processType in data.ProcessDrivenByProcessType)
             {
-                processDrivenLoss.AddRange(process.Value.LossLevel3.Keys);
+                foreach (var processDriven in processType.Value)
+                {
+                    processDrivenLoss.AddRange(processDriven.Value.LossLevel3.Keys);
+                }
             }
 
             var mpList = new List<int>();
-            foreach (var mp in data.ManufacturingPerformance)
+            foreach (var processType in data.ManufacturingPerformanceByProcessType)
             {
-                mpList.AddRange(mp.Value.LossLevel3.Keys);
+                foreach (var mp in processType.Value)
+                {
+                    mpList.AddRange(mp.Value.LossLevel3.Keys);
+                }                
             }
 
-            foreach ( var loss in data.LossLevel3s)
+            foreach (var loss in data.LossLevel3s)
             {
-                loss.Value.IsProcessDriven = processDrivenLoss.Any(x=>x == loss.Key);
+                loss.Value.IsProcessDriven = processDrivenLoss.Any(x => x == loss.Key);
                 loss.Value.IsMP = mpList.Any(x => x == loss.Key); ;
             }
             return data;
@@ -271,7 +297,9 @@ namespace CIM.BusinessLogic.Services
         public async Task<MasterDataModel> Refresh(MasterDataType masterdataType)
         {
             var masterData = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA}");
-            if(masterData == null) masterData = new MasterDataModel();
+            var masterDataOper = await _responseCacheService.GetAsTypeAsync<MasterDataModel>($"{Constans.RedisKey.MASTER_DATA_Oper}");
+            if (masterData == null) masterData = new MasterDataModel();
+            if (masterDataOper == null) masterDataOper = new MasterDataModel();
 
             switch (masterdataType)
             {
@@ -293,7 +321,9 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterData.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
                     masterData.ProcessDriven = await GetProcessDriven();
+                    masterData.ProcessDrivenByProcessType = await GetProcessDrivenByProcessType();
                     masterData.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
+                    masterData.ManufacturingPerformanceByProcessType = await GetManufacturingPerformanceNoMachineByProcessType();
                     masterData.AppFeature = await GetAppFeature();
                     masterData.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
                     masterData.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
@@ -321,6 +351,49 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.App = await GetAppDictionary();
                     masterData.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
                     masterData.Dictionary.WasteNonePrime = await GetWasteNonePrime();
+
+                    //Oper
+                    masterDataOper.LossLevel3s = GetLossLevel3();
+                    //masterDataOper.RouteMachines = await GetRouteMachine();
+                    masterDataOper.Components = await GetComponents();
+                    masterDataOper.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
+                    masterDataOper.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                    masterDataOper.Products = await _productsRepository.ListAsDictionary(_productBOM);
+                    //masterDataOper.ProductionPlan = await GetProductionPlan(masterData.Products);
+                    //masterDataOper.ProductGroupRoutes = await GetProductGroupRoutes();
+                    masterDataOper.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
+                    masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
+                    masterDataOper.ProcessDriven = await GetProcessDriven();
+                    masterDataOper.ProcessDrivenByProcessType = await GetProcessDrivenByProcessType();
+                    masterDataOper.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
+                    masterDataOper.ManufacturingPerformanceByProcessType = await GetManufacturingPerformanceNoMachineByProcessType();
+                    //masterDataOper.AppFeature = await GetAppFeature();
+                    masterDataOper.RedirectUrl = _configuration.GetValue<string>("RedirectUrl");
+                    //masterDataOper.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
+
+                    //masterDataOper.Dictionary.Products = GetProductDictionary(masterData.Products);
+                    //masterDataOper.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
+                    //masterDataOper.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
+                    //masterDataOper.Dictionary.Units = await GetUnitsDictionary();
+                    //masterDataOper.Dictionary.CompareResult = GetProductionPlanCompareResult();
+                    masterDataOper.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
+                    //masterDataOper.Dictionary.MachineType = await GetMachineTypeDictionary();
+                    //masterDataOper.Dictionary.ComponentType = await GetComponentTypeDictionary();
+                    //masterDataOper.Dictionary.ProductFamily = await GetProductFamilyDictionary();
+                    //masterDataOper.Dictionary.ProductGroup = await GetProductGroupDictionary();
+                    //masterDataOper.Dictionary.ProductType = await GetProductTypeDictionary();
+                    //masterDataOper.Dictionary.Machine = await GetMachineDictionary();
+                    //masterDataOper.Dictionary.MaterialType = await GetMaterialTypeDictionary();
+                    //masterDataOper.Dictionary.TeamType = await GetTeamTypeDictionary();
+                    //masterDataOper.Dictionary.Team = await GetTeamDictionary();
+                    //masterDataOper.Dictionary.UserPosition = await GetUserPositionDictionary();
+                    //masterDataOper.Dictionary.Education = await GetEducationDictionary();
+                    masterDataOper.Dictionary.ProcessType = await GetProcessTypeDictionary();
+                    //masterDataOper.Dictionary.UserGroup = await GetUserGroupDictionary();
+                    //masterDataOper.Dictionary.Language = await GetLanguageDictionary();
+                    //masterDataOper.Dictionary.App = await GetAppDictionary();
+                    //masterDataOper.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
+                    masterDataOper.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -418,6 +491,8 @@ namespace CIM.BusinessLogic.Services
                     break;
             }
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", masterData);
+            await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA_Oper}", masterDataOper);
+
             return masterData;
 
         }
@@ -445,6 +520,23 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private IDictionary<int, Dictionary<int, WasteDictionaryModel>> GetWastesByProcessType(IList<WasteDictionaryModel> wastesLevel1, IList<WasteDictionaryModel> wastesLevel2)
+        {
+            var output = new Dictionary<int, Dictionary<int, WasteDictionaryModel>>();
+
+            foreach (var item in wastesLevel1)
+            {
+                item.Sub = wastesLevel2.Where(x => x.ParentId == item.Id).ToDictionary(x => x.Id, x => x);
+            }
+
+            var processTypeIds = wastesLevel1.Where(x => x.ProcessTypeId != null).Select(x => (int)x.ProcessTypeId).Distinct().ToList();
+            foreach (var processTypeId in processTypeIds)
+            {
+                var wasteByprocessType = wastesLevel1.Where(x => x.ProcessTypeId == processTypeId).ToDictionary(x => x.Id, x => x);
+                output.Add(processTypeId, wasteByprocessType);
+            }
+            return output;
+        }
         public async Task Clear()
         {
             await _responseCacheService.SetAsync($"{Constans.RedisKey.MASTER_DATA}", null);
@@ -457,7 +549,7 @@ namespace CIM.BusinessLogic.Services
             var routeList = db.Select(x => x.RouteId).Distinct().ToList();
             foreach (var routeId in routeList)
             {
-                output[routeId] = db.Where(x => x.RouteId == routeId).OrderBy(x=>x.Sequence).Select(x => x.MachineId).ToArray();
+                output[routeId] = db.Where(x => x.RouteId == routeId).OrderBy(x => x.Sequence).Select(x => x.MachineId).ToArray();
             }
             return output;
         }
@@ -526,7 +618,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, string>> GetMachineTypeDictionary()
         {
-            var db = (await _machineTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
+            var db = (await _machineTypeRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -543,7 +635,7 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var item in lossLevel2Db)
             {
-                var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete))
+                var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => x.LossLevel2Id == item.Id && x.IsActive && !x.IsDelete && x.ProcessTypeId == 1))
                     .ToDictionary(x => x.Id, y => y.Description);
 
                 output.Add(item.Id, new ProcessDrivenModel()
@@ -557,11 +649,39 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async Task<IDictionary<int, Dictionary<int, ProcessDrivenModel>>> GetProcessDrivenByProcessType()
+        {
+            var output = new Dictionary<int, Dictionary<int, ProcessDrivenModel>>();
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => x.LossLevel1Id == 2 && x.IsActive && !x.IsDelete));
+            var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => lossLevel2Db.Select(o => o.Id).Contains(x.LossLevel2Id) && x.IsActive && !x.IsDelete))
+                 .Select(i => new { Id = i.Id, Description = i.Description, Lv2id = i.LossLevel2Id, processId = i.ProcessTypeId });
+
+            var processTypeList = lossLevel3.Select(o => o.processId).Distinct();
+
+            foreach (var item in lossLevel2Db)
+            {
+                foreach (int proc in processTypeList)
+                {
+                    if (!output.ContainsKey(proc)) output.Add(proc, new Dictionary<int, ProcessDrivenModel>());
+
+                    output[proc].Add(
+                               item.Id, new ProcessDrivenModel()
+                               {
+                                   Id = item.Id,
+                                   Name = item.Name,
+                                   Description = item.Description,
+                                   LossLevel3 = lossLevel3.Where(i => i.Lv2id == item.Id && i.processId == proc).ToDictionary(t => t.Id, t => t.Description)
+                               });
+                }
+            }
+            return output;
+        }
+
         private async Task<IDictionary<int, ManufacturingPerformanceNoMachineModel>> GetManufacturingPerformanceNoMachine()
         {
             var output = new Dictionary<int, ManufacturingPerformanceNoMachineModel>();
-            var losslv2MC = new List<int>() {13,14,15,16,20};
-            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => losslv2MC.Contains(x.Id) && x.LossLevel1Id == 3 &&  x.IsActive && !x.IsDelete));
+            var losslv2MC = new List<int>() { 13, 14, 15, 16, 20, 18, 19 };
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => losslv2MC.Contains(x.Id) && x.LossLevel1Id == 3 && x.IsActive && !x.IsDelete));
 
             foreach (var item in lossLevel2Db)
             {
@@ -578,7 +698,36 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
-        
+
+        private async Task<IDictionary<int, Dictionary<int, ManufacturingPerformanceNoMachineModel>>> GetManufacturingPerformanceNoMachineByProcessType()
+        {
+            var output = new Dictionary<int, Dictionary<int, ManufacturingPerformanceNoMachineModel>>();
+            var losslv2MC = new List<int>() { 13, 14, 15, 16, 20, 18, 19 };
+            var lossLevel2Db = (await _lossLevel2Repository.WhereAsync(x => losslv2MC.Contains(x.Id) && x.LossLevel1Id == 3 && x.IsActive && !x.IsDelete));
+            var lossLevel3 = (await _lossLevel3Repository.WhereAsync(x => lossLevel2Db.Select(o => o.Id).Contains(x.LossLevel2Id) && x.IsActive && !x.IsDelete))
+                             .Select(i => new { Id = i.Id, Description = i.Description, Lv2id = i.LossLevel2Id, processId = i.ProcessTypeId });
+
+            var processTypeList = lossLevel3.Select(o => o.processId).Distinct();
+            foreach (var item in lossLevel2Db)
+            {
+                foreach (int proc in processTypeList)
+                {
+                    if (!output.ContainsKey(proc)) output.Add(proc, new Dictionary<int, ManufacturingPerformanceNoMachineModel>());
+
+                    output[proc].Add(
+                               item.Id, new ManufacturingPerformanceNoMachineModel()
+                               {
+                                   Id = item.Id,
+                                   Name = item.Name,
+                                   Description = item.Description,
+                                   LossLevel3 = lossLevel3.Where(i => i.Lv2id == item.Id && i.processId == proc).ToDictionary(t => t.Id, t => t.Description)
+                               });
+
+                }
+            }
+            return output;
+        }
+
 
         private async Task<IDictionary<int, AppFeatureModel>> GetAppFeature()
         {
@@ -586,19 +735,19 @@ namespace CIM.BusinessLogic.Services
             var dbModel = await _appFeatureRepository.AllAsync();
             foreach (var item in dbModel)
             {
-                    output[item.FeatureId] = new AppFeatureModel
-                    {
-                        FeatureId = item.FeatureId,
-                        Name = item.Name,
-                        AppId = item.AppId
-                    };
+                output[item.FeatureId] = new AppFeatureModel
+                {
+                    FeatureId = item.FeatureId,
+                    Name = item.Name,
+                    AppId = item.AppId
+                };
             }
             return output;
         }
 
         private async Task<IDictionary<int, string>> GetComponentTypeDictionary()
         {
-            var db = (await _componentTypeRepository.WhereAsync(x=>x.IsActive == true)).OrderBy(x => x.Id);
+            var db = (await _componentTypeRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
@@ -741,7 +890,7 @@ namespace CIM.BusinessLogic.Services
         }
 
         private async Task<IDictionary<string, string>> GetLanguageDictionary()
-        { 
+        {
             var output = new Dictionary<string, string>();
             output.Add("en", "EN");
             output.Add("th", "TH");
@@ -761,7 +910,7 @@ namespace CIM.BusinessLogic.Services
         }
         private async Task<IDictionary<int, string>> GetWasteNonePrime()
         {
-            var db = await Task.Run(()=> _wastenoneprimeRepository.Where(x=>x.IsActive).OrderBy(x=>x.Id));
+            var db = await Task.Run(() => _wastenoneprimeRepository.Where(x => x.IsActive).OrderBy(x => x.Id));
             var output = new Dictionary<int, string>();
             foreach (var item in db)
             {
