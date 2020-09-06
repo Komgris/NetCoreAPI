@@ -14,7 +14,8 @@ using static CIM.Model.Constans;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class HardwareInterfaceController : BoardcastController {
+    public class HardwareInterfaceController : BaseNoSecureController
+    {
         private IMachineService _machineService;
         IHardwareInterfaceService _hwinterfaceService;
 
