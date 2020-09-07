@@ -23,6 +23,7 @@ namespace CIM.API {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BaseService.CurrentUserId = Configuration.GetValue<string>("DefaultUserId");
             BaseService.ExcelMapping = new ExcelMappingModel();
             Configuration.GetSection(nameof(ExcelMappingModel)).Bind(BaseService.ExcelMapping);//.Bind(BaseService.ExcelMapping);
 #if (DEBUG)

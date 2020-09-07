@@ -16,7 +16,7 @@ using static CIM.Model.Constans;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class BoardcastController : BaseController
+    public class BoardcastNoSecureController : BaseNoSecureController
     {
 
         public IHubContext<GlobalHub> _hub;
@@ -25,7 +25,7 @@ namespace CIM.API.Controllers
         public IConfiguration _config;
         public IActiveProductionPlanService _activeProductionPlanService;
 
-        public BoardcastController(
+        public BoardcastNoSecureController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService service,

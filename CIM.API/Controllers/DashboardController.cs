@@ -16,7 +16,8 @@ namespace CIM.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class DashboardController : BoardcastController {
+    public class DashboardController : BoardcastNoSecureController
+    {
         public DashboardController(
         IResponseCacheService responseCacheService,
         IHubContext<GlobalHub> hub,
