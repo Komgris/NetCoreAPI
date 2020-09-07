@@ -44,6 +44,13 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -67,6 +74,13 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -95,6 +109,13 @@ namespace CIM.API.Controllers
                     {
                         await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, productionPlan.ProductionPlanId
                             , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    }
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                     }
                 }
                 output.IsSuccess = true;

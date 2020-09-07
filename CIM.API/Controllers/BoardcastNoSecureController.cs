@@ -95,6 +95,7 @@ namespace CIM.API.Controllers
                     cache.SetData(dashboard);
                 }
             }
+            cache.LastUpdate = DateTime.Now;
             await _responseCacheService.SetAsync(channelKey, cache);
         }
 
