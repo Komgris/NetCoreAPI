@@ -140,7 +140,7 @@ namespace CIM.BusinessLogic.Services {
             var boardcastData = new BoardcastModel();
             var ch = $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-CachedCH-{DashboardCachedCH.Dole_Custom_Dashboard.ToString()}";
             var cached = await _responseCacheService.GetAsTypeAsync<BoardcastModel>(ch);
-            if ((DateTime.Now - cached.LastUpdate).TotalMinutes < 1) return cached;
+            if ((DateTime.Now - cached.LastUpdate).TotalMinutes < 1) return null;
 
             return await Task.Run(() =>
             {

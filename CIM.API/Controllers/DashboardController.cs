@@ -43,7 +43,7 @@ namespace CIM.API.Controllers
             try
             {
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(updateType);
-                if (boardcastData.Data.Count > 0)
+                if (boardcastData?.Data.Count > 0)
                 {
                     await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                 }

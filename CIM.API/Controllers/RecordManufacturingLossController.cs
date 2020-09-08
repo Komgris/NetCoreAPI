@@ -47,7 +47,7 @@ namespace CIM.API.Controllers
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    if (boardcastData.Data.Count > 0)
+                    if (boardcastData?.Data.Count > 0)
                     {
                         await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                     }
@@ -77,7 +77,7 @@ namespace CIM.API.Controllers
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    if (boardcastData.Data.Count > 0)
+                    if (boardcastData?.Data.Count > 0)
                     {
                         await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                     }
@@ -113,7 +113,7 @@ namespace CIM.API.Controllers
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    if (boardcastData.Data.Count > 0)
+                    if (boardcastData?.Data.Count > 0)
                     {
                         await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                     }
