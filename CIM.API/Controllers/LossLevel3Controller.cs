@@ -29,12 +29,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<LossLevel3ListModel>>> List(string keyword = "", int page = 1, int howmany = 10, bool isActive = true)
+        public async Task<ProcessReponseModel<PagingModel<LossLevel3ListModel>>> List(string keyword = "", int page = 1, int howmany = 10, bool isActive = true, int? lossLevel2Id = null)
         {
             var output = new ProcessReponseModel<PagingModel<LossLevel3ListModel>>();
             try
             {
-                output.Data = await _service.List(keyword, page, howmany, isActive);
+                output.Data = await _service.List(keyword, page, howmany, isActive, lossLevel2Id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<object>> Create([FromBody]LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody] LossLevel3Model model)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -64,7 +64,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody]LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody] LossLevel3Model model)
         {
             var output = new ProcessReponseModel<object>();
             try
