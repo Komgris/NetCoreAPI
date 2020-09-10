@@ -26,8 +26,7 @@ namespace CIM.DAL.Implements
                     Id = x.Id,
                     ProcessTypeId = x.ProcessTypeId,
                     Description = x.Description,
-                    Level = 1,
-                    ProductTypeId = x.ProductTypeId,
+                    Level = 1
                 }).ToListAsync();
         }
     }
