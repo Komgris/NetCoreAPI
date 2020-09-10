@@ -333,6 +333,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
                     masterData.Dictionary.Units = await GetUnitsDictionary();
                     masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
+                    masterData.Dictionary.WastesLevel1 = _wastesLevel1.ToDictionary(x => x.Id, x => x.Description);
                     masterData.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
                     masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
                     masterData.Dictionary.ComponentType = await GetComponentTypeDictionary();
@@ -448,6 +449,10 @@ namespace CIM.BusinessLogic.Services
                     break;
                 case MasterDataType.Units:
                     masterData.Dictionary.Units = await GetUnitsDictionary();
+                    break;
+                case MasterDataType.WastesLevel1:
+                    _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
+                    masterData.Dictionary.WastesLevel1 = _wastesLevel1.ToDictionary(x => x.Id, x => x.Description);
                     break;
                 case MasterDataType.WastesLevel2:
                     _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
