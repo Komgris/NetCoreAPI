@@ -125,6 +125,7 @@ namespace CIM.Model
             , ProductionStatus
             , Units
             , CompareResult
+            , WastesLevel1
             , WastesLevel2
             , MachineType
             , ComponentType

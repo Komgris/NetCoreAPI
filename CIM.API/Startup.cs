@@ -148,6 +148,8 @@ namespace CIM.API {
             services.AddTransient<IUserGroupAppService, UserGroupAppService>();
             services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();
             services.AddTransient<IHardwareInterfaceService, HardwareInterfaceService>();
+            services.AddTransient<IWasteLevel1Service, WasteLevel1Service>();
+            services.AddTransient<IWasteLevel2Service, WasteLevel2Service>();
 
             services.AddControllers();
             services.AddSignalR();
