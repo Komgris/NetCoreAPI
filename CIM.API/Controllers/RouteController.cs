@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CIM.API.Controllers
 {
@@ -15,13 +17,14 @@ namespace CIM.API.Controllers
         private IResponseCacheService _responseCacheService;
         private IRouteService _service;
 
-
         public RouteController(
+            IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IRouteService service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _responseCacheService = responseCacheService;
             _service = service;
             _masterDataService = masterDataService;

@@ -19,10 +19,12 @@ namespace CIM.API.Controllers
 
         private IWasteLevel2Service _service;
         public WasteLevel2Controller(
+            IHubContext<GlobalHub> hub,
             IWasteLevel2Service service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }

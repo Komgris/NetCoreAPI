@@ -20,11 +20,13 @@ namespace CIM.API.Controllers
         private IUtilitiesService _utilitiesService;
 
         public MachineTypeController(
+            IHubContext<GlobalHub> hub,
             IMachineTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         ) 
         {
+            _hub = hub;
             _masterDataService = masterDataService;
             _service = service;
             _utilitiesService = utilitiesService;

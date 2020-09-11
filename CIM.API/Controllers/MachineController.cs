@@ -24,6 +24,7 @@ namespace CIM.API.Controllers
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }

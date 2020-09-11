@@ -19,10 +19,12 @@ namespace CIM.API.Controllers
 
         private ILossLevel3Service _service;
         public LossLevel3Controller(
+            IHubContext<GlobalHub> hub,
             ILossLevel3Service service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
@@ -17,10 +19,12 @@ namespace CIM.API.Controllers
         private IMaterialService _service;
         private IUtilitiesService _utilitiesService;
         public MaterialController(
+            IHubContext<GlobalHub> hub,
             IMaterialService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService)
         {
+            _hub = hub;
             _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using System.Collections.Generic;
+using CIM.API.HubConfig;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CIM.API.Controllers
 {
@@ -12,10 +14,12 @@ namespace CIM.API.Controllers
     {
         private IMachineTypeLossLevel3Service _service;
         public MachineTypeLossLevel3Controller(
+            IHubContext<GlobalHub> hub,
             IMachineTypeLossLevel3Service service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }

@@ -11,6 +11,8 @@ using System.IO;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using CIM.API.HubConfig;
+using Microsoft.AspNetCore.SignalR;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,11 +25,13 @@ namespace CIM.API.Controllers
         private IUtilitiesService _utilitiesService;
 
         public ProductController(
+            IHubContext<GlobalHub> hub,
             IProductService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
             )
         {
+            _hub = hub;
             _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;

@@ -31,6 +31,7 @@ namespace CIM.API.Controllers
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
+            _hub = hub;
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
