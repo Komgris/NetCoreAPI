@@ -52,7 +52,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _service.Create(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
+                await RefreshMasterData(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _service.Update(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
+                await RefreshMasterData(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -36,7 +36,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machines);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -54,7 +54,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machines);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertMappingRouteMachine(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Machines);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

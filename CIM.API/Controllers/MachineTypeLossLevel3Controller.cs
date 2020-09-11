@@ -45,7 +45,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(lossLevel3Ids, machineTypeId);
-                await _masterDataService.Refresh(Constans.MasterDataType.LossLevel3s);
+                await RefreshMasterData(Constans.MasterDataType.LossLevel3s);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

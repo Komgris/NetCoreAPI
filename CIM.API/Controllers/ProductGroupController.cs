@@ -48,7 +48,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
+                await RefreshMasterData(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -83,7 +83,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
+                await RefreshMasterData(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -118,7 +118,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertMappingRouteProductGroup(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Products);
+                await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

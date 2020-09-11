@@ -68,7 +68,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Team);
+                await  RefreshMasterData(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -86,7 +86,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Team);
+                await  RefreshMasterData(Constans.MasterDataType.Team);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

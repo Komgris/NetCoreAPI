@@ -16,13 +16,14 @@ namespace CIM.API.Controllers
     [ApiController]
     public class WasteLevel1Controller : BaseController
     {
-
         private IWasteLevel1Service _service;
         public WasteLevel1Controller(
+            IHubContext<GlobalHub> hub,
             IWasteLevel1Service service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }
@@ -52,7 +53,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _service.Create(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.WastesLevel1);
+                await RefreshMasterData(Constans.MasterDataType.WastesLevel1);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,7 +71,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _service.Update(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.WastesLevel1);
+                await RefreshMasterData(Constans.MasterDataType.WastesLevel1);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

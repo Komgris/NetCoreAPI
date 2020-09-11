@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
@@ -16,6 +17,7 @@ namespace CIM.API.Controllers
     public class BaseController : ControllerBase {
 
         internal IMasterDataService _masterDataService;
+        internal IHubContext<GlobalHub> _hub;
 
         #region general
 
@@ -34,6 +36,8 @@ namespace CIM.API.Controllers
         internal async Task<string> RefreshMasterData(MasterDataType masterdataType)
         {
             await _masterDataService.Refresh(masterdataType);
+            var master = await _masterDataService.GetData();
+            await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_MASTER_DATA, JsonConvert.SerializeObject(master, JsonsSetting));
             return "OK";
         }
 

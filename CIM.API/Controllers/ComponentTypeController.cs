@@ -98,7 +98,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _service.Create(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
+                await RefreshMasterData(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _service.Update(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
+                await RefreshMasterData(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -26,7 +26,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
+                await  RefreshMasterData(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
+                await  RefreshMasterData(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -50,7 +50,7 @@ namespace CIM.API.Controllers
                     list.Image = $"product/{list.Image}";
                 }
                 await _service.Create(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.Products);
+                await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -132,7 +132,7 @@ namespace CIM.API.Controllers
                     list.Image = $"product/{list.Image}";
                 }
                 await _service.Update(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.Products);
+                await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
