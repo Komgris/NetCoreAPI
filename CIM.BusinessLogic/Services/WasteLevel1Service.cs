@@ -41,6 +41,7 @@ namespace CIM.BusinessLogic.Services
         {
             WasteLevel1 dbModel = await _wasteLevel1Repository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel.Description = model.Description;
+            dbModel.ProcessTypeId = model.ProcessTypeId;
             dbModel.IsActive = model.IsActive;
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
