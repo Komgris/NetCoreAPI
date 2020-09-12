@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +20,13 @@ namespace CIM.API.Controllers
 
 
         public ComponentTypeController(
+            IHubContext<GlobalHub> hub,
             IComponentTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _utilitiesService = utilitiesService;
             _masterDataService = masterDataService;
@@ -98,7 +101,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _service.Create(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
+                await RefreshMasterData(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -125,7 +128,7 @@ namespace CIM.API.Controllers
                     list.Image = $"componentType/{list.Image}";
                 }
                 await _service.Update(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.ComponentType);
+                await RefreshMasterData(Constans.MasterDataType.ComponentType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

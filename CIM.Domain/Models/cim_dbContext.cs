@@ -1427,6 +1427,7 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.ProductGroup)
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.ProductGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductGroup");
 
                 entity.HasOne(d => d.ProductType)
@@ -1519,7 +1520,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.IngredientPerUnit).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.IngredientPerUnit).HasColumnType("decimal(18, 3)");
 
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
@@ -1968,6 +1969,9 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.FactorDivide).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.FactorMultiply).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
@@ -2037,9 +2041,11 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Waste_Materials");
 
-                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 3)");
 
-                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.Cost)
+                    .HasColumnType("decimal(18, 3)")
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
@@ -2450,9 +2456,13 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<UserGroups>(entity =>
             {
+                entity.HasIndex(e => e.Name)
+                    .HasName("KX_UserGroups")
+                    .IsUnique();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<UserGroupsAppFeatures>(entity =>
@@ -2585,8 +2595,6 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
 
-                entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -2595,12 +2603,6 @@ namespace CIM.Domain.Models
                     .WithMany(p => p.WasteLevel1)
                     .HasForeignKey(d => d.ProcessTypeId)
                     .HasConstraintName("FK_WasteLevel1_ProcessType");
-
-                entity.HasOne(d => d.ProductType)
-                    .WithMany(p => p.WasteLevel1)
-                    .HasForeignKey(d => d.ProductTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WasteLevel1_ProductType");
             });
 
             modelBuilder.Entity<WasteLevel2>(entity =>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IWasteLevel2Repository : IRepository<WasteLevel2, object>
+    public interface IWasteLevel2Repository : IRepository<WasteLevel2, WasteLevel2Model>
     {
         Task<IList<WasteDictionaryModel>> ListAsDictionary();
     }
