@@ -14,13 +14,13 @@ using System.Linq;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class LossLevel3Controller : BaseController
+    public class WasteLevel2Controller : BaseController
     {
 
-        private ILossLevel3Service _service;
-        public LossLevel3Controller(
+        private IWasteLevel2Service _service;
+        public WasteLevel2Controller(
             IHubContext<GlobalHub> hub,
-            ILossLevel3Service service,
+            IWasteLevel2Service service,
             IMasterDataService masterDataService
         )
         {
@@ -31,12 +31,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<LossLevel3ListModel>>> List(string keyword = "", int page = 1, int howmany = 10, bool isActive = true, int? lossLevel2Id = null)
+        public async Task<ProcessReponseModel<PagingModel<WasteLevel2Model>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
-            var output = new ProcessReponseModel<PagingModel<LossLevel3ListModel>>();
+            var output = new ProcessReponseModel<PagingModel<WasteLevel2Model>>();
             try
             {
-                output.Data = await _service.List(keyword, page, howmany, isActive, lossLevel2Id);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -48,13 +48,13 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<object>> Create([FromBody] LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody] WasteLevel2Model model)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
                 output.Data = await _service.Create(model);
-                await RefreshMasterData(Constans.MasterDataType.LossLevel3s);
+                await  RefreshMasterData(Constans.MasterDataType.WastesLevel2);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -66,13 +66,13 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody] LossLevel3Model model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody] WasteLevel2Model model)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
                 output.Data = await _service.Update(model);
-                await RefreshMasterData(Constans.MasterDataType.LossLevel3s);
+                await  RefreshMasterData(Constans.MasterDataType.WastesLevel2);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -84,9 +84,9 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/Get")]
-        public async Task<ProcessReponseModel<LossLevel3Model>> Get(int id)
+        public async Task<ProcessReponseModel<WasteLevel2Model>> Get(int id)
         {
-            var output = new ProcessReponseModel<LossLevel3Model>();
+            var output = new ProcessReponseModel<WasteLevel2Model>();
             try
             {
                 output.Data = await _service.Get(id);

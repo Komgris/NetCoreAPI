@@ -44,6 +44,13 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -67,6 +74,13 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -95,6 +109,13 @@ namespace CIM.API.Controllers
                     {
                         await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, productionPlan.ProductionPlanId
                             , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    }
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                     }
                 }
                 output.IsSuccess = true;
@@ -134,11 +155,47 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _service.List(planId, routeId, keyword, page, howmany);
                 output.IsSuccess = true;
-            } 
-            catch( Exception e)
+            }
+            catch (Exception e)
             {
                 output.Message = e.Message;
             }
+            return output;
+        }
+
+        [Route("api/[controller]/ListByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<RecordManufacturingLossModel>>> ListByMonth(int month, int year, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<List<RecordManufacturingLossModel>>();
+            try
+            {
+                output.Data = await _service.ListByMonth(month, year, planId, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("api/[controller]/ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
+            try
+            {
+                output.Data = await _service.ListByDate(date, keyword,page, howmany, planId,routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
             return output;
         }
     }

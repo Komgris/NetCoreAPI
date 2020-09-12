@@ -63,6 +63,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
 
                 output.IsSuccess = true;
@@ -88,6 +96,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
 
                 output.IsSuccess = true;
@@ -114,6 +130,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -166,6 +190,13 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.NonePrimeCreate(models);
+
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -183,7 +214,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _service.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
+                output.Data = JsonConvert.SerializeObject(await _service.RecordNonePrimeList(planId, routeId), JsonsFormatting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

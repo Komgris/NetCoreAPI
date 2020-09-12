@@ -51,9 +51,9 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new LossLevel3Model());
         }
 
-        public async Task<PagingModel<Model.LossLevel3ListModel>> List(string keyword, int page, int howmany, bool isActive)
+        public async Task<PagingModel<Model.LossLevel3ListModel>> List(string keyword, int page, int howmany, bool isActive, int? lossLevel2Id)
         {
-            var output = await _lossLevel3Repository.List(page, howmany, keyword, isActive);
+            var output = await _lossLevel3Repository.List(page, howmany, keyword, isActive, lossLevel2Id);
             return output;
         }
 

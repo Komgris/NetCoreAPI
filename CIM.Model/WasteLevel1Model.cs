@@ -8,7 +8,8 @@ namespace CIM.Model
     {
         public int Id { get; set; }
         public string Description { get; set; }
-        public int ProductTypeId { get; set; }
+        public int? ProcessTypeId { get; set; }
+        public string ProcessType { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

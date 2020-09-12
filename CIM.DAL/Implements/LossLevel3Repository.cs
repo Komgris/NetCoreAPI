@@ -15,7 +15,7 @@ namespace CIM.DAL.Implements
     {
         private IDirectSqlRepository _directSqlRepository;
 
-        public LossLevel3Repository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
+        public LossLevel3Repository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }
@@ -39,7 +39,7 @@ namespace CIM.DAL.Implements
             return data;
         }
 
-        public async Task<PagingModel<LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<LossLevel3ListModel>> List(int page, int howmany, string keyword, bool isActive, int? lossLevel2Id)
         {
             return await Task.Run(() =>
             {
@@ -48,7 +48,8 @@ namespace CIM.DAL.Implements
                                             { "@keyword", keyword },
                                             { "@is_active", isActive},
                                             { "@page", page},
-                                            { "@howmany", howmany}
+                                            { "@howmany", howmany},
+                                            { "@lv2", lossLevel2Id}
                                         };
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListLossLevel3", parameterList);
                 int totalCount;

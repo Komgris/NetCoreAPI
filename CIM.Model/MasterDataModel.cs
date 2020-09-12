@@ -16,8 +16,11 @@ namespace CIM.Model
         public IDictionary<int, IDictionary<int,string>> ProductGroupRoutes { get; set; }
         public DictionaryModel Dictionary { get; set; } = new DictionaryModel();
         public IDictionary<int, Dictionary<int, WasteDictionaryModel>> WastesByProductType { get; set; }
+        public IDictionary<int, Dictionary<int, WasteDictionaryModel>> WastesByProcessType { get; set; }
         public IDictionary<int, ProcessDrivenModel> ProcessDriven { get; set; }
+        public IDictionary<int, Dictionary<int, ProcessDrivenModel>> ProcessDrivenByProcessType { get; set; }
         public IDictionary<int, ManufacturingPerformanceNoMachineModel> ManufacturingPerformance { get; set; }
+        public IDictionary<int, Dictionary<int, ManufacturingPerformanceNoMachineModel>> ManufacturingPerformanceByProcessType { get; set; }
         public IDictionary<int, AppFeatureModel> AppFeature { get; set; }
         public string RedirectUrl { get; set; }
         public bool EnabledVerifyToken { get; set; }

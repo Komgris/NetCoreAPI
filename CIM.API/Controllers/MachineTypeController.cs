@@ -20,11 +20,13 @@ namespace CIM.API.Controllers
         private IUtilitiesService _utilitiesService;
 
         public MachineTypeController(
+            IHubContext<GlobalHub> hub,
             IMachineTypeService service,
             IUtilitiesService utilitiesService,
             IMasterDataService masterDataService
         ) 
         {
+            _hub = hub;
             _masterDataService = masterDataService;
             _service = service;
             _utilitiesService = utilitiesService;
@@ -48,7 +50,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _service.Create(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
+                await RefreshMasterData(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -75,7 +77,7 @@ namespace CIM.API.Controllers
                     list.Image = $"machineType/{list.Image}";
                 }
                 await _service.Update(list);
-                await _masterDataService.Refresh(Constans.MasterDataType.MachineType);
+                await RefreshMasterData(Constans.MasterDataType.MachineType);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

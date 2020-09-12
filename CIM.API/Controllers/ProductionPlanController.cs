@@ -13,7 +13,8 @@ using CIM.API.HubConfig;
 using Microsoft.Extensions.Configuration;
 using static CIM.Model.Constans;
 
-namespace CIM.API.Controllers {
+namespace CIM.API.Controllers
+{
     [ApiController]
     public class ProductionPlanController : BoardcastController
     {
@@ -30,6 +31,7 @@ namespace CIM.API.Controllers {
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
+            _hub = hub;
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
@@ -67,12 +69,12 @@ namespace CIM.API.Controllers {
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? processTypeId = null)
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, processTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -137,14 +139,13 @@ namespace CIM.API.Controllers {
 
         [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody]List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody] List<ProductionPlanModel> data)
         {
             var output = new ProcessReponseModel<List<ProductionPlanModel>>();
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
-                output.Data = await _productionPlanService.CheckDuplicate(data);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -163,7 +164,7 @@ namespace CIM.API.Controllers {
             try
             {
                 await _productionPlanService.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -181,7 +182,7 @@ namespace CIM.API.Controllers {
             try
             {
                 await _productionPlanService.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -215,7 +216,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(( await _productionPlanService.Load(id, routeId)), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -307,7 +308,7 @@ namespace CIM.API.Controllers {
             {
                 var result = await _activeProductionPlanService.Finish(planId, routeId);
                 await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
-                        , new int[] {routeId }, result);
+                        , new int[] { routeId }, result);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -353,12 +354,12 @@ namespace CIM.API.Controllers {
 
         [Route("api/FilterLoadProductionPlan")]
         [HttpGet]
-        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId = "")
+        public ProcessReponseModel<object> FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, int? processTypeId = null, string planId = "")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(_productionPlanService.FilterLoadProductionPlan(productId, routeId, statusId, planId, processTypeId), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -375,7 +376,7 @@ namespace CIM.API.Controllers {
             var output = new ProcessReponseModel<List<int>>();
             try
             {
-                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select( x=>x.Key).ToList();
+                output.Data = (await _activeProductionPlanService.GetCached(planId)).ActiveProcesses.Select(x => x.Key).ToList();
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -391,7 +392,7 @@ namespace CIM.API.Controllers {
             if (model != null)
             {
                 await HandleBoardcastingActiveProcess(DataTypeGroup.All, model.ProductionPlanId
-                    , model.ActiveProcesses.Where(x=>x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
+                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), model);
 
                 output.IsSuccess = true;
             }

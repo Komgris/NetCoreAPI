@@ -17,6 +17,7 @@ namespace CIM.Model
             public const string CHANNEL_MESSAGE = "transfer-message";
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
+            public const string CHANNEL_MASTER_DATA = "master-data";
         }
         
         public class RedisKey {
@@ -27,6 +28,7 @@ namespace CIM.Model
             public const string COMPONENT = "component-production-plan";
             public const string ACTIVE_PRODUCTION_PLAN = "active-production-plan";
             public const string MASTER_DATA = "master-data";
+            public const string MASTER_DATA_Oper = "master-data-Oper";
             public const string TOKEN = "token";
         }
 
@@ -124,6 +126,7 @@ namespace CIM.Model
             , ProductionStatus
             , Units
             , CompareResult
+            , WastesLevel1
             , WastesLevel2
             , MachineType
             , ComponentType
@@ -202,14 +205,14 @@ namespace CIM.Model
         }
 
         public enum DataTypeGroup {
-            Machine       =0,
+            All = 0,
             Loss          =1,
             Waste         =2,
             Operators     =3,
             Produce       =4,
             Process       =5,
             HSE           =6,
-            All           =99,
+            Machine       =7,
             None          =100
         }
 

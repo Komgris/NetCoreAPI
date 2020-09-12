@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class WasteLevel1Repository : Repository<WasteLevel1, object>, IWasteLevel1Repository
+    public class WasteLevel1Repository : Repository<WasteLevel1, WasteLevel1Model>, IWasteLevel1Repository
     {
         public WasteLevel1Repository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {
@@ -24,9 +24,9 @@ namespace CIM.DAL.Implements
                 .Select(x => new WasteDictionaryModel
                 {
                     Id = x.Id,
+                    ProcessTypeId = x.ProcessTypeId,
                     Description = x.Description,
-                    Level = 1,
-                    ProductTypeId = x.ProductTypeId,
+                    Level = 1
                 }).ToListAsync();
         }
     }

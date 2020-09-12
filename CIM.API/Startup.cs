@@ -23,6 +23,7 @@ namespace CIM.API {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BaseService.CurrentUserId = Configuration.GetValue<string>("DefaultUserId");
             BaseService.ExcelMapping = new ExcelMappingModel();
             Configuration.GetSection(nameof(ExcelMappingModel)).Bind(BaseService.ExcelMapping);//.Bind(BaseService.ExcelMapping);
 #if (DEBUG)
@@ -147,6 +148,8 @@ namespace CIM.API {
             services.AddTransient<IUserGroupAppService, UserGroupAppService>();
             services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();
             services.AddTransient<IHardwareInterfaceService, HardwareInterfaceService>();
+            services.AddTransient<IWasteLevel1Service, WasteLevel1Service>();
+            services.AddTransient<IWasteLevel2Service, WasteLevel2Service>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -198,7 +201,7 @@ namespace CIM.API {
 #if (DEBUG)
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CIM Data Service");
 #else
-                c.SwaggerEndpoint("/cim-api/swagger/v1/swagger.json", "CIM Data Service");
+                c.SwaggerEndpoint("/cim/api/swagger/v1/swagger.json", "CIM Data Service");
 #endif
             });
 

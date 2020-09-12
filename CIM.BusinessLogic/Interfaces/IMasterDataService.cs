@@ -10,6 +10,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IMasterDataService : IBaseService
     {
         Task<MasterDataModel> GetData();
+        Task<MasterDataModel> GetDataOperation();
         Task<MasterDataModel> Refresh(MasterDataType masterdataType);
         Task Clear();
         MasterDataModel Data { get; set; }
