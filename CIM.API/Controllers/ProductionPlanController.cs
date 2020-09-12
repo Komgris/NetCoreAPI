@@ -31,6 +31,7 @@ namespace CIM.API.Controllers
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
+            _hub = hub;
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
@@ -144,7 +145,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -163,7 +164,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -181,7 +182,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

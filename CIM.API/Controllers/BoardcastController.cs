@@ -18,8 +18,6 @@ namespace CIM.API.Controllers
     [ApiController]
     public class BoardcastController : BaseController
     {
-
-        public IHubContext<GlobalHub> _hub;
         public IResponseCacheService _responseCacheService;
         public IDashboardService _dashboardService;
         public IConfiguration _config;

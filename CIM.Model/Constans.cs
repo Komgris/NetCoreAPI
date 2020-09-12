@@ -17,6 +17,7 @@ namespace CIM.Model
             public const string CHANNEL_MESSAGE = "transfer-message";
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
+            public const string CHANNEL_MASTER_DATA = "master-data";
         }
         
         public class RedisKey {
@@ -125,6 +126,7 @@ namespace CIM.Model
             , ProductionStatus
             , Units
             , CompareResult
+            , WastesLevel1
             , WastesLevel2
             , MachineType
             , ComponentType
