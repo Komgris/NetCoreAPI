@@ -109,13 +109,13 @@ namespace CIM.API.Controllers
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan.ProductionPlanId}";
                 await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+            }
 
-                //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+            //dole dashboard
+            var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
+            if (boardcastData?.Data.Count > 0)
+            {
+                await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
             }
             return "OK";
         }
