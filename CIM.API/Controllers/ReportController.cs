@@ -18,6 +18,9 @@ namespace CIM.API.Controllers {
     [ApiController]
     public class ReportController : BoardcastController {
         IReportService _service;
+
+        public Formatting JsonFormatting { get; private set; }
+
         public ReportController(
             IResponseCacheService responseCacheService,
             IHubContext<GlobalHub> hub,
@@ -292,6 +295,38 @@ namespace CIM.API.Controllers {
             try
             {
                 output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetCostAnalysisReport(data), JsonsFormatting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> HSEReport([FromBody] ReportTimeCriteriaModel data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetHSEReport(data), JsonsFormatting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> AttendantReport([FromBody] ReportTimeCriteriaModel data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetAttendantReport(data), JsonFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -205,6 +205,18 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Cost_Analysis", paramsList);
         }
 
+        public DataTable GetHSEReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("[sp_Report_HSE]", paramsList);
+        }
+
+        public DataTable GetAttendantReport(ReportTimeCriteriaModel data)
+        {
+            var paramsList = ReportCreiteria(data);
+            return _directSqlRepository.ExecuteSPWithQuery("[sp_Report_Attendant]", paramsList);
+        }
+
 
         #endregion
 
