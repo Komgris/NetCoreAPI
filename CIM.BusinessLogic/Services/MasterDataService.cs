@@ -320,6 +320,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.ProductionPlan = await GetProductionPlan(masterData.Products);
                     masterData.ProductGroupRoutes = await GetProductGroupRoutes();
                     masterData.WastesByProductType = masterDataOper.WastesByProductType = GetWastesByProductType(_wastesLevel1, _wastesLevel2);
+                    masterData.WastesByProcessType = masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
                     masterData.ProcessDriven = masterDataOper.ProcessDriven = await GetProcessDriven();
                     masterData.ProcessDrivenByProcessType = masterDataOper.ProcessDrivenByProcessType = await GetProcessDrivenByProcessType();
                     masterData.ManufacturingPerformance = masterDataOper.ManufacturingPerformance = await GetManufacturingPerformanceNoMachine();
@@ -421,11 +422,13 @@ namespace CIM.BusinessLogic.Services
                 case MasterDataType.WastesLevel1:
                     _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
                     masterData.Dictionary.WastesLevel1 = _wastesLevel1.ToDictionary(x => x.Id, x => x.Description);
+                    masterData.WastesByProcessType = masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
                     break;
                 case MasterDataType.WastesLevel2:
                     _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
                     masterData.Dictionary.WastesLevel2 =
                     masterDataOper.Dictionary.WastesLevel2 = _wastesLevel2.ToDictionary(x => x.Id, x => x.Description);
+                    masterData.WastesByProcessType = masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
                     break;
                 case MasterDataType.MachineType:
                     masterData.Dictionary.MachineType = await GetMachineTypeDictionary();
