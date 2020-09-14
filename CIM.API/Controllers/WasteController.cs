@@ -224,5 +224,41 @@ namespace CIM.API.Controllers
 
             return output;
         }
+
+        [Route("ListByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<RecordProductionPlanWasteModel>>> ListByMonth(int month, int year, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<List<RecordProductionPlanWasteModel>>();
+            try
+            {
+                output.Data = await _service.ListByMonth(month, year, planId, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>();
+            try
+            {
+                output.Data = await _service.ListByDate(date, keyword, page, howmany, planId, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
     }
 }

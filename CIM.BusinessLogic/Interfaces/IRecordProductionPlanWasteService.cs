@@ -22,5 +22,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task Update(RecordProductionPlanWasteModel model);
         Task NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models);
         Task<DataTable> RecordNonePrimeList(string planId, int routeId);
+        Task<List<RecordProductionPlanWasteModel>> ListByMonth(int month, int year, string planId, int? routeId = null);
+        Task<PagingModel<RecordProductionPlanWasteModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
     }
 }
