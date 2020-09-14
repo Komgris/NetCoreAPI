@@ -8,6 +8,7 @@ namespace CIM.Model
     {
         public int Id { get; set; }
         public int? CategoryId { get; set; }
+        public int? MachineId { get; set; }
         public string Category { get; set; }
         public string Title { get; set; }
         public DateTime HappenAt { get; set; }

@@ -19,8 +19,9 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
         public string Note { get; set; }
         public int? CategoryId { get; set; }
+        public int? MachineId { get; set; }
 
-        public virtual AccidentCategory Category { get; set; }
+        public virtual AccidentCategory AccidentCategory { get; set; }
         public virtual ICollection<AccidentParticipants> AccidentParticipants { get; set; }
     }
 }
