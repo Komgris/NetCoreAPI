@@ -25,6 +25,8 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetActualDesignSpeedReport(ReportTimeCriteriaModel data);
         DataTable GetMaintenanceReport(ReportTimeCriteriaModel data);
         DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data);
+        DataTable GetHSEReport(ReportTimeCriteriaModel data);
+        DataTable GetAttendantReport(ReportTimeCriteriaModel data);
 
     }
 
