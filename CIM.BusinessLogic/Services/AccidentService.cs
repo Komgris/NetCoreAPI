@@ -69,6 +69,8 @@ namespace CIM.BusinessLogic.Services
         {
             var dbModel = await _accidentRepository.Get(model.Id);
             dbModel.Title = model.Title;
+            dbModel.CategoryId = model.CategoryId;
+            dbModel.MachineId = model.MachineId;
             dbModel.HappenAt = model.HappenAt;
             dbModel.Note = model.Note;
             dbModel.UpdatedAt = DateTime.Now;
@@ -92,6 +94,19 @@ namespace CIM.BusinessLogic.Services
                     { "@page", page}
                 }, page, howMany);
             return output;
+        }
+
+        public async Task End(int id)
+        {
+            var dbModel = await _accidentRepository.Get(id);
+            var now = DateTime.Now;
+
+            dbModel.EndAt = now;
+            dbModel.UpdatedAt = now;
+            dbModel.UpdatedBy = CurrentUser.UserId;
+
+            _accidentRepository.Edit(dbModel);
+            await _unitOfWorkCIM.CommitAsync();
         }
     }
 }

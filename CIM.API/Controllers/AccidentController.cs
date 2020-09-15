@@ -40,6 +40,24 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
+        [Route("End")]
+        public async Task<ProcessReponseModel<AccidentModel>> End(int id)
+        {
+            var output = new ProcessReponseModel<AccidentModel>();
+            try
+            {
+                await _service.End(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpGet]
         public async Task<ProcessReponseModel<AccidentModel>> Get(int id)
         {
             var output = new ProcessReponseModel<AccidentModel>();
