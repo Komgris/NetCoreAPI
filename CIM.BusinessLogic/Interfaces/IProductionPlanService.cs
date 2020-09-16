@@ -24,7 +24,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany);
         Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds);
         Task<ProductionPlanModel> Get(string id);
-        Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId);
+        Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId, string routeDefault);
         Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds);
 
         Task<ProductionPlanOverviewModel> Load(string id, int routeId);

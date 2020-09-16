@@ -79,9 +79,9 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId)
+        public async Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId, string routeDefault)
         {
-            var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive, statusIds, processTypeId);
+            var output = await _productionPlanRepository.ListAsPaging(page, howmany, keyword, productId, routeId, isActive, statusIds, processTypeId, routeDefault);
             return output;
         }
 

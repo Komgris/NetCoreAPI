@@ -69,12 +69,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? processTypeId = null)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? processTypeId = null, string routeDefault = "")
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, processTypeId);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, processTypeId, routeDefault);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
