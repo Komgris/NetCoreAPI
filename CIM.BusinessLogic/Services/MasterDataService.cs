@@ -341,7 +341,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.ProductFamily = await GetProductFamilyDictionary();
                     masterData.Dictionary.ProductGroup = await GetProductGroupDictionary();
                     masterData.Dictionary.ProductType = await GetProductTypeDictionary();
-                    masterData.Dictionary.Machine = await GetMachineDictionary();
+                    masterData.Dictionary.Machine = masterDataOper.Dictionary.Machine = await GetMachineDictionary();
                     masterData.Dictionary.MaterialType = await GetMaterialTypeDictionary();
                     masterData.Dictionary.TeamType = await GetTeamTypeDictionary();
                     masterData.Dictionary.Team = await GetTeamDictionary();
@@ -351,7 +351,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.UserGroup = await GetUserGroupDictionary();
                     masterData.Dictionary.Language = await GetLanguageDictionary();
                     masterData.Dictionary.App = await GetAppDictionary();
-                    masterData.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
+                    masterData.Dictionary.AccidentCategory = masterDataOper.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
                     masterData.Dictionary.WasteNonePrime = masterDataOper.Dictionary.WasteNonePrime = await GetWasteNonePrime();
                     break;
 

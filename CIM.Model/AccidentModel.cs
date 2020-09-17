@@ -8,9 +8,12 @@ namespace CIM.Model
     {
         public int Id { get; set; }
         public int? CategoryId { get; set; }
+        public int? MachineId { get; set; }
+        public string MachineArea { get; set; }
         public string Category { get; set; }
         public string Title { get; set; }
         public DateTime HappenAt { get; set; }
+        public DateTime? EndAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
