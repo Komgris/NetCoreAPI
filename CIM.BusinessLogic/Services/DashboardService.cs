@@ -138,6 +138,7 @@ namespace CIM.BusinessLogic.Services {
         public async Task<BoardcastModel> GenerateCustomDashboard(DataTypeGroup updateType)
         {
             var boardcastData = new BoardcastModel();
+
             return await Task.Run(() =>
             {
                 try
@@ -192,6 +193,7 @@ namespace CIM.BusinessLogic.Services {
                         case DataTypeGroup.Loss:
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Spoilage
                                                                 , CustomDashboardType.Delivery
                                                                 , CustomDashboardType.MachineStatus});
                             break;

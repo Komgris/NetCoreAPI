@@ -13,5 +13,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task Create(AccidentModel model);
         Task Update(AccidentModel model);
         Task Delete(int id);
+        Task End(int id);
     }
 }

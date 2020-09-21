@@ -9,6 +9,8 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Description { get; set; }
         public int WasteLevel1Id { get; set; }
+        public string WasteLevel1 { get; set; }
+        public string ProcessType { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }

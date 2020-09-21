@@ -31,6 +31,7 @@ namespace CIM.API.Controllers
             IMasterDataService masterDataService
             ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
+            _hub = hub;
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
@@ -68,12 +69,12 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? processTypeId = null)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? processTypeId = null, string routeDefault = "")
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, processTypeId);
+                output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, processTypeId, routeDefault);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -144,7 +145,7 @@ namespace CIM.API.Controllers
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -163,7 +164,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -181,7 +182,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductionPlan);
+                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

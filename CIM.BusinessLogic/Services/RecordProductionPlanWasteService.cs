@@ -169,5 +169,45 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        public async Task<PagingModel<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputList(string keyword, int page, int howmany)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputList(keyword, page, howmany);
+            return output;
+        }
+
+        public async Task<List<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByMonth(int month, int year)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputListByMonth(month, year);
+            return output;
+        }
+
+        public async Task<PagingModel<RecordProductionPlanWasteNonePrimeModel>> NonePrimeOutputListByDate(DateTime date, int page, int howmany)
+        {
+            var output = await _recordProductionPlanWasteMaterialRepository.NonePrimeOutputListByDate(date, page, howmany);
+            return output;
+        }
+
+        public async Task<List<RecordProductionPlanWasteModel>> ListByMonth(int month, int year, string planId, int? routeId = null)
+        {
+            return await _recordProductionPlanWasteRepository.List("sp_ListWasteByMonth", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId},
+                    {"@month", month},
+                    {"@year", year}
+                });
+        }
+        public async Task<PagingModel<RecordProductionPlanWasteModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null)
+        {
+            return await _recordProductionPlanWasteRepository.ListAsPaging("sp_ListWasteByDate", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@route_id", routeId},
+                    {"@date", date},
+                    {"@keyword", keyword},
+                    {"@howmany", howmany},
+                    {"@page", page}
+                }, page, howmany);
+        }
     }
 }

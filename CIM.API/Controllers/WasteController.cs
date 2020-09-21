@@ -63,6 +63,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
 
                 output.IsSuccess = true;
@@ -88,6 +96,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
 
                 output.IsSuccess = true;
@@ -114,6 +130,14 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+
+                    //dole dashboard
+                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                    if (boardcastData?.Data.Count > 0)
+                    {
+                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -140,6 +164,24 @@ namespace CIM.API.Controllers
             return output;
         }
 
+
+        [HttpGet]
+        [Route("NonePrimeOutputList")]
+        public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>> NonePrimeOutputList(string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>();
+            try
+            {
+                output.Data = await _service.NonePrimeOutputList(keyword, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
         [Route("NonePrimeCreate")]
         public async Task<ProcessReponseModel<object>> NonePrimeCreate(List<RecordProductionPlanWasteNonePrimeModel> models)
@@ -148,6 +190,13 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.NonePrimeCreate(models);
+
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -165,7 +214,43 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _service.RecordNonePrimeList(planId, routeId), JsonsFormatting); 
+                output.Data = JsonConvert.SerializeObject(await _service.RecordNonePrimeList(planId, routeId), JsonsFormatting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("ListByMonth")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<List<RecordProductionPlanWasteModel>>> ListByMonth(int month, int year, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<List<RecordProductionPlanWasteModel>>();
+            try
+            {
+                output.Data = await _service.ListByMonth(month, year, planId, routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("ListByDate")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordProductionPlanWasteModel>>();
+            try
+            {
+                output.Data = await _service.ListByDate(date, keyword, page, howmany, planId, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

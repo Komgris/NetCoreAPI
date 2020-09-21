@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CIM.API.Controllers
 {
@@ -12,8 +14,13 @@ namespace CIM.API.Controllers
     {
         private IUserGroupService _service;
 
-        public UserGroupController(IUserGroupService service, IMasterDataService masterDataService)
+        public UserGroupController(
+            IHubContext<GlobalHub> hub,
+            IUserGroupService service,
+            IMasterDataService masterDataService
+            )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }
@@ -26,7 +33,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
+                await RefreshMasterData(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -79,7 +86,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
-                await _masterDataService.Refresh(Constans.MasterDataType.UserGroup);
+                await RefreshMasterData(Constans.MasterDataType.UserGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

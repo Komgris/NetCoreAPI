@@ -16,14 +16,16 @@ using static CIM.Model.Constans;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class BoardcastController : BaseController
+    public class BoardcastNoSecureController : BaseNoSecureController
     {
+
+        public IHubContext<GlobalHub> _hub;
         public IResponseCacheService _responseCacheService;
         public IDashboardService _dashboardService;
         public IConfiguration _config;
         public IActiveProductionPlanService _activeProductionPlanService;
 
-        public BoardcastController(
+        public BoardcastNoSecureController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService service,
@@ -93,6 +95,7 @@ namespace CIM.API.Controllers
                     cache.SetData(dashboard);
                 }
             }
+            cache.LastUpdate = DateTime.Now;
             await _responseCacheService.SetAsync(channelKey, cache);
         }
 

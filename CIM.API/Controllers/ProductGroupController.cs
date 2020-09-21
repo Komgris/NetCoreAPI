@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CIM.API.Controllers
 {
@@ -14,10 +16,12 @@ namespace CIM.API.Controllers
     {
         private IProductGroupService _service;
         public ProductGroupController(
+            IHubContext<GlobalHub> hub,
             IProductGroupService service,
             IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
             _masterDataService = masterDataService;
         }
@@ -48,7 +52,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
+                await RefreshMasterData(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -83,7 +87,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.ProductGroup);
+                await RefreshMasterData(Constans.MasterDataType.ProductGroup);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -118,7 +122,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.InsertMappingRouteProductGroup(data);
-                await _masterDataService.Refresh(Constans.MasterDataType.Products);
+                await RefreshMasterData(Constans.MasterDataType.Products);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
