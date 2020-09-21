@@ -38,6 +38,10 @@ namespace CIM.API.Controllers
             await _masterDataService.Refresh(masterdataType);
             var master = await _masterDataService.GetData();
             await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_MASTER_DATA, JsonConvert.SerializeObject(master, JsonsSetting));
+
+            var masterOperation = await _masterDataService.GetDataOperation();
+            await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_MASTER_DATA_OPERATION, JsonConvert.SerializeObject(masterOperation, JsonsSetting));
+
             return "OK";
         }
 
