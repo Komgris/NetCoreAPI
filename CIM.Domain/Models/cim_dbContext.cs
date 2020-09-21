@@ -152,6 +152,7 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<Accidents>(entity =>
             {
                 entity.Property(e => e.CategoryId).HasColumnName("Category_Id");
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -174,7 +175,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.Category)
+                entity.HasOne(d => d.AccidentCategory)
                     .WithMany(p => p.Accidents)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("FK_Accidents_Accident_Category");
@@ -185,6 +186,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.ThUrl).HasMaxLength(500);
 
                 entity.Property(e => e.Url)
                     .IsRequired()
