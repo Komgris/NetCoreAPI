@@ -164,7 +164,7 @@ namespace CIM.BusinessLogic.Services
         {
             var masterData = await _masterDataService.GetData();
             var productionPlanDict = masterData.ProductionPlan;
-            var productDict = masterData.Dictionary.Products;
+            var routeDict = masterData.Dictionary.RouteByName;
             var productCodeToIds = masterData.Dictionary.ProductsByCode;
             var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
             var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
@@ -174,6 +174,7 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var plan in import)
             {
+                plan.RouteId = RouteGuideLineToId(plan.RouteGuideLine.Trim(), routeDict);
                 plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
                 if (plan.ProductId != 0)
                 {
@@ -222,6 +223,15 @@ namespace CIM.BusinessLogic.Services
         {
             var plan = await _productionPlanRepository.WhereAsync(x => x.PlanId == planId);
             return plan.Select(x => x.StatusId).FirstOrDefault().Value;
+        }
+
+        public int? RouteGuideLineToId(string routeGuideLine, IDictionary<string, int> routeDict)
+        {
+            int routeId;
+            if (routeDict.TryGetValue(routeGuideLine, out routeId))
+                return routeId;
+            else
+                return null;
         }
 
         public int ProductCodeToId(string Code, IDictionary<string, int> productDict)

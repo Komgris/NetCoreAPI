@@ -9,7 +9,7 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IRouteService : IBaseService
     {
         Task Create(RouteListModel data);
-        Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany, bool isActive);
+        Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany, bool isActive, int? processTypeId);
         Task<RouteListModel> Get(int id);
         Task Update(RouteListModel data);
     }

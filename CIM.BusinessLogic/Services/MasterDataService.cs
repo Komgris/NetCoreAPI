@@ -2,6 +2,7 @@
 using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
@@ -330,7 +331,9 @@ namespace CIM.BusinessLogic.Services
                     masterData.EnabledVerifyToken = _configuration.GetValue<bool>("EnabledVerifyToken");
 
                     masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
+                    masterData.Dictionary.ProductProcesstype = await GetProductByProcessTypeDictionary();
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
+                    masterData.Dictionary.RouteByName = masterData.Routes.ToDictionary(x => x.Value.Name, x => x.Key);
                     masterData.Dictionary.ProductionStatus = await GetProductionStatusDictionary();
                     masterData.Dictionary.Units = await GetUnitsDictionary();
                     masterData.Dictionary.CompareResult = GetProductionPlanCompareResult();
@@ -384,12 +387,14 @@ namespace CIM.BusinessLogic.Services
                     masterDataOper.Machines = await GetMachines(masterData.Components, masterData.RouteMachines);
                     masterData.Routes =
                     masterDataOper.Routes = await GetRoutes(masterData.RouteMachines, masterData.Machines);
+                    masterData.Dictionary.RouteByName = masterData.Routes.ToDictionary(x => x.Value.Name, x => x.Key);
                     masterData.Dictionary.Machine = await GetMachineDictionary();
                     break;
                 case MasterDataType.Products:
                     _productBOM = await _materialRepository.ListProductBOM();
                     masterData.Products = await _productsRepository.ListAsDictionary(_productBOM);
-                    GetProductDictionary(masterData.Products);
+                    masterData.Dictionary.Products = GetProductDictionary(masterData.Products);
+                    masterData.Dictionary.ProductProcesstype = await GetProductByProcessTypeDictionary();
                     masterData.Dictionary.ProductsByCode = masterData.Dictionary.Products.ToDictionary(x => x.Value, x => x.Key);
                     break;
                 case MasterDataType.ProductionPlan:
@@ -527,7 +532,7 @@ namespace CIM.BusinessLogic.Services
             var routeList = db.Select(x => x.RouteId).Distinct().ToList();
             foreach (var routeId in routeList)
             {
-                output[routeId] = db.Where(x => x.RouteId == routeId).OrderBy(x => x.Sequence).Select(x => x.MachineId).ToArray();
+                output[routeId] = db.Where(x => x.RouteId == routeId  && x.IsActive == true).OrderBy(x => x.Sequence).Select(x => x.MachineId).ToArray();
             }
             return output;
         }
@@ -554,6 +559,27 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        private async  Task<IDictionary<int, ProductDictionaryModel>> GetProductByProcessTypeDictionary()
+        {
+            var output = new Dictionary<int, ProductDictionaryModel>();
+            var productGroup = (await _productGroupRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
+            var product = await _productsRepository.Where(x => x.IsActive == true && x.IsDelete == false)
+            .Select(x => new ProductDictionaryModel
+            {
+                Id = x.Id,
+                Code = x.Code,
+                GroupId = x.ProductGroupId,
+                TypeId = x.ProductTypeId,
+            }).ToListAsync();
+            
+            foreach(var item in product)
+            {
+                item.ProcessTypeId = productGroup.FirstOrDefault(x => x.Id == item.GroupId).ProcessTypeId;
+                output.Add(item.Id, item);
+            }
+            return output;
+        }
+
         private async Task<IDictionary<int, string>> GetUnitsDictionary()
         {
             var db = (await _unitsRepository.AllAsync()).OrderBy(x => x.Id);
@@ -568,7 +594,7 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, IDictionary<int, string>>> GetProductGroupRoutes()
         {
-            var db = (await _routeProductGroupRepository.AllAsync());
+            var db = (await _routeProductGroupRepository.WhereAsync(x => x.IsActive == true));
             var output = new Dictionary<int, IDictionary<int, string>>();
 
             foreach (var item in db)
