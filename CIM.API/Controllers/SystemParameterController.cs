@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.SignalR;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class SystemParameter : BaseController
+    public class SystemParameterController : BaseController
     {
         private IResponseCacheService _responseCacheService;
         private ISystemParameterService _service;
 
-        public SystemParameter(
+        public SystemParameterController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             ISystemParameterService service,
@@ -40,6 +40,7 @@ namespace CIM.API.Controllers
                 await _service.Create(data);
                 await RefreshMasterData(Constans.MasterDataType.SystemParameter);
                 output.IsSuccess = true;
+
             }
             catch (Exception ex)
             {
