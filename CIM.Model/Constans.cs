@@ -144,12 +144,13 @@ namespace CIM.Model
         }
 
         public enum ReportType {
-            Daily,
-            Weekly,
-            Monthly,
-            Yearly,
-            DoleCalendar
-        }
+            Daily =0,
+            Weekly=1,
+            Monthly=2,
+            Yearly=3,
+            DoleCalendar=4,
+            Details= 99
+        } 
 
         public enum BoardcastType {
             All =0,

@@ -356,6 +356,7 @@ namespace CIM.BusinessLogic.Services
                     masterData.Dictionary.App = await GetAppDictionary();
                     masterData.Dictionary.AccidentCategory = masterDataOper.Dictionary.AccidentCategory = await GetAccidentCategoryDictionary();
                     masterData.Dictionary.WasteNonePrime = masterDataOper.Dictionary.WasteNonePrime = await GetWasteNonePrime();
+                    masterData.Dictionary.LanguageVersion = masterDataOper.Dictionary.LanguageVersion = await GetLanguageUrlDictionary();
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -920,6 +921,24 @@ namespace CIM.BusinessLogic.Services
             {
                 if (!output.ContainsKey(item.Id))
                     output.Add(item.Id, item.Name);
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, AppModel>> GetLanguageUrlDictionary()
+        {
+            var db = await _appRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+            var output = new Dictionary<int, AppModel>();
+
+            foreach (var item in db)
+            {
+                output[item.Id] = new AppModel
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Url = item.Url,
+                    ThUrl = item.ThUrl
+                };
             }
             return output;
         }
