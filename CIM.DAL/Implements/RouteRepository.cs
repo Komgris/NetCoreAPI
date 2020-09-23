@@ -18,7 +18,7 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<RouteListModel>> List(int page, int howmany, string keyword,bool isActive)
+        public async Task<PagingModel<RouteListModel>> List(int page, int howmany, string keyword,bool isActive,int? processTypeId)
         {
             return await Task.Run(() =>
             {
@@ -27,6 +27,7 @@ namespace CIM.DAL.Implements
                                             {"@keyword", keyword},
                                             {"@howmany", howmany},
                                             { "@page", page},
+                                             { "@processtype", processTypeId},
                                             { "@is_active", isActive},
                                         };
 
