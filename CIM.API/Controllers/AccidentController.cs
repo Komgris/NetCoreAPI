@@ -2,22 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
+using static CIM.Model.Constans;
 
 namespace CIM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccidentController : BaseController
+    public class AccidentController : BoardcastController
     {
         private IAccidentService _service;
 
         public AccidentController(
-            IAccidentService service)
+            IAccidentService service,
+            IHubContext<GlobalHub> hub,
+            IResponseCacheService responseCacheService,
+            IDashboardService dashboardService,
+            IConfiguration config,
+            IActiveProductionPlanService activeProductionPlanService
+
+            ) : base(hub, responseCacheService, dashboardService, config, activeProductionPlanService)
         {
+            _hub = hub;
             _service = service;
         }
 
@@ -30,6 +42,7 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _service.List(keyword, page, howmany);
                 output.IsSuccess = true;
+
             }
             catch (Exception ex)
             {
@@ -81,6 +94,12 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -98,6 +117,12 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -116,6 +141,12 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Delete(id);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
