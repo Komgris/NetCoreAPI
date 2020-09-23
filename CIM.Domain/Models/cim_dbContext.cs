@@ -82,6 +82,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
         public virtual DbSet<StandardCostBrite> StandardCostBrite { get; set; }
         public virtual DbSet<Sysdiagrams> Sysdiagrams { get; set; }
+        public virtual DbSet<SystemParameter> SystemParameter { get; set; }
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamEmployees> TeamEmployees { get; set; }
         public virtual DbSet<TeamType> TeamType { get; set; }
@@ -2334,6 +2335,36 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.PrincipalId).HasColumnName("principal_id");
 
                 entity.Property(e => e.Version).HasColumnName("version");
+            });
+
+            modelBuilder.Entity<SystemParameter>(entity =>
+            {
+                entity.ToTable("System_Parameter");
+
+                entity.HasIndex(e => e.Parameter)
+                    .HasName("IX_System_Parameter")
+                    .IsUnique();
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Parameter)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(200);
             });
 
             modelBuilder.Entity<Team>(entity =>
