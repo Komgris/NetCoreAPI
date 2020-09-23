@@ -58,9 +58,9 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany,bool isActive)
+        public async Task<PagingModel<RouteListModel>> List(string keyword, int page, int howmany,bool isActive, int? processTypeId)
         {
-            var output = await _routeRepository.List(page, howmany, keyword, isActive);
+            var output = await _routeRepository.List(page, howmany, keyword, isActive, processTypeId);
             return output;
         }
 

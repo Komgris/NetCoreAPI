@@ -10,6 +10,7 @@ namespace CIM.Model
         public string Code { get; set; }
         public int GroupId { get; set; }
         public int TypeId { get; set; }
+        public int ProcessTypeId { get; set; }
 
         public Dictionary<int, MaterialDictionaryModel> Materials { get; set; }
     }
