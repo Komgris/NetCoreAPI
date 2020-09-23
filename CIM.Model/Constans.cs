@@ -136,6 +136,7 @@ namespace CIM.Model
             , MaterialType
             , TeamType
             , Team
+            , SystemParameter
             , UserPosition
             , Education
             , ProcessType
