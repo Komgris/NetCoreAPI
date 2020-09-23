@@ -146,6 +146,13 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
+
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -165,6 +172,12 @@ namespace CIM.API.Controllers
             {
                 await _productionPlanService.Create(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -183,6 +196,13 @@ namespace CIM.API.Controllers
             {
                 await _productionPlanService.Update(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
+
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)

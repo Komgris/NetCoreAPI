@@ -43,6 +43,12 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -70,6 +76,12 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Operators, model.PlanId
                     ,listRoute, activeProductionPlan);
                 }
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -87,6 +99,12 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Delete(id);
+                //dole dashboard
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
