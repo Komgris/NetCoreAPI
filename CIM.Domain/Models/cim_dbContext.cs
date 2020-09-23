@@ -187,6 +187,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.ThUrl).HasMaxLength(500);
+
                 entity.Property(e => e.Url)
                     .IsRequired()
                     .HasMaxLength(500);

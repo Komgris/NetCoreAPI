@@ -9,6 +9,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
+        public string ThUrl { get; set; }
         public List<AppFeatureModel> FeatureList { get; set; } = new List<AppFeatureModel>();
     }
 }
