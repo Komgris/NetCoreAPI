@@ -18,7 +18,7 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<PagingModel<ProductGroupModel>> List(int page, int howmany, string keyword, bool isActive)
+        public async Task<PagingModel<ProductGroupModel>> List(int page, int howmany, string keyword, bool isActive, int? processTypeId)
         {
             return await Task.Run(() =>
             {
@@ -26,8 +26,9 @@ namespace CIM.DAL.Implements
                                         {
                                             {"@keyword", keyword},
                                             {"@howmany", howmany},
-                                            { "@page", page},
-                                            { "@is_active", isActive},
+                                            {"@page", page},
+                                            {"@is_active", isActive},
+                                            {"@processtypeid", processTypeId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductGroup", parameterList);

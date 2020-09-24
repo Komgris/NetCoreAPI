@@ -29,6 +29,8 @@ namespace CIM.Model
         public DateTime? ActualStart { get; set; }
 
         public DateTime? ActualFinish { get; set; }
+        public int ProcessTypeId { get; set; }
+        public string ProcessType { get; set; }
 
     }
 
