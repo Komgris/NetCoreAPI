@@ -64,6 +64,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
+                    await RefreshMasterData(Constans.MasterDataType.WastesLevel1);
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
@@ -97,6 +98,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
+                    await RefreshMasterData(Constans.MasterDataType.WastesLevel1);
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
@@ -131,6 +133,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
+                    await RefreshMasterData(Constans.MasterDataType.WastesLevel1);
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
