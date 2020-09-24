@@ -50,7 +50,7 @@ namespace CIM.BusinessLogic.Services
             await DeleteMapping(data[0].ProductGroupId);
             foreach (var model in data)
             {
-                if(model.RouteId != 0)
+                if (model.RouteId != 0)
                 {
                     var db = MapperHelper.AsModel(model, new RouteProductGroup());
                     db.CreatedAt = DateTime.Now;
@@ -70,9 +70,9 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        public async Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany, bool isActive)
+        public async Task<PagingModel<ProductGroupModel>> List(string keyword, int page, int howmany, bool isActive, int? processTypeId)
         {
-            var output = await _productGroupRepository.List(page, howmany, keyword, isActive);
+            var output = await _productGroupRepository.List(page, howmany, keyword, isActive, processTypeId);
             return output;
         }
 

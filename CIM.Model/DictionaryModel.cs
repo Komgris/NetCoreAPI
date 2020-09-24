@@ -31,5 +31,8 @@ namespace CIM.Model
         public IDictionary<int, string> WasteNonePrime { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> ProcessType { get; set; } = new Dictionary<int, string>();
         public IDictionary<int, string> AccidentCategory { get; set; } = new Dictionary<int, string>();
+        public IDictionary<string, int> RouteByName { get; set; } = new Dictionary<string, int>();
+        public IDictionary<int, ProductDictionaryModel> ProductProcesstype { get; set; } = new Dictionary<int, ProductDictionaryModel>();
+        public IDictionary<int, AppModel> LanguageVersion { get; set; } = new Dictionary<int, AppModel>();
     }
 }

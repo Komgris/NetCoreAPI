@@ -166,17 +166,20 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.Spoilage
                                                                 , CustomDashboardType.NonePrime
-                                                                , CustomDashboardType.Quality});
+                                                                , CustomDashboardType.Quality
+                                                                , CustomDashboardType.PlanvsActual});
                             break;
                         case DataTypeGroup.Operators:
                             boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.Attendance});
+                                                            new[]{ CustomDashboardType.Attendance
+                                                                , CustomDashboardType.PlanvsActual});
                             break;
                         case DataTypeGroup.Produce:
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.OEE
                                                                 , CustomDashboardType.Production
-                                                                , CustomDashboardType.Delivery});
+                                                                , CustomDashboardType.Delivery
+                                                                , CustomDashboardType.PlanvsActual});
                             break;
                         case DataTypeGroup.Process:
                             boardcastData = CustomDashboard(
@@ -194,8 +197,7 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.OEE
                                                                 , CustomDashboardType.Spoilage
-                                                                , CustomDashboardType.Delivery
-                                                                , CustomDashboardType.MachineStatus});
+                                                                , CustomDashboardType.Delivery});
                             break;
                     }
 

@@ -14,7 +14,7 @@ namespace CIM.Model
         public string Image { get; set; }
         public string Description { get; set; }
         public string BriteItemPerUPCItem { get; set; }
-        public int ProductFamilyId { get; set; }
+        public int? ProductFamilyId { get; set; }
         public string ProductFamily { get; set; }
         public int ProductGroupId { get; set; }
         public string ProductGroup { get; set; }
@@ -32,5 +32,7 @@ namespace CIM.Model
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public bool IsPlanActive { get; set; }
+        public int ProcessTypeId { get; set; }
+        public string ProcessType { get; set; }
     }
 }

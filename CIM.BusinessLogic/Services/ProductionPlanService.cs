@@ -164,7 +164,7 @@ namespace CIM.BusinessLogic.Services
         {
             var masterData = await _masterDataService.GetData();
             var productionPlanDict = masterData.ProductionPlan;
-            var productDict = masterData.Dictionary.Products;
+            var routeDict = masterData.Dictionary.RouteByName;
             var productCodeToIds = masterData.Dictionary.ProductsByCode;
             var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
             var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
@@ -174,41 +174,49 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var plan in import)
             {
+                plan.RouteId = RouteGuideLineToId(plan.RouteGuideLine.Trim(), routeDict);
                 plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
                 if (plan.ProductId != 0)
                 {
-                    if (productionPlanDict.ContainsKey(plan.PlanId))
+                    if (plan.PlanStart == null || plan.PlanFinish == null)
                     {
-                        plan.StatusId = await planStatus(plan.PlanId);
-                        plan.CompareResult = Constans.CompareMapping.Inprocess;
-                        //Validate updated production plan status with current existing
-                        switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
-                        {
-                            case Constans.PRODUCTION_PLAN_STATUS.Production:
-                            case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
-                            case Constans.PRODUCTION_PLAN_STATUS.Changeover:
-                            case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
-                            case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
-                                    plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                                else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
-                                    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
-                                        plan.CompareResult = Constans.CompareMapping.InvalidTarget;
-                                break;
-                            case Constans.PRODUCTION_PLAN_STATUS.New:
-                            case Constans.PRODUCTION_PLAN_STATUS.Hold:
-                            case Constans.PRODUCTION_PLAN_STATUS.Cancel:
-                                break;
-                            case Constans.PRODUCTION_PLAN_STATUS.Finished:
-                                plan.CompareResult = Constans.CompareMapping.PlanFinished;
-                                break;
-                            default:
-                                break;
-                        }
+                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
                     }
                     else
                     {
-                        plan.CompareResult = Constans.CompareMapping.NEW;
+                        if (productionPlanDict.ContainsKey(plan.PlanId))
+                        {
+                            plan.StatusId = await planStatus(plan.PlanId);
+                            plan.CompareResult = Constans.CompareMapping.Inprocess;
+                            //Validate updated production plan status with current existing
+                            switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
+                            {
+                                case Constans.PRODUCTION_PLAN_STATUS.Production:
+                                case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                                case Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                                case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                                case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                                    if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
+                                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                                    else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
+                                        if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
+                                            plan.CompareResult = Constans.CompareMapping.InvalidTarget;
+                                    break;
+                                case Constans.PRODUCTION_PLAN_STATUS.New:
+                                case Constans.PRODUCTION_PLAN_STATUS.Hold:
+                                case Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                                    break;
+                                case Constans.PRODUCTION_PLAN_STATUS.Finished:
+                                    plan.CompareResult = Constans.CompareMapping.PlanFinished;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            plan.CompareResult = Constans.CompareMapping.NEW;
+                        }
                     }
                 }
                 else
@@ -222,6 +230,15 @@ namespace CIM.BusinessLogic.Services
         {
             var plan = await _productionPlanRepository.WhereAsync(x => x.PlanId == planId);
             return plan.Select(x => x.StatusId).FirstOrDefault().Value;
+        }
+
+        public int? RouteGuideLineToId(string routeGuideLine, IDictionary<string, int> routeDict)
+        {
+            int routeId;
+            if (routeDict.TryGetValue(routeGuideLine, out routeId))
+                return routeId;
+            else
+                return null;
         }
 
         public int ProductCodeToId(string Code, IDictionary<string, int> productDict)
@@ -417,9 +434,9 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId)
         {
-            var output = await _productionPlanRepository.ListByDate(date, page, howmany, statusIds);
+            var output = await _productionPlanRepository.ListByDate(date, page, howmany, statusIds, processTypeId);
             return output;
         }
 

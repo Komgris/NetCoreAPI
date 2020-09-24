@@ -15,7 +15,7 @@ namespace CIM.DAL.Interfaces
         Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds);
         Task<List<ProductionOutputModel>> ListOutputByMonth(int month, int year);
         Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany);
-        Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds);
+        Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId);
         Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds);
     }
 

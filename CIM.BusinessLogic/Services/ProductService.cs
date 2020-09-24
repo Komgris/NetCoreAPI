@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class ProductService: BaseService, IProductService
+    public class ProductService : BaseService, IProductService
     {
         private readonly IResponseCacheService _responseCacheService;
         private readonly IProductRepository _productRepository;
@@ -31,16 +31,16 @@ namespace CIM.BusinessLogic.Services
 
         public async Task BulkEdit(List<ProductModel> model)
         {
-            foreach(var plan in model)
+            foreach (var plan in model)
             {
                 var existingItem = _productRepository.Where(x => x.Id == plan.Id).FirstOrDefault();
-                if(existingItem != null)
+                if (existingItem != null)
                 {
                     var db_model = MapperHelper.AsModel(plan, existingItem);
                     _productRepository.Edit(db_model);
                 }
             }
-            await _unitOfWork.CommitAsync();           
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task Delete(int id)
@@ -68,9 +68,9 @@ namespace CIM.BusinessLogic.Services
             return response;
         }
 
-        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive)
+        public async Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActiive, int? processTypeId)
         {
-            var output = await _productRepository.Paging(keyword, page, howMany, isActiive);
+            var output = await _productRepository.Paging(keyword, page, howMany, isActiive, processTypeId);
             return output;
         }
 
