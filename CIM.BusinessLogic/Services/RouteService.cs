@@ -48,6 +48,7 @@ namespace CIM.BusinessLogic.Services
                 Id = x.Id,
                 Name = x.Name,
                 ParentId = x.ParentId,
+                ProcessTypeId = x.ProcessTypeId,
                 IsActive = x.IsActive,
                 IsDelete = x.IsDelete,
                 CreatedAt = x.CreatedAt,
