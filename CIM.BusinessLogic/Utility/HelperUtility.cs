@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Utility
@@ -23,10 +25,10 @@ namespace CIM.BusinessLogic.Utility
             return text.Split(',').Select(x => x).ToArray();
         }
 
-        public static void Logging(string path,string mng)
+        public static void Logging(string file, string mng)
         {
-            path = Directory.GetCurrentDirectory() + "\\logging.log";
-            File.AppendAllText(path, $"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} >> {mng} \r\n");   
+            var path = @"C:\log\" + file;
+            File.AppendAllTextAsync(path, $"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff")} >> {mng} \r\n",CancellationToken.None);
         }
     }
 }
