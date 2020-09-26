@@ -8,7 +8,12 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IRecordManufacturingLossService : IBaseService
     {
-        Task Create(RecordManufacturingLossModel model);
-        Task Update(RecordManufacturingLossModel model);
+        Task<ActiveProductionPlanModel> Create(RecordManufacturingLossModel model);
+        Task<ActiveProductionPlanModel> Update(RecordManufacturingLossModel model);
+        Task<RecordManufacturingLossModel> GetByGuid(Guid guid);
+        Task<ActiveProductionPlanModel> End(RecordManufacturingLossModel model);
+        Task<PagingModel<RecordManufacturingLossModel>> List(string planId, int? routeId, string keyword, int page, int howmany);
+        Task<List<RecordManufacturingLossModel>> ListByMonth(int month, int year, string planId, int? routeId = null);
+        Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
     }
 }

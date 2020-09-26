@@ -8,13 +8,21 @@ using CIM.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using StoredProcedureEFCore;
+using System.Data.SqlClient;
+using System.Data;
+using CIM.DAL.Utility;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class ProductionPlanRepository : Repository<ProductionPlan>, IProductionPlanRepository
+    public class ProductionPlanRepository : Repository<ProductionPlan, object>, IProductionPlanRepository
     {
-        public ProductionPlanRepository(cim_dbContext context) : base(context)
+
+        private IDirectSqlRepository _directSqlRepository;
+        public ProductionPlanRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration)
+            : base(context, configuration)
         {
+            _directSqlRepository = directSqlRepository;
         }
 
         public async Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany)
@@ -45,24 +53,31 @@ namespace CIM.DAL.Implements
                 Data = data
             };
         }
-    
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds)
+
+        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId, string routeDefault)
         {
-            List<ProductionPlanListModel> data = null;
-            //int totalCount = 0;
-            var proc = _entities.LoadStoredProc("[sp_ListProductionPlan]");
-            proc.AddParam("total_count", out IOutParam<int> totalCount);
-            proc.AddParam("@route_id", routeId);
-            proc.AddParam("@product_id", productId);
-            proc.AddParam("@keyword", keyword);
-            proc.AddParam("@is_active", isActive);
-            proc.AddParam("@status_id", statusIds);
-            proc.AddParam("@howmany", howmany);
-            proc.AddParam("@page", page);
-            await proc.ExecAsync(x => Task.Run(() => data = x.ToList<ProductionPlanListModel>()));
+            return await Task.Run(() =>
+                                    {
+                                        Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@route_id", routeId},
+                                            {"@product_id", productId},
+                                            {"@keyword", keyword},
+                                            {"@is_active", isActive},
+                                            {"@status_id", statusIds},
+                                            {"@howmany", howmany},
+                                            { "@page", page},
+                                            { "@processtypeid", processTypeId},
+                                            { "@route_default", routeDefault}
+                                        };
 
-            return ToPagingModel(data, totalCount.Value, page, howmany);
+                                        var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan", parameterList);
+                                        var totalCount = 0;
+                                        if (dt.Rows.Count > 0)
+                                            totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
+                                        return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
+                                    });
         }
 
         public List<ProductionPlanModel> Get()
@@ -125,6 +140,152 @@ namespace CIM.DAL.Implements
                 _entities.SaveChanges();
             }
         }
-    }
 
+        public FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string? planId, int? processTypeId)
+        {
+            var output = new FilterLoadProductionPlanListModel();
+            Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@routeid", routeId},
+                    {"@productid", productId},
+                    {"@statusid", statusId},
+                    {"@planid", planId },
+                    {"@processtypeid", processTypeId }
+                };
+            var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListFilterLoadProductionPlan", parameterList);
+            if (dt.Rows.Count > 0)
+            {
+                output.Products = dt.AsEnumerable().Select(x => new { id = x.Field<int>("productid"), name = x.Field<string>("productcode") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Routes = dt.AsEnumerable().Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename") }).Distinct().ToDictionary(x => x.id, y => y.name);
+                output.Status = dt.AsEnumerable().Select(x => new { id = x.Field<int>("statusid"), name = x.Field<string>("statusname") }).Distinct().ToDictionary(x => x.id, y => y.name);
+
+                var routeList = dt.AsEnumerable().Where(x => x.Field<string>("PlanId") == planId || string.IsNullOrEmpty(planId)).Select(x => new { id = x.Field<int>("routeid"), name = x.Field<string>("routename"), inProcess = Convert.ToBoolean(x.Field<Int32>("inprocess")) }).Distinct().ToList();
+                output.Route = new List<RouteModel>();
+                foreach (var item in routeList)
+                {
+                    output.Route.Add(new RouteModel
+                    {
+                        Id = item.id,
+                        Name = item.name,
+                        InProcess = item.inProcess
+                    });
+                }
+            }
+            return output;
+        }
+
+        public async Task<ProductionPlanModel> Load(string id, int routeId)
+        {
+            return await Task.Run(() =>
+            {
+                var output = new ProductionPlanModel();
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@planid", id},
+                    {"@routeid", routeId}
+                };
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_ActiveProductionPlan_Info", parameterList);
+                if (dt.Rows.Count > 0)
+                    output = dt.ToModel<ProductionPlanModel>()[0];
+                return output;
+            });
+        }
+
+        public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@month", month},
+                                            {"@year", year},
+                                            {"@status_id", statusIds},
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanBYMonth", parameterList);
+
+                return (dt.ToModel<ProductionPlanListModel>());
+            });
+        }
+
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@date", date},
+                                            {"@howmany", howmany},
+                                            {"@page", page},
+                                            {"@status_id", statusIds},
+                                            {"@processtypeid", processTypeId }
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanByDate", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
+            });
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@keyword", keyword},
+                                            {"@is_active", isActive},
+                                            {"@status_id", statusIds},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlan_Output", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
+            });
+        }
+
+        public async Task<List<ProductionOutputModel>> ListOutputByMonth(int month, int year)
+        {
+            return await Task.Run(() =>
+            {
+                var parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@month", month},
+                                            {"@year", year}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYMonth", parameterList);
+
+                return (dt.ToModel<ProductionOutputModel>());
+            });
+        }
+
+        public async Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany)
+        {
+            return await Task.Run(() =>
+            {
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                                        {
+                                            {"@date", date},
+                                            {"@howmany", howmany},
+                                            { "@page", page}
+                                        };
+
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanOutputBYDate", parameterList);
+                var totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
+
+                return ToPagingModel(dt.ToModel<ProductionOutputModel>(), totalCount, page, howmany);
+            });
+        }
+    }
 }

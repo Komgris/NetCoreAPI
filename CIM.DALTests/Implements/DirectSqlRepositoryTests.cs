@@ -37,9 +37,22 @@ namespace CIM.DAL.Implements.Tests
            ([Name]
            ,[IsActive]
            ,[IsDelete]
-           ,[CreatedBy],[CreatedAt]) VALUES ( 'test001' ,0 ,0 ,'test' , getDate())", null);
+           ,[CreatedBy],[CreatedAt]) VALUES ( 'test001' ,0 ,0 ,'test' , getDate())");
             var result = repo.ExecuteReader("select * from sites where name = 'test001'", null);
             result.Should().NotBeNullOrEmpty();
+
+        }
+
+        [Fact]
+        public void ExecuteSPWithQueryDSetTest()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(InMemorySettings)
+            .Build();
+
+            var repo = new DirectSqlRepository(configuration);
+            var result = repo.ExecuteSPWithQueryDSet("sp_custom_dashboard_x", null);
+            result.Should().NotBeNull();
 
         }
 

@@ -47,7 +47,7 @@ namespace CIM.API.IntegrationTests
                     var masterDataService = new Mock<IMasterDataService>();
                     var moqMasterData = this.GetMoqMasterData(scenario.TestDb);
                     masterDataService.Setup(x => x.GetData()).Returns(Task.FromResult(moqMasterData));
-                    masterDataService.Setup(x => x.Refresh()).Returns(Task.FromResult(moqMasterData));
+                    masterDataService.Setup(x => x.Refresh(Constans.MasterDataType.All)).Returns(Task.FromResult(moqMasterData));
 
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
@@ -70,7 +70,7 @@ namespace CIM.API.IntegrationTests
                             Name = "Admin"
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
-                        userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
+                        //userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
                         db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
                         var registerUserModel = new UserModel
@@ -80,8 +80,8 @@ namespace CIM.API.IntegrationTests
                             Password = "super-secret",
                             FirstName = "Hans",
                             LastName = "Meier",
-                            LanguageId = "en",
-                            Image = null,
+                            DefaultLanguageId = "en",
+                            //Image = null,
                             UserGroupId = adminGroup.Id,
                         };
                         userService.Create(registerUserModel);

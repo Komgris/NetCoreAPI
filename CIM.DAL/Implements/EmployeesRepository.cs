@@ -1,16 +1,21 @@
 ﻿using CIM.DAL.Interfaces;
+using CIM.DAL.Utility;
 using CIM.Domain.Models;
+using CIM.Model;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CIM.DAL.Implements
 {
-    public class EmployeesRepository : Repository<Employees>, IEmployeesRepository
+    public class EmployeesRepository : Repository<Employees, EmployeesModel>, IEmployeesRepository
     {
-        public EmployeesRepository(cim_dbContext context) : base(context)
+        public EmployeesRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
         {
 
         }
+
     }
 }

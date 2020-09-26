@@ -18,71 +18,66 @@ namespace CIM.API.Controllers
     {
         private IMachineService _service;
         public MachineController(
-            IHubContext<MachineHub> hub,
+            IHubContext<GlobalHub> hub,
             IProductionPlanService productionPlanService,
-            IMachineService service
+            IMachineService service,
+            IMasterDataService masterDataService
         )
         {
+            _hub = hub;
             _service = service;
+            _masterDataService = masterDataService;
         }
 
         [HttpPost]
         [Route("api/[controller]/Create")]
-        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Create([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _service.Create(model);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
         [HttpPost]
         [Route("api/[controller]/Update")]
-        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineModel model)
+        public async Task<ProcessReponseModel<object>> Update([FromBody]MachineListModel model)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                _service.CurrentUser = new CurrentUserModel { UserId = "64c679a2-795c-4ea9-a35a-a18822fa5b8e" };
-
                 await _service.Update(model);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<PagingModel<MachineListModel>>> List(string keyword = "", int page = 1, int howMany = 10, bool isActive = true)
         {
             var output = new ProcessReponseModel<PagingModel<MachineListModel>>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
-                output.Data = await _service.List(keyword, page, howmany);
+                output.Data = await _service.List(keyword, page, howMany, isActive);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }
@@ -94,14 +89,47 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<MachineListModel>();
             try
             {
-                // todo
-                //var currentUser = (CurrentUserModel)HttpContext.Items[Constans.CURRENT_USER];
                 output.Data = await _service.Get(id);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetMachineByRoute")]
+        public async Task<ProcessReponseModel<List<RouteMachineModel>>> GetMachineByRoute(int routeId)
+        {
+            var output = new ProcessReponseModel<List<RouteMachineModel>>();
+            try
+            {
+                output.Data = await _service.GetMachineByRoute(routeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/[controller]/InsertMappingRouteMachine")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> InsertMappingRouteMachine([FromBody] List<RouteMachineModel> data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                await _service.InsertMappingRouteMachine(data);
+                await RefreshMasterData(Constans.MasterDataType.Machines);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
             }
             return output;
         }

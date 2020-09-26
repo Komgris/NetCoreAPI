@@ -15,25 +15,37 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<AccidentCategory> AccidentCategory { get; set; }
+        public virtual DbSet<AccidentParticipants> AccidentParticipants { get; set; }
+        public virtual DbSet<Accidents> Accidents { get; set; }
         public virtual DbSet<App> App { get; set; }
         public virtual DbSet<AppFeatures> AppFeatures { get; set; }
         public virtual DbSet<AreaLocals> AreaLocals { get; set; }
         public virtual DbSet<Areas> Areas { get; set; }
         public virtual DbSet<Bom> Bom { get; set; }
+        public virtual DbSet<BomDole> BomDole { get; set; }
+        public virtual DbSet<Calendar> Calendar { get; set; }
+        public virtual DbSet<ClientRoute> ClientRoute { get; set; }
         public virtual DbSet<Companies> Companies { get; set; }
         public virtual DbSet<CompaniesSites> CompaniesSites { get; set; }
         public virtual DbSet<CompanyLocals> CompanyLocals { get; set; }
+        public virtual DbSet<Component> Component { get; set; }
+        public virtual DbSet<ComponentType> ComponentType { get; set; }
+        public virtual DbSet<ComponentTypeLossLevel3> ComponentTypeLossLevel3 { get; set; }
+        public virtual DbSet<Education> Education { get; set; }
         public virtual DbSet<Employees> Employees { get; set; }
         public virtual DbSet<Locations> Locations { get; set; }
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
-        public virtual DbSet<MachineComponent> MachineComponent { get; set; }
-        public virtual DbSet<MachineComponentType> MachineComponentType { get; set; }
-        public virtual DbSet<MachineComponentTypeLossLevel3> MachineComponentTypeLossLevel3 { get; set; }
+        public virtual DbSet<MachineMonitors> MachineMonitors { get; set; }
+        public virtual DbSet<MachineOperators> MachineOperators { get; set; }
+        public virtual DbSet<MachinePanel> MachinePanel { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
+        public virtual DbSet<MachineTeam> MachineTeam { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
+        public virtual DbSet<MachineTypeComponentType> MachineTypeComponentType { get; set; }
         public virtual DbSet<MachineTypeLossLevel3> MachineTypeLossLevel3 { get; set; }
         public virtual DbSet<MachineTypeMaterial> MachineTypeMaterial { get; set; }
         public virtual DbSet<MaintenanceActivity> MaintenanceActivity { get; set; }
@@ -41,20 +53,27 @@ namespace CIM.Domain.Models
         public virtual DbSet<MaintenanceTeam> MaintenanceTeam { get; set; }
         public virtual DbSet<MaintenanceTeamMember> MaintenanceTeamMember { get; set; }
         public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<MaterialGroup> MaterialGroup { get; set; }
+        public virtual DbSet<MaterialGroupMaterial> MaterialGroupMaterial { get; set; }
         public virtual DbSet<MaterialType> MaterialType { get; set; }
         public virtual DbSet<Name> Name { get; set; }
+        public virtual DbSet<ProcessType> ProcessType { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductDetail> ProductDetail { get; set; }
         public virtual DbSet<ProductFamily> ProductFamily { get; set; }
         public virtual DbSet<ProductGroup> ProductGroup { get; set; }
+        public virtual DbSet<ProductMaterial> ProductMaterial { get; set; }
         public virtual DbSet<ProductType> ProductType { get; set; }
         public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
         public virtual DbSet<ProductionStatus> ProductionStatus { get; set; }
         public virtual DbSet<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual DbSet<RecordMachineComponentLoss> RecordMachineComponentLoss { get; set; }
         public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
+        public virtual DbSet<RecordMaintenancePlan> RecordMaintenancePlan { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
+        public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
+        public virtual DbSet<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
         public virtual DbSet<Route> Route { get; set; }
         public virtual DbSet<RouteMachine> RouteMachine { get; set; }
         public virtual DbSet<RouteProductGroup> RouteProductGroup { get; set; }
@@ -63,6 +82,10 @@ namespace CIM.Domain.Models
         public virtual DbSet<SitesUsers> SitesUsers { get; set; }
         public virtual DbSet<StandardCostBrite> StandardCostBrite { get; set; }
         public virtual DbSet<Sysdiagrams> Sysdiagrams { get; set; }
+        public virtual DbSet<SystemParameter> SystemParameter { get; set; }
+        public virtual DbSet<Team> Team { get; set; }
+        public virtual DbSet<TeamEmployees> TeamEmployees { get; set; }
+        public virtual DbSet<TeamType> TeamType { get; set; }
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
         public virtual DbSet<UserGroups> UserGroups { get; set; }
@@ -73,23 +96,99 @@ namespace CIM.Domain.Models
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<WasteLevel1> WasteLevel1 { get; set; }
         public virtual DbSet<WasteLevel2> WasteLevel2 { get; set; }
+        public virtual DbSet<WasteNonePrime> WasteNonePrime { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.70.6.198,1433;initial catalog=cim_db;persist security info=True;user id=cim;password=4dev@psec;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.70.6.212,1433;initial catalog=cim_db;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccidentCategory>(entity =>
+            {
+                entity.ToTable("Accident_Category");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<AccidentParticipants>(entity =>
+            {
+                entity.ToTable("Accident_Participants");
+
+                entity.Property(e => e.AccidentId).HasColumnName("Accident_Id");
+
+                entity.Property(e => e.EmNo)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.HasOne(d => d.Accident)
+                    .WithMany(p => p.AccidentParticipants)
+                    .HasForeignKey(d => d.AccidentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Accident_Participants_Accidents");
+            });
+
+            modelBuilder.Entity<Accidents>(entity =>
+            {
+                entity.Property(e => e.CategoryId).HasColumnName("Category_Id");
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.HappenAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.AccidentCategory)
+                    .WithMany(p => p.Accidents)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_Accidents_Accident_Category");
+            });
+
             modelBuilder.Entity<App>(entity =>
             {
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.ThUrl).HasMaxLength(500);
 
                 entity.Property(e => e.Url)
                     .IsRequired()
@@ -265,6 +364,170 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.TodayJdate).HasColumnName("today_jdate");
             });
 
+            modelBuilder.Entity<BomDole>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("BOM_Dole");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.F24).HasMaxLength(255);
+
+                entity.Property(e => e.FruitGroup)
+                    .HasColumnName("FRUIT GROUP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.FruitType)
+                    .HasColumnName("Fruit type")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.FruitTypeDescription)
+                    .HasColumnName("Fruit type Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Imdsc1ConsumeDescription)
+                    .HasColumnName("Imdsc1_Consume Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imdsc1Description)
+                    .HasColumnName("Imdsc1_Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ImglptConsumeGlClass)
+                    .HasColumnName("Imglpt_Consume GL Class")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imprp2).HasMaxLength(255);
+
+                entity.Property(e => e.Imprp3ProductGrup)
+                    .HasColumnName("Imprp3Product Grup")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp2CanCount)
+                    .HasColumnName("Imsrp2_Can Count")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp7).HasMaxLength(255);
+
+                entity.Property(e => e.Imsrp9CanSize)
+                    .HasColumnName("Imsrp9_Can Size")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Irdsc1Routing)
+                    .HasColumnName("Irdsc1_Routing")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Irmcu).HasMaxLength(255);
+
+                entity.Property(e => e.Irtrt).HasMaxLength(255);
+
+                entity.Property(e => e.IxcmcuConsumePartBP)
+                    .HasColumnName("Ixcmcu_Consume part b/p")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Ixfser).HasMaxLength(255);
+
+                entity.Property(e => e.Ixfvbt).HasMaxLength(255);
+
+                entity.Property(e => e.IxkitlProduceItem)
+                    .HasColumnName("Ixkitl_ProduceITem")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxlitmConsumePart)
+                    .HasColumnName("Ixlitm_Consume Part")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxmmcuBP)
+                    .HasColumnName("Ixmmcu_B/P")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxqntyUsagePlusSpoilage).HasColumnName("Ixqnty_Usage plus spoilage");
+
+                entity.Property(e => e.IxsbntSubstituteIf0PrimaryOtherAlternate).HasColumnName("Ixsbnt_Substitute(If 0=Primary , Other = Alternate)");
+
+                entity.Property(e => e.IxscrpSpoilage).HasColumnName("Ixscrp_%Spoilage");
+
+                entity.Property(e => e.Ixtbm).HasMaxLength(255);
+
+                entity.Property(e => e.IxumUom)
+                    .HasColumnName("Ixum_UOM")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.IxuomProductUom)
+                    .HasColumnName("Ixuom_ProductUOM_")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Sysdate).HasColumnName("sysdate");
+
+                entity.Property(e => e.TodayJdate).HasColumnName("today_jdate");
+            });
+
+            modelBuilder.Entity<Calendar>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("DATE")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Day)
+                    .HasColumnName("DAY")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Ipd).HasColumnName("IPD");
+
+                entity.Property(e => e.Iyear)
+                    .HasColumnName("IYEAR")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.JulainDate).HasColumnName("Julain_Date");
+
+                entity.Property(e => e.Label)
+                    .HasColumnName("LABEL")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Pdwk)
+                    .HasColumnName("PDWK")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Period).HasMaxLength(10);
+
+                entity.Property(e => e.TjulainDate).HasColumnName("TJulain_Date");
+
+                entity.Property(e => e.Wk).HasColumnName("WK");
+
+                entity.Property(e => e.Year).HasColumnName("YEAR");
+            });
+
+            modelBuilder.Entity<ClientRoute>(entity =>
+            {
+                entity.ToTable("Client_Route");
+
+                entity.Property(e => e.ClientName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.LastUpdate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+
+                entity.HasOne(d => d.Route)
+                    .WithMany(p => p.ClientRoute)
+                    .HasForeignKey(d => d.RouteId)
+                    .HasConstraintName("FK_Client_Route_Route");
+            });
+
             modelBuilder.Entity<Companies>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -325,6 +588,115 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Company_Locals_Companies");
             });
 
+            modelBuilder.Entity<Component>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.TypeId).HasColumnName("Type_Id");
+
+                entity.Property(e => e.UpdateBy).HasMaxLength(128);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.Component)
+                    .HasForeignKey(d => d.MachineId)
+                    .HasConstraintName("FK_Machine_Component_Machine");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany(p => p.Component)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Component_Machine_ComponentType");
+            });
+
+            modelBuilder.Entity<ComponentType>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Image).HasMaxLength(200);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NameStd)
+                    .HasColumnName("Name_Std")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<ComponentTypeLossLevel3>(entity =>
+            {
+                entity.ToTable("ComponentType_LossLevel3");
+
+                entity.Property(e => e.ComponentTypeId).HasColumnName("ComponentType_Id");
+
+                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
+
+                entity.HasOne(d => d.ComponentType)
+                    .WithMany(p => p.ComponentTypeLossLevel3)
+                    .HasForeignKey(d => d.ComponentTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_MachineTypeComponent_LossLevel3_MachineTypeComponent");
+
+                entity.HasOne(d => d.LossLevel3)
+                    .WithMany(p => p.ComponentTypeLossLevel3)
+                    .HasForeignKey(d => d.LossLevel3Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LossLevel3_MachineTypeComponent_LossLevel3");
+            });
+
+            modelBuilder.Entity<Education>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Educational)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+            });
+
             modelBuilder.Entity<Employees>(entity =>
             {
                 entity.Property(e => e.BirthDate).HasColumnType("date");
@@ -344,6 +716,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Education).HasMaxLength(50);
 
+                entity.Property(e => e.EducationId).HasColumnName("Education_Id");
+
                 entity.Property(e => e.EmLevel).HasMaxLength(20);
 
                 entity.Property(e => e.EmNo).HasMaxLength(50);
@@ -353,6 +727,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Emsp2).HasMaxLength(20);
 
                 entity.Property(e => e.HireDate).HasColumnType("date");
+
+                entity.Property(e => e.Image).HasMaxLength(200);
 
                 entity.Property(e => e.Sex)
                     .IsRequired()
@@ -484,6 +860,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -539,15 +917,75 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Machine_MachineStatus");
             });
 
-            modelBuilder.Entity<MachineComponent>(entity =>
+            modelBuilder.Entity<MachineMonitors>(entity =>
             {
-                entity.ToTable("Machine_Component");
+                entity.ToTable("Machine_Monitors");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.PanelId).HasColumnName("Panel_Id");
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.MachineMonitors)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Monitors_Machine");
+
+                entity.HasOne(d => d.Panel)
+                    .WithMany(p => p.MachineMonitors)
+                    .HasForeignKey(d => d.PanelId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Machine_Monitors_Machine_Panel");
+            });
+
+            modelBuilder.Entity<MachineOperators>(entity =>
+            {
+                entity.ToTable("Machine_Operators");
+
+                entity.Property(e => e.LastUpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.LastUpdatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.PlanId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<MachinePanel>(entity =>
+            {
+                entity.ToTable("Machine_Panel");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MachineStatus>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<MachineTeam>(entity =>
+            {
+                entity.ToTable("Machine_Team");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.CreatedBy)
+                    .IsRequired()
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
@@ -557,85 +995,23 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.TypeId).HasColumnName("Type_Id");
-
-                entity.Property(e => e.UpdateBy).HasMaxLength(128);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Machine)
-                    .WithMany(p => p.MachineComponent)
-                    .HasForeignKey(d => d.MachineId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Machine_Component_Machine");
-
-                entity.HasOne(d => d.Type)
-                    .WithMany(p => p.MachineComponent)
-                    .HasForeignKey(d => d.TypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Machine_Component_Machine_ComponentType");
-            });
-
-            modelBuilder.Entity<MachineComponentType>(entity =>
-            {
-                entity.ToTable("Machine_ComponentType");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128)
-                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
-
-                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.TeamId).HasColumnName("Team_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.MachineType)
-                    .WithMany(p => p.MachineComponentType)
-                    .HasForeignKey(d => d.MachineTypeId)
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.MachineTeam)
+                    .HasForeignKey(d => d.MachineId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Machine_ComponentType_MachineType");
-            });
+                    .HasConstraintName("FK_Machine_Team_Machine_Team");
 
-            modelBuilder.Entity<MachineComponentTypeLossLevel3>(entity =>
-            {
-                entity.ToTable("Machine_ComponentType_LossLevel3");
-
-                entity.Property(e => e.LossLevel3Id).HasColumnName("LossLevel3_Id");
-
-                entity.Property(e => e.MachineComponentTypeId).HasColumnName("MachineComponentType_Id");
-
-                entity.HasOne(d => d.LossLevel3)
-                    .WithMany(p => p.MachineComponentTypeLossLevel3)
-                    .HasForeignKey(d => d.LossLevel3Id)
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.MachineTeam)
+                    .HasForeignKey(d => d.TeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_LossLevel3_MachineTypeComponent_LossLevel3");
-
-                entity.HasOne(d => d.MachineComponentType)
-                    .WithMany(p => p.MachineComponentTypeLossLevel3)
-                    .HasForeignKey(d => d.MachineComponentTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MachineTypeComponent_LossLevel3_MachineTypeComponent");
-            });
-
-            modelBuilder.Entity<MachineStatus>(entity =>
-            {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .HasConstraintName("FK_Machine_Team_Team");
             });
 
             modelBuilder.Entity<MachineType>(entity =>
@@ -651,6 +1027,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.HasOee).HasColumnName("HasOEE");
 
+                entity.Property(e => e.Image).HasMaxLength(200);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -658,6 +1036,24 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MachineTypeComponentType>(entity =>
+            {
+                entity.ToTable("MachineType_ComponentType");
+
+                entity.Property(e => e.ComponentTypeId).HasColumnName("ComponentType_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
             });
 
             modelBuilder.Entity<MachineTypeLossLevel3>(entity =>
@@ -837,11 +1233,15 @@ namespace CIM.Domain.Models
                     .HasColumnName("ICSGroup")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Image).HasMaxLength(200);
+
                 entity.Property(e => e.MaterialGroup).HasMaxLength(50);
 
                 entity.Property(e => e.MaterialTypeId).HasColumnName("MaterialType_Id");
 
                 entity.Property(e => e.ProductCategory).HasMaxLength(50);
+
+                entity.Property(e => e.UnitsId).HasColumnName("Units_Id");
 
                 entity.Property(e => e.Uom)
                     .HasColumnName("UOM")
@@ -856,6 +1256,53 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.MaterialTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_MaterialType");
+
+                entity.HasOne(d => d.Units)
+                    .WithMany(p => p.Material)
+                    .HasForeignKey(d => d.UnitsId)
+                    .HasConstraintName("FK_Material_Unit");
+            });
+
+            modelBuilder.Entity<MaterialGroup>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MaterialGroupMaterial>(entity =>
+            {
+                entity.ToTable("MaterialGroup_Material");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.MaterialGroupId).HasColumnName("MaterialGroup_Id");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.HasOne(d => d.MaterialGroup)
+                    .WithMany(p => p.MaterialGroupMaterial)
+                    .HasForeignKey(d => d.MaterialGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BOM_Material_BOM_temp");
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.MaterialGroupMaterial)
+                    .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BOM_Material_Material");
             });
 
             modelBuilder.Entity<MaterialType>(entity =>
@@ -875,7 +1322,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.EmployeeId).HasColumnName("Employee_Id");
+                entity.Property(e => e.EmployeesId).HasColumnName("Employees_Id");
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
@@ -886,9 +1333,9 @@ namespace CIM.Domain.Models
                     .HasColumnName("Language_id")
                     .HasMaxLength(2);
 
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.LastName).HasMaxLength(500);
+
+                entity.Property(e => e.TitleName).HasMaxLength(10);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -900,9 +1347,9 @@ namespace CIM.Domain.Models
                     .HasColumnName("User_Id")
                     .HasMaxLength(128);
 
-                entity.HasOne(d => d.Employee)
+                entity.HasOne(d => d.Employees)
                     .WithMany(p => p.Name)
-                    .HasForeignKey(d => d.EmployeeId)
+                    .HasForeignKey(d => d.EmployeesId)
                     .HasConstraintName("FK_Name_Employees");
 
                 entity.HasOne(d => d.User)
@@ -911,13 +1358,22 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Name_Users");
             });
 
+            modelBuilder.Entity<ProcessType>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(20);
+            });
+
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.BriteItemPerUpcitem)
+                entity.Property(e => e.BriteItemPerUPCItem)
                     .HasColumnName("BriteItemPerUPCItem")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Code).HasMaxLength(50);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -932,15 +1388,22 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.Igweight)
+                entity.Property(e => e.IGWeight)
                     .HasColumnName("IGWeight")
                     .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Image).HasMaxLength(200);
 
                 entity.Property(e => e.NetWeight).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.PackingMedium).HasMaxLength(50);
 
-                entity.Property(e => e.Pmweight)
+                entity.Property(e => e.PID)
+                    .IsRequired()
+                    .HasColumnName("PID")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.PMWeight)
                     .HasColumnName("PMWeight")
                     .HasColumnType("decimal(18, 2)");
 
@@ -950,18 +1413,19 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
 
+                entity.Property(e => e.UnitId).HasColumnName("Unit_Id");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.Property(e => e.WeightPerUom)
+                entity.Property(e => e.WeightPerUOM)
                     .HasColumnName("WeightPerUOM")
                     .HasColumnType("decimal(18, 2)");
 
                 entity.HasOne(d => d.ProductFamily)
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.ProductFamilyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductFamily");
 
                 entity.HasOne(d => d.ProductGroup)
@@ -1039,9 +1503,52 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
+
+                entity.Property(e => e.SizeOz).HasColumnName("Size(Oz)");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<ProductMaterial>(entity =>
+            {
+                entity.ToTable("Product_Material");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.IngredientPerUnit).HasColumnType("decimal(18, 3)");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_Id");
+
+                entity.Property(e => e.UnitsId).HasColumnName("Units_Id");
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Material");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Product");
+
+                entity.HasOne(d => d.Units)
+                    .WithMany(p => p.ProductMaterial)
+                    .HasForeignKey(d => d.UnitsId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Material_Unit");
             });
 
             modelBuilder.Entity<ProductType>(entity =>
@@ -1072,9 +1579,15 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.PlanId).HasMaxLength(50);
 
+                entity.Property(e => e.Acid).HasMaxLength(50);
+
                 entity.Property(e => e.ActualFinish).HasColumnType("datetime");
 
                 entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.Brix).HasMaxLength(100);
+
+                entity.Property(e => e.Country).HasMaxLength(10);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -1084,17 +1597,35 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
+                entity.Property(e => e.Ingredient).HasMaxLength(300);
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.ItemBrite).HasMaxLength(50);
+
+                entity.Property(e => e.Line).HasMaxLength(10);
+
+                entity.Property(e => e.Note).HasMaxLength(300);
+
+                entity.Property(e => e.Ph).HasMaxLength(20);
 
                 entity.Property(e => e.PlanFinish).HasColumnType("datetime");
 
                 entity.Property(e => e.PlanStart).HasColumnType("datetime");
 
+                entity.Property(e => e.Pm).HasMaxLength(10);
+
                 entity.Property(e => e.ProductId)
                     .HasColumnName("Product_Id")
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.RawMaterial).HasMaxLength(300);
+
+                entity.Property(e => e.RouteGuideLine)
+                    .HasColumnName("Route_GuideLine")
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
@@ -1107,6 +1638,12 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Wbrt)
+                    .HasColumnName("WBRT")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Weight).HasMaxLength(50);
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductionPlan)
@@ -1143,6 +1680,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(128);
 
+                entity.Property(e => e.EstimateFinish).HasColumnType("datetime");
+
                 entity.Property(e => e.Finish).HasColumnType("datetime");
 
                 entity.Property(e => e.OperatorSetId).HasColumnName("OperatorSet_Id");
@@ -1154,7 +1693,9 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
-                entity.Property(e => e.Start).HasColumnType("datetime");
+                entity.Property(e => e.Start)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
@@ -1243,11 +1784,6 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.ProductionPlanId)
                     .HasConstraintName("FK_Record_Machine_Component_Loss_Production_Plan");
 
-                entity.HasOne(d => d.RecordMachineComponentStatus)
-                    .WithMany(p => p.RecordMachineComponentLoss)
-                    .HasForeignKey(d => d.RecordMachineComponentStatusId)
-                    .HasConstraintName("FK_Record_Machine_Component_Loss_Record_Machine_Component_Status");
-
                 entity.HasOne(d => d.UpdatedByNavigation)
                     .WithMany(p => p.RecordMachineComponentLossUpdatedByNavigation)
                     .HasForeignKey(d => d.UpdatedBy)
@@ -1262,18 +1798,23 @@ namespace CIM.Domain.Models
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.CreatedBy)
-                    .HasMaxLength(128)
-                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
 
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.RecordMachineStatus)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .HasConstraintName("FK_Record_Machine_Component_Status_Users");
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
 
                 entity.HasOne(d => d.Machine)
                     .WithMany(p => p.RecordMachineStatus)
@@ -1288,11 +1829,55 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Record_Machine_Component_Status_MachineStatus");
             });
 
+            modelBuilder.Entity<RecordMaintenancePlan>(entity =>
+            {
+                entity.ToTable("Record_Maintenance_Plan");
+
+                entity.Property(e => e.ActualFinish).HasColumnType("datetime");
+
+                entity.Property(e => e.ActualStart).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Details).HasMaxLength(2000);
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.PlanStart).HasColumnType("datetime");
+
+                entity.Property(e => e.TeamId).HasColumnName("Team_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Machine)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.MachineId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Machine");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.RecordMaintenancePlan)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_Maintenance_Plan_Team");
+            });
+
             modelBuilder.Entity<RecordManufacturingLoss>(entity =>
             {
                 entity.ToTable("Record_Manufacturing_Loss");
 
-                entity.Property(e => e.ComponentTypeId).HasColumnName("ComponentType_Id");
+                entity.Property(e => e.ComponentId).HasColumnName("Component_Id");
 
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
@@ -1309,9 +1894,16 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
                 entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
 
                 entity.Property(e => e.StartedAt)
                     .HasColumnType("datetime")
@@ -1321,10 +1913,14 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.ComponentType)
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+
+                entity.HasOne(d => d.Component)
                     .WithMany(p => p.RecordManufacturingLoss)
-                    .HasForeignKey(d => d.ComponentTypeId)
-                    .HasConstraintName("FK_Record_Manufacturing_Loss_Machine_ComponentType");
+                    .HasForeignKey(d => d.ComponentId)
+                    .HasConstraintName("FK_Record_Manufacturing_Loss_Component");
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.RecordManufacturingLossCreatedByNavigation)
@@ -1346,6 +1942,7 @@ namespace CIM.Domain.Models
                 entity.HasOne(d => d.ProductionPlan)
                     .WithMany(p => p.RecordManufacturingLoss)
                     .HasForeignKey(d => d.ProductionPlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_ProductionPLan_Loss_Production_Plan");
 
                 entity.HasOne(d => d.UpdatedByNavigation)
@@ -1358,6 +1955,12 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Output");
 
+                entity.Property(e => e.AdditionalCounterOut).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CounterIn).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CounterOut).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -1367,9 +1970,15 @@ namespace CIM.Domain.Models
                     .HasMaxLength(128)
                     .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
 
-                entity.Property(e => e.IsCounterOut).HasDefaultValueSql("((1))");
+                entity.Property(e => e.FactorDivide).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.FactorMultiply).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
 
                 entity.Property(e => e.ProductionPlanId)
                     .IsRequired()
@@ -1378,26 +1987,79 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
 
+                entity.Property(e => e.TotalIn).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.TotalOut).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.RecordProductionPlanOutputCreatedByNavigation)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Output_Users2");
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
-                entity.HasOne(d => d.ProductionPlan)
-                    .WithMany(p => p.RecordProductionPlanOutput)
-                    .HasForeignKey(d => d.ProductionPlanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Record_Production_Output_Production_Plan");
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
 
-                entity.HasOne(d => d.UpdatedByNavigation)
-                    .WithMany(p => p.RecordProductionPlanOutputUpdatedByNavigation)
-                    .HasForeignKey(d => d.UpdatedBy)
-                    .HasConstraintName("FK_Record_Production_Output_Users");
+            modelBuilder.Entity<RecordProductionPlanWaste>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste");
+
+                entity.Property(e => e.CauseMachineId).HasColumnName("CauseMachine_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Reason).HasMaxLength(4000);
+
+                entity.Property(e => e.RecordManufacturingLossId).HasColumnName("Record_Manufacturing_Loss_Id");
+
+                entity.Property(e => e.RouteId).HasColumnName("Route_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WasteLevel2Id).HasColumnName("WasteLevel2_Id");
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste_Materials");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 3)");
+
+                entity.Property(e => e.Cost)
+                    .HasColumnType("decimal(18, 3)")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
+
+                entity.HasOne(d => d.Waste)
+                    .WithMany(p => p.RecordProductionPlanWasteMaterials)
+                    .HasForeignKey(d => d.WasteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_Materials_Record_ProductionPlan_Waste");
             });
 
             modelBuilder.Entity<Route>(entity =>
@@ -1418,6 +2080,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -1651,7 +2315,7 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<Sysdiagrams>(entity =>
             {
                 entity.HasKey(e => e.DiagramId)
-                    .HasName("PK__sysdiagr__C2B05B61241CA7D3");
+                    .HasName("PK__sysdiagr__C2B05B6189960BF1");
 
                 entity.ToTable("sysdiagrams");
 
@@ -1671,6 +2335,126 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.PrincipalId).HasColumnName("principal_id");
 
                 entity.Property(e => e.Version).HasColumnName("version");
+            });
+
+            modelBuilder.Entity<SystemParameter>(entity =>
+            {
+                entity.ToTable("System_Parameter");
+
+                entity.HasIndex(e => e.Parameter)
+                    .HasName("IX_System_Parameter")
+                    .IsUnique();
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Parameter)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<Team>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.TeamTypeId).HasColumnName("TeamType_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.TeamType)
+                    .WithMany(p => p.Team)
+                    .HasForeignKey(d => d.TeamTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Team_TeamType");
+            });
+
+            modelBuilder.Entity<TeamEmployees>(entity =>
+            {
+                entity.ToTable("Team_Employees");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.EmployeesId).HasColumnName("Employees_Id");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TeamId).HasColumnName("Team_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Employees)
+                    .WithMany(p => p.TeamEmployees)
+                    .HasForeignKey(d => d.EmployeesId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Team_Employees_Employees");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.TeamEmployees)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Team_Employees_Team");
+            });
+
+            modelBuilder.Entity<TeamType>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasDefaultValueSql("([dbo].[GetSystemGUID]())");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
             modelBuilder.Entity<Units>(entity =>
@@ -1706,9 +2490,13 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<UserGroups>(entity =>
             {
+                entity.HasIndex(e => e.Name)
+                    .HasName("KX_UserGroups")
+                    .IsUnique();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<UserGroupsAppFeatures>(entity =>
@@ -1732,8 +2520,6 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("UserGroups_Apps");
 
-                entity.Property(e => e.Id).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.AppId).HasColumnName("App_Id");
 
                 entity.Property(e => e.UserGroupId).HasColumnName("UserGroup_Id");
@@ -1743,18 +2529,6 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.AppId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserGroups_Apps_App");
-
-                entity.HasOne(d => d.UserGroup)
-                    .WithMany(p => p.UserGroupsApps)
-                    .HasForeignKey(d => d.UserGroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroups_Apps_UserGroups");
-
-                entity.HasOne(d => d.UserGroupsAppFeatures)
-                    .WithMany(p => p.UserGroupsApps)
-                    .HasForeignKey(d => new { d.Id, d.UserGroupId })
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserGroups_Apps_UserGroups_AppFeatures");
             });
 
             modelBuilder.Entity<UserPosition>(entity =>
@@ -1853,17 +2627,16 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.ProductTypeId).HasColumnName("ProductType_Id");
+                entity.Property(e => e.ProcessTypeId).HasColumnName("ProcessType_Id");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
 
-                entity.HasOne(d => d.ProductType)
+                entity.HasOne(d => d.ProcessType)
                     .WithMany(p => p.WasteLevel1)
-                    .HasForeignKey(d => d.ProductTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WasteLevel1_ProductType");
+                    .HasForeignKey(d => d.ProcessTypeId)
+                    .HasConstraintName("FK_WasteLevel1_ProcessType");
             });
 
             modelBuilder.Entity<WasteLevel2>(entity =>
@@ -1896,6 +2669,21 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.WasteLevel1Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WasteLevel2_WasteLevel1");
+            });
+
+            modelBuilder.Entity<WasteNonePrime>(entity =>
+            {
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(20);
             });
 
             OnModelCreatingPartial(modelBuilder);

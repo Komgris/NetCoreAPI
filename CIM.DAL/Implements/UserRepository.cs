@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.DAL.Implements
 {
-    public class UserRepository : Repository<Users>, IUserRepository
+    public class UserRepository : Repository<Users, UserModel>, IUserRepository
     {
-        public UserRepository(cim_dbContext context) : base(context)
+        public UserRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
         {
         }
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
@@ -22,22 +23,19 @@ namespace CIM.DAL.Implements
             if (!string.IsNullOrEmpty(keyword))
             {
                 query = query.Where(x =>
-                    x.UserName.Contains(keyword) 
-                    //|| x.UserProfiles.Any(profile =>
-                    //    profile.FirstName.Contains(keyword) ||
-                    //    profile.LastName.Contains(keyword))
+                    x.UserName.Contains(keyword)
                 );
             }
             var data = await query
-                .Select(x=> new UserModel { 
+                .Select(x => new UserModel
+                {
                     Email = x.Email,
                     FirstName = "",
                     LastName = "",
                     Id = x.Id,
-                    LanguageId = x.DefaultLanguageId,
+                    DefaultLanguageId = x.DefaultLanguageId,
                     UserGroupId = x.UserGroupId,
-                    UserName = x.UserName,
-                    Image = null
+                    UserName = x.UserName
                 })
                 .ToListAsync();
             return new PagingModel<UserModel>

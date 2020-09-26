@@ -7,6 +7,7 @@ namespace CIM.Domain.Models
     {
         public Route()
         {
+            ClientRoute = new HashSet<ClientRoute>();
             ProductionPlan = new HashSet<ProductionPlan>();
             RecordActiveProductionPlan = new HashSet<RecordActiveProductionPlan>();
             RouteMachine = new HashSet<RouteMachine>();
@@ -15,6 +16,7 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public int ProcessTypeId { get; set; }
         public int? ParentId { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDelete { get; set; }
@@ -23,6 +25,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
+        public virtual ICollection<ClientRoute> ClientRoute { get; set; }
         public virtual ICollection<ProductionPlan> ProductionPlan { get; set; }
         public virtual ICollection<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
         public virtual ICollection<RouteMachine> RouteMachine { get; set; }

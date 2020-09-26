@@ -15,20 +15,25 @@ namespace CIM.BusinessLogic.Services
     {
         private readonly IMaterialRepository _materialRepository;
         private IUnitOfWorkCIM _unitOfWork;
+        private IProductMaterialRepository _productMaterialRepository;
 
         public MaterialService(
             IUnitOfWorkCIM unitOfWork,
-            IMaterialRepository materialRepository
+            IMaterialRepository materialRepository,
+            IProductMaterialRepository productMaterialRepository
             )
         {
             _materialRepository = materialRepository;
             _unitOfWork = unitOfWork;
+            _productMaterialRepository = productMaterialRepository;
         }
 
         public async Task<MaterialModel> Create(MaterialModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Material());
             _materialRepository.Add(dbModel);
+            dbModel.IsActive = true;
+            dbModel.IsDelete = false;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             await _unitOfWork.CommitAsync();
@@ -37,7 +42,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<MaterialModel> Update(MaterialModel model)
         {
-            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
@@ -46,37 +51,47 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
 
-        public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howmany)
+        public async Task<PagingModel<MaterialModel>> List(string keyword, int page, int howMany, bool isActive)
         {
-            int skipRec = (page - 1) * howmany;
-            int takeRec = howmany;
-
-            //to do optimize
-            var dbModel = (await _materialRepository.WhereAsync(x => x.IsActive && x.IsDelete == false &&
-                                string.IsNullOrEmpty(keyword) ? true : (x.Code.Contains(keyword)
-                                || x.Description.Contains(keyword)
-                                || x.ProductCategory.Contains(keyword)
-                                || x.Icsgroup.Contains(keyword)
-                                || x.MaterialGroup.Contains(keyword)
-                                || x.Uom.Contains(keyword))));
-            int total = dbModel.Count();
-            dbModel = dbModel.OrderBy(s => s.Id).Skip(skipRec).Take(takeRec).ToList();
-
-            var output = new List<MaterialModel>();
-            foreach (var item in dbModel)
-                output.Add(MapperHelper.AsModel(item, new MaterialModel()));
-
-            return new PagingModel<MaterialModel>
-            {
-                HowMany = total,
-                Data = output
-            };
+            var output = await _materialRepository.List(keyword, page, howMany, isActive);
+            return output;
         }
 
         public async Task<MaterialModel> Get(int id)
         {
-            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsDelete == false);
+            var dbModel = await _materialRepository.FirstOrDefaultAsync(x => x.Id == id);
             return MapperHelper.AsModel(dbModel, new MaterialModel());
+        }
+
+        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
+        {
+            var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            return output;
+        }
+
+        public async Task InsertByProduct(List<ProductMaterialModel> data)
+        {
+            DeleteMapping(data[0].ProductId);
+            foreach (var model in data) 
+            {
+                if (model.MaterialId != 0)
+                {
+                    var db_model = MapperHelper.AsModel(model, new ProductMaterial());
+                    db_model.CreatedAt = DateTime.Now;
+                    db_model.CreatedBy = CurrentUser.UserId;
+                    _productMaterialRepository.Add(db_model);
+                }
+            }
+            await _unitOfWork.CommitAsync();
+        }
+
+        public void DeleteMapping(int productId)
+        {
+            var list = _productMaterialRepository.Where(x => x.ProductId == productId);
+            foreach (var model in list)
+            {
+                _productMaterialRepository.Delete(model);
+            }
         }
 
     }

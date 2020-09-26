@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Utility
 {
     public static class HelperUtility
     {
-
         public static int[] StringToArray(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -21,6 +23,12 @@ namespace CIM.BusinessLogic.Utility
             if (string.IsNullOrEmpty(text))
                 return new string[] { };
             return text.Split(',').Select(x => x).ToArray();
+        }
+
+        public static void Logging(string file, string mng)
+        {
+            var path = @"C:\log\" + file;
+            File.AppendAllTextAsync(path, $"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff")} >> {mng} \r\n",CancellationToken.None);
         }
     }
 }

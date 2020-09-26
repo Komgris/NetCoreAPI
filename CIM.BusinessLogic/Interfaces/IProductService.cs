@@ -15,7 +15,7 @@ namespace CIM.BusinessLogic.Interfaces
 
         Task<ProductModel> Create(ProductModel model);
 
-        Task<PagingModel<ProductModel>> List(string keyword, int page, int howmany);
+        Task<PagingModel<ProductModel>> List(string keyword, int page, int howMany, bool isActive, int? processTypeId);
 
         Task<ProductModel> Get(int id);
     }

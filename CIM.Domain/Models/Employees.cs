@@ -8,10 +8,12 @@ namespace CIM.Domain.Models
         public Employees()
         {
             Name = new HashSet<Name>();
+            TeamEmployees = new HashSet<TeamEmployees>();
         }
 
         public int Id { get; set; }
         public string EmNo { get; set; }
+        public string Image { get; set; }
         public int Company { get; set; }
         public string EmLevel { get; set; }
         public string UserId { get; set; }
@@ -35,9 +37,11 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public int? EducationId { get; set; }
 
         public virtual Users User { get; set; }
         public virtual UserPosition UserPosition { get; set; }
         public virtual ICollection<Name> Name { get; set; }
+        public virtual ICollection<TeamEmployees> TeamEmployees { get; set; }
     }
 }

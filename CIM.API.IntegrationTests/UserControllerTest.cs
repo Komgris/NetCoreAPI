@@ -24,8 +24,8 @@ namespace CIM.API.IntegrationTests
                 Password = "super-secret",
                 FirstName = "Hans",
                 LastName = "Meier",
-                LanguageId = "en",
-                Image = null,
+                DefaultLanguageId = "en",
+                //Image = null,
 
             };
             var testGroup = new UserGroups

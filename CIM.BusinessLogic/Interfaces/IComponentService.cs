@@ -1,0 +1,19 @@
+﻿using CIM.Model;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CIM.BusinessLogic.Interfaces
+{
+    public interface IComponentService : IBaseService
+    {
+        Task<List<ComponentModel>> GetComponentByMachine(int machineId);
+        Task<PagingModel<ComponentModel>> List(string keyword, int page, int howMany, bool isActive);
+        Task<ComponentModel> Get(int id);
+        Task Update(ComponentModel data);
+        Task Create(ComponentModel data);
+        Task InsertMappingMachineComponent(MappingMachineComponent data);
+        Task<List<ComponentModel>> GetComponentNoMachineId(string keyword);
+    }
+}

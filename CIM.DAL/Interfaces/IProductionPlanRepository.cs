@@ -7,14 +7,16 @@ using CIM.Model;
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IProductionPlanRepository : IRepository<ProductionPlan>
+    public interface IProductionPlanRepository : IRepository<ProductionPlan, object>
     {
-        Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
-        Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive,string statusIds);
-        List<ProductionPlanModel> Get();
-        void InsertProduction(List<ProductionPlanModel> import);
-        void DeleteProduction(string id);
-        void UpdateProduction(List<ProductionPlanModel> list);
+        Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? processTypeId, string routeDefault);
+        FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId, int? processTypeId);
+        Task<ProductionPlanModel> Load(string id, int routeId);
+        Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds);
+        Task<List<ProductionOutputModel>> ListOutputByMonth(int month, int year);
+        Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany);
+        Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId);
+        Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds);
     }
 
 }

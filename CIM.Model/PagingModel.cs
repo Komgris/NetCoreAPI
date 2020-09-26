@@ -15,6 +15,12 @@ namespace CIM.Model
         public int PreviousPage { get; set; }
 
         public List<T> Data { get; set; } = new List<T>();
+
+        public object DataObject { get; set; }
+
         public int Total { get; set; }
+        public int LastPage { get; set; }
+        public bool ShowNext { get; set; }
+        public bool ShowPrevious { get; set; }
     }
 }

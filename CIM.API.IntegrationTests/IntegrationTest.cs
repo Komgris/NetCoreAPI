@@ -18,11 +18,13 @@ using CIM.Model;
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Net;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.API.IntegrationTests
 {
 
-    public class IntegrationTest
+    public class IntegrationTest:BaseIntegrationTest
     {
         protected readonly HttpClient TestClient;
         protected cim_dbContext DbContext;
@@ -47,6 +49,12 @@ namespace CIM.API.IntegrationTests
                         services.Remove(descriptor);
                     }
 
+                    //var connectionString = "Server=103.70.6.198;Initial Catalog=cim_db;Persist Security Info=False;User ID=cim;Password=4dev@psec;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;";
+                    //services.AddDbContext<cim_dbContext>(options =>
+                    //    options.UseSqlServer(connectionString)
+                    //);
+                    //return;
+
                     // Add ApplicationDbContext using an in-memory database for testing.
                     services.AddDbContext<cim_dbContext>((options, context) =>
                     {
@@ -54,7 +62,7 @@ namespace CIM.API.IntegrationTests
                     });
 
                     // Build the service provider.
-                    var sp = services.BuildServiceProvider();
+                    var sp = services.BuildServiceProvider(); 
 
                     // Create a scope to obtain a reference to the database
                     // context (ApplicationDbContext).
@@ -74,7 +82,7 @@ namespace CIM.API.IntegrationTests
                             Name = "Admin"
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
-                        userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
+                        //userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
                         db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
                         var registerUserModel = new UserModel
@@ -84,8 +92,8 @@ namespace CIM.API.IntegrationTests
                             Password = "super-secret",
                             FirstName = "Hans",
                             LastName = "Meier",
-                            LanguageId = "en",
-                            Image = null,
+                            DefaultLanguageId = "en",
+                            //Image = null,
                             UserGroupId = adminGroup.Id,
                         };
                         userService.Create(registerUserModel);
@@ -103,7 +111,6 @@ namespace CIM.API.IntegrationTests
                         //    //    "database with test messages. Error: {Message}", ex.Message);
                         //}
                     }
-
                 });
             });
             TestClient = appFactory.CreateClient();

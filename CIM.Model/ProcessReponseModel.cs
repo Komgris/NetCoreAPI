@@ -9,7 +9,8 @@ namespace CIM.Model
     {
         public T Data { get; set; } = new T();
         public bool IsSuccess { get; set; }
-        public string Message { get; set; } = "Success";
+        public string Message { get; set; }
+        public bool IsAuthorized { get; set; } = true;
 
     }
 }

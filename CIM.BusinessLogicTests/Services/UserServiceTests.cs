@@ -9,6 +9,7 @@ using Moq;
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using CIM.BusinessLogic.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace CIM.BusinessLogic.Services.Tests
 {
@@ -20,12 +21,20 @@ namespace CIM.BusinessLogic.Services.Tests
             var userAppTokenRepository = new Mock<IUserAppTokenRepository>().Object;
             var cipherService = new Mock<ICipherService>().Object;
             var userRep = new Mock<IUserRepository>().Object;
+            var employee = new Mock<IEmployeesRepository>().Object;
             var unitOfWork = new Mock<IUnitOfWorkCIM>().Object;
+            var respon =new Mock<IResponseCacheService>().Object;
+            var config = new Mock<IConfiguration>().Object;
+            var userGroup = new Mock<IUserGroupAppRepository>().Object;
             var service = new UserService(
                 userAppTokenRepository,
                 cipherService, 
-                userRep, 
-                unitOfWork);
+                userRep,
+                employee,
+                unitOfWork,
+                respon,
+                config,
+                userGroup);
             var registerUserModel = new UserModel
             {
                 Password = "password"

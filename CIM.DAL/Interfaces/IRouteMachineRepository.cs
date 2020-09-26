@@ -2,7 +2,7 @@
 
 namespace CIM.DAL.Interfaces
 {
-    public interface IRouteMachineRepository : IRepository<RouteMachine>
+    public interface IRouteMachineRepository : IRepository<RouteMachine, object>
     {
     }
 }

@@ -2,5 +2,5 @@
 
 namespace CIM.DAL.Interfaces
 {
-    public interface ISiteRepository : IRepository<Sites> { }
+    public interface ISiteRepository : IRepository<Sites, object> { }
 }
