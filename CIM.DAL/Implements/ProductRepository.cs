@@ -15,7 +15,7 @@ namespace CIM.DAL.Implements
     public class ProductRepository : Repository<Product, ProductModel>, IProductRepository
     {
         private IDirectSqlRepository _directSqlRepository;
-        public ProductRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
+        public ProductRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration ) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }
@@ -50,8 +50,6 @@ namespace CIM.DAL.Implements
             {
                 Id = x.Id,
                 Code = x.Code,
-                GroupId = x.ProductGroupId,
-                TypeId = x.ProductTypeId,
             }).ToListAsync();
             foreach (var item in output)
             {

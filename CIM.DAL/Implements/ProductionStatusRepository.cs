@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class ProductionStatusRepository : Repository<ProductionStatus, object>, IProductionStatusRepository
     {
-        public ProductionStatusRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public ProductionStatusRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
         }
 

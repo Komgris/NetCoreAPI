@@ -44,7 +44,7 @@ namespace CIM.API {
             {
                 options.Providers.Add<GzipCompressionProvider>();
             });
-            services.AddDbContext<cim_dbContext>(options =>
+            services.AddDbContext<cim_3m_1Context>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
@@ -59,10 +59,8 @@ namespace CIM.API {
             services.AddTransient<ILossLevel1Repository, LossLevel1Repository>();
             services.AddTransient<ILossLevel2Repository, LossLevel2Repository>();
             services.AddTransient<ILossLevel3Repository, LossLevel3Repository>();
-            services.AddTransient<IComponentTypeLossLevel3Repository, ComponentTypeLossLevel3Repository>();
             services.AddTransient<IMachineTypeLossLevel3Repository, MachineTypeLossLevel3Repository>();
             services.AddTransient<IMachineRepository, MachineRepository>();
-            services.AddTransient<IComponentRepository, ComponentRepository>();
             services.AddTransient<IRouteMachineRepository, RouteMachineRepository>();
             services.AddTransient<IRouteRepository, RouteRepository>();
             services.AddTransient<IRecordProductionPlanOutputRepository, RecordProductionPlanOutputRepository>();
@@ -72,15 +70,12 @@ namespace CIM.API {
             services.AddTransient<IRecordManufacturingLossRepository, RecordManufacturingLossRepository>();
             services.AddTransient<IRecordProductionPlanWasteRepository, RecordProductionPlanWasteRepository>();
             services.AddTransient<IRecordMachineStatusRepository, RecordMachineStatusRepository>();
-            services.AddTransient<IAccidentRepository, AccidentRepository>();
-            services.AddTransient<IAccidentParticipantRepository, AccidentParticipantRepository>();
             services.AddTransient<IMachineOperatorRepository, MachineOperatorRepository>();
 
             services.AddTransient<IWasteLevel1Repository, WasteLevel1Repository>();
             services.AddTransient<IWasteLevel2Repository, WasteLevel2Repository>();
             services.AddTransient<IMachineTypeRepository, MachineTypeRepository>();
             services.AddTransient<IRecordProductionPlanWasteMaterialRepository, RecordProductionPlanWasteMaterialRepository>();
-            services.AddTransient<IComponentTypeRepository, ComponentTypeRepository>();
             services.AddTransient<IMachineTypeComponentTypeRepository, MachineTypeComponentTypeRepository>();
             services.AddTransient<IRecordActiveProductionPlanRepository, RecordActiveProductionPlanRepository>();
             services.AddTransient<IProductMaterialRepository, ProductMaterialRepository>();
@@ -105,7 +100,6 @@ namespace CIM.API {
             services.AddTransient<IAppFeatureRepository, AppFeatureRepository>();
             services.AddTransient<IUserGroupAppRepository, UserGroupAppRepository>();
             services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
-            services.AddTransient<IAccidentCategoryRepository, AccidentCategoryRepository>();
             services.AddTransient<IWasteNonePrimeRepository, WasteNonePrimeRepository>();
             services.AddTransient<ISystemParameterRepository, SystemParameterRepository>();
 
@@ -123,8 +117,6 @@ namespace CIM.API {
             services.AddTransient<IRecordManufacturingLossService, RecordManufacturingLossService>();
             services.AddTransient<IRecordProductionPlanWasteService, RecordProductionPlanWasteService>();
             services.AddTransient<IMachineTypeService, MachineTypeService>();
-            services.AddTransient<IComponentTypeService, ComponentTypeService>();
-            services.AddTransient<IComponentService, ComponentService>();
             services.AddTransient<IRouteService, RouteService>();
             services.AddTransient<IRecordProductionPlanOutputService, RecordProductionPlanOutputService>();
 
@@ -134,17 +126,14 @@ namespace CIM.API {
             services.AddTransient<ILossLevel1Service, LossLevel1Service>();
             services.AddTransient<ILossLevel2Service, LossLevel2Service>();
             services.AddTransient<ILossLevel3Service, LossLevel3Service>();
-            services.AddTransient<IComponentTypeLossLevel3Service, ComponentTypeLossLevel3Service>();
             services.AddTransient<IMachineTypeLossLevel3Service, MachineTypeLossLevel3Service>();
             services.AddTransient<IBomService, BomService>();
             services.AddTransient<IUtilitiesService, UtilitiesService>();
             services.AddTransient<IProductGroupService, ProductGroupService>();
-            services.AddTransient<IAccidentService, AccidentService>();
             services.AddTransient<IEmployeesService, EmployeesService>();
             services.AddTransient<IMachineOperatorService, MachineOperatorService>();
             services.AddTransient<ITeamService, TeamService>();
             services.AddTransient<IRecordMaintenancePlanService, RecordMaintenancePlanService>();
-            services.AddTransient<IMachineTeamService, MachineTeamService>();
             services.AddTransient<IUserGroupService, UserGroupService>();
             services.AddTransient<IUserGroupAppService, UserGroupAppService>();
             services.AddTransient<IUserGroupAppFeatureService, UserGroupAppFeatureService>();

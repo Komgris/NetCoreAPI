@@ -14,7 +14,7 @@ namespace CIM.DAL.Implements
     public class ProductMaterialRepository : Repository<ProductMaterial, object>, IProductMaterialRepository
     {
         private IDirectSqlRepository _directSqlRepository;
-        public ProductMaterialRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
+        public ProductMaterialRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }

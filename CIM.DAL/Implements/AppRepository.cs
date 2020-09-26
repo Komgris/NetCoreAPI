@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class AppRepository : Repository<App, AppModel>, IAppRepository
     {
-        public AppRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public AppRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

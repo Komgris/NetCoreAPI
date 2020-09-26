@@ -15,7 +15,7 @@ namespace CIM.DAL.Implements
     {
         private IDirectSqlRepository _directSqlRepository;
 
-        public LossLevel2Repository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
+        public LossLevel2Repository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }

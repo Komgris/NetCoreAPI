@@ -6,7 +6,7 @@ namespace CIM.DAL.Implements
 {
     public class RouteProductGroupRepository : Repository<RouteProductGroup, object>, IRouteProductGroupRepository
     {
-        public RouteProductGroupRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public RouteProductGroupRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }

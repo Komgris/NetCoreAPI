@@ -153,22 +153,22 @@ namespace CIM.BusinessLogic.Services {
                         step = "บันทึก Operator"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
                         foreach (var machine in activeMachines)
                         {
-                            var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
-                            if (machineOperator == null)
-                            {
-                                var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
-                                 {"@machine_id", machine.Key }
-                            });
-                                _machineOperatorRepository.Add(new MachineOperators
-                                {
-                                    LastUpdatedAt = now,
-                                    MachineId = machine.Key,
-                                    PlanId = planId,
-                                    LastUpdatedBy = CurrentUser.UserId,
-                                    OperatorCount = machineTeamCount,
-                                    OperatorPlan = machineTeamCount
-                                });
-                            }
+                            //var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
+                            //if (machineOperator == null)
+                            //{
+                            //    var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
+                            //     {"@machine_id", machine.Key }
+                            //});
+                            //    _machineOperatorRepository.Add(new MachineOperators
+                            //    {
+                            //        LastUpdatedAt = now,
+                            //        MachineId = machine.Key,
+                            //        PlanId = planId,
+                            //        LastUpdatedBy = CurrentUser.UserId,
+                            //        OperatorCount = machineTeamCount,
+                            //        OperatorPlan = machineTeamCount
+                            //    });
+                            //}
 
                         }
 
@@ -225,32 +225,32 @@ namespace CIM.BusinessLogic.Services {
                         step = "Route List: "; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}{String.Join(',',lstr)}");
 
 
-                        //get last plan with same route
-                        var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date).OrderByDescending(x => x.Start).Take(2).ToListAsync();
-                        var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
-                                                                : dbModel.ProductId;
-                        step = "Add PREP"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
-                        //record time loss on process ramp-up #139
-                        var rampupModel = new RecordManufacturingLossModel()
-                        {
-                            ProductionPlanId = planId,
-                            RouteId = routeId,
-                            LossLevelId = preproductId != dbModel.ProductId ?
-                                                                          _config.GetValue<int>("DefaultChangeOverlv3Id")
-                                                                        : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
-                            IsAuto = true
-                        };
+                        ////get last plan with same route
+                        //var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date).OrderByDescending(x => x.Start).Take(2).ToListAsync();
+                        //var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
+                        //                                        : dbModel.ProductId;
+                        //step = "Add PREP"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        ////record time loss on process ramp-up #139
+                        //var rampupModel = new RecordManufacturingLossModel()
+                        //{
+                        //    ProductionPlanId = planId,
+                        //    RouteId = routeId,
+                        //    LossLevelId = preproductId != dbModel.ProductId ?
+                        //                                                  _config.GetValue<int>("DefaultChangeOverlv3Id")
+                        //                                                : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                        //    IsAuto = true
+                        //};
 
-                        step = "Create RampupModel"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
-                        foreach (var machine in activeMachines)
-                        {
-                            //Is first start for machine
-                            if (machine.Value.RouteIds.Count == 1)
-                            {
-                                rampupModel.MachineId = machine.Key;
-                                await _recordManufacturingLossService.Create(rampupModel);
-                            }
-                        }
+                        //step = "Create RampupModel"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        //foreach (var machine in activeMachines)
+                        //{
+                        //    //Is first start for machine
+                        //    if (machine.Value.RouteIds.Count == 1)
+                        //    {
+                        //        rampupModel.MachineId = machine.Key;
+                        //        await _recordManufacturingLossService.Create(rampupModel);
+                        //    }
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -503,7 +503,7 @@ namespace CIM.BusinessLogic.Services {
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var losses = await _recordManufacturingLossRepository
-                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null && x.RouteId == routeId 
+                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null /*&& x.RouteId == routeId */
                                 && x.IsAuto == true
                                 && !(
                                         (x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id")) 
@@ -575,7 +575,7 @@ namespace CIM.BusinessLogic.Services {
                             MachineId = machineId,
                             ProductionPlanId = activeProductionPlan.ProductionPlanId,
                             StartedAt = now,
-                            RouteId = routeId
+                            //RouteId = routeId
                         });
 
                     }

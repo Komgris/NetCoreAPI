@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class EducationRepository : Repository<Education, EducationModel>, IEducationRepository
     {
-        public EducationRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public EducationRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

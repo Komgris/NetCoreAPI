@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class NameRepository : Repository<Name, NameModel>, INameRepository
     {
-        public NameRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public NameRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

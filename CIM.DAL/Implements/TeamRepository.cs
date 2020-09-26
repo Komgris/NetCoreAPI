@@ -12,7 +12,7 @@ namespace CIM.DAL.Implements
 {
     public class TeamRepository : Repository<Team, TeamModel>, ITeamRepository
     {
-        public TeamRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public TeamRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

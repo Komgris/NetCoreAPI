@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class RecordProductionPlanWasteRepository : Repository<RecordProductionPlanWaste, RecordProductionPlanWasteModel>, IRecordProductionPlanWasteRepository
     {
-        public RecordProductionPlanWasteRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public RecordProductionPlanWasteRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

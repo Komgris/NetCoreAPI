@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
     public class ProductGroupRepository : Repository<ProductGroup, object>, IProductGroupRepository
     {
         private IDirectSqlRepository _directSqlRepository;
-        public ProductGroupRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
+        public ProductGroupRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }

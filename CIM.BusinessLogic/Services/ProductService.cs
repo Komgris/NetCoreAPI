@@ -54,9 +54,9 @@ namespace CIM.BusinessLogic.Services
         public async Task<ProductModel> Create(ProductModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new Product());
-            dbModel.ProductTypeId = model.ProductTypeId;
-            dbModel.ProductFamilyId = model.ProductFamilyId;
-            dbModel.ProductGroupId = model.ProductGroupId;
+            //dbModel.ProductTypeId = model.ProductTypeId;
+            //dbModel.ProductFamilyId = model.ProductFamilyId;
+            //dbModel.ProductGroupId = model.ProductGroupId;
             dbModel.CreatedBy = CurrentUser.UserId;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.IsActive = true;
@@ -83,17 +83,17 @@ namespace CIM.BusinessLogic.Services
                             Id = x.Id,
                             Image = x.Image,
                             Code = x.Code,
-                            PID = x.PID,
+                            //PID = x.PID,
                             Description = x.Description,
-                            BriteItemPerUPCItem = x.BriteItemPerUPCItem,
-                            ProductFamilyId = x.ProductFamilyId,
-                            ProductGroupId = x.ProductGroupId,
-                            ProductTypeId = x.ProductTypeId,
-                            PackingMedium = x.PackingMedium,
-                            NetWeight = x.NetWeight,
-                            IGWeight = x.IGWeight,
-                            PMWeight = x.PMWeight,
-                            WeightPerUOM = x.WeightPerUOM,
+                            //BriteItemPerUPCItem = x.BriteItemPerUPCItem,
+                            //ProductFamilyId = x.ProductFamilyId,
+                            //ProductGroupId = x.ProductGroupId,
+                            //ProductTypeId = x.ProductTypeId,
+                            //PackingMedium = x.PackingMedium,
+                            //NetWeight = x.NetWeight,
+                            //IGWeight = x.IGWeight,
+                            //PMWeight = x.PMWeight,
+                            //WeightPerUOM = x.WeightPerUOM,
                             IsActive = x.IsActive,
                             IsDelete = x.IsDelete,
                             CreatedAt = x.CreatedAt,

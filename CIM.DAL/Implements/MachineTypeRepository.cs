@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
     public class MachineTypeRepository : Repository<MachineType, object>, IMachineTypeRepository
     {
         private IDirectSqlRepository _directSqlRepository;
-        public MachineTypeRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository,IConfiguration configuration) : base(context, configuration)
+        public MachineTypeRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository,IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }

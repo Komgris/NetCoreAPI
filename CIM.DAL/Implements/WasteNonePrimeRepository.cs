@@ -8,7 +8,7 @@ using System.Text;
 namespace CIM.DAL.Implements {
     public class WasteNonePrimeRepository :Repository<WasteNonePrime, object>, IWasteNonePrimeRepository{
 
-        public WasteNonePrimeRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public WasteNonePrimeRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

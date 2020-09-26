@@ -9,7 +9,7 @@ namespace CIM.DAL.Implements
 {
     public class UserAppTokenRepository : Repository<UserAppTokens, object>, IUserAppTokenRepository
     {
-        public UserAppTokenRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public UserAppTokenRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }

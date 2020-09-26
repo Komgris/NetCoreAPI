@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class RecordManufacturingLossRepository : Repository<RecordManufacturingLoss, RecordManufacturingLossModel>, IRecordManufacturingLossRepository
     {
-        public RecordManufacturingLossRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public RecordManufacturingLossRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }

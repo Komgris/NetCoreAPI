@@ -15,21 +15,22 @@ namespace CIM.DAL.Implements
     public class RecordProductionPlanWasteMaterialRepository : Repository<RecordProductionPlanWasteMaterials, object>, IRecordProductionPlanWasteMaterialRepository
     {
         private IDirectSqlRepository _directSqlRepository;
-        public RecordProductionPlanWasteMaterialRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
+        public RecordProductionPlanWasteMaterialRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }
 
         public async Task<List<RecordProductionPlanWasteMaterialModel>> ListByLoss(int recordManufacturingLossId)
         {
-            return await _entities.RecordProductionPlanWasteMaterials.Where(x => x.Waste.RecordManufacturingLossId == recordManufacturingLossId && x.Waste.IsDelete == false)
-                .Select(x => new RecordProductionPlanWasteMaterialModel
-                {
-                    Amount = x.Amount,
-                    Id = x.Id,
-                    MaterialId = x.MaterialId,
-                    WasteId = x.WasteId,
-                }).ToListAsync();
+            return null;
+                //await _entities.RecordProductionPlanWasteMaterials.Where(x => x.Waste.RecordManufacturingLossId == recordManufacturingLossId && x.Waste.IsDelete == false)
+                //.Select(x => new RecordProductionPlanWasteMaterialModel
+                //{
+                //    Amount = x.Amount,
+                //    Id = x.Id,
+                //    MaterialId = x.MaterialId,
+                //    WasteId = x.WasteId,
+                //}).ToListAsync();
 
         }
 

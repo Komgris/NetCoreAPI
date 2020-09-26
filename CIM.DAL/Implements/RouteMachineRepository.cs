@@ -6,7 +6,7 @@ namespace CIM.DAL.Implements
 {
     public class RouteMachineRepository : Repository<RouteMachine, object>, IRouteMachineRepository
     {
-        public RouteMachineRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public RouteMachineRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
 
         }

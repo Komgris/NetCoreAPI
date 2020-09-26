@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class UserPositionRepository : Repository<UserPosition, UserPositionModel>, IUserPositionRepository
     {
-        public UserPositionRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public UserPositionRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

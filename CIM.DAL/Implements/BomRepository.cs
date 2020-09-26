@@ -14,7 +14,7 @@ namespace CIM.DAL.Implements
     {
         private IDirectSqlRepository _directSqlRepository;
 
-        public BomRepository(cim_dbContext context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
+        public BomRepository(cim_3m_1Context context, IDirectSqlRepository directSqlRepository, IConfiguration configuration) : base(context, configuration)
         {
             _directSqlRepository = directSqlRepository;
         }

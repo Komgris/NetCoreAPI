@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class UserRepository : Repository<Users, UserModel>, IUserRepository
     {
-        public UserRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public UserRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
         }
         public async Task<PagingModel<UserModel>> List(string keyword, int page, int howmany)
@@ -33,7 +33,6 @@ namespace CIM.DAL.Implements
                     FirstName = "",
                     LastName = "",
                     Id = x.Id,
-                    DefaultLanguageId = x.DefaultLanguageId,
                     UserGroupId = x.UserGroupId,
                     UserName = x.UserName
                 })

@@ -12,7 +12,7 @@ namespace CIM.DAL.Implements
 {
     public class MachineOperatorRepository : Repository<MachineOperators, MachineOperatorModel>, IMachineOperatorRepository
     {
-        public MachineOperatorRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public MachineOperatorRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
 

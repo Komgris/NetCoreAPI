@@ -63,7 +63,7 @@ namespace CIM.BusinessLogic.Services
                             Name = x.Name,
                             StatusId = x.StatusId,
                             MachineTypeId = x.MachineTypeId,
-                            Type = x.MachineType.Name,
+                            //Type = x.MachineType.Name,
                             StatusTag = x.StatusTag,
                             CounterInTag = x.CounterInTag,
                             CounterOutTag = x.CounterOutTag,

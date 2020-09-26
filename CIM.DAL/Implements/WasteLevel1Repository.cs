@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class WasteLevel1Repository : Repository<WasteLevel1, WasteLevel1Model>, IWasteLevel1Repository
     {
-        public WasteLevel1Repository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public WasteLevel1Repository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

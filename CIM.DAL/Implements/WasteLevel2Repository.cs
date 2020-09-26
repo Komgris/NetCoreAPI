@@ -11,7 +11,7 @@ namespace CIM.DAL.Implements
 {
     public class WasteLevel2Repository : Repository<WasteLevel2, WasteLevel2Model>, IWasteLevel2Repository
     {
-        public WasteLevel2Repository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public WasteLevel2Repository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

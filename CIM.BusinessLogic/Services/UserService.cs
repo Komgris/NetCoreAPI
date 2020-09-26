@@ -56,8 +56,7 @@ namespace CIM.BusinessLogic.Services
                 UserName = model.UserName.ToLower().Trim(),
                 HashedPassword = HashPassword(model),
                 Email = model.Email,
-                UserGroupId = model.UserGroupId,
-                DefaultLanguageId = model.DefaultLanguageId
+                UserGroupId = model.UserGroupId
             };
 
             _userRepository.Add(dbModel);
@@ -83,37 +82,37 @@ namespace CIM.BusinessLogic.Services
         public async Task<AuthModel> Auth(string username, string password)
         {
             AuthModel result = new AuthModel();
-            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
-                .Select(
-                    x => new
-                    {
-                        UserName = x.UserName,
-                        FullName = x.Name.Select(x => x.FirstName).FirstOrDefault() + " " + x.Name.Select(x => x.LastName).FirstOrDefault(),
-                        Id = x.Id,
-                        HashedPassword = x.HashedPassword,
-                        Group = x.UserGroup.Name,
-                        Apps = x.UserGroup.UserGroupsApps.Where(x => x.App.IsActive)
-                        .Select(app => new AppModel
-                        {
-                            Id = app.App.Id,
-                            Name = app.App.Name,
-                            Url = app.App.Url
-                        })
-                    }
-                )
-                .FirstOrDefaultAsync(x => x.UserName == username);
+            //var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
+            //    .Select(
+            //        x => new
+            //        {
+            //            //UserName = x.UserName,
+            //            //FullName = x.Name.Select(x => x.FirstName).FirstOrDefault() + " " + x.Name.Select(x => x.LastName).FirstOrDefault(),
+            //            //Id = x.Id,
+            //            //HashedPassword = x.HashedPassword,
+            //            //Group = x.UserGroup.Name,
+            //            //Apps = x.UserGroup.UserGroupsApps.Where(x => x.App.IsActive)
+            //            //.Select(app => new AppModel
+            //            //{
+            //            //    Id = app.App.Id,
+            //            //    Name = app.App.Name,
+            //            //    Url = app.App.Url
+            //            //})
+            //        }
+            //    )
+            //    .FirstOrDefaultAsync(x => x.UserName == username);
 
-            if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
-            {
-                result.FullName = dbModel.FullName;
-                result.UserId = dbModel.Id;
-                result.IsSuccess = true;
-                result.Token = await CreateToken(dbModel.Id);
-                result.Group = dbModel.Group;
-                result.Apps = dbModel.Apps.ToList();
+            //if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
+            //{
+            //    result.FullName = dbModel.FullName;
+            //    result.UserId = dbModel.Id;
+            //    result.IsSuccess = true;
+            //    result.Token = await CreateToken(dbModel.Id);
+            //    result.Group = dbModel.Group;
+            //    result.Apps = dbModel.Apps.ToList();
 
-                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
-            }
+            //    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
+            //}
 
             return result;
         }
@@ -262,7 +261,7 @@ namespace CIM.BusinessLogic.Services
                     OldPassword = x.HashedPassword,
                     Email = x.Email,
                     UserGroupId = x.UserGroupId,
-                    DefaultLanguageId = x.DefaultLanguageId,
+                    //DefaultLanguageId = x.DefaultLanguageId,
                     IsSuspend = x.IsSuspend,
                     IsActive = x.IsActive,
                     IsDelete = x.IsDelete,

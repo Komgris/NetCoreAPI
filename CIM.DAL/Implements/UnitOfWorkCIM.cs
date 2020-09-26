@@ -10,9 +10,9 @@ namespace CIM.DAL.Implements
 {
     public class UnitOfWorkCIM : IUnitOfWorkCIM
     {
-        private cim_dbContext _dbContext;
+        private cim_3m_1Context _dbContext;
 
-        public UnitOfWorkCIM(cim_dbContext context)
+        public UnitOfWorkCIM(cim_3m_1Context context)
         {
             _dbContext = context;
         }

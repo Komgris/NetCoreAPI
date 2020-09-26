@@ -12,7 +12,7 @@ namespace CIM.DAL.Implements
 {
     public class RecordMachineStatusRepository : Repository<RecordMachineStatus, object>, IRecordMachineStatusRepository
     {
-        public RecordMachineStatusRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public RecordMachineStatusRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

@@ -9,7 +9,7 @@ namespace CIM.DAL.Implements
 {
     public class RecordProductionPlanOutputRepository : Repository<RecordProductionPlanOutput, object>, IRecordProductionPlanOutputRepository
     {
-        public RecordProductionPlanOutputRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public RecordProductionPlanOutputRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
         }
     }

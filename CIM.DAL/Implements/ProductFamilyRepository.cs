@@ -9,7 +9,7 @@ namespace CIM.DAL.Implements
 {
     public class ProductFamilyRepository : Repository<ProductFamily, object>, IProductFamilyRepository
     {
-        public ProductFamilyRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public ProductFamilyRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

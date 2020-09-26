@@ -11,7 +11,7 @@ namespace CIM.DAL.Implements
 {
     public class SiteRepository : Repository<Sites, object>, ISiteRepository
     {
-        public SiteRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public SiteRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {}
 
         public async Task<IList<SiteModel>> ExecuteProcedure(string procedureName, Dictionary<string, object> parameters)

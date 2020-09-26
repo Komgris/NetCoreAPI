@@ -9,7 +9,7 @@ namespace CIM.DAL.Implements
 {
     public class MachineTypeComponentTypeRepository : Repository<MachineTypeComponentType, object>, IMachineTypeComponentTypeRepository
     {
-        public MachineTypeComponentTypeRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public MachineTypeComponentTypeRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

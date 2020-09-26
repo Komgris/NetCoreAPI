@@ -11,7 +11,7 @@ namespace CIM.DAL.Implements
 {
     public class SystemParameterRepository : Repository<SystemParameter, SystemParameterModel>, ISystemParameterRepository
     {
-        public SystemParameterRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public SystemParameterRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
 
         }

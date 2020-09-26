@@ -13,7 +13,7 @@ namespace CIM.DAL.Implements
 {
     public class UserGroupAppFeatureRepository : Repository<UserGroupsAppFeatures, UserGroupAppFeatureModel>, IUserGroupAppFeatureRepository
     {
-        public UserGroupAppFeatureRepository(cim_dbContext context, IConfiguration configuration ) : base(context, configuration)
+        public UserGroupAppFeatureRepository(cim_3m_1Context context, IConfiguration configuration ) : base(context, configuration)
         {
         }
     }

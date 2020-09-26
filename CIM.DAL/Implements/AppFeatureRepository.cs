@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class AppFeatureRepository : Repository<AppFeatures, AppFeatureModel>, IAppFeatureRepository
     {
-        public AppFeatureRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public AppFeatureRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }

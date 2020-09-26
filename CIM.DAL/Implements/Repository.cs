@@ -20,12 +20,12 @@ namespace CIM.DAL.Implements
          where T : class
          where TModel : class, new()
     {
-        protected cim_dbContext _entities;
+        protected cim_3m_1Context _entities;
         protected readonly DbSet<T> _dbset;
         private readonly IConfiguration _configuration;
 
         public Repository(
-            cim_dbContext context,
+            cim_3m_1Context context,
             IConfiguration configuration
         )
         {

@@ -80,9 +80,7 @@ namespace CIM.BusinessLogic.Services
             newDbModel.IsAuto = model.IsAuto;
             newDbModel.MachineId = model.MachineId;
             newDbModel.ProductionPlanId = model.ProductionPlanId;
-            newDbModel.RouteId = model.RouteId;
             newDbModel.LossLevel3Id = model.LossLevelId;
-            newDbModel.ComponentId = model.ComponentId > 0 ? model.ComponentId : null;
             newDbModel.Remark = model.Remark;
             if (model.IsWasteChanged)
                 newDbModel = await HandleWaste(newDbModel, model, now);
@@ -229,10 +227,10 @@ namespace CIM.BusinessLogic.Services
             dbModel.MachineId = model.MachineId;
             dbModel.Remark = model.Remark;
             dbModel.UpdatedAt = DateTime.Now;
-            if (model.ComponentId > 0)
-            {
-                dbModel.ComponentId = model.ComponentId;
-            }
+            //if (model.ComponentId > 0)
+            //{
+            //    dbModel.ComponentId = model.ComponentId;
+            //}
             _recordManufacturingLossRepository.Edit(dbModel);
 
             if (model.IsWasteChanged)
@@ -245,32 +243,32 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<RecordManufacturingLoss> HandleWaste(RecordManufacturingLoss dbModel, RecordManufacturingLossModel model, DateTime now)
         {
-            await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
-            var productId = model.WasteList[0].ProductId;
-            var productMats = _productmaterialRepository.Where(x => x.ProductId == productId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
-            var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+            //await _recordProductionPlanWasteRepository.DeleteByLoss(dbModel.Id);
+            //var productId = model.WasteList[0].ProductId;
+            //var productMats = _productmaterialRepository.Where(x => x.ProductId == productId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            //var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
 
-            foreach (var item in model.WasteList)
-            {
-                var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
-                foreach (var material in item.Materials)
-                {
-                    var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                    if (item.AmountUnit > 0 && item.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * item.AmountUnit;
-                    mat.Cost = (mat.Amount * mats[mat.MaterialId]);
-                    if (mat.Amount > 0) waste.RecordProductionPlanWasteMaterials.Add(mat);
-                }
+            //foreach (var item in model.WasteList)
+            //{
+            //    var waste = MapperHelper.AsModel(item, new RecordProductionPlanWaste());
+            //    foreach (var material in item.Materials)
+            //    {
+            //        var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+            //        if (item.AmountUnit > 0 && item.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * item.AmountUnit;
+            //        mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+            //        if (mat.Amount > 0) waste.RecordProductionPlanWasteMaterials.Add(mat);
+            //    }
 
-                if (waste.RecordProductionPlanWasteMaterials.Count > 0)
-                {
-                    dbModel.RecordProductionPlanWaste.Add(waste);
-                    waste.CreatedAt = now;
-                    waste.CreatedBy = CurrentUser.UserId;
-                    waste.ProductionPlanId = model.ProductionPlanId;
-                    waste.CauseMachineId = model.MachineId;
-                }
+            //    if (waste.RecordProductionPlanWasteMaterials.Count > 0)
+            //    {
+            //        //dbModel.RecordProductionPlanWaste.Add(waste);
+            //        waste.CreatedAt = now;
+            //        waste.CreatedBy = CurrentUser.UserId;
+            //        waste.ProductionPlanId = model.ProductionPlanId;
+            //        waste.CauseMachineId = model.MachineId;
+            //    }
 
-            }
+            //}
             return dbModel;
 
         }

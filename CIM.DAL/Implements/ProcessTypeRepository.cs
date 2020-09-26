@@ -10,7 +10,7 @@ namespace CIM.DAL.Implements
 {
     public class ProcessTypeRepository : Repository<ProcessType, ProcessTypeModel>, IProcessTypeRepository
     {
-        public ProcessTypeRepository(cim_dbContext context, IConfiguration configuration) : base(context, configuration)
+        public ProcessTypeRepository(cim_3m_1Context context, IConfiguration configuration) : base(context, configuration)
         {
         }
     }
