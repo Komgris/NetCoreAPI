@@ -1,4 +1,5 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
@@ -11,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
+using Newtonsoft.Json;
 
 namespace CIM.BusinessLogic.Services {
     public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
@@ -105,6 +107,12 @@ namespace CIM.BusinessLogic.Services {
 
             ActiveProductionPlanModel output = null;
             var now = DateTime.Now;
+            var lastStarted = await _responseCacheService.GetAsync("LastPlanStarted");
+            if(lastStarted != null && (now - JsonConvert.DeserializeObject<DateTime>(lastStarted)).TotalSeconds < _config.GetValue<int>("ProcessDelay(Sec)"))
+            {
+                throw (new Exception($"Please space the time foreach process {_config.GetValue<int>("ProcessDelay(Sec)")} sec.; กรุณาเว้นระยะระหว่างกระบวนการ {_config.GetValue<int>("ProcessDelay(Sec)")} วินาที"));
+            }
+            await _responseCacheService.SetAsync("LastPlanStarted", now);
 
             //validation
             var paramsList = new Dictionary<string, object>() {
@@ -121,109 +129,135 @@ namespace CIM.BusinessLogic.Services {
                 //Transaction success
                 if (affect > 0)
                 {
-                    var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-                    var masterData = await _masterDataService.GetData();
-                    var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel(planId);
+                    var cmtxt = $"Plan:{planId} | Route:{routeId}";
+                    var step = "";
 
-                    var routeMachines = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
+                    try
                     {
-                        ComponentList = x.Value.ComponentList.ToDictionary(x => x.Id, x => x),
-                        Id = x.Key,
-                        ProductionPlanId = planId,
-                        RouteIds = x.Value.RouteList,
-                        Image = x.Value.Image
-                    });
-                    var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
+                        var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+                        var masterData = await _masterDataService.GetData();
+                        var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel(planId);
 
-                    //record operators
-                    foreach (var machine in activeMachines)
-                    {
-                        var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
-                        if (machineOperator == null)
+                        step = "สร้าง active Machine"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        var routeMachines = masterData.Routes[routeId].MachineList.ToDictionary(x => x.Key, x => new ActiveMachineModel
                         {
-                            var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
+                            ComponentList = x.Value.ComponentList.ToDictionary(x => x.Id, x => x),
+                            Id = x.Key,
+                            ProductionPlanId = planId,
+                            RouteIds = x.Value.RouteList,
+                            Image = x.Value.Image
+                        });
+                        var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, routeMachines);
+
+                        //record operators TonDev
+                        step = "บันทึก Operator"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        foreach (var machine in activeMachines)
+                        {
+                            var machineOperator = await _machineOperatorRepository.FirstOrDefaultAsync(x => x.MachineId == machine.Key && x.PlanId == planId);
+                            if (machineOperator == null)
+                            {
+                                var machineTeamCount = await _machineOperatorRepository.ExecuteProcedure<int>("[dbo].[sp_CountMachineEmployee]", new Dictionary<string, object> {
                                  {"@machine_id", machine.Key }
                             });
-                            _machineOperatorRepository.Add(new MachineOperators
+                                _machineOperatorRepository.Add(new MachineOperators
+                                {
+                                    LastUpdatedAt = now,
+                                    MachineId = machine.Key,
+                                    PlanId = planId,
+                                    LastUpdatedBy = CurrentUser.UserId,
+                                    OperatorCount = machineTeamCount,
+                                    OperatorPlan = machineTeamCount
+                                });
+                            }
+
+                        }
+
+                        step = "สร้าง ActiveProcess Cached"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
+                        {
+                            ProductionPlanId = planId,
+                            ProductId = dbModel.ProductId,
+                            Status = Constans.PRODUCTION_PLAN_STATUS.Production,
+                            Route = new ActiveRouteModel
                             {
-                                LastUpdatedAt = now,
-                                MachineId = machine.Key,
-                                PlanId = planId,
-                                LastUpdatedBy = CurrentUser.UserId,
-                                OperatorCount = machineTeamCount,
-                                OperatorPlan = machineTeamCount
+                                Id = routeId,
+                                MachineList = activeMachines,
+                            }
+                        };
+
+
+                        //update another route are use the same machines
+                        step = "add another route + same machines"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        foreach (var mcmultiRoute in activeMachines.Where(a => a.Value.RouteIds.Count > 1))
+                        {
+                            foreach (var r in mcmultiRoute.Value.RouteIds)
+                            {
+                                if (r != routeId)
+
+                                    activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Add(routeId);
+                            }
+                        }
+
+                        step = "Change idle to Running"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}"); //TonDev 
+                        var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
+                        foreach (var machineId in runningMachineIds)
+                        {
+                            _recordMachineStatusRepository.Add(new RecordMachineStatus
+                            {
+                                CreatedAt = now,
+                                MachineId = machineId,
+                                MachineStatusId = Constans.MACHINE_STATUS.Running,
                             });
+                            UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
                         }
 
-                    }
+                        //start counting output
+                        step = "List for Reset counter"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        var mcfirstStart = activeMachines.Where(x => x.Value.RouteIds.Count == 1).Select(o => o.Key).ToList();
+                        await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
-                    activeProductionPlan.ActiveProcesses[routeId] = new ActiveProcessModel
-                    {
-                        ProductionPlanId = planId,
-                        ProductId = dbModel.ProductId,
-                        Status = Constans.PRODUCTION_PLAN_STATUS.Production,
-                        Route = new ActiveRouteModel
+                        //generate -> BoardcastData
+                        step = "เจน BoardcastData"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
+                        await SetCached(activeProductionPlan);
+                        output = activeProductionPlan;
+                        var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
+                        step = "Route List: "; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}{String.Join(',',lstr)}");
+
+
+                        //get last plan with same route
+                        var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date).OrderByDescending(x => x.Start).Take(2).ToListAsync();
+                        var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
+                                                                : dbModel.ProductId;
+                        step = "Add PREP"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        //record time loss on process ramp-up #139
+                        var rampupModel = new RecordManufacturingLossModel()
                         {
-                            Id = routeId,
-                            MachineList = activeMachines,
-                        }
-                    };
+                            ProductionPlanId = planId,
+                            RouteId = routeId,
+                            LossLevelId = preproductId != dbModel.ProductId ?
+                                                                          _config.GetValue<int>("DefaultChangeOverlv3Id")
+                                                                        : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                            IsAuto = true
+                        };
 
-                    //update another route are use the same machines
-                    foreach (var mcmultiRoute in activeMachines.Where(a=> a.Value.RouteIds.Count > 1) )
-                    {
-                        foreach (var r in mcmultiRoute.Value.RouteIds)
+                        step = "Create RampupModel"; HelperUtility.Logging("StartPlanLog.txt", $"{cmtxt} | {step}");
+                        foreach (var machine in activeMachines)
                         {
-                            if (r != routeId)
-                                activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Add(routeId);
+                            //Is first start for machine
+                            if (machine.Value.RouteIds.Count == 1)
+                            {
+                                rampupModel.MachineId = machine.Key;
+                                await _recordManufacturingLossService.Create(rampupModel);
+                            }
                         }
                     }
-
-                    var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
-                    foreach (var machineId in runningMachineIds)
+                    catch (Exception ex)
                     {
-                        _recordMachineStatusRepository.Add(new RecordMachineStatus {
-                            CreatedAt = now,
-                            MachineId = machineId,
-                            MachineStatusId = Constans.MACHINE_STATUS.Running,
-                        });
-                        UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
+                        var textErr = $"{cmtxt} | RecordsStep:{step} | RecordError:{ex}";
+                        HelperUtility.Logging("StartPlanLog-Err.txt", textErr);
                     }
-
-                    //start counting output
-                    var mcfirstStart = activeMachines.Where(x => x.Value.RouteIds.Count == 1).Select(o=>o.Key).ToList();
-                    await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
-
-                    //generate -> BoardcastData
-                    activeProductionPlan.ActiveProcesses[routeId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
-                    await SetCached(activeProductionPlan);
-                    output = activeProductionPlan;
-
-                    //get last plan with same route
-                    var preplan = await _activeproductionPlanRepository.Where(x => x.RouteId == routeId && now.Date == x.Start.Date ).OrderByDescending(x => x.Start).Take(2).ToListAsync();
-                    var preproductId = preplan.Count == 2 ? await _productionPlanRepository.Where(x => x.PlanId == preplan[1].ProductionPlanPlanId).Select(o => o.ProductId).FirstOrDefaultAsync()
-                                                            : dbModel.ProductId;
-
-                    //record time loss on process ramp-up #139
-                    var rampupModel = new RecordManufacturingLossModel()
-                    {
-                        ProductionPlanId = planId,
-                        RouteId = routeId,
-                        LossLevelId = preproductId != dbModel.ProductId ? 
-                                                                      _config.GetValue<int>("DefaultChangeOverlv3Id")
-                                                                    : _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
-                        IsAuto = true
-                    };
-                    foreach (var machine in activeMachines)
-                    {
-                        //Is first start for machine
-                        if (machine.Value.RouteIds.Count == 1)
-                        {
-                            //activeProductionPlan.ActiveProcesses[routeId].Route.MachineList[machine.Key].IsReady = true;
-                            rampupModel.MachineId = machine.Key;
-                            await _recordManufacturingLossService.Create(rampupModel);
-                        }
-                    }
+                    
                 }
             }
             await _unitOfWork.CommitAsync();
@@ -241,7 +275,16 @@ namespace CIM.BusinessLogic.Services {
         public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
         {
             ActiveProductionPlanModel output = null;
+            var cmtxt = $"Plan:{planId} | Route:{routeId}";
             string step = "";
+            var now = DateTime.Now;
+            var lastFinished = await _responseCacheService.GetAsync("LastPlanFinished");
+            if (lastFinished != null && (now - JsonConvert.DeserializeObject<DateTime>(lastFinished)).TotalSeconds < _config.GetValue<int>("ProcessDelay(Sec)"))
+            {
+                throw (new Exception($"Please space the time foreach process {_config.GetValue<int>("ProcessDelay(Sec)")} sec.; กรุณาเว้นระยะระหว่างกระบวนการ {_config.GetValue<int>("ProcessDelay(Sec)")} วินาที"));
+            }
+            await _responseCacheService.SetAsync("LastPlanFinished", now);
+
             try
             {
                 var paramsList = new Dictionary<string, object>() {
@@ -264,18 +307,18 @@ namespace CIM.BusinessLogic.Services {
                     //Transaction success
                     if (affect > 0)
                     {
-                        step = "Transaction success";
+                        step = "Transaction success"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                         var activeProductionPlan = await GetCached(planId);
                         if (activeProductionPlan != null)
                         {
-                            step = "GetCached activeProductionPlan ไม่ได้";
+                            step = "GetCached activeProductionPlan ไม่ได้"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             var mcliststopCounting = new List<int>();
                             var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
                             activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                             var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
 
                             //update another route are use the same machines
-                            step = "loop mcmultiRoute";
+                            step = "loop mcmultiRoute"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
                             {
                                 foreach (var r in mcmultiRoute.Value.RouteIds)
@@ -284,7 +327,7 @@ namespace CIM.BusinessLogic.Services {
                                         activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
                                 }
                             }
-                            step = "loop MachineList";
+                            step = "loop MachineList"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             foreach (var machine in activeProcess.Route.MachineList)
                             {
                                 machine.Value.RouteIds.Remove(routeId);
@@ -295,16 +338,16 @@ namespace CIM.BusinessLogic.Services {
 
 
                             //stop counting output
-                            step = "loop SetListMachinesResetCounter";
+                            step = "loop SetListMachinesResetCounter"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
                             if (isPlanActive)
                             {
-                                step = "SetCached(activeProductionPlan)";
+                                step = "SetCached(activeProductionPlan)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                                 await SetCached(activeProductionPlan);
                             }
                             else
                             {
-                                step = "RemoveCached(activeProductionPlan.ProductionPlanId)";
+                                step = "RemoveCached(activeProductionPlan.ProductionPlanId)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                                 await RemoveCached(activeProductionPlan.ProductionPlanId);
                                 activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                             }
@@ -315,8 +358,8 @@ namespace CIM.BusinessLogic.Services {
             }
             catch (Exception ex)
             {
-                File.AppendAllText(@"C:\log\FinishPlanLog.txt"
-                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex} \r\n");
+                var textErr = $"Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex}";
+                HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
             return output;
@@ -624,8 +667,10 @@ namespace CIM.BusinessLogic.Services {
                                 paramsList.Add("@cIn", item.CounterIn - dbOutput[0].TotalIn);
                                 paramsList.Add("@cOut", item.CounterOut - dbOutput[0].TotalOut);
 
-                                File.AppendAllText(@"C:\log\CounterAdd_logging"
-                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count} \r\n");
+                                //// Logging
+                                //var textErr = $"Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count}";
+                                //HelperUtility.Logging("CounterAdd_logging.txt", textErr);
+                          
                             }
                             else//close ramp-up records and start to operating time #139
                             {
