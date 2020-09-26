@@ -427,6 +427,7 @@ namespace CIM.BusinessLogic.Services
                     break;
                 case MasterDataType.WastesLevel1:
                     _wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
+                    _wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
                     masterData.Dictionary.WastesLevel1 = _wastesLevel1.ToDictionary(x => x.Id, x => x.Description);
                     masterData.WastesByProcessType = masterDataOper.WastesByProcessType = GetWastesByProcessType(_wastesLevel1, _wastesLevel2);
                     break;
