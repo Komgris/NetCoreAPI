@@ -285,7 +285,6 @@ namespace CIM.BusinessLogic.Services {
                             await _machineService.SetCached(machine.Key, machine.Value);
                         }
 
-
                         //stop counting output
                         await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
                         if (isPlanActive)
