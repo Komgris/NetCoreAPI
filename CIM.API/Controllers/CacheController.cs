@@ -92,32 +92,15 @@ namespace CIM.API.Controllers
         [Route("DeleteProductionPlans")]
         public async Task<string> DeleteProductionPlan(string planIds)
         {
-
             var planList = planIds.Split(',');
             try
             {
-                var data = _productionPlanRepository.Where(x => x.PlanId == planIds).Select(x => x.StatusId).ToArray();
-                if (data[0] == 3)
+                var data = _productionPlanRepository.Where(x => planList.Contains(x.PlanId) && x.StatusId == 3).Select(Io => Io.PlanId).ToList();
+                foreach (var plan in data)
                 {
-                    foreach (var planId in planList)
-                    {
-                        await _activeProductionPlanService.RemoveCached(planId);
-                    }
-                    return "OK";
+                    await _activeProductionPlanService.RemoveCached(plan);
                 }
-                else if (data[0] == 2)
-                {
-                    return "Plan Running";
-                }
-                else if (data[0] == 1)
-                {
-                    return "Plan not Started";
-                }
-                else
-                {
-                    return "Without Plan";
-                }
-                
+                return $"OK Remove: { String.Join(',',data)}";
             }
             catch (Exception ex)
             {
