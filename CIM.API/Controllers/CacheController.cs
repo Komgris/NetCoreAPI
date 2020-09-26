@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CIM.BusinessLogic.Interfaces;
+using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +21,19 @@ namespace CIM.API.Controllers
         private IActiveProductionPlanService _activeProductionPlanService;
         private IMachineService _machineService;
         private IResponseCacheService _responseCacheService;
+        private IProductionPlanRepository _productionPlanRepository;
 
         public CacheController(
             IActiveProductionPlanService activeProductionPlanService,
             IMachineService machineService,
-            IResponseCacheService responseCacheService
+            IResponseCacheService responseCacheService,
+            IProductionPlanRepository productionPlanRepository
             )
         {
             _activeProductionPlanService = activeProductionPlanService;
             _machineService = machineService;
             _responseCacheService = responseCacheService;
+            _productionPlanRepository = productionPlanRepository;
         }
 
         [HttpGet]
@@ -87,15 +92,15 @@ namespace CIM.API.Controllers
         [Route("DeleteProductionPlans")]
         public async Task<string> DeleteProductionPlan(string planIds)
         {
-
             var planList = planIds.Split(',');
             try
             {
-                foreach (var planId in planList)
-                {   
-                    await _activeProductionPlanService.RemoveCached(planId);
+                var data = _productionPlanRepository.Where(x => planList.Contains(x.PlanId) && x.StatusId == 3).Select(Io => Io.PlanId).ToList();
+                foreach (var plan in data)
+                {
+                    await _activeProductionPlanService.RemoveCached(plan);
                 }
-                return "OK";
+                return $"OK Remove: { String.Join(',',data)}";
             }
             catch (Exception ex)
             {
