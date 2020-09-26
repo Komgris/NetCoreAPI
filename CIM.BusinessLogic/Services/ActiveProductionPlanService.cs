@@ -241,67 +241,86 @@ namespace CIM.BusinessLogic.Services {
         public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
         {
             ActiveProductionPlanModel output = null;
-            var paramsList = new Dictionary<string, object>() {
+            string step = "";
+            try
+            {
+                var paramsList = new Dictionary<string, object>() {
                     {"@planid", planId },
                     {"@routeid", routeId }
                 };
 
-            //get message for descripe validation result
-            var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_finish", paramsList);
-            if (message != ""){
-                throw (new Exception(message));
-            }
-            else
-            {
-                paramsList.Add("@user", CurrentUser.UserId);
-                var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
-
-                //Transaction success
-                if (affect > 0)
+                //get message for descripe validation result
+                var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_finish", paramsList);
+                if (message != "")
                 {
-                    var activeProductionPlan = await GetCached(planId);
-                    if (activeProductionPlan != null)
-                    {
-                        var mcliststopCounting = new List<int>();
-                        var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                        activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
-                        var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
+                    step = "validation พัง";
+                    throw (new Exception(message));
+                }
+                else
+                {
+                    paramsList.Add("@user", CurrentUser.UserId);
+                    var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_finish", paramsList);
 
-                        //update another route are use the same machines
-                        foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
+                    //Transaction success
+                    if (affect > 0)
+                    {
+                        step = "Transaction success";
+                        var activeProductionPlan = await GetCached(planId);
+                        if (activeProductionPlan != null)
                         {
-                            foreach (var r in mcmultiRoute.Value.RouteIds)
+                            step = "GetCached activeProductionPlan ไม่ได้";
+                            var mcliststopCounting = new List<int>();
+                            var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                            activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
+
+                            //update another route are use the same machines
+                            step = "loop mcmultiRoute";
+                            foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
                             {
-                                if (r != routeId)
-                                    activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                                foreach (var r in mcmultiRoute.Value.RouteIds)
+                                {
+                                    if (r != routeId)
+                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                                }
+                            }
+                            step = "loop MachineList";
+                            foreach (var machine in activeProcess.Route.MachineList)
+                            {
+                                machine.Value.RouteIds.Remove(routeId);
+                                if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
+                                if (!isPlanActive) machine.Value.ProductionPlanId = null;
+                                await _machineService.SetCached(machine.Key, machine.Value);
+                            }
+
+
+                            //stop counting output
+                            step = "loop SetListMachinesResetCounter";
+                            await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
+                            if (isPlanActive)
+                            {
+                                step = "SetCached(activeProductionPlan)";
+                                await SetCached(activeProductionPlan);
+                            }
+                            else
+                            {
+                                step = "RemoveCached(activeProductionPlan.ProductionPlanId)";
+                                await RemoveCached(activeProductionPlan.ProductionPlanId);
+                                activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                             }
                         }
-
-                        foreach (var machine in activeProcess.Route.MachineList)
-                        {
-                            machine.Value.RouteIds.Remove(routeId);
-                            if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
-                            if (!isPlanActive) machine.Value.ProductionPlanId = null;
-                            await _machineService.SetCached(machine.Key, machine.Value);
-                        }
-
-                        //stop counting output
-                        await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
-                        if (isPlanActive)
-                        {
-                            await SetCached(activeProductionPlan);
-                        }
-                        else
-                        {
-                            await RemoveCached(activeProductionPlan.ProductionPlanId);
-                            activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
-                        }
+                        output = activeProductionPlan;
                     }
-                    output = activeProductionPlan;
                 }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(@"C:\log\FinishPlanLog.txt"
+                                    , $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} >> Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex} \r\n");
             }
 
             return output;
+
         }
 
         public async Task<ActiveProductionPlanModel> Pause(string planId, int routeId, int lossLevel3Id)

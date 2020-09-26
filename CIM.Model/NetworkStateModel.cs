@@ -10,5 +10,6 @@ namespace CIM.Model
         public string Ip { get; set; }
         public string Description { get; set; }
         public NetworkState State { get; set; }
+        public DateTime Time { get; set; }
     }
 }
