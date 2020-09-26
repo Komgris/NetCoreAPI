@@ -64,7 +64,6 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
-
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
                     if (boardcastData?.Data.Count > 0)
@@ -96,7 +95,6 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-
 
                     //dole dashboard
                     var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);

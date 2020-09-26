@@ -50,14 +50,15 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new WasteLevel2Model());
         }
 
-        public async Task<PagingModel<WasteLevel2Model>> List(string keyword, int page, int howMany, bool isActive)
+        public async Task<PagingModel<WasteLevel2Model>> List(string keyword, int page, int howMany, bool isActive, int? processTypeId)
         {
             var output = await _wasteLevel2Repository.ListAsPaging("sp_ListWasteLevel2", new Dictionary<string, object>()
                 {
                     {"@keyword", keyword},
                     {"@howmany", howMany},
                     {"@page", page},
-                    {"@is_active", isActive}
+                    {"@is_active", isActive},
+                    {"@processtype", processTypeId}
                 }, page, howMany);
             return output;
         }

@@ -82,6 +82,26 @@ namespace CIM.API.Controllers
                 throw ex;
             }
         }
+        
+        [HttpGet]
+        [Route("DeleteProductionPlans")]
+        public async Task<string> DeleteProductionPlan(string planIds)
+        {
+
+            var planList = planIds.Split(',');
+            try
+            {
+                foreach (var planId in planList)
+                {   
+                    await _activeProductionPlanService.RemoveCached(planId);
+                }
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
 
 
         [HttpPost]

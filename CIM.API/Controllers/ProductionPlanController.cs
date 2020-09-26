@@ -283,12 +283,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListByDate")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany, string statusIds)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId = null)
         {
             var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
             try
             {
-                output.Data = await _productionPlanService.ListByDate(date, page, howmany, statusIds);
+                output.Data = await _productionPlanService.ListByDate(date, page, howmany, statusIds, processTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

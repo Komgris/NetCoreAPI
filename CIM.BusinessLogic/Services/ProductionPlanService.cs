@@ -434,9 +434,9 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId)
         {
-            var output = await _productionPlanRepository.ListByDate(date, page, howmany, statusIds);
+            var output = await _productionPlanRepository.ListByDate(date, page, howmany, statusIds, processTypeId);
             return output;
         }
 
