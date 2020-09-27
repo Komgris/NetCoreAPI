@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CIM.BusinessLogic.Services
 {
-    public class TeamService : BaseService, ITriggerQueueService
+    public class TeamService : BaseService, ITeamService
     {
         private IResponseCacheService _responseCacheService;
         private IUnitOfWorkCIM _unitOfWork;

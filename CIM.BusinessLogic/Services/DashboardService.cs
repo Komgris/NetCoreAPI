@@ -167,26 +167,13 @@ namespace CIM.BusinessLogic.Services {
                                                             new[]{ CustomDashboardType.Attendance
                                                                 , CustomDashboardType.PlanvsActual});
                             break;
-                        //case DataTypeGroup.Produce:
-                        //    boardcastData = CustomDashboard(
-                        //                                    new[]{ CustomDashboardType.Production
-                        //                                        , CustomDashboardType.PlanvsActual});
-                        //    break;
-                        //case DataTypeGroup.Process:
-                        //    boardcastData = CustomDashboard(
-                        //                                    new[]{ CustomDashboardType.Attendance
-                        //                                        , CustomDashboardType.PlanvsActual});
-                        //break;
+
                         case DataTypeGroup.Machine:
                             boardcastData = CustomDashboard(
                                                             new[]{ 
                                                                 CustomDashboardType.MachineStatus});
                             break;
 
-                        //case DataTypeGroup.Loss:
-                        //    boardcastData = CustomDashboard(
-                        //                                    new[]{ CustomDashboardType.OEE});
-                        //break;
                         case DataTypeGroup.PlanActual:
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.Production

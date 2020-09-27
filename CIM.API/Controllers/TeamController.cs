@@ -15,12 +15,12 @@ namespace CIM.API.Controllers
     public class TeamController : BaseController
     {
         private IResponseCacheService _responseCacheService;
-        private ITriggerQueueService _service;
+        private ITeamService _service;
 
         public TeamController(
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
-            ITriggerQueueService service,
+            ITeamService service,
             IMasterDataService masterDataService
         )
         {

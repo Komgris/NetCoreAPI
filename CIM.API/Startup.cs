@@ -142,7 +142,7 @@ namespace CIM.API {
             services.AddTransient<IAccidentService, AccidentService>();
             services.AddTransient<IEmployeesService, EmployeesService>();
             services.AddTransient<IMachineOperatorService, MachineOperatorService>();
-            services.AddTransient<ITriggerQueueService, TeamService>();
+            services.AddTransient<ITeamService, TeamService>();
             services.AddTransient<IRecordMaintenancePlanService, RecordMaintenancePlanService>();
             services.AddTransient<IMachineTeamService, MachineTeamService>();
             services.AddTransient<IUserGroupService, UserGroupService>();
