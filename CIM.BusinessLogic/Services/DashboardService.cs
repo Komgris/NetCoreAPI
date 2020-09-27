@@ -186,6 +186,11 @@ namespace CIM.BusinessLogic.Services {
                                                             new[]{ CustomDashboardType.Attendance
                                                                 , CustomDashboardType.PlanvsActual});
                             break;
+                        case DataTypeGroup.Plan:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Production
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
                         case DataTypeGroup.Machine:
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.OEE

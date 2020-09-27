@@ -216,6 +216,7 @@ namespace CIM.Model
             Process       =5,
             HSE           =6,
             Machine       =7,
+            Plan          =8,
             None          =100
         }
 
