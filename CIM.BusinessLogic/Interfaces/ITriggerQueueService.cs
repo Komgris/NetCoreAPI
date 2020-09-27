@@ -9,6 +9,6 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface ITriggerQueueService : IBaseService
     {
-        void TriggerQueueing(TriggerType trigertype, string par);
+        void TriggerQueueing(TriggerType trigertype, int par);
     }
 }

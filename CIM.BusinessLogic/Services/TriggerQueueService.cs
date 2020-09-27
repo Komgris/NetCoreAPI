@@ -23,7 +23,7 @@ namespace CIM.BusinessLogic.Services
             _directSqlRepository = directSqlRepository;
         }
 
-        public void TriggerQueueing(Constans.TriggerType trigertype, string par)
+        public void TriggerQueueing(Constans.TriggerType trigertype, int par)
         {
             var paramsList = new Dictionary<string, object>() 
             { 
