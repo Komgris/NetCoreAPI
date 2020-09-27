@@ -208,7 +208,7 @@ namespace CIM.DAL.Implements
             });
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds)
+        public async Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId)
         {
             return await Task.Run(() =>
             {
@@ -216,8 +216,9 @@ namespace CIM.DAL.Implements
                                         {
                                             {"@date", date},
                                             {"@howmany", howmany},
-                                            { "@page", page},
+                                            {"@page", page},
                                             {"@status_id", statusIds},
+                                            {"@processtypeid", processTypeId }
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductionPlanByDate", parameterList);

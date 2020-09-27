@@ -10,6 +10,6 @@ namespace CIM.DAL.Interfaces
     public interface IProductGroupRepository : IRepository<ProductGroup, object>
     {
         Task<List<RouteProductGroupModel>> ListRouteByProductGroup(int productGroupId);
-        Task<PagingModel<ProductGroupModel>> List(int page, int howmany, string keyword, bool isActive);
+        Task<PagingModel<ProductGroupModel>> List(int page, int howmany, string keyword, bool isActive, int? processTypeId);
     }
 }
