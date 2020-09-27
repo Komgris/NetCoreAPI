@@ -209,15 +209,17 @@ namespace CIM.Model
 
         public enum DataTypeGroup {
             All = 0,
-            Loss          =1,
-            Waste         =2,
-            Operators     =3,
-            Produce       =4,
-            Process       =5,
-            HSE           =6,
-            Machine       =7,
-            Plan          =8,
-            None          =100
+            Loss            = 1,
+            Waste           = 2,
+            Operators       = 3,
+            Produce         = 4,
+            Process         = 5,
+            HSE             = 6,
+            Machine         = 7,
+            PlanActual      = 8,
+            McCalc          = 9,
+            ProduceCalc     = 10,
+            None            = 100
         }
 
         public enum TriggerType {

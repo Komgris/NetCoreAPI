@@ -66,6 +66,7 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
@@ -92,6 +93,7 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
@@ -119,7 +121,7 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-
+                    //dole dashboard
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
                 output.IsSuccess = true;
@@ -173,6 +175,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.NonePrimeCreate(models);
+                //dole dashboard
                 _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 output.IsSuccess = true;
             }

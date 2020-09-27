@@ -149,7 +149,8 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Plan);
+                //dole dashboard
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -169,7 +170,8 @@ namespace CIM.API.Controllers
             {
                 await _productionPlanService.Create(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Plan);
+                //dole dashboard
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -188,7 +190,8 @@ namespace CIM.API.Controllers
             {
                 await _productionPlanService.Update(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Plan);
+                //dole dashboard
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -206,7 +209,8 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Delete(id);
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Plan);
+                //dole dashboard
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

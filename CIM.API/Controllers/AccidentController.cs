@@ -97,6 +97,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
+                //dole dashboard
                 _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
@@ -115,6 +116,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
+                //dole dashboard
                 _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
@@ -134,6 +136,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Delete(id);
+                //dole dashboard
                 _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
