@@ -18,8 +18,10 @@ namespace CIM.API.Controllers
     public class AccidentController : BoardcastController
     {
         private IAccidentService _service;
+        ITriggerQueueService _triggerService;
 
         public AccidentController(
+            ITriggerQueueService triggerService,
             IAccidentService service,
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
@@ -31,6 +33,7 @@ namespace CIM.API.Controllers
         {
             _hub = hub;
             _service = service;
+            _triggerService = triggerService;
         }
 
         [HttpGet]
@@ -94,12 +97,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Create(model);
-                //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -117,12 +115,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Update(model);
-                //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -141,12 +134,7 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.Delete(id);
-                //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.HSE);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.HSE);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

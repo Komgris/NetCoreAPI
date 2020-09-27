@@ -66,13 +66,6 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
@@ -99,13 +92,6 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
@@ -134,13 +120,6 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
-
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
                     _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
                 output.IsSuccess = true;
@@ -194,13 +173,6 @@ namespace CIM.API.Controllers
             try
             {
                 await _service.NonePrimeCreate(models);
-
-                //dole dashboard
-                //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Waste);
-                //if (boardcastData?.Data.Count > 0)
-                //{
-                //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                //}
                 _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 output.IsSuccess = true;
             }
