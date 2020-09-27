@@ -219,7 +219,12 @@ namespace CIM.Model
             None          =100
         }
 
+        public enum TriggerType {
+            CustomDashboard = 1,
+            ActiveProcess= 2,
+            CalcHour=3
+        }
         #endregion
 
-    }
+        }
 }
