@@ -18,10 +18,12 @@ namespace CIM.API.Controllers
     {
         private IMachineService _machineService;
         IHardwareInterfaceService _hwinterfaceService;
+        ITriggerQueueService _triggerService;
 
 
         public HardwareInterfaceController(
             IHubContext<GlobalHub> hub,
+            ITriggerQueueService triggerService,
             IMachineService machineService,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
@@ -32,6 +34,7 @@ namespace CIM.API.Controllers
         {
             _machineService = machineService;
             _hwinterfaceService = hwinterfaceService;
+            _triggerService = triggerService;
         }
 
         [HttpGet]
@@ -117,6 +120,8 @@ namespace CIM.API.Controllers
             {
                 await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
             }
+            _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.McCalc);
+
             return "OK";
         }
 
@@ -137,11 +142,8 @@ namespace CIM.API.Controllers
                 }
 
                 //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
+
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -167,11 +169,7 @@ namespace CIM.API.Controllers
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
                     //dole dashboard
-                    var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
-                    if (boardcastData?.Data.Count > 0)
-                    {
-                        await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    }
+                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
                 }
                 output.IsSuccess = true;
             }
