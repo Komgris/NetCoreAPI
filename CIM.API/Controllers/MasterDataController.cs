@@ -48,8 +48,15 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/Refresh")]
         public async Task<string> Refresh()
         {
-            await _masterDataService.Refresh(Constans.MasterDataType.All);
-            return "OK";
+            try
+            {
+                await _masterDataService.Refresh(Constans.MasterDataType.All);
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
         }
 
         [HttpGet]

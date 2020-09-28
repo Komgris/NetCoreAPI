@@ -20,7 +20,9 @@ namespace CIM.API.Controllers
     {
         private IProductionPlanService _productionPlanService;
         private IUtilitiesService _utilitiesService;
+        ITriggerQueueService _triggerService;
         public ProductionPlanController(
+            ITriggerQueueService triggerService,
             IHubContext<GlobalHub> hub,
             IResponseCacheService responseCacheService,
             IDashboardService dashboardService,
@@ -35,6 +37,7 @@ namespace CIM.API.Controllers
             _productionPlanService = productionPlanService;
             _masterDataService = masterDataService;
             _utilitiesService = utilitiesService;
+            _triggerService = triggerService;
         }
 
         #region Production plan mng 
@@ -146,13 +149,8 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-
                 //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -173,11 +171,7 @@ namespace CIM.API.Controllers
                 await _productionPlanService.Create(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
                 //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -196,13 +190,8 @@ namespace CIM.API.Controllers
             {
                 await _productionPlanService.Update(data);
                 await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-
                 //dole dashboard
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Produce);
-                if (boardcastData?.Data.Count > 0)
-                {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                }
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -220,6 +209,8 @@ namespace CIM.API.Controllers
             try
             {
                 await _productionPlanService.Delete(id);
+                //dole dashboard
+                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -314,7 +305,7 @@ namespace CIM.API.Controllers
             }
             catch (Exception ex)
             {
-                output.Message = ex.ToString();
+                output.Message = ex.Message;
             }
             return output;
         }

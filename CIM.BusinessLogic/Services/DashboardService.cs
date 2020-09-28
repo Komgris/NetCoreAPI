@@ -162,42 +162,40 @@ namespace CIM.BusinessLogic.Services {
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.HSE});
                             break;
+                        case DataTypeGroup.Operators:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Attendance
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
+
+                        case DataTypeGroup.Machine:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ 
+                                                                CustomDashboardType.MachineStatus});
+                            break;
+
+                        case DataTypeGroup.PlanActual:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.Production
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
+                        case DataTypeGroup.McCalc:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Delivery});
+                            break;
+                        case DataTypeGroup.ProduceCalc:
+                            boardcastData = CustomDashboard(
+                                                            new[]{ CustomDashboardType.OEE
+                                                                , CustomDashboardType.Delivery
+                                                                , CustomDashboardType.PlanvsActual});
+                            break;
                         case DataTypeGroup.Waste:
                             boardcastData = CustomDashboard(
                                                             new[]{ CustomDashboardType.Spoilage
                                                                 , CustomDashboardType.NonePrime
                                                                 , CustomDashboardType.Quality
                                                                 , CustomDashboardType.PlanvsActual});
-                            break;
-                        case DataTypeGroup.Operators:
-                            boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.Attendance
-                                                                , CustomDashboardType.PlanvsActual});
-                            break;
-                        case DataTypeGroup.Produce:
-                            boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.OEE
-                                                                , CustomDashboardType.Production
-                                                                , CustomDashboardType.Delivery
-                                                                , CustomDashboardType.PlanvsActual});
-                            break;
-                        case DataTypeGroup.Process:
-                            boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.Attendance
-                                                                , CustomDashboardType.PlanvsActual});
-                            break;
-                        case DataTypeGroup.Machine:
-                            boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.OEE
-                                                                , CustomDashboardType.Production
-                                                                , CustomDashboardType.Delivery
-                                                                , CustomDashboardType.MachineStatus});
-                            break;
-                        case DataTypeGroup.Loss:
-                            boardcastData = CustomDashboard(
-                                                            new[]{ CustomDashboardType.OEE
-                                                                , CustomDashboardType.Spoilage
-                                                                , CustomDashboardType.Delivery});
                             break;
                     }
 

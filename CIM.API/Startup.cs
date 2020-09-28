@@ -152,6 +152,7 @@ namespace CIM.API {
             services.AddTransient<IWasteLevel1Service, WasteLevel1Service>();
             services.AddTransient<IWasteLevel2Service, WasteLevel2Service>();
             services.AddTransient<ISystemParameterService, SystemParameterService>();
+            services.AddTransient<ITriggerQueueService, TriggerQueueService>();
 
             services.AddControllers();
             services.AddSignalR();
