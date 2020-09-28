@@ -102,6 +102,7 @@ namespace CIM.API {
             services.AddTransient<IUserGroupAppFeatureRepository, UserGroupAppFeatureRepository>();
             services.AddTransient<IWasteNonePrimeRepository, WasteNonePrimeRepository>();
             services.AddTransient<ISystemParameterRepository, SystemParameterRepository>();
+            services.AddTransient<IProductionPlanCheckListRepository, ProductionPlanCheckListRepository>(); 
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();
@@ -142,6 +143,7 @@ namespace CIM.API {
             services.AddTransient<IWasteLevel2Service, WasteLevel2Service>();
             services.AddTransient<ISystemParameterService, SystemParameterService>();
             services.AddTransient<ITriggerQueueService, TriggerQueueService>();
+            services.AddTransient<IProductionPlanCheckListService, ProductionPlanCheckListServices>();
 
             services.AddControllers();
             services.AddSignalR();

@@ -7,7 +7,7 @@ namespace CIM.Domain.Models
     {
         public Team()
         {
-            MachineTeam = new HashSet<MachineTeam>();
+            //MachineTeam = new HashSet<MachineTeam>();
             RecordMaintenancePlan = new HashSet<RecordMaintenancePlan>();
             TeamEmployees = new HashSet<TeamEmployees>();
         }
@@ -23,7 +23,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual TeamType TeamType { get; set; }
-        public virtual ICollection<MachineTeam> MachineTeam { get; set; }
+        //public virtual ICollection<MachineTeam> MachineTeam { get; set; }
         public virtual ICollection<RecordMaintenancePlan> RecordMaintenancePlan { get; set; }
         public virtual ICollection<TeamEmployees> TeamEmployees { get; set; }
     }
