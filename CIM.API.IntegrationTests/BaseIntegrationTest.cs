@@ -31,7 +31,7 @@ namespace CIM.API.IntegrationTests
                 // Remove the app's ApplicationDbContext registration.
                 var descriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
-                    typeof(DbContextOptions<cim_dbContext>));
+                    typeof(DbContextOptions<cim_3m_1Context>));
 
                     if (descriptor != null)
                     {
@@ -39,7 +39,7 @@ namespace CIM.API.IntegrationTests
                     }
 
                 // Add ApplicationDbContext using an in-memory database for testing.
-                services.AddDbContext<cim_dbContext>((options, context) =>
+                services.AddDbContext<cim_3m_1Context>((options, context) =>
                     {
                         context.UseInMemoryDatabase("InMemoryDbForTesting");
                     });
@@ -59,7 +59,7 @@ namespace CIM.API.IntegrationTests
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<cim_dbContext>();
+                    var db = scopedServices.GetRequiredService<cim_3m_1Context>();
 
                         // Ensure the database is created.
                         db.Database.EnsureCreated();
@@ -71,7 +71,7 @@ namespace CIM.API.IntegrationTests
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
                         //userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
-                        db.UserGroups.Add(adminGroup);
+                        //db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
                         var registerUserModel = new UserModel
                         {
@@ -103,7 +103,7 @@ namespace CIM.API.IntegrationTests
             //Start_Test
             using (var scope = seacario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 //
 
                 foreach (var item in context.ProductionPlan.ToList())
@@ -116,10 +116,10 @@ namespace CIM.API.IntegrationTests
                     context.Entry(item).State = EntityState.Deleted;
                 }
 
-                foreach (var item in context.Route.ToList())
-                {
-                    context.Entry(item).State = EntityState.Deleted;
-                }
+                //foreach (var item in context.Route.ToList())
+                //{
+                //    context.Entry(item).State = EntityState.Deleted;
+                //}
 
                 context.SaveChanges();
 

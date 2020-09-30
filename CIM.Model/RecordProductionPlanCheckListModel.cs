@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class RecordProductionPlanCheckList
+    public class RecordProductionPlanCheckListModel
     {
-        public RecordProductionPlanCheckList()
-        {
-            RecordProductionPlanCheckListDetail = new HashSet<RecordProductionPlanCheckListDetail>();
-        }
-
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int Hour { get; set; }
@@ -21,7 +17,6 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-
-        public virtual ICollection<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
+        public List<RecordProductionPlanCheckListDetailModel> checkListdetail { get; set; }
     }
 }

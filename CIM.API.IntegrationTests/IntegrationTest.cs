@@ -27,7 +27,7 @@ namespace CIM.API.IntegrationTests
     public class IntegrationTest:BaseIntegrationTest
     {
         protected readonly HttpClient TestClient;
-        protected cim_dbContext DbContext;
+        protected cim_3m_1Context DbContext;
         protected IServiceScopeFactory ServiceScopeFactory;
         public UserModel Admin { get; set; }
         public string AdminToken { get; set; }
@@ -42,7 +42,7 @@ namespace CIM.API.IntegrationTests
                     // Remove the app's ApplicationDbContext registration.
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType ==
-                            typeof(DbContextOptions<cim_dbContext>));
+                            typeof(DbContextOptions<cim_3m_1Context>));
 
                     if (descriptor != null)
                     {
@@ -56,7 +56,7 @@ namespace CIM.API.IntegrationTests
                     //return;
 
                     // Add ApplicationDbContext using an in-memory database for testing.
-                    services.AddDbContext<cim_dbContext>((options, context) =>
+                    services.AddDbContext<cim_3m_1Context>((options, context) =>
                     {
                         context.UseInMemoryDatabase("InMemoryDbForTesting");
                     });
@@ -69,7 +69,7 @@ namespace CIM.API.IntegrationTests
                     using (var scope = sp.CreateScope())
                     {
                         var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices.GetRequiredService<cim_dbContext>();
+                        var db = scopedServices.GetRequiredService<cim_3m_1Context>();
                         //var logger = scopedServices
                         //    .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
@@ -83,7 +83,7 @@ namespace CIM.API.IntegrationTests
                         };
                         var userService = scopedServices.GetRequiredService<IUserService>();
                         //userService.CurrentUser = new CurrentUserModel { LanguageId = "en", IsValid = true, UserId = "MockTestId" };
-                        db.UserGroups.Add(adminGroup);
+                        //db.UserGroups.Add(adminGroup);
                         db.SaveChanges();
                         var registerUserModel = new UserModel
                         {

@@ -25,8 +25,8 @@ namespace CIM.API.IntegrationTests
         {
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                return context.MaterialGroup.First(x => x.Name == name);
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
+                return null; //context.MaterialGroup.First(x => x.Name == name);
             }
         }
 
@@ -46,8 +46,8 @@ namespace CIM.API.IntegrationTests
             {
                 using (var scope = scenario.ServiceScopeFactory.CreateScope())
                 {
-                    var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                    context.MaterialGroup.Add(model);
+                    var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
+                    //context.MaterialGroup.Add(model);
                     context.SaveChanges();
                 }
             }

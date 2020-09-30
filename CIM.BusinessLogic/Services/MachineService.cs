@@ -77,9 +77,9 @@ namespace CIM.BusinessLogic.Services
                         }).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagingModel<MachineListModel>> List(string keyword, int page, int howMany, bool isActive)
+        public async Task<List<MachineModel>> List()
         {
-            var output = await _machineRepository.List(keyword, page, howMany, isActive);
+            var output = await _machineRepository.List("sp_ListMachine", new Dictionary<string, object>());
             return output;
         }
 

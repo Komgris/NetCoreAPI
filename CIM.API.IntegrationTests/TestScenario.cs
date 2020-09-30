@@ -11,7 +11,7 @@ namespace CIM.API.IntegrationTests
     public class TestScenario
     {
         public HttpClient TestClient;
-        public cim_dbContext DbContext;
+        public cim_3m_1Context DbContext;
         public IServiceScopeFactory ServiceScopeFactory;
         public UserModel Admin { get; set; }
         public string AdminToken { get; set; }

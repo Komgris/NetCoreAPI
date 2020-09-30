@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace CIM.Domain.Models
 {
-    public partial class ProductType
+    public partial class WasteLevel1
     {
-        public ProductType()
+        public WasteLevel1()
         {
-            Product = new HashSet<Product>();
-            //StandardCostBrite = new HashSet<StandardCostBrite>();
+            WasteLevel2 = new HashSet<WasteLevel2>();
         }
 
         public int Id { get; set; }
         public string Description { get; set; }
+        public int? ProcessTypeId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -20,7 +20,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<Product> Product { get; set; }
-        //public virtual ICollection<StandardCostBrite> StandardCostBrite { get; set; }
+        public virtual ProcessType ProcessType { get; set; }
+        public virtual ICollection<WasteLevel2> WasteLevel2 { get; set; }
     }
 }

@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class CheckListType
     {
+        public CheckListType()
+        {
+            ProductionPlanCheckList = new HashSet<ProductionPlanCheckList>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }
@@ -13,5 +18,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual ICollection<ProductionPlanCheckList> ProductionPlanCheckList { get; set; }
     }
 }

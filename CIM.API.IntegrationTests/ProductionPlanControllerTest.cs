@@ -41,10 +41,10 @@ namespace CIM.API.IntegrationTests
             //Start_Test
             using (var scope = seacario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 context.ProductionPlan.Add(productionPlanTest);
                 context.Product.Add(product);
-                context.Route.Add(route);
+                //context.Route.Add(route);
                 context.SaveChanges();
             }
 
@@ -54,7 +54,7 @@ namespace CIM.API.IntegrationTests
         {
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 return context.ProductionPlan.Count();
             }
         }
@@ -63,7 +63,7 @@ namespace CIM.API.IntegrationTests
         {
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 return context.ProductionPlan.First(x => x.PlanId == id);
             }
         }
@@ -142,7 +142,7 @@ namespace CIM.API.IntegrationTests
             };
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 context.ProductionPlan.Add(productionPlanModel);
                 context.SaveChanges();
             }
@@ -170,7 +170,7 @@ namespace CIM.API.IntegrationTests
             };
             using (var scope = scenario.ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
                 context.ProductionPlan.Add(productionPlan);
                 context.SaveChanges();
             }

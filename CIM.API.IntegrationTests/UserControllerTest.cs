@@ -42,12 +42,12 @@ namespace CIM.API.IntegrationTests
 
             using (var scope = ServiceScopeFactory.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<cim_dbContext>();
-                context.UserGroups.Add(testGroup);
-                context.App.Add(app1);
-                context.App.Add(app2);
-                context.App.Add(app3);
-                context.App.Add(app4);
+                var context = scope.ServiceProvider.GetService<cim_3m_1Context>();
+                //context.UserGroups.Add(testGroup);
+                //context.App.Add(app1);
+                //context.App.Add(app2);
+                //context.App.Add(app3);
+                //context.App.Add(app4);
 
                 testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app1.Id, UserGroupId = testGroup.Id });
                 testGroup.UserGroupsApps.Add(new UserGroupsApps { AppId = app2.Id, UserGroupId = testGroup.Id });
