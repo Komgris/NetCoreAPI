@@ -49,5 +49,14 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return model;
         }
+
+        public async Task<List<RecordProductionPlanCheckListModel>> List(string planId)
+        {
+            var output = await _recordProductionPlanCheckListRepository.List("sp_ListRecordCheckList", new Dictionary<string, object>()
+                {
+                    {"@planId", planId}
+                });
+            return output;
+        }
     }
 }

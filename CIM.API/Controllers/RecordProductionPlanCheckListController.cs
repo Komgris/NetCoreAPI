@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+   
     public class RecordProductionPlanCheckListController : BaseController
     {
         private IRecordProductionPlanCheckListService _service;
@@ -31,7 +31,25 @@ namespace CIM.API.Controllers
             _masterDataService = masterDataService;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/List")]
+        public async Task<ProcessReponseModel<List<RecordProductionPlanCheckListModel>>> List(string planId)
+        {
+            var output = new ProcessReponseModel<List<RecordProductionPlanCheckListModel>>();
+            try
+            {
+                output.Data = await _service.List(planId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
+        [Route("api/[controller]")]
         public async Task<ProcessReponseModel<RecordProductionPlanCheckListModel>> Create(RecordProductionPlanCheckListModel model)
         {
             var output = new ProcessReponseModel<RecordProductionPlanCheckListModel>();

@@ -9,5 +9,6 @@ namespace CIM.BusinessLogic.Interfaces
     public interface IRecordProductionPlanCheckListService : IBaseService
     {
         Task<RecordProductionPlanCheckListModel> Create(RecordProductionPlanCheckListModel model);
+        Task<List<RecordProductionPlanCheckListModel>> List(string planId);
     }
 }
