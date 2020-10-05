@@ -10,6 +10,9 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
         public string Description { get; set; }
         public int CheckListTypeId { get; set; }
+        public int CheckListId { get; set; }
+        public int DetailId { get; set; }
+        public int ExampleNumber { get; set; }
         public bool IsCheck { get; set; }
         public int Hour { get; set; }
         public int Date { get; set; }

@@ -33,12 +33,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<List<RecordProductionPlanCheckListModel>>> List(string planId)
+        public async Task<ProcessReponseModel<List<RecordProductionPlanCheckListModel>>> List(string planId, int? checklistTypeId = null)
         {
             var output = new ProcessReponseModel<List<RecordProductionPlanCheckListModel>>();
             try
             {
-                output.Data = await _service.List(planId);
+                output.Data = await _service.List(planId, checklistTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanCheckListModel>();
             try
             {
-                output.Data = await _service.Create(model);
+                output.Data = await _service.Compare(model);
                 //var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 //var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
 

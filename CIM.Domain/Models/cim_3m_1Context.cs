@@ -16,7 +16,6 @@ namespace CIM.Domain.Models
         }
 
         public virtual DbSet<CheckListType> CheckListType { get; set; }
-        public virtual DbSet<CuttingProgram> CuttingProgram { get; set; }
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
@@ -60,25 +59,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
-            });
-
-            modelBuilder.Entity<CuttingProgram>(entity =>
-            {
-                entity.ToTable("Cutting_Program");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.Name).HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -455,6 +435,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CheckListId).HasColumnName("CheckList_Id");
 
+                entity.Property(e => e.CheckListTypeId).HasColumnName("CheckListType_Id");
+
+                entity.Property(e => e.ExampleNumber).HasColumnName("Example_Number");
+
                 entity.Property(e => e.RecordCheckListId).HasColumnName("Record_CheckList_Id");
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
@@ -464,6 +448,11 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.CheckListId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_ProductionPlan_CheckList");
+
+                entity.HasOne(d => d.CheckListType)
+                    .WithMany(p => p.RecordProductionPlanCheckListDetail)
+                    .HasForeignKey(d => d.CheckListTypeId)
+                    .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_CheckListType");
 
                 entity.HasOne(d => d.RecordCheckList)
                     .WithMany(p => p.RecordProductionPlanCheckListDetail)
