@@ -301,7 +301,7 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Start(planId, routeId, target);
-                output = await HandleResult(result);
+                //output = await HandleResult(result);
             }
             catch (Exception ex)
             {

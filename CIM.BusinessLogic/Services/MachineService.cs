@@ -141,8 +141,8 @@ namespace CIM.BusinessLogic.Services
                         cachedMachine.RouteIds = new List<int>();
                     }
 
-                    if (!cachedMachine.RouteIds.Contains(routeId))
-                        cachedMachine.RouteIds.Add(routeId);
+                    //if (!cachedMachine.RouteIds.Contains(routeId))
+                    //    cachedMachine.RouteIds.Add(routeId);
 
                     cachedMachine.Sequence = seq;
                 }
