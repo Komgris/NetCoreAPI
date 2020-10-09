@@ -28,6 +28,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<ProductionPlanCheckList> ProductionPlanCheckList { get; set; }
         public virtual DbSet<ProductionStatus> ProductionStatus { get; set; }
         public virtual DbSet<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
+        public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanCheckList> RecordProductionPlanCheckList { get; set; }
         public virtual DbSet<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
@@ -355,6 +356,35 @@ namespace CIM.Domain.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
+            });
+
+            modelBuilder.Entity<RecordMachineStatus>(entity =>
+            {
+                entity.ToTable("Record_Machine_Status");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
             });
 
             modelBuilder.Entity<RecordManufacturingLoss>(entity =>
