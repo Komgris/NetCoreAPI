@@ -12,7 +12,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlanModel> GetCached(string id);
         Task SetCached(ActiveProductionPlanModel model);
         Task RemoveCached(string id);
-        Task<ActiveProductionPlanModel> Start(string planId, int route, int? target);
+        Task<ActiveProductionPlan3MModel> Start(string planId, int route, int? target);
         Task<ActiveProductionPlanModel> Finish(string planId, int route);
         Task<ActiveProductionPlanModel> Pause(string planId, int route, int lossLevel3);
         Task<ActiveProductionPlanModel> Resume(string planId, int route);

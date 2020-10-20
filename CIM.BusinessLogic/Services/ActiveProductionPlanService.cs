@@ -78,7 +78,18 @@ namespace CIM.BusinessLogic.Services {
             return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(key);
         }
 
+        public async Task<ActiveProductionPlan3MModel> GetCached3M(string id)
+        {
+            var key = GetKey(id);
+            return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(key);
+        }
+
         public async Task SetCached(ActiveProductionPlanModel model)
+        {
+            await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
+        }
+
+        public async Task SetCached3M(ActiveProductionPlan3MModel model)
         {
             await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
         }
@@ -102,9 +113,9 @@ namespace CIM.BusinessLogic.Services {
         /// <param name="routeId"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Start(string planId, int routeId, int? target)
+        public async Task<ActiveProductionPlan3MModel> Start(string planId, int routeId, int? target)
         {
-            ActiveProductionPlanModel output = null;
+            ActiveProductionPlan3MModel output = null;
             var cmtxt = $"Plan:{planId}";
             var step = "";
             var now = DateTime.Now;
@@ -131,17 +142,18 @@ namespace CIM.BusinessLogic.Services {
                     if (affect > 0)
                     {
                         var masterData = await _masterDataService.GetData();
-                        var activeProductionPlan = (await GetCached(planId)) ?? new ActiveProductionPlanModel(planId);
+                        var activeProductionPlan = (await GetCached3M(planId)) ?? new ActiveProductionPlan3MModel(planId);
 
                         step = "สร้าง active Machine";
-                        Dictionary<int, ActiveMachineModel> machine = new Dictionary<int, ActiveMachineModel>();
-                        var active = new ActiveMachineModel
+                        Dictionary<int, ActiveMachine3MModel> machine = new Dictionary<int, ActiveMachine3MModel>();
+                        var active = new ActiveMachine3MModel
                         {
                             ProductionPlanId = planId,
                             Id = dbModel.MachineId,
+                            StatusId = Constans.MACHINE_STATUS.Idle
                         };
                         machine.Add(dbModel.MachineId, active);
-                        var activeMachines = await _machineService.BulkCacheMachines(planId, routeId, machine);
+                        //var activeMachines = await _machineService.BulkCacheMachines3M(planId, routeId, machine);
 
 
                         step = "สร้าง ActiveProcess Cached";
@@ -154,7 +166,7 @@ namespace CIM.BusinessLogic.Services {
 
 
                         step = "Change idle to Running";
-                        var runningMachineIds = activeMachines.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
+                        var runningMachineIds = machine.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
                         foreach (var machineId in runningMachineIds)
                         {
                             _recordMachineStatusRepository.Add(new RecordMachineStatus
@@ -167,12 +179,12 @@ namespace CIM.BusinessLogic.Services {
                         }
 
                         step = "List for Reset counter";
-                        var mcfirstStart = activeMachines.Where(x => x.Value.RouteIds.Count == 1).Select(o => o.Key).ToList();
-                        await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
+                        //var mcfirstStart = machine.Where(x => x.Value.RouteIds.Count == 1).Select(o => o.Key).ToList();
+                        //await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                         step = "เจน BoardcastData";
                         activeProductionPlan.ActiveProcesses[dbModel.MachineId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
-                        await SetCached(activeProductionPlan);
+                        await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
                         var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
                     }
