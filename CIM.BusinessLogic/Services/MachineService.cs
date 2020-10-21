@@ -112,10 +112,10 @@ namespace CIM.BusinessLogic.Services
         {
             await _responseCacheService.RemoveAsync(CachedKey(id));
         }
-        public async Task<Dictionary<int, ActiveMachine3MModel>> BulkCacheMachines3M(string productionPlanId, int routeId, Dictionary<int, ActiveMachine3MModel> machineList)
-        {
-           var out
-        }
+        //public async Task<Dictionary<int, ActiveMachine3MModel>> BulkCacheMachines3M(string productionPlanId, int routeId, Dictionary<int, ActiveMachine3MModel> machineList)
+        //{
+        //   var out
+        //}
 
         public async Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
         {
