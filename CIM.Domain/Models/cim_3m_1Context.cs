@@ -41,7 +41,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.58.148.161,1433;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -361,8 +361,6 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<RecordMachineStatus>(entity =>
             {
                 entity.ToTable("Record_Machine_Status");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")

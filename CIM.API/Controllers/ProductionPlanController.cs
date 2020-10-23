@@ -301,7 +301,13 @@ namespace CIM.API.Controllers
             try
             {
                 var result = await _activeProductionPlanService.Start(planId, routeId, target);
-                //output = await HandleResult(result);
+                output = await HandleResult3M(result);
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                }
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
@@ -410,6 +416,20 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        private async Task<ProcessReponseModel<object>> HandleResult3M(ActiveProductionPlan3MModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            if (model != null)
+            {
+                await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                    , model.ProductionPlanId
+                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), 
+                    model);
+
+                output.IsSuccess = true;
+            }
+            return output;
+        }
         #endregion
     }
 }

@@ -48,6 +48,23 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/Validate")]
+        public async Task<ProcessReponseModel<object>> Validate(string planId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await _service.Validate(planId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
         [Route("api/[controller]")]
         public async Task<ProcessReponseModel<RecordProductionPlanCheckListModel>> Create(RecordProductionPlanCheckListModel model)

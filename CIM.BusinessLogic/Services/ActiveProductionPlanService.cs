@@ -153,15 +153,16 @@ namespace CIM.BusinessLogic.Services {
                             StatusId = Constans.MACHINE_STATUS.Idle
                         };
                         machine.Add(dbModel.MachineId, active);
-                        //var activeMachines = await _machineService.BulkCacheMachines3M(planId, routeId, machine);
+                        var activeMachines = await _machineService.BulkCacheMachines3M(planId, machine);
 
 
                         step = "สร้าง ActiveProcess Cached";
-                        activeProductionPlan.ActiveProcesses[dbModel.MachineId] = new ActiveProcessModel
+                        activeProductionPlan.ActiveProcesses[dbModel.MachineId] = new ActiveProcess3MModel
                         {
                             ProductionPlanId = planId,
                             ProductId = dbModel.ProductId,
                             Status = Constans.PRODUCTION_PLAN_STATUS.Production,
+                            MachineList = activeMachines
                         };
 
 

@@ -10,6 +10,7 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
         public int ProductId { get; set; }
         public PRODUCTION_PLAN_STATUS Status { get; set; }
+        public Dictionary<int, ActiveMachine3MModel> MachineList { get; set; }
         public BoardcastModel BoardcastData { get; set; }
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
     }

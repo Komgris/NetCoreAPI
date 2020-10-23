@@ -16,16 +16,19 @@ namespace CIM.BusinessLogic.Services
         private IResponseCacheService _responseCacheService;
         private IRecordProductionPlanCheckListRepository _recordProductionPlanCheckListRepository;
         private IRecordProductionPlanCheckListDetailRepository _recordProductionPlanCheckListDetailRepository;
+        private IDirectSqlRepository _directSqlRepository;
         private IUnitOfWorkCIM _unitOfWork;
 
         public RecordProductionPlanCheckListService(
         IResponseCacheService responseCacheService,
         IRecordProductionPlanCheckListRepository recordProductionPlanCheckListRepository,
         IRecordProductionPlanCheckListDetailRepository recordProductionPlanCheckListDetailRepository,
+        IDirectSqlRepository directSqlRepository,
         IUnitOfWorkCIM unitOfWork
         )
         {
             _responseCacheService = responseCacheService;
+            _directSqlRepository = directSqlRepository;
             _recordProductionPlanCheckListRepository = recordProductionPlanCheckListRepository;
             _recordProductionPlanCheckListDetailRepository = recordProductionPlanCheckListDetailRepository;
             _unitOfWork = unitOfWork;
@@ -127,6 +130,15 @@ namespace CIM.BusinessLogic.Services
                     {"@checklist_Id", checklistTypeId}
                 });
             return output;
+        }
+
+        public async Task<bool> Validate(string planId)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId },
+            };
+            var isCheck = _directSqlRepository.ExecuteFunction<bool>("dbo.fn_validation_plan_checklist", paramsList);
+            return isCheck;
         }
     }
 }

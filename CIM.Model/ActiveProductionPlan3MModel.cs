@@ -16,10 +16,10 @@ namespace CIM.Model
         /// <summary>
         /// Key = RouteId
         /// </summary>
-        public Dictionary<int, ActiveProcessModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcessModel>();
+        public Dictionary<int, ActiveProcess3MModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcess3MModel>();
 
         //public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
         public PRODUCTION_PLAN_STATUS Status { get; set; }
-        public Dictionary<int, ActiveMachineModel> Machines { get; set; }
+        public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
     }
 }
