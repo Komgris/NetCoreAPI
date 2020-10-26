@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+   
     public class RecordProductionPlanCheckListController : BaseController
     {
         private IRecordProductionPlanCheckListService _service;
@@ -31,13 +31,48 @@ namespace CIM.API.Controllers
             _masterDataService = masterDataService;
         }
 
+        [HttpGet]
+        [Route("api/[controller]/List")]
+        public async Task<ProcessReponseModel<List<RecordProductionPlanCheckListModel>>> List(string planId, int? checklistTypeId = null)
+        {
+            var output = new ProcessReponseModel<List<RecordProductionPlanCheckListModel>>();
+            try
+            {
+                output.Data = await _service.List(planId, checklistTypeId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/Validate")]
+        public async Task<ProcessReponseModel<object>> Validate(string planId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await _service.Validate(planId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
+        [Route("api/[controller]")]
         public async Task<ProcessReponseModel<RecordProductionPlanCheckListModel>> Create(RecordProductionPlanCheckListModel model)
         {
             var output = new ProcessReponseModel<RecordProductionPlanCheckListModel>();
             try
             {
-                output.Data = await _service.Create(model);
+                output.Data = await _service.Compare(model);
                 //var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 //var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
 

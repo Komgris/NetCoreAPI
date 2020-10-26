@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public CheckListType()
         {
             ProductionPlanCheckList = new HashSet<ProductionPlanCheckList>();
+            RecordProductionPlanCheckListDetail = new HashSet<RecordProductionPlanCheckListDetail>();
         }
 
         public int Id { get; set; }
@@ -20,5 +21,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual ICollection<ProductionPlanCheckList> ProductionPlanCheckList { get; set; }
+        public virtual ICollection<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
     }
 }

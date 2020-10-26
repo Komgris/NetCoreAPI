@@ -16,7 +16,6 @@ namespace CIM.Domain.Models
         }
 
         public virtual DbSet<CheckListType> CheckListType { get; set; }
-        public virtual DbSet<CuttingProgram> CuttingProgram { get; set; }
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
@@ -29,6 +28,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<ProductionPlanCheckList> ProductionPlanCheckList { get; set; }
         public virtual DbSet<ProductionStatus> ProductionStatus { get; set; }
         public virtual DbSet<RecordActiveProductionPlan> RecordActiveProductionPlan { get; set; }
+        public virtual DbSet<RecordMachineStatus> RecordMachineStatus { get; set; }
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanCheckList> RecordProductionPlanCheckList { get; set; }
         public virtual DbSet<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
@@ -41,7 +41,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.58.148.161,1433;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -60,25 +60,6 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
-            });
-
-            modelBuilder.Entity<CuttingProgram>(entity =>
-            {
-                entity.ToTable("Cutting_Program");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.Name).HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -377,6 +358,33 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
             });
 
+            modelBuilder.Entity<RecordMachineStatus>(entity =>
+            {
+                entity.ToTable("Record_Machine_Status");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.MachineStatusId).HasColumnName("MachineStatus_Id");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
             modelBuilder.Entity<RecordManufacturingLoss>(entity =>
             {
                 entity.ToTable("Record_Manufacturing_Loss");
@@ -455,6 +463,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.CheckListId).HasColumnName("CheckList_Id");
 
+                entity.Property(e => e.CheckListTypeId).HasColumnName("CheckListType_Id");
+
+                entity.Property(e => e.ExampleNumber).HasColumnName("Example_Number");
+
                 entity.Property(e => e.RecordCheckListId).HasColumnName("Record_CheckList_Id");
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
@@ -464,6 +476,11 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.CheckListId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_ProductionPlan_CheckList");
+
+                entity.HasOne(d => d.CheckListType)
+                    .WithMany(p => p.RecordProductionPlanCheckListDetail)
+                    .HasForeignKey(d => d.CheckListTypeId)
+                    .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_CheckListType");
 
                 entity.HasOne(d => d.RecordCheckList)
                     .WithMany(p => p.RecordProductionPlanCheckListDetail)

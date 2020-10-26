@@ -352,7 +352,7 @@ namespace CIM.BusinessLogic.Services {
         public async Task<BoardcastModel> GenerateBoardcast(DataTypeGroup relateType, string productionPlan, int routeId)
         {
             var boardcastData = new BoardcastModel();
-            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan }, { "@routeid", routeId } };
+            var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan } };
             return await Task.Run(() =>
             {
                 try

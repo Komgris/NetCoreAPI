@@ -13,6 +13,7 @@ namespace CIM.Model
         public decimal IngredientPerUnit { get; set; }
         public int UnitsId { get; set; }
         public string UnitsName { get; set; }
+        public string LotNo { get; set; }
         public int MaterialId { get; set; }
         public string MaterialCode { get; set; }
         public string MaterialDescription { get; set; }

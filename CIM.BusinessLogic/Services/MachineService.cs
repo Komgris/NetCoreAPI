@@ -102,6 +102,15 @@ namespace CIM.BusinessLogic.Services
         {
             return await _responseCacheService.GetAsTypeAsync<ActiveMachineModel>(CachedKey(id));
         }
+        public async Task<ActiveMachine3MModel> GetCached3M(int id)
+        {
+            return await _responseCacheService.GetAsTypeAsync<ActiveMachine3MModel>(CachedKey(id));
+        }
+
+        public async Task SetCached3M(int id, ActiveMachine3MModel model)
+        {
+            await _responseCacheService.SetAsync(CachedKey(id), model);
+        }
 
         public async Task SetCached(int id, ActiveMachineModel model)
         {
@@ -111,6 +120,40 @@ namespace CIM.BusinessLogic.Services
         public async Task RemoveCached(int id, ActiveMachineModel model)
         {
             await _responseCacheService.RemoveAsync(CachedKey(id));
+        }
+        public async Task<Dictionary<int, ActiveMachine3MModel>> BulkCacheMachines3M(string productionPlanId,  Dictionary<int, ActiveMachine3MModel> machineList)
+        {
+            var output = new List<ActiveMachine3MModel>();
+            var seq = 0;
+            foreach (var machine in machineList)
+            {
+                seq++;
+                var key = CachedKey(machine.Key);
+                var cachedMachine = await GetCached3M(machine.Key);
+                if(cachedMachine == null)
+                {
+                    cachedMachine = new ActiveMachine3MModel
+                    {
+                        Id = machine.Key,
+                        Sequence = seq,
+                        UserId = CurrentUser.UserId,
+                        StartedAt = DateTime.Now,
+                        StatusId = Constans.MACHINE_STATUS.Unknown,
+                    };
+                }
+                if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA || cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown)
+                {
+                    var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machine.Key).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+                    if (dbModel != null)
+                        cachedMachine.StatusId = dbModel.MachineStatusId;
+                }
+                cachedMachine.ProductionPlanId = productionPlanId;
+
+                await SetCached3M(machine.Key, cachedMachine);
+                output.Add(cachedMachine);
+            }
+            return output.ToDictionary(x => x.Id, x => x);
+
         }
 
         public async Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList)
@@ -141,8 +184,8 @@ namespace CIM.BusinessLogic.Services
                         cachedMachine.RouteIds = new List<int>();
                     }
 
-                    if (!cachedMachine.RouteIds.Contains(routeId))
-                        cachedMachine.RouteIds.Add(routeId);
+                    //if (!cachedMachine.RouteIds.Contains(routeId))
+                    //    cachedMachine.RouteIds.Add(routeId);
 
                     cachedMachine.Sequence = seq;
                 }

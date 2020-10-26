@@ -10,8 +10,11 @@ namespace CIM.Domain.Models
         public int CheckListId { get; set; }
         public bool IsCheck { get; set; }
         public string Remark { get; set; }
+        public int? ExampleNumber { get; set; }
+        public int? CheckListTypeId { get; set; }
 
         public virtual ProductionPlanCheckList CheckList { get; set; }
+        public virtual CheckListType CheckListType { get; set; }
         public virtual RecordProductionPlanCheckList RecordCheckList { get; set; }
     }
 }

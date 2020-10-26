@@ -352,6 +352,30 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
+        public async Task<ProductionPlanOverviewModel> Load3M(string id,int machineId)
+        {
+            var productionPlan = await _productionPlanRepository.Load3M(id);
+            var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
+            var route = new ActiveProcess3MModel();
+            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(machineId))
+            {
+                route = activeProductionPlan?.ActiveProcesses[machineId];
+            }
+            else
+            {
+                route = new ActiveProcess3MModel
+                {
+                    //Route = new ActiveRouteModel { Id = routeId },
+                    Status = Constans.PRODUCTION_PLAN_STATUS.New
+                };
+            }
+            return new ProductionPlanOverviewModel
+            {
+                ProductionPlan = productionPlan
+                //Route = route
+            };
+        }
+
         public async Task<ProductionPlanModel> Get(string planId)
         {
             var output = await _productionPlanRepository.Where(x => x.PlanId == planId).Select(
@@ -385,6 +409,19 @@ namespace CIM.BusinessLogic.Services
                 item.StatusId = (int)Constans.AlertStatus.Processing;
             }
             await _activeProductionPlanService.SetCached(output);
+            return output;
+        }
+
+        public async Task<ActiveProductionPlan3MModel> TakeAction3M(string id, int routeId)
+        {
+            var output = await _activeProductionPlanService.GetCached3M(id);
+
+            var alertList = output.ActiveProcesses[routeId].Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
+            foreach (var item in alertList)
+            {
+                item.StatusId = (int)Constans.AlertStatus.Processing;
+            }
+            await _activeProductionPlanService.SetCached3M(output);
             return output;
         }
 
