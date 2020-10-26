@@ -44,6 +44,10 @@ namespace CIM.API.Controllers
         {
             return $"{Constans.SIGNAL_R_CHANNEL_DASHBOARD}-CachedCH-{cachedCH.ToString()}";//Ex. dashboard-CachedCH-Dole_Custom_Dashboard
         }
+        internal string CHActivePlan(string planId)
+        {
+            return $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_PRODUCTION_PLAN}:{planId}";//Ex. dashboard-CachedCH-Dole_Custom_Dashboard
+        }
 
         internal string CacheForBoardcast<T>(string cache)
         {

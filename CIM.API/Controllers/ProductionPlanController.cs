@@ -305,7 +305,7 @@ namespace CIM.API.Controllers
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
                 if (boardcastData?.Data.Count > 0)
                 {
-                    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
                 }
                 output.IsSuccess = true;
             }
