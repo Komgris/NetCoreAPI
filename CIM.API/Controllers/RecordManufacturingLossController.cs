@@ -188,7 +188,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
             try
             {
-                output.Data = await _service.ListByDate(date, keyword,page, howmany, planId,routeId);
+                output.Data = await _service.ListByDate(date, keyword, page, howmany, planId, routeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -196,6 +196,23 @@ namespace CIM.API.Controllers
                 output.Message = ex.Message;
             }
 
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/List3M")]
+        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> List3M(string planId, bool isAuto, string keyword = "", int page = 1, int howmany = 10)
+        {
+            var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
+            try
+            {
+                output.Data = await _service.List3M(planId, isAuto, keyword, page, howmany);
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
             return output;
         }
     }

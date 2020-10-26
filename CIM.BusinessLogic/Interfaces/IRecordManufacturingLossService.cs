@@ -15,5 +15,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<RecordManufacturingLossModel>> List(string planId, int? routeId, string keyword, int page, int howmany);
         Task<List<RecordManufacturingLossModel>> ListByMonth(int month, int year, string planId, int? routeId = null);
         Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
+        Task<PagingModel<RecordManufacturingLossModel>> List3M(string planId, bool isAuto, string keyword, int page, int howmany);
     }
 }

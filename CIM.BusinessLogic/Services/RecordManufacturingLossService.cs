@@ -237,7 +237,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel = await HandleWaste(dbModel, model, now);
 
             await _unitOfWork.CommitAsync();
-           
+
             return activeProductionPlan;
         }
 
@@ -294,13 +294,25 @@ namespace CIM.BusinessLogic.Services
                     {"@year", year}
                 });
         }
-        public async Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page , int howmany, string planId, int? routeId = null)
+        public async Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null)
         {
             return await _recordManufacturingLossRepository.ListAsPaging("sp_ListManufacturingLossByDate", new Dictionary<string, object>()
                 {
                     {"@plan_id", planId},
                     {"@route_id", routeId},
                     {"@date", date},
+                    {"@keyword", keyword},
+                    {"@howmany", howmany},
+                    {"@page", page}
+                }, page, howmany);
+        }
+
+        public async Task<PagingModel<RecordManufacturingLossModel>> List3M(string planId, bool isAuto, string keyword, int page, int howmany)
+        {
+            return await _recordManufacturingLossRepository.ListAsPaging("sp_ListMachineLossRecording", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@isauto", isAuto},
                     {"@keyword", keyword},
                     {"@howmany", howmany},
                     {"@page", page}
