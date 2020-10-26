@@ -119,7 +119,6 @@ namespace CIM.BusinessLogic.Services
             {
                 return await Update(model);
             }
-
         }
 
         public async Task<List<RecordProductionPlanCheckListModel>> List(string planId, int? checklistTypeId)
