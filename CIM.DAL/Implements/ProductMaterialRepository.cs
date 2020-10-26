@@ -28,7 +28,7 @@ namespace CIM.DAL.Implements
                                             {"@product_id", productId}
                                         };
 
-                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_ListProductMaterial", parameterList);
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_GetProductMaterial", parameterList);
 
                 return (dt.ToModel<ProductMaterialModel>());
             });

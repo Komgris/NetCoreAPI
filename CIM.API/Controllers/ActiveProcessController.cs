@@ -79,13 +79,13 @@ namespace CIM.API.Controllers
 
             try
             {
-                var productionPlan = await _productionPlanService.TakeAction(productionPlanId, routeId);
+                var productionPlan = await _productionPlanService.TakeAction3M(productionPlanId, routeId);
 
                 // Production plan of this component doesn't started yet
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 

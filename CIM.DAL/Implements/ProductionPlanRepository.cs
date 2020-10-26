@@ -190,6 +190,22 @@ namespace CIM.DAL.Implements
             });
         }
 
+        public async Task<ProductionPlanModel> Load3M(string id)
+        {
+            return await Task.Run(() =>
+            {
+                var output = new ProductionPlanModel();
+                Dictionary<string, object> parameterList = new Dictionary<string, object>()
+                {
+                    {"@planid", id}
+                };
+                var dt = _directSqlRepository.ExecuteSPWithQuery("sp_Report_ActiveProductionPlan_Info", parameterList);
+                if (dt.Rows.Count > 0)
+                    output = dt.ToModel<ProductionPlanModel>()[0];
+                return output;
+            });
+        }
+
         public async Task<List<ProductionPlanListModel>> ListByMonth(int month, int year, string statusIds)
         {
             return await Task.Run(() =>

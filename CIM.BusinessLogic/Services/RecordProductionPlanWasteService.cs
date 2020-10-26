@@ -80,7 +80,6 @@ namespace CIM.BusinessLogic.Services
            //     mat.Cost = (mat.Amount * mats[mat.MaterialId]);
            //     if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
            // }
-
            // if (dbModel.RecordProductionPlanWasteMaterials.Count>0)
            // {
            //     dbModel.CauseMachineId = model.CauseMachineId;
