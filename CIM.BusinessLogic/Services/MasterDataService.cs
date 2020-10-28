@@ -913,5 +913,17 @@ namespace CIM.BusinessLogic.Services
             }
             return output;
         }
+
+        private async Task<IDictionary<int, string>> GetColorDictionary()
+        {
+            var db = (await _productFamilyRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Description);
+            }
+            return output;
+        }
     }
 }

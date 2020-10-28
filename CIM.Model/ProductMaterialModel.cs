@@ -11,6 +11,8 @@ namespace CIM.Model
         public string ProductCode { get; set; }
         public string ProductDescription { get; set; }
         public decimal IngredientPerUnit { get; set; }
+        public int ColorId { get; set; }
+        public string ColorName { get; set; }
         public int UnitsId { get; set; }
         public string UnitsName { get; set; }
         public string LotNo { get; set; }

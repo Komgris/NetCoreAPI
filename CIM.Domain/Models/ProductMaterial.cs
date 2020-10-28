@@ -8,7 +8,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int MaterialId { get; set; }
-        public int UnitsId { get; set; }
+        public int? UnitsId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
     }
