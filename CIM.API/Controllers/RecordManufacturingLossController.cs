@@ -201,18 +201,132 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List3M")]
-        public async Task<ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>> List3M(string planId, bool isAuto, string keyword = "", int page = 1, int howmany = 10)
+        public async Task<ProcessReponseModel<List<RecordManufacturingLossModel>>> List3M(string planId, int machineId, bool isAuto, string keyword = "")
         {
-            var output = new ProcessReponseModel<PagingModel<RecordManufacturingLossModel>>();
+            var output = new ProcessReponseModel<List<RecordManufacturingLossModel>>();
             try
             {
-                output.Data = await _service.List3M(planId, isAuto, keyword, page, howmany);
+                output.Data = await _service.List3M(planId, machineId, isAuto, keyword);
                 output.IsSuccess = true;
             }
             catch (Exception e)
             {
                 output.Message = e.Message;
             }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/GetByGuid3M")]
+        public async Task<ProcessReponseModel<RecordManufacturingLossModel>> GetByGuid3M(Guid guid)
+        {
+            var output = new ProcessReponseModel<RecordManufacturingLossModel>();
+            try
+            {
+                output.Data = await _service.GetByGuid3M(guid);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/Create3M")]
+        public async Task<ProcessReponseModel<object>> Create3M(RecordManufacturingLossModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _service.Create3M(model);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    //if (boardcastData?.Data.Count > 0)
+                    //{
+                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    //}
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpPut]
+        [Route("api/[controller]/Update3M")]
+        public async Task<ProcessReponseModel<object>> Update3M(RecordManufacturingLossModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _service.Update3M(model);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //if (model.WasteList.Count > 0)
+                    //{
+                    //    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, productionPlan.ProductionPlanId
+                    //        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //}
+
+                    //dole dashboard
+                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    //if (boardcastData?.Data.Count > 0)
+                    //{
+                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    //}
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/End3M")]
+        public async Task<ProcessReponseModel<object>> End3M(RecordManufacturingLossModel model)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var productionPlan = await _service.End3M(model);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
+                    //dole dashboard
+                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
+                    //if (boardcastData?.Data.Count > 0)
+                    //{
+                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
+                    //}
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
             return output;
         }
     }
