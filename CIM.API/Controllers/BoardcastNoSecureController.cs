@@ -31,7 +31,7 @@ namespace CIM.API.Controllers
             IDashboardService service,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) 
+            )
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
@@ -123,6 +123,25 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
+        internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int[] machineId, ActiveProductionPlan3MModel activeModel)
+        {
+            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
+
+            //generate data for boardcast
+            foreach (var m in machineId)
+            {
+                var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, m);
+                if (boardcastData.Data.Count > 0)
+                {
+                    activeModel = await SetBoardcastActiveDataCached3M(rediskey, m, activeModel, boardcastData);
+                }
+            }
+
+            await BoardcastClientData(channelKey, activeModel);
+            return activeModel;
+        }
+
         private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
@@ -153,6 +172,40 @@ namespace CIM.API.Controllers
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
             activeModel.ActiveProcesses[routeId].Alerts = LimitAlert(activeModel.ActiveProcesses[routeId].Alerts);
+
+            return activeModel;
+        }
+
+        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, BoardcastModel model)
+        {
+            var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
+            if (cache is null)
+            {
+                activeModel.ActiveProcesses[machineId].BoardcastData = model;
+            }
+            else
+            {
+                //update only new dashboard
+                foreach (BoardcastDataModel dashboard in model.Data)
+                {
+                    cache.SetData(dashboard);
+                }
+                activeModel.ActiveProcesses[machineId].BoardcastData = cache;
+            }
+
+            var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
+            var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
+            //foreach (var machine in activeModel.ActiveProcesses[machineId].Route.MachineList)
+            //{
+            //machine.Value.IsReady = recordingMachines.Contains(machine.Key);
+            if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
+            {
+                activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
+            }
+            //}
+
+            await _responseCacheService.SetAsync(channelKey, activeModel);
+            activeModel.ActiveProcesses[machineId].Alerts = LimitAlert(activeModel.ActiveProcesses[machineId].Alerts);
 
             return activeModel;
         }

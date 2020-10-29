@@ -14,12 +14,12 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
 
         /// <summary>
-        /// Key = RouteId
+        /// Key = MachineId
         /// </summary>
         public Dictionary<int, ActiveProcess3MModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcess3MModel>();
 
         //public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
         public PRODUCTION_PLAN_STATUS Status { get; set; }
-        public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
+        //public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
     }
 }
