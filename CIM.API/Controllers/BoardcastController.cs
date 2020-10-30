@@ -108,7 +108,7 @@ namespace CIM.API.Controllers
         internal async Task<ActiveProductionPlanModel> HandleBoardcastingActiveProcess(DataTypeGroup updateType, string productionPlan, int[] routeId, ActiveProductionPlanModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
 
             //generate data for boardcast
             foreach (var r in routeId)
@@ -127,7 +127,7 @@ namespace CIM.API.Controllers
         internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int[] machineId, ActiveProductionPlan3MModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlan}";
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
 
             //generate data for boardcast
             foreach (var m in machineId)
