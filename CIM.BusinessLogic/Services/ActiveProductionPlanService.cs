@@ -185,7 +185,8 @@ namespace CIM.BusinessLogic.Services {
 
                         step = "เจน BoardcastData";
                         activeProductionPlan.ActiveProcesses[dbModel.MachineId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
-                        await SetCached3M(activeProductionPlan);
+                        await _responseCacheService.SetActivePlan(activeProductionPlan, "Start");
+                        //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
                         var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
                     }
