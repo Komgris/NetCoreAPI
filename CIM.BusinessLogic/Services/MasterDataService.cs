@@ -266,7 +266,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh(MasterDataType.All);
                 }
-                Data = PostProcess(Data);
+                //Data = PostProcess(Data);
 
             }
             return Data;
@@ -283,7 +283,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh(MasterDataType.All);
                 }
-                Data = PostProcess(Data);
+                //Data = PostProcess(Data);
 
             }
             return Data;

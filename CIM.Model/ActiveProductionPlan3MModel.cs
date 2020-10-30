@@ -14,7 +14,7 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
 
         /// <summary>
-        /// Key = RouteId
+        /// Key = MachineId
         /// </summary>
         public Dictionary<int, ActiveProcess3MModel> ActiveProcesses { get; set; } = new Dictionary<int, ActiveProcess3MModel>();
 
@@ -25,5 +25,6 @@ namespace CIM.Model
         public DateTime UpdateTime = DateTime.Now;
         public string LastAction { get; set; }
         public bool IsFinished { get; set; } = false;
+        //public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
     }
 }
