@@ -25,12 +25,12 @@ namespace CIM.BusinessLogic.Services
 
         public void TriggerQueueing(Constans.TriggerType trigertype, int par)
         {
-            var paramsList = new Dictionary<string, object>() 
-            { 
-                { "@trig", trigertype },
-                { "@pars", par }
-            };
-            _directSqlRepository.ExecuteSPNonQuery("a_sys_call_api_trigger_queueing", paramsList);
+            //var paramsList = new Dictionary<string, object>() 
+            //{ 
+            //    { "@trig", trigertype },
+            //    { "@pars", par }
+            //};
+            //_directSqlRepository.ExecuteSPNonQuery("a_sys_call_api_trigger_queueing", paramsList);
         }
     }
 }

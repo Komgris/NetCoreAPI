@@ -263,7 +263,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh(MasterDataType.All);
                 }
-                Data = PostProcess(Data);
+                //Data = PostProcess(Data);
 
             }
             return Data;
@@ -280,7 +280,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Data = await Refresh(MasterDataType.All);
                 }
-                Data = PostProcess(Data);
+                //Data = PostProcess(Data);
 
             }
             return Data;
@@ -330,7 +330,7 @@ namespace CIM.BusinessLogic.Services
                     _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
                     //_wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
                     //_wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
-                    //_productBOM = await _materialRepository.ListProductBOM();
+                    _productBOM = await _materialRepository.ListProductBOM();
 
                     masterData.LossLevel3s = masterDataOper.LossLevel3s = GetLossLevel3();
                     //masterData.RouteMachines = await GetRouteMachine();
