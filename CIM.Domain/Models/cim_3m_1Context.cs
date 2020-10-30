@@ -71,14 +71,11 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Color>(entity =>
             {
-                entity.Property(e => e.Code)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                entity.Property(e => e.Code).HasMaxLength(50);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<LossLevel1>(entity =>
@@ -184,6 +181,8 @@ namespace CIM.Domain.Models
             modelBuilder.Entity<MachineStatus>(entity =>
             {
                 entity.ToTable("Machine_Status");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -396,6 +395,10 @@ namespace CIM.Domain.Models
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Sequence).HasColumnType("decimal(10, 3)");
+
+                entity.Property(e => e.ShopNo)
+                    .HasColumnName("Shop_No")
+                    .HasMaxLength(128);
 
                 entity.Property(e => e.StatusId)
                     .HasColumnName("Status_Id")

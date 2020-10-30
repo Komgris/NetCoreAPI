@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int MachineId { get; set; }
+        public string ShopNo { get; set; }
         public int Target { get; set; }
         public decimal? Sequence { get; set; }
         public int? UnitId { get; set; }
