@@ -105,6 +105,7 @@ namespace CIM.API {
             services.AddTransient<IProductionPlanCheckListRepository, ProductionPlanCheckListRepository>();
             services.AddTransient<IRecordProductionPlanCheckListRepository, RecordProductionPlanCheckListRepository>();
             services.AddTransient<IRecordProductionPlanCheckListDetailRepository, RecordProductionPlanCheckListDetailRepository>();
+            services.AddTransient<IWasteRepository, WasteRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();

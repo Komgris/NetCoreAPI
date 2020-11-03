@@ -594,6 +594,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);

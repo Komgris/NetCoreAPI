@@ -49,6 +49,7 @@ namespace CIM.BusinessLogic.Services
         private IAppFeatureRepository _appFeatureRepository;
 
         private IWasteNonePrimeRepository _wastenoneprimeRepository;
+        private IWasteRepository _wasteRepository;
 
         private IConfiguration _configuration;
         public MasterDataService(
@@ -81,7 +82,8 @@ namespace CIM.BusinessLogic.Services
             IAppFeatureRepository appFeatureRepository,
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository,
-            IConfiguration configuration
+            IWasteRepository wasteRepository,
+        IConfiguration configuration
             )
         {
             _directSqlRepository = directSqlRepository;
@@ -113,6 +115,7 @@ namespace CIM.BusinessLogic.Services
             _appRepository = appRepository;
             _appFeatureRepository = appFeatureRepository;
             _wastenoneprimeRepository = wastenoneprimeRepository;
+            _wasteRepository = wasteRepository;
             _configuration = configuration;
         }
         public MasterDataModel Data { get; set; }
@@ -123,6 +126,7 @@ namespace CIM.BusinessLogic.Services
         //private IList<WasteDictionaryModel> _wastesLevel1;
         //private IList<WasteDictionaryModel> _wastesLevel2;
         private IList<MaterialDictionaryModel> _productBOM;
+        private IList<WasteModel> _waste;
 
         private IDictionary<int, LossLevel3DictionaryModel> GetLossLevel3()
         {
@@ -331,6 +335,7 @@ namespace CIM.BusinessLogic.Services
                     //_wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
                     //_wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
                     _productBOM = await _materialRepository.ListProductBOM();
+                    _waste = (await _wasteRepository.WhereAsync(x => x.IsActive && !x.IsDelete)).Select(x => MapperHelper.AsModel(x, new WasteModel())).ToList();
 
                     masterData.LossLevel3s = masterDataOper.LossLevel3s = GetLossLevel3();
                     //masterData.RouteMachines = await GetRouteMachine();
@@ -371,6 +376,7 @@ namespace CIM.BusinessLogic.Services
                     //masterData.Dictionary.Language = await GetLanguageDictionary();
                     //masterData.Dictionary.App = await GetAppDictionary();
                     //masterData.Dictionary.LanguageVersion = masterDataOper.Dictionary.LanguageVersion = await GetLanguageUrlDictionary();
+                    masterData.Dictionary.WasteByMachine = await GetWasteByMachineAsync(_waste);
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -529,7 +535,7 @@ namespace CIM.BusinessLogic.Services
             var routeList = db.Select(x => x.RouteId).Distinct().ToList();
             foreach (var routeId in routeList)
             {
-                output[routeId] = db.Where(x => x.RouteId == routeId  && x.IsActive == true).OrderBy(x => x.Sequence).Select(x => x.MachineId).ToArray();
+                output[routeId] = db.Where(x => x.RouteId == routeId && x.IsActive == true).OrderBy(x => x.Sequence).Select(x => x.MachineId).ToArray();
             }
             return output;
         }
@@ -556,7 +562,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async  Task<IDictionary<int, ProductDictionaryModel>> GetProductByProcessTypeDictionary()
+        private async Task<IDictionary<int, ProductDictionaryModel>> GetProductByProcessTypeDictionary()
         {
             var output = new Dictionary<int, ProductDictionaryModel>();
             var productGroup = (await _productGroupRepository.WhereAsync(x => x.IsActive == true)).OrderBy(x => x.Id);
@@ -566,8 +572,8 @@ namespace CIM.BusinessLogic.Services
                 Id = x.Id,
                 Code = x.Code,
             }).ToListAsync();
-            
-            foreach(var item in product)
+
+            foreach (var item in product)
             {
                 item.ProcessTypeId = productGroup.FirstOrDefault(x => x.Id == item.GroupId).ProcessTypeId;
                 output.Add(item.Id, item);
@@ -910,6 +916,18 @@ namespace CIM.BusinessLogic.Services
                     Url = item.Url,
                     ThUrl = item.ThUrl
                 };
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, List<WasteModel>>> GetWasteByMachineAsync(IList<WasteModel> waste)
+        {
+            var output = new Dictionary<int, List<WasteModel>>();
+            var machineDb = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+
+            foreach (var item in machineDb)
+            {
+                output[item.Id] = waste.Where(x => x.MachineId == item.Id).Select(x => MapperHelper.AsModel(x, new WasteModel())).ToList();
             }
             return output;
         }

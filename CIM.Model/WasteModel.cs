@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class Waste
+    public class WasteModel
     {
         public int Id { get; set; }
         public string Description { get; set; }
@@ -14,5 +15,6 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
     }
 }

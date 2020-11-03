@@ -24,5 +24,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<DataTable> RecordNonePrimeList(string planId, int routeId);
         Task<List<RecordProductionPlanWasteModel>> ListByMonth(int month, int year, string planId, int? routeId = null);
         Task<PagingModel<RecordProductionPlanWasteModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
+        Task<List<RecordProductionPlanWasteModel>> List3M(string planId, int? machineId, string keyword);
     }
 }

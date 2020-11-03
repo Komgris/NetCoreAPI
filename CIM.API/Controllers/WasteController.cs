@@ -149,7 +149,6 @@ namespace CIM.API.Controllers
             return output;
         }
 
-
         [HttpGet]
         [Route("NonePrimeOutputList")]
         public async Task<ProcessReponseModel<PagingModel<RecordProductionPlanWasteNonePrimeModel>>> NonePrimeOutputList(string keyword = "", int page = 1, int howmany = 10)
@@ -238,6 +237,123 @@ namespace CIM.API.Controllers
                 output.Message = ex.Message;
             }
 
+            return output;
+        }
+
+        [HttpGet]
+        [Route("List3M")]
+        public async Task<ProcessReponseModel<List<RecordProductionPlanWasteModel>>> List3M(string planId, int? machineId = null, string keyword = "")
+        {
+            var output = new ProcessReponseModel<List<RecordProductionPlanWasteModel>>();
+            try
+            {
+                output.Data = await _service.List3M(planId, machineId, keyword);
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("Get3M")]
+        public async Task<ProcessReponseModel<RecordProductionPlanWasteModel>> Get3M(int id)
+        {
+            var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
+            try
+            {
+                output.Data = await _service.Get(id);
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpPost]
+        [Route("Create3M")]
+        public async Task<ProcessReponseModel<RecordProductionPlanWasteModel>> Create3M(RecordProductionPlanWasteModel model)
+        {
+            var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
+            try
+            {
+                output.Data = await _service.Create(model);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
+                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                }
+
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpPut]
+        [Route("Update3M")]
+        public async Task<ProcessReponseModel<RecordProductionPlanWasteModel>> Update3M(RecordProductionPlanWasteModel model)
+        {
+            var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
+            try
+            {
+                await _service.Update(model);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
+                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                }
+
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [HttpDelete]
+        [Route("Delete3M")]
+        public async Task<ProcessReponseModel<object>> Delete3M(int id)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var dbModel = await _service.Get(id);
+                await _service.Delete(id);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
+                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
+                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
             return output;
         }
     }

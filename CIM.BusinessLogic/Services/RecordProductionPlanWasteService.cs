@@ -208,5 +208,15 @@ namespace CIM.BusinessLogic.Services
                     {"@page", page}
                 }, page, howmany);
         }
+
+        public async Task<List<RecordProductionPlanWasteModel>> List3M(string planId, int? machineId, string keyword)
+        {
+            return await _recordProductionPlanWasteRepository.List("[dbo].[sp_ListWaste]", new Dictionary<string, object>()
+                {
+                    {"@plan_id", planId},
+                    {"@machine_id", machineId},
+                    {"@keyword", keyword}
+                });
+        }
     }
 }
