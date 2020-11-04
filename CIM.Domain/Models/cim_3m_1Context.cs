@@ -15,14 +15,20 @@ namespace CIM.Domain.Models
         {
         }
 
+        public virtual DbSet<CheckListMachine> CheckListMachine { get; set; }
         public virtual DbSet<CheckListType> CheckListType { get; set; }
+        public virtual DbSet<Color> Color { get; set; }
         public virtual DbSet<LossLevel1> LossLevel1 { get; set; }
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
+        public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<MaterialType> MaterialType { get; set; }
+        public virtual DbSet<Pm2> Pm2 { get; set; }
         public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<ProductMatMaster> ProductMatMaster { get; set; }
         public virtual DbSet<ProductMaterial> ProductMaterial { get; set; }
         public virtual DbSet<ProductionPlan> ProductionPlan { get; set; }
         public virtual DbSet<ProductionPlanCheckList> ProductionPlanCheckList { get; set; }
@@ -32,7 +38,12 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanCheckList> RecordProductionPlanCheckList { get; set; }
         public virtual DbSet<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
+        public virtual DbSet<RecordProductionPlanInformation> RecordProductionPlanInformation { get; set; }
+        public virtual DbSet<RecordProductionPlanInformationDetail> RecordProductionPlanInformationDetail { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
+        public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
+        public virtual DbSet<RecordProductionPlanWasteMaterial> RecordProductionPlanWasteMaterial { get; set; }
+        public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Waste> Waste { get; set; }
 
@@ -47,6 +58,27 @@ namespace CIM.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CheckListMachine>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("CheckList_Machine");
+
+                entity.Property(e => e.CheckListId).HasColumnName("CheckList_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+            });
+
             modelBuilder.Entity<CheckListType>(entity =>
             {
                 entity.Property(e => e.CreatedAt)
@@ -64,6 +96,15 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<Color>(entity =>
+            {
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<LossLevel1>(entity =>
@@ -170,6 +211,8 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Machine_Status");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -196,6 +239,133 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<Material>(entity =>
+            {
+                entity.Property(e => e.BhtperUnit)
+                    .HasColumnName("BHTPerUnit")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ColorId).HasColumnName("Color_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Description).HasMaxLength(4000);
+
+                entity.Property(e => e.Image).HasMaxLength(200);
+
+                entity.Property(e => e.MaterialGroup).HasMaxLength(50);
+
+                entity.Property(e => e.MaterialTypeId).HasColumnName("MaterialType_Id");
+
+                entity.Property(e => e.Name).HasMaxLength(15);
+
+                entity.Property(e => e.UnitsId).HasColumnName("Units_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MaterialType>(entity =>
+            {
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<Pm2>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("PM2$");
+
+                entity.Property(e => e.Bmscp).HasColumnName("BMSCP");
+
+                entity.Property(e => e.BomChild)
+                    .HasColumnName("BOM Child")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.BomChildDescription)
+                    .HasColumnName("BOM Child Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.BomChildMaterial)
+                    .HasColumnName("BOM Child Material")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Bqreq).HasColumnName("BQREQ");
+
+                entity.Property(e => e.ColorLayer1)
+                    .HasColumnName("Color Layer 1")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer2)
+                    .HasColumnName("Color Layer 2")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer3)
+                    .HasColumnName("Color Layer 3")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer4)
+                    .HasColumnName("Color Layer 4")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer5)
+                    .HasColumnName("Color Layer 5")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer6)
+                    .HasColumnName("Color Layer 6")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iump)
+                    .HasColumnName("IUMP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iums)
+                    .HasColumnName("IUMS")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iums01)
+                    .HasColumnName("IUMS01")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Product).HasMaxLength(255);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasColumnName("Product Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.WorkcenterDescription)
+                    .HasColumnName("Workcenter Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.WorkcenterNo).HasColumnName("Workcenter No#");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -225,11 +395,80 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
-            modelBuilder.Entity<ProductMaterial>(entity =>
+            modelBuilder.Entity<ProductMatMaster>(entity =>
             {
                 entity.HasNoKey();
 
+                entity.Property(e => e.Bmscp).HasColumnName("BMSCP");
+
+                entity.Property(e => e.BomChild)
+                    .HasColumnName("BOM Child")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.BomChildDescription)
+                    .HasColumnName("BOM Child Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.BomChildMaterial)
+                    .HasColumnName("BOM Child Material")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Bqreq).HasColumnName("BQREQ");
+
+                entity.Property(e => e.ColorLayer1)
+                    .HasColumnName("Color Layer 1")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer2)
+                    .HasColumnName("Color Layer 2")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer3)
+                    .HasColumnName("Color Layer 3")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer4)
+                    .HasColumnName("Color Layer 4")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer5)
+                    .HasColumnName("Color Layer 5")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ColorLayer6)
+                    .HasColumnName("Color Layer 6")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iump)
+                    .HasColumnName("IUMP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iums)
+                    .HasColumnName("IUMS")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Iums01)
+                    .HasColumnName("IUMS01")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Product).HasMaxLength(255);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasColumnName("Product Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.WorkcenterDescription)
+                    .HasColumnName("Workcenter Description")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.WorkcenterNo).HasColumnName("Workcenter No#");
+            });
+
+            modelBuilder.Entity<ProductMaterial>(entity =>
+            {
                 entity.ToTable("Product_Material");
+
+                entity.Property(e => e.Bqreq).HasColumnName("BQREQ");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -279,6 +518,10 @@ namespace CIM.Domain.Models
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Sequence).HasColumnType("decimal(10, 3)");
+
+                entity.Property(e => e.ShopNo)
+                    .HasColumnName("Shop_No")
+                    .HasMaxLength(128);
 
                 entity.Property(e => e.StatusId)
                     .HasColumnName("Status_Id")
@@ -471,6 +714,10 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
 
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
                 entity.HasOne(d => d.CheckList)
                     .WithMany(p => p.RecordProductionPlanCheckListDetail)
                     .HasForeignKey(d => d.CheckListId)
@@ -487,6 +734,63 @@ namespace CIM.Domain.Models
                     .HasForeignKey(d => d.RecordCheckListId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_Record_ProductionPlan_CheckList");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanInformation>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Information");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Date).HasDefaultValueSql("([dbo].[fn_get_datenumber](DEFAULT))");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("ProductionPlan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanInformationDetail>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("Record_ProductionPlan_Information_Detail");
+
+                entity.Property(e => e.ColorId).HasColumnName("Color_Id");
+
+                entity.Property(e => e.LotNo)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.RecordInformationId).HasColumnName("Record_Information_Id");
+
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
             });
 
             modelBuilder.Entity<RecordProductionPlanOutput>(entity =>
@@ -539,6 +843,66 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
                 entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanWaste>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste");
+
+                entity.Property(e => e.CauseMachineId).HasColumnName("CauseMachine_Id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("Production_Plan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Reason).HasMaxLength(4000);
+
+                entity.Property(e => e.RecordManufacturingLossId).HasColumnName("Record_Manufacturing_Loss_Id");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanWasteMaterial>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Waste_Material");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 3)");
+
+                entity.Property(e => e.Cost)
+                    .HasColumnType("decimal(18, 3)")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
+
+                entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
+            });
+
+            modelBuilder.Entity<Units>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name).HasMaxLength(10);
             });
 
             modelBuilder.Entity<Users>(entity =>

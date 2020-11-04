@@ -20,6 +20,11 @@ namespace CIM.Model
 
         //public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
         public PRODUCTION_PLAN_STATUS Status { get; set; }
+        public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
+        public DateTime CreateTime = DateTime.Now;
+        public DateTime UpdateTime = DateTime.Now;
+        public string LastAction { get; set; }
+        public bool IsFinished { get; set; } = false;
         //public Dictionary<int, ActiveMachine3MModel> Machines { get; set; }
     }
 }

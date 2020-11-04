@@ -105,6 +105,9 @@ namespace CIM.API {
             services.AddTransient<IProductionPlanCheckListRepository, ProductionPlanCheckListRepository>();
             services.AddTransient<IRecordProductionPlanCheckListRepository, RecordProductionPlanCheckListRepository>();
             services.AddTransient<IRecordProductionPlanCheckListDetailRepository, RecordProductionPlanCheckListDetailRepository>();
+            services.AddTransient<IColorRepository, ColorRepository>();
+            services.AddTransient<IRecordProductionPlanInformationDetailRepository, RecordProductionPlanInformationDetailRepository>();
+            services.AddTransient<IRecordProductionPlanInformationRepository, RecordProductionPlanInformationRepository>();
             services.AddTransient<IWasteRepository, WasteRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
@@ -148,6 +151,7 @@ namespace CIM.API {
             services.AddTransient<ITriggerQueueService, TriggerQueueService>();
             services.AddTransient<IProductionPlanCheckListService, ProductionPlanCheckListServices>();
             services.AddTransient<IRecordProductionPlanCheckListService, RecordProductionPlanCheckListService>();
+            services.AddTransient<IRecordProductionPlanInformationService, RecordProductionPlanInformationService>();
 
             services.AddControllers();
             services.AddSignalR();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class Units
+    public class ColorModel
     {
         public int Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
     }
 }

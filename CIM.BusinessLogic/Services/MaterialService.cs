@@ -63,9 +63,9 @@ namespace CIM.BusinessLogic.Services
             return MapperHelper.AsModel(dbModel, new MaterialModel());
         }
 
-        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
+        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId, string planId)
         {
-            var output = await _productMaterialRepository.ListMaterialByProduct(productId);
+            var output = await _productMaterialRepository.ListMaterialByProduct(productId, planId);
             return output;
         }
 

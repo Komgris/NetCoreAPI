@@ -47,6 +47,7 @@ namespace CIM.BusinessLogic.Services
         private IProcessTypeRepository _processTypeRepository;
         private IAppRepository _appRepository;
         private IAppFeatureRepository _appFeatureRepository;
+        private IColorRepository _colorRepository;
 
         private IWasteNonePrimeRepository _wastenoneprimeRepository;
         private IWasteRepository _wasteRepository;
@@ -82,6 +83,7 @@ namespace CIM.BusinessLogic.Services
             IAppFeatureRepository appFeatureRepository,
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository,
+            IColorRepository colorRepository
             IWasteRepository wasteRepository,
         IConfiguration configuration
             )
@@ -117,6 +119,7 @@ namespace CIM.BusinessLogic.Services
             _wastenoneprimeRepository = wastenoneprimeRepository;
             _wasteRepository = wasteRepository;
             _configuration = configuration;
+            _colorRepository = colorRepository;
         }
         public MasterDataModel Data { get; set; }
 
@@ -376,6 +379,7 @@ namespace CIM.BusinessLogic.Services
                     //masterData.Dictionary.Language = await GetLanguageDictionary();
                     //masterData.Dictionary.App = await GetAppDictionary();
                     //masterData.Dictionary.LanguageVersion = masterDataOper.Dictionary.LanguageVersion = await GetLanguageUrlDictionary();
+                    masterData.Dictionary.Color = masterDataOper.Dictionary.Color = masterData.Dictionary.Color = await GetColorDictionary(); 
                     masterData.Dictionary.WasteByMachine = masterDataOper.Dictionary.WasteByMachine = await GetWasteByMachineAsync(_waste);
                     break;
 
@@ -588,7 +592,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Uom);
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }
@@ -916,6 +920,18 @@ namespace CIM.BusinessLogic.Services
                     Url = item.Url,
                     ThUrl = item.ThUrl
                 };
+            }
+            return output;
+        }
+
+        private async Task<IDictionary<int, string>> GetColorDictionary()
+        {
+            var db = (await _colorRepository.AllAsync()).OrderBy(x => x.Id);
+            var output = new Dictionary<int, string>();
+            foreach (var item in db)
+            {
+                if (!output.ContainsKey(item.Id))
+                    output.Add(item.Id, item.Name.Replace("\r\n", string.Empty).Trim());
             }
             return output;
         }

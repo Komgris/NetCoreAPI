@@ -19,13 +19,14 @@ namespace CIM.DAL.Implements
             _directSqlRepository = directSqlRepository;
         }
 
-        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId)
+        public async Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId, string planId)
         {
             return await Task.Run(() =>
             {
                 var parameterList = new Dictionary<string, object>()
                                         {
-                                            {"@product_id", productId}
+                                            {"@product_id", productId},
+                                            {"@plan_id", planId}
                                         };
 
                 var dt = _directSqlRepository.ExecuteSPWithQuery("sp_GetProductMaterial", parameterList);

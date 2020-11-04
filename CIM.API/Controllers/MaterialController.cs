@@ -118,12 +118,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/ListByProduct")]
         [HttpGet]
-        public async Task<ProcessReponseModel<List<ProductMaterialModel>>> ListByProduct(int productId)
+        public async Task<ProcessReponseModel<List<ProductMaterialModel>>> ListByProduct(int productId, string planId)
         {
             var output = new ProcessReponseModel<List<ProductMaterialModel>>();
             try
             {
-                output.Data = await _service.ListMaterialByProduct(productId);
+                output.Data = await _service.ListMaterialByProduct(productId, planId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
