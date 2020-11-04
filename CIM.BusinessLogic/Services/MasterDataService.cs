@@ -376,7 +376,7 @@ namespace CIM.BusinessLogic.Services
                     //masterData.Dictionary.Language = await GetLanguageDictionary();
                     //masterData.Dictionary.App = await GetAppDictionary();
                     //masterData.Dictionary.LanguageVersion = masterDataOper.Dictionary.LanguageVersion = await GetLanguageUrlDictionary();
-                    masterData.Dictionary.WasteByMachine = await GetWasteByMachineAsync(_waste);
+                    masterData.Dictionary.WasteByMachine = masterDataOper.Dictionary.WasteByMachine = await GetWasteByMachineAsync(_waste);
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -923,7 +923,7 @@ namespace CIM.BusinessLogic.Services
         private async Task<IDictionary<int, List<WasteModel>>> GetWasteByMachineAsync(IList<WasteModel> waste)
         {
             var output = new Dictionary<int, List<WasteModel>>();
-            var machineDb = await _machineRepository.WhereAsync(x => x.IsActive && !x.IsDelete);
+            var machineDb = await _machineRepository.WhereAsync(x => x.IsActive);
 
             foreach (var item in machineDb)
             {

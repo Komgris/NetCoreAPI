@@ -281,7 +281,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                output.Data = await _service.Create(model);
+                output.Data = await _service.Create3M(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -289,7 +289,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
-                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
                 output.IsSuccess = true;
@@ -309,7 +309,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                await _service.Update(model);
+                await _service.Update3M(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -317,7 +317,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
-                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
 
                 output.IsSuccess = true;
@@ -337,8 +337,8 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var dbModel = await _service.Get(id);
-                await _service.Delete(id);
+                var dbModel = await _service.Get3M(id);
+                await _service.Delete3M(id);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
                 var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
                 if (productionPlan != null)
@@ -346,7 +346,7 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
-                    _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
                 output.IsSuccess = true;
             }

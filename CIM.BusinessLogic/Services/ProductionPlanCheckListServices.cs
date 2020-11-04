@@ -27,7 +27,7 @@ namespace CIM.BusinessLogic.Services
         {
             var output = await _productionPlanCheckListRepository.List("sp_ListCheckList", new Dictionary<string, object>()
                 {
-                    {"@machineType_id", machineTypeId},
+                    {"@machine_id", machineTypeId},
                     {"@CheckListType_id", CheckListTypeId}
                 });
             return output;

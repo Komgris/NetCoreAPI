@@ -218,5 +218,84 @@ namespace CIM.BusinessLogic.Services
                     {"@keyword", keyword}
                 });
         }
+
+        public async Task<RecordProductionPlanWasteModel> Get3M(int id)
+        {
+            var dbModel = await _recordProductionPlanWasteRepository.Get(id);
+            var output = MapperHelper.AsModel(dbModel, new RecordProductionPlanWasteModel(), new[] { "WasteLevel2" });
+            output.Materials = dbModel.RecordProductionPlanWasteMaterials.Select(x => MapperHelper.AsModel(x, new RecordProductionPlanWasteMaterialModel())).ToList();
+            return output;
+        }
+
+        public async Task<RecordProductionPlanWasteModel> Create3M(RecordProductionPlanWasteModel model)
+        {
+            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
+            var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanWaste());
+            dbModel.CreatedAt = DateTime.Now;
+            dbModel.CreatedBy = CurrentUser.UserId;
+
+            //var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            //var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+
+            foreach (var material in model.Materials)
+            {
+                //var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+                //if (model.AmountUnit > 0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
+                //mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+                //if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            }
+
+            if (dbModel.RecordProductionPlanWasteMaterials.Count > 0)
+            {
+                _recordProductionPlanWasteRepository.Add(dbModel);
+            }
+            await _unitOfWork.CommitAsync();
+            return model;
+        }
+
+        public async Task Update3M(RecordProductionPlanWasteModel model)
+        {
+            // var dbModel = await _recordProductionPlanWasteRepository.Get(model.Id);
+            // foreach (var item in dbModel.RecordProductionPlanWasteMaterials)
+            // {
+            //     _recordProductionPlanWasteMaterialRepository.Delete(item);
+            // }
+            // dbModel.RecordProductionPlanWasteMaterials.Clear();
+
+            ////var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
+            // var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
+            // foreach (var material in model.Materials)
+            // {
+            //     var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
+            //     if (model.AmountUnit > 0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
+            //     mat.Cost = (mat.Amount * mats[mat.MaterialId]);
+            //     if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
+            // }
+            // if (dbModel.RecordProductionPlanWasteMaterials.Count>0)
+            // {
+            //     dbModel.CauseMachineId = model.CauseMachineId;
+            //     dbModel.Reason = model.Reason;
+            //     dbModel.RouteId = model.RouteId;
+            //     dbModel.UpdatedAt = DateTime.Now;
+            //     dbModel.UpdatedBy = CurrentUser.UserId;
+            //     dbModel.WasteLevel2Id = model.WasteLevel2Id;
+            //     _recordProductionPlanWasteRepository.Edit(dbModel);
+            // }
+            // else
+            // {
+            //     dbModel.IsDelete = true;
+            //     _recordProductionPlanWasteRepository.Edit(dbModel);
+            // }
+            await _unitOfWork.CommitAsync();
+
+        }
+
+        public async Task Delete3M(int id)
+        {
+            var dbModel = await _recordProductionPlanWasteRepository.FirstOrDefaultAsync(x => x.Id == id);
+            dbModel.IsDelete = true;
+            _recordProductionPlanWasteRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
+        }
     }
 }

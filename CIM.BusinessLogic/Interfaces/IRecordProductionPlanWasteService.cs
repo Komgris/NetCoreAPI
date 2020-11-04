@@ -25,5 +25,9 @@ namespace CIM.BusinessLogic.Interfaces
         Task<List<RecordProductionPlanWasteModel>> ListByMonth(int month, int year, string planId, int? routeId = null);
         Task<PagingModel<RecordProductionPlanWasteModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
         Task<List<RecordProductionPlanWasteModel>> List3M(string planId, int? machineId, string keyword);
+        Task<RecordProductionPlanWasteModel> Get3M(int id);
+        Task<RecordProductionPlanWasteModel> Create3M(RecordProductionPlanWasteModel model);
+        Task Update3M(RecordProductionPlanWasteModel model);
+        Task Delete3M(int id)
     }
 }
