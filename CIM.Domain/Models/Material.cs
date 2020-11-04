@@ -11,6 +11,7 @@ namespace CIM.Domain.Models
         public string Description { get; set; }
         public string MaterialGroup { get; set; }
         public int? UnitsId { get; set; }
+        public int? ColorId { get; set; }
         public decimal? BhtperUnit { get; set; }
         public int? MaterialTypeId { get; set; }
         public bool IsActive { get; set; }

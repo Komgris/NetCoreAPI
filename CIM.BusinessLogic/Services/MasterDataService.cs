@@ -586,7 +586,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in db)
             {
                 if (!output.ContainsKey(item.Id))
-                    output.Add(item.Id, item.Uom);
+                    output.Add(item.Id, item.Name);
             }
             return output;
         }
