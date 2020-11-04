@@ -9,6 +9,6 @@ namespace CIM.DAL.Interfaces
 {
     public interface IProductMaterialRepository : IRepository<ProductMaterial, object>
     {
-        Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId);
+        Task<List<ProductMaterialModel>> ListMaterialByProduct(int productId, string planId);
     }
 }

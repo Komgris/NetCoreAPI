@@ -1,10 +1,13 @@
 ﻿using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Utility;
+using CIM.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -68,6 +71,30 @@ namespace CIM.BusinessLogic.Services
         public async Task RemoveAsync(string key)
         {
             _distributedCache.Remove(key);
+        }
+
+        string GetKey(string planId)
+        {
+            return $"{RedisKey.ACTIVE_PRODUCTION_PLAN}:{planId}";
+        }
+
+        public async Task SetActivePlan(ActiveProductionPlan3MModel model, string actionFrom)
+        {
+            try
+            {
+                model.UpdateTime = DateTime.Now;
+                model.LastAction = actionFrom;
+                if (!model.IsFinished)
+                {
+                    BaseService.baseListActive[model.ProductionPlanId] = model;
+                    var key = GetKey(model.ProductionPlanId);
+                    await SetAsync(key, model);
+                }
+            }
+            catch (Exception ex)
+            {
+                HelperUtility.Logging("SetCached-Err.txt", $"{model.ProductionPlanId} | {actionFrom} | {ex.Message}");
+            }
         }
     }
 }

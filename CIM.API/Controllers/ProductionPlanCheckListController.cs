@@ -28,12 +28,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/List")]
-        public async Task<ProcessReponseModel<List<ProductionPlanCheckListModel>>> List(int machineTypeId,int checkListTypeId)
+        public async Task<ProcessReponseModel<List<ProductionPlanCheckListModel>>> List(int machineId,int checkListTypeId)
         {
             var output = new ProcessReponseModel<List<ProductionPlanCheckListModel>>();
             try
             {
-                output.Data = await _service.List(machineTypeId, checkListTypeId);
+                output.Data = await _service.List(machineId, checkListTypeId);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

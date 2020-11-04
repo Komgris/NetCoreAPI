@@ -8,6 +8,6 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IProductionPlanCheckListService : IBaseService
     {
-        Task<List<ProductionPlanCheckListModel>> List(int machineTypeId, int CheckListTypeId);
+        Task<List<ProductionPlanCheckListModel>> List(int machineId, int CheckListTypeId);
     }
 }

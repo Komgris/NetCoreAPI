@@ -12,6 +12,8 @@ namespace CIM.Domain.Models
         public string Remark { get; set; }
         public int? ExampleNumber { get; set; }
         public int? CheckListTypeId { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string UpdatedBy { get; set; }
 
         public virtual ProductionPlanCheckList CheckList { get; set; }
         public virtual CheckListType CheckListType { get; set; }

@@ -14,6 +14,7 @@ namespace CIM.BusinessLogic.Services
         public static ExcelMappingModel ExcelMapping { get; set; }
         public static string CurrentUserId { get; set; }
         public static bool IsVerifyTokenPass { get; set; }
+        public static Dictionary<string, ActiveProductionPlan3MModel> baseListActive { get; set; } = new Dictionary<string, ActiveProductionPlan3MModel>();
 
         public JsonSerializerSettings JsonsSetting { get; } = new JsonSerializerSettings
         {

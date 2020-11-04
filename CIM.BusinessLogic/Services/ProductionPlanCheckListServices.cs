@@ -23,11 +23,11 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<List<ProductionPlanCheckListModel>> List(int machineTypeId, int CheckListTypeId)
+        public async Task<List<ProductionPlanCheckListModel>> List(int machineId, int CheckListTypeId)
         {
             var output = await _productionPlanCheckListRepository.List("sp_ListCheckList", new Dictionary<string, object>()
                 {
-                    {"@machineType_id", machineTypeId},
+                    {"@machine_id", machineId},
                     {"@CheckListType_id", CheckListTypeId}
                 });
             return output;

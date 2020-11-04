@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using OfficeOpenXml;
 
@@ -11,15 +12,22 @@ namespace CIM.BusinessLogic.Utility
         {
 			try
 			{
-				DateTime oDate = DateTime.ParseExact(val.Value.ToString(), "dd/MM/yyyy HH:mm", null);
-				return Convert.ToDateTime(oDate);
+				DateTime oDate;
+				if (DateTime.TryParseExact(val.Text.ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out oDate))
+				{
+					return Convert.ToDateTime(oDate);
+				}
+				else
+				{
+					return Convert.ToDateTime(DateTime.Parse(val.Text.ToString()));
+				}
 			}
 			catch (Exception)
 			{
 
 				return null;
 			}
-        }
+		}
 
 		public static DateTime CellValToDateTime(this ExcelRange val)
 		{
