@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CIM.Domain.Models
+namespace CIM.Model
 {
-    public partial class RecordProductionPlanWaste
+    public class RecordProductionPlanColorOrderModel
     {
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
-        public int MachineId { get; set; }
-        public int WasteId { get; set; }
-        public int? CauseMachineId { get; set; }
-        public string Reason { get; set; }
-        public int? RecordManufacturingLossId { get; set; }
+        public int ProductId { get; set; }
         public int Hour { get; set; }
         public int Date { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
-        public bool IsDelete { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

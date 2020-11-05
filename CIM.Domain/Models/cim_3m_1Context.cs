@@ -38,6 +38,8 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordManufacturingLoss> RecordManufacturingLoss { get; set; }
         public virtual DbSet<RecordProductionPlanCheckList> RecordProductionPlanCheckList { get; set; }
         public virtual DbSet<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }
+        public virtual DbSet<RecordProductionPlanColorOrder> RecordProductionPlanColorOrder { get; set; }
+        public virtual DbSet<RecordProductionPlanColorOrderDetail> RecordProductionPlanColorOrderDetail { get; set; }
         public virtual DbSet<RecordProductionPlanInformation> RecordProductionPlanInformation { get; set; }
         public virtual DbSet<RecordProductionPlanInformationDetail> RecordProductionPlanInformationDetail { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
@@ -736,6 +738,55 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Record_ProductionPlan_CheckList_Detail_Record_ProductionPlan_CheckList");
             });
 
+            modelBuilder.Entity<RecordProductionPlanColorOrder>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Color_Order");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Date).HasDefaultValueSql("([dbo].[fn_get_datenumber](DEFAULT))");
+
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_Id");
+
+                entity.Property(e => e.ProductionPlanId)
+                    .IsRequired()
+                    .HasColumnName("ProductionPlan_Id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
+
+                entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+            });
+
+            modelBuilder.Entity<RecordProductionPlanColorOrderDetail>(entity =>
+            {
+                entity.ToTable("Record_ProductionPlan_Color_Order_Detail");
+
+                entity.Property(e => e.ColorId).HasColumnName("Color_Id");
+
+                entity.Property(e => e.RecordColorId).HasColumnName("Record_Color_Id");
+
+                entity.Property(e => e.Remark).HasMaxLength(200);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<RecordProductionPlanInformation>(entity =>
             {
                 entity.ToTable("Record_ProductionPlan_Information");
@@ -859,7 +910,11 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.Date).HasDefaultValueSql("([dbo].[fn_get_datenumber](DEFAULT))");
+
                 entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
 
@@ -875,6 +930,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
 
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
