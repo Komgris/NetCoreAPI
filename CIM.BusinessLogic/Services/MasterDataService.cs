@@ -83,7 +83,7 @@ namespace CIM.BusinessLogic.Services
             IAppFeatureRepository appFeatureRepository,
             IDirectSqlRepository directSqlRepository,
             IWasteNonePrimeRepository wastenoneprimeRepository,
-            IColorRepository colorRepository
+            IColorRepository colorRepository,
             IWasteRepository wasteRepository,
         IConfiguration configuration
             )
