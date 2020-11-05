@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public ProductionPlan()
         {
             RecordProductionPlanColorOrder = new HashSet<RecordProductionPlanColorOrder>();
+            RecordProductionPlanInformation = new HashSet<RecordProductionPlanInformation>();
         }
 
         public string PlanId { get; set; }
@@ -29,5 +30,6 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
 
         public virtual ICollection<RecordProductionPlanColorOrder> RecordProductionPlanColorOrder { get; set; }
+        public virtual ICollection<RecordProductionPlanInformation> RecordProductionPlanInformation { get; set; }
     }
 }

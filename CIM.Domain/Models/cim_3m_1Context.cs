@@ -843,6 +843,18 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
                 entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.RecordProductionPlanInformation)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Information_Product");
+
+                entity.HasOne(d => d.ProductionPlan)
+                    .WithMany(p => p.RecordProductionPlanInformation)
+                    .HasForeignKey(d => d.ProductionPlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Information_ProductionPlan");
             });
 
             modelBuilder.Entity<RecordProductionPlanInformationDetail>(entity =>
@@ -850,8 +862,6 @@ namespace CIM.Domain.Models
                 entity.HasNoKey();
 
                 entity.ToTable("Record_ProductionPlan_Information_Detail");
-
-                entity.Property(e => e.ColorId).HasColumnName("Color_Id");
 
                 entity.Property(e => e.LotNo)
                     .IsRequired()
@@ -866,6 +876,18 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.HasOne(d => d.Material)
+                    .WithMany(p => p.RecordProductionPlanInformationDetail)
+                    .HasForeignKey(d => d.MaterialId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Information_Detail_Material");
+
+                entity.HasOne(d => d.RecordInformation)
+                    .WithMany(p => p.RecordProductionPlanInformationDetail)
+                    .HasForeignKey(d => d.RecordInformationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Information_Detail_Record_ProductionPlan_Information");
             });
 
             modelBuilder.Entity<RecordProductionPlanOutput>(entity =>
@@ -934,7 +956,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+                  entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
 

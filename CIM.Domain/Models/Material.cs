@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class Material
     {
+        public Material()
+        {
+            RecordProductionPlanInformationDetail = new HashSet<RecordProductionPlanInformationDetail>();
+        }
+
         public int Id { get; set; }
         public string Code { get; set; }
         public string Image { get; set; }
@@ -21,5 +26,7 @@ namespace CIM.Domain.Models
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public string Name { get; set; }
+
+        public virtual ICollection<RecordProductionPlanInformationDetail> RecordProductionPlanInformationDetail { get; set; }
     }
 }
