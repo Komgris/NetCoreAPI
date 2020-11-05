@@ -859,8 +859,6 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<RecordProductionPlanInformationDetail>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("Record_ProductionPlan_Information_Detail");
 
                 entity.Property(e => e.LotNo)
@@ -956,7 +954,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                  entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+                entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
                 entity.Property(e => e.Month).HasDefaultValueSql("([dbo].[fn_get_monthnumber](DEFAULT))");
 
