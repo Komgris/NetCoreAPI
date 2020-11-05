@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace CIM.BusinessLogic.Services
         public IConfiguration _config;
         private IMaterialRepository _materialRepository;
         private IProductMaterialRepository _productmaterialRepository;
+        private IDirectSqlRepository _directSqlRepository;
 
         public RecordManufacturingLossService(
             IResponseCacheService responseCacheService,
@@ -38,7 +40,8 @@ namespace CIM.BusinessLogic.Services
             IUnitOfWorkCIM unitOfWork,
             IConfiguration config,
             IMaterialRepository materialRepository,
-            IProductMaterialRepository productmaterialRepository
+            IProductMaterialRepository productmaterialRepository,
+            IDirectSqlRepository directSqlRepository
             )
         {
             _responseCacheService = responseCacheService;
@@ -52,7 +55,7 @@ namespace CIM.BusinessLogic.Services
             _config = config;
             _materialRepository = materialRepository;
             _productmaterialRepository = productmaterialRepository;
-
+            _directSqlRepository = directSqlRepository;
         }
 
         public string GetKey(string productionPLanId)
@@ -476,6 +479,16 @@ namespace CIM.BusinessLogic.Services
             }
 
             return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Running, activeProductionPlan);
+        }
+
+        public DataTable GetReportLoss3M(string planId, int machineId)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@plan_id", planId },
+                {"@machine_id", machineId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Loss", paramsList);
         }
     }
 }
