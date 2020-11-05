@@ -5,6 +5,11 @@ namespace CIM.Domain.Models
 {
     public partial class ProductionPlan
     {
+        public ProductionPlan()
+        {
+            RecordProductionPlanColorOrder = new HashSet<RecordProductionPlanColorOrder>();
+        }
+
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int MachineId { get; set; }
@@ -22,5 +27,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual ICollection<RecordProductionPlanColorOrder> RecordProductionPlanColorOrder { get; set; }
     }
 }

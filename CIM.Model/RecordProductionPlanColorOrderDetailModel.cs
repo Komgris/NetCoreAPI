@@ -9,6 +9,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public int RecordColorId { get; set; }
         public int ColorId { get; set; }
+        public string ColorName { get; set; } 
         public int Sequence { get; set; }
         public string Remark { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -12,5 +12,8 @@ namespace CIM.Domain.Models
         public string Remark { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+
+        public virtual Color Color { get; set; }
+        public virtual RecordProductionPlanColorOrder RecordColor { get; set; }
     }
 }

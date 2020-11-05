@@ -39,20 +39,9 @@ namespace CIM.BusinessLogic.Services
             var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanCheckList());
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
-            //var recordChecklist = await _recordProductionPlanCheckListRepository.Get(dbModel.Id);
-            //var detailList = recordChecklist.RecordProductionPlanCheckListDetail.ToList();
-
-            //var detail = await _recordProductionPlanCheckListDetailRepository.Get(model.checkListdetail[0].Id);
-            //var recordChecklist = (await _recordProductionPlanCheckListRepository.FirstOrDefaultAsync(x => x.ProductionPlanId == dbModel.ProductionPlanId));
-            //var recordChecklistDetail = (await _recordProductionPlanCheckListDetailRepository.FirstOrDefaultAsync(x => x.RecordCheckListId == recordChecklist.Id && ));
             foreach (var datails in model.checkListdetail)
             {
                 var checklist = MapperHelper.AsModel(datails, new RecordProductionPlanCheckListDetail());
-                //var existId = detailList.Where(x => x.CheckListId == datails.CheckListId);
-                //foreach(var duplicate in existId)
-                //{
-                //    _recordProductionPlanCheckListDetailRepository.Delete(duplicate);
-                //}
                 dbModel.RecordProductionPlanCheckListDetail.Add(checklist);
             }
 
@@ -80,19 +69,9 @@ namespace CIM.BusinessLogic.Services
                     _recordProductionPlanCheckListDetailRepository.Delete(item);
                 }
                 recordChecklist.RecordProductionPlanCheckListDetail.Clear();
-                //var detailList = recordChecklist.RecordProductionPlanCheckListDetail.ToList();
-
-                //var detail = await _recordProductionPlanCheckListDetailRepository.Get(model.checkListdetail[0].Id);
-                //var recordChecklist = (await _recordProductionPlanCheckListRepository.FirstOrDefaultAsync(x => x.ProductionPlanId == dbModel.ProductionPlanId));
-                //var recordChecklistDetail = (await _recordProductionPlanCheckListDetailRepository.FirstOrDefaultAsync(x => x.RecordCheckListId == recordChecklist.Id && ));
                 foreach (var datails in model.checkListdetail)
                 {
                     var checklist = MapperHelper.AsModel(datails, new RecordProductionPlanCheckListDetail());
-                    //var existId = detailList.Where(x => x.CheckListId == datails.CheckListId);
-                    //foreach(var duplicate in existId)
-                    //{
-                    //    _recordProductionPlanCheckListDetailRepository.Delete(duplicate);
-                    //}
                     recordChecklist.RecordProductionPlanCheckListDetail.Add(checklist);
                 }
 
