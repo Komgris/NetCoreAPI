@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CIM.Model
+namespace CIM.Domain.Models
 {
-    public class RecordProductionPlanInformationModel
+    public partial class RecordProductionPlanColorOrder
     {
+        public RecordProductionPlanColorOrder()
+        {
+            RecordProductionPlanColorOrderDetail = new HashSet<RecordProductionPlanColorOrderDetail>();
+        }
+
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int ProductId { get; set; }
@@ -18,7 +22,9 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public List<RecordProductionPlanInformationDetailModel> Informationdetail { get; set; }
 
+        public virtual Product Product { get; set; }
+        public virtual ProductionPlan ProductionPlan { get; set; }
+        public virtual ICollection<RecordProductionPlanColorOrderDetail> RecordProductionPlanColorOrderDetail { get; set; }
     }
 }

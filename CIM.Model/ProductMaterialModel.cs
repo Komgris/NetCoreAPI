@@ -24,5 +24,5 @@ namespace CIM.Model
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public decimal QuantityUsage { get; set; }
-}
+    }
 }

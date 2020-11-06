@@ -1,6 +1,7 @@
 ﻿using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,5 +21,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveProductionPlan3MModel> Create3M(RecordManufacturingLossModel model);
         Task<ActiveProductionPlan3MModel> Update3M(RecordManufacturingLossModel model);
         Task<ActiveProductionPlan3MModel> End3M(RecordManufacturingLossModel model);
+        DataTable GetReportLoss3M(string planId, int machineId);
     }
 }

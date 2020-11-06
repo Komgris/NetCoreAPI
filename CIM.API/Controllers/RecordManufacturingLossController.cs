@@ -329,5 +329,22 @@ namespace CIM.API.Controllers
 
             return output;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/GetReportLoss3M")]
+        public async Task<ProcessReponseModel<object>> GetReportLoss3M(string planId, int machineId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetReportLoss3M(planId, machineId), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
     }
 }

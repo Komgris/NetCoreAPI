@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class RecordProductionPlanInformationModel
+    public class RecordProductionPlanColorOrderModel
     {
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
@@ -14,11 +14,12 @@ namespace CIM.Model
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
+        public int ColorId { get; set; }
+        public string ColorName { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public List<RecordProductionPlanInformationDetailModel> Informationdetail { get; set; }
-
+        public List<RecordProductionPlanColorOrderDetailModel> Colordetail { get; set; }
     }
 }
