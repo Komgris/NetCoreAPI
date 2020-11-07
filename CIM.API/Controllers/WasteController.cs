@@ -283,10 +283,10 @@ namespace CIM.API.Controllers
             {
                 output.Data = await _service.Create3M(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
@@ -311,10 +311,10 @@ namespace CIM.API.Controllers
             {
                 await _service.Update3M(model);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, model.ProductionPlanId
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
@@ -340,10 +340,10 @@ namespace CIM.API.Controllers
                 var dbModel = await _service.Get3M(id);
                 await _service.Delete3M(id);
                 var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(rediskey);
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
                 if (productionPlan != null)
                 {
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, dbModel.ProductionPlanId
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);

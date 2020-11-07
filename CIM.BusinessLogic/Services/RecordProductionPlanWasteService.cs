@@ -237,19 +237,30 @@ namespace CIM.BusinessLogic.Services
             //var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
             //var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
 
-            foreach (var material in model.Materials)
-            {
+            //foreach (var material in model.Materials)
+            //{
                 //var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
                 //if (model.AmountUnit > 0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
                 //mat.Cost = (mat.Amount * mats[mat.MaterialId]);
                 //if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
-            }
+            //}
 
-            if (dbModel.RecordProductionPlanWasteMaterials.Count > 0)
-            {
-                _recordProductionPlanWasteRepository.Add(dbModel);
-            }
-            await _unitOfWork.CommitAsync();
+            //if (dbModel.RecordProductionPlanWasteMaterials.Count > 0)
+            //{
+                //_recordProductionPlanWasteRepository.Add(dbModel);
+            //}
+            //await _unitOfWork.CommitAsync();
+
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ProductionPlan_Waste", new Dictionary<string, object>()
+                {
+                    {"@productionPlanId", model.ProductionPlanId},
+                    {"@machineId", model.CauseMachineId},
+                    {"@wasteId", model.WasteId},
+                    {"@reason", model.Reason},
+                    {"@amountUnit", model.AmountUnit},
+                    {"@createdBy", CurrentUser.UserId},
+                    {"@createdAt", DateTime.Now}
+                });
             return model;
         }
 

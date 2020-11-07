@@ -41,9 +41,9 @@ namespace CIM.DAL.Implements
                 {
                     CauseMachineId = x.CauseMachineId,
                     Reason = x.Reason,
-                    RouteId = x.RouteId,
-                    WasteLevel2Id = x.WasteLevel2Id,
-                    WasteLevel1Id = x.WasteLevel2.WasteLevel1Id,
+                    //RouteId = x.RouteId,
+                    //WasteLevel2Id = x.WasteLevel2Id,
+                    //WasteLevel1Id = x.WasteLevel2.WasteLevel1Id,
                     Id = x.Id
                 }).ToListAsync();
         }
