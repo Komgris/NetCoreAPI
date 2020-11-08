@@ -65,15 +65,16 @@ namespace CIM.API.Controllers
                     var plan = await _activeProductionPlanService.GetCached(planId);
                     if (plan != null)
                     {
-                        foreach (var route in plan?.ActiveProcesses)
-                        {
-                            foreach (var machine in route.Value.Route.MachineList)
-                            {
-                                route.Value.BoardcastData = null;
+                        //foreach (var route in plan?.ActiveProcesses)
+                        //{
 
-                                exportModel.Machines.Add(machine.Value);
-                            }
-                        }
+                        //foreach (var machine in route.Value.Route.MachineList)
+                        //{
+                        //    route.Value.BoardcastData = null;
+
+                        //    exportModel.Machines.Add(machine.Value);
+                        //}
+                        //}
 
                         exportModel.ProductionPlans.Add(plan);
                     }

@@ -671,7 +671,7 @@ namespace CIM.BusinessLogic.Services {
                             StatusId = (int)Constans.AlertStatus.New,
                             ItemStatusId = statusId,
                             CreatedAt = now,
-                            //Id = Guid.NewGuid(),
+                            Id = Guid.NewGuid(),
                             LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
                             ItemId = machineId,
                             ItemType = (int)Constans.AlertType.MACHINE,
@@ -696,7 +696,8 @@ namespace CIM.BusinessLogic.Services {
                             {"@machineId", machineId },
                             {"@lossLevel3Id", _config.GetValue<int>("DefaultLosslv3Id") },
                             {"@isAuto", isAuto },
-                            {"@createdBy", CurrentUser.UserId }
+                            {"@createdBy", CurrentUser.UserId },
+                            {"@guid", alert.Id.ToString() }
                         };
                         _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
 
