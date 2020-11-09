@@ -116,7 +116,7 @@ namespace CIM.API.Controllers
 
             //dole dashboard
             var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
-            if (boardcastData?.Data.Count > 0)
+            if (boardcastData?.UnitData.Count > 0)
             {
                 await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
             }
@@ -135,8 +135,8 @@ namespace CIM.API.Controllers
             if (productionPlan != null)
             {
                 var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan.ProductionPlanId}";
-                await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
             }
 
             //dole dashboard

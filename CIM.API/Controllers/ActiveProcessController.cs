@@ -85,8 +85,8 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                    //, productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
                 output.IsSuccess = true;

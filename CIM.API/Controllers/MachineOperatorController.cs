@@ -45,7 +45,7 @@ namespace CIM.API.Controllers
                 await _service.Create(model);
                 //dole dashboard
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                 }
@@ -78,7 +78,7 @@ namespace CIM.API.Controllers
                 }
                 //dole dashboard
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                 }
@@ -101,7 +101,7 @@ namespace CIM.API.Controllers
                 await _service.Delete(id);
                 //dole dashboard
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                 }
