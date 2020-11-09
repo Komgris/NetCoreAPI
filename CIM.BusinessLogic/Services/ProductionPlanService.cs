@@ -335,13 +335,12 @@ namespace CIM.BusinessLogic.Services
             var route = new ActiveProcessModel();
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
-                route = activeProductionPlan?.ActiveProcesses[routeId];
+                route = activeProductionPlan.ActiveProcesses[routeId];
             }
             else
             {
                 route = new ActiveProcessModel
                 {
-                    Route = new ActiveRouteModel { Id = routeId },
                     Status = Constans.PRODUCTION_PLAN_STATUS.New
                 };
             }
@@ -352,27 +351,26 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<ProductionPlanOverviewModel> Load3M(string id,int machineId)
+        public async Task<ProductionPlanoverview3MModel> Load3M(string id, int routeId)
         {
-            var productionPlan = await _productionPlanRepository.Load3M(id);
+            var productionPlan = await _productionPlanRepository.Load(id, routeId);
             var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
             var route = new ActiveProcess3MModel();
-            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(machineId))
+            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
-                route = activeProductionPlan?.ActiveProcesses[machineId];
+                route = activeProductionPlan.ActiveProcesses[routeId];
             }
             else
             {
                 route = new ActiveProcess3MModel
                 {
-                    //Route = new ActiveRouteModel { Id = routeId },
                     Status = Constans.PRODUCTION_PLAN_STATUS.New
                 };
             }
-            return new ProductionPlanOverviewModel
+            return new ProductionPlanoverview3MModel
             {
-                ProductionPlan = productionPlan
-                //Route = route
+                ProductionPlan = productionPlan,
+                Route = route
             };
         }
 

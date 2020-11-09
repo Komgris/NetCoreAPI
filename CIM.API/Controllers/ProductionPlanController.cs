@@ -227,7 +227,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load(id, routeId)), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load3M(id, routeId)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -292,15 +292,37 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Production Process
-
-        [Route("api/ProductionPlanStart")]
+        [Route("api/ProductionPlanStartProduction")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Start(string planId, int routeId, int? target)
+        public async Task<ProcessReponseModel<object>> StartProduction(string planId, int machineId, int? target)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Start(planId, routeId, target);
+                var result = await _activeProductionPlanService.Start(planId, machineId, target);
+                output = await HandleResult3M(result);
+                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (boardcastData?.Data.Count > 0)
+                {
+                    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanStart")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Start(string planId, int machineId, int? target)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Start(planId, machineId, target);
                 output = await HandleResult3M(result);
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
                 if (boardcastData?.Data.Count > 0)

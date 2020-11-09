@@ -113,7 +113,29 @@ namespace CIM.BusinessLogic.Services {
         /// <param name="routeId"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlan3MModel> Start(string planId, int routeId, int? target)
+
+        //public async Task<ActiveProductionPlan3MModel> StartProduction(string planId, int machineId, int? target)
+        //{
+        //    ActiveProductionPlan3MModel output = null;
+        //    var cmtxt = $"Plan:{planId}";
+        //    var step = "";
+        //    var now = DateTime.Now;
+        //    var paramsList = new Dictionary<string, object>() {
+        //        {"@planid", planId },
+        //        {"@target", target },
+        //    };
+        //    var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_start", paramsList);
+        //    if (message != "")
+        //    {
+        //        throw (new Exception(message));
+        //    }
+
+        //    var currentPlan = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+        //    currentPlan.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
+
+        //    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => x.MachineId == machineId && x.IsAuto == true && x.EndAt.HasValue == false);
+        //}
+        public async Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target)
         {
             ActiveProductionPlan3MModel output = null;
             var cmtxt = $"Plan:{planId}";
@@ -134,9 +156,9 @@ namespace CIM.BusinessLogic.Services {
             {
                 try
                 {
-                    var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+                    //var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
                     paramsList.Add("@user", CurrentUser.UserId);
-                    paramsList.Add("@machineid", dbModel.MachineId);
+                    paramsList.Add("@machineid", machineId);
                     var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
                     //var affect = 1;
                     if (affect > 0)
@@ -149,46 +171,53 @@ namespace CIM.BusinessLogic.Services {
                         var active = new ActiveMachine3MModel
                         {
                             ProductionPlanId = planId,
-                            Id = dbModel.MachineId,
+                            Id = machineId,
                             StatusId = Constans.MACHINE_STATUS.Idle
                         };
-                        machine.Add(dbModel.MachineId, active);
-                        var activeMachines = await _machineService.BulkCacheMachines3M(planId, dbModel.MachineId);
+                        machine.Add(machineId, active);
+                        var activeMachines = await _machineService.BulkCacheMachines3M(planId, machineId);
 
 
                         step = "สร้าง ActiveProcess Cached";
-                        activeProductionPlan.ActiveProcesses[dbModel.MachineId] = new ActiveProcess3MModel
+                        activeProductionPlan.ActiveProcesses[machineId] = new ActiveProcess3MModel
                         {
                             ProductionPlanId = planId,
-                            ProductId = dbModel.ProductId,
-                            Status = Constans.PRODUCTION_PLAN_STATUS.Production,
+                            ProductId = machineId,
+                            Status = Constans.PRODUCTION_PLAN_STATUS.Preparatory,
                             Machine = activeMachines
                         };
 
 
                         step = "Change idle to Running";
                         var runningMachineIds = machine.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
-                        foreach (var machineId in runningMachineIds)
+                        foreach (var mcId in runningMachineIds)
                         {
                             _recordMachineStatusRepository.Add(new RecordMachineStatus
                             {
                                 CreatedAt = now,
-                                MachineId = machineId,
+                                MachineId = mcId,
                                 MachineStatusId = Constans.MACHINE_STATUS.Running,
                             });
-                            UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
+                            UpdateMachineStatus(mcId, Constans.MACHINE_STATUS.Running);
                         }
 
-                        step = "List for Reset counter";
-                        //var mcfirstStart = machine.Where(x => x.Value.RouteIds.Count == 1).Select(o => o.Key).ToList();
-                        //await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
-
                         step = "เจน BoardcastData";
-                        activeProductionPlan.ActiveProcesses[dbModel.MachineId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
+                        activeProductionPlan.ActiveProcesses[machineId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, machineId);
                         await _responseCacheService.SetActivePlan(activeProductionPlan, "Start");
                         //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
                         var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
+
+                        step = "Add Preparatory";
+                        //record time loss on process ramp-up #139
+                        var rampupModel = new RecordManufacturingLossModel()
+                        {
+                            ProductionPlanId = planId,
+                            MachineId = machineId,
+                            LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                            IsAuto = true
+                        };
+                        await _recordManufacturingLossService.Create3M(rampupModel);
                     }
                 }
                 catch (Exception ex)
