@@ -6,28 +6,28 @@ using System.Text;
 using static CIM.Model.Constans;
 
 namespace CIM.Model {
-    public class BoardcastModel {
-        public BoardcastModel()
+    public class ProductionDataModel {
+        public ProductionDataModel()
         { }
-        public BoardcastModel(DataFrame timeFrame)
+        public ProductionDataModel(DataFrame timeFrame)
         {
             Type = timeFrame;
         }
         public DataFrame Type { get; set; } = DataFrame.Default;
-        public List<BoardcastDataModel> Data { get; private set; } = new List<BoardcastDataModel>();
+        public List<ProductionUnitDataModel> UnitData { get; private set; } = new List<ProductionUnitDataModel>();
         public DateTime LastUpdate { get; set; } = DateTime.Now;
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
 
-        public void SetData(BoardcastDataModel dashboard)
+        public void SetData(ProductionUnitDataModel dashboard)
         {
             if (dashboard == null) return;
-            Data.Remove(Data.Where(x => x.Name == dashboard.Name).FirstOrDefault());
-            Data.Add(dashboard);
+            UnitData.Remove(UnitData.Where(x => x.Name == dashboard.Name).FirstOrDefault());
+            UnitData.Add(dashboard);
         }
     }
 
-    public class BoardcastDataModel {
+    public class ProductionUnitDataModel {
         public string Name { get; set; }
         public DateTime LastUpdate { get; set; } = DateTime.Now;
         public string JsonData { get; set; }

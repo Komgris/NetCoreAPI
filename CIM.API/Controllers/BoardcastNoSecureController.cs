@@ -90,7 +90,7 @@ namespace CIM.API.Controllers
             }
             else
             {
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (ProductionUnitDataModel dashboard in model.Data)
                 {
                     cache.SetData(dashboard);
                 }
@@ -152,7 +152,7 @@ namespace CIM.API.Controllers
             else
             {
                 //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (ProductionUnitDataModel dashboard in model.Data)
                 {
                     cache.SetData(dashboard);
                 }
@@ -186,7 +186,7 @@ namespace CIM.API.Controllers
             else
             {
                 //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (ProductionUnitDataModel dashboard in model.Data)
                 {
                     cache.SetData(dashboard);
                 }
