@@ -6,10 +6,10 @@ using System.Text;
 using static CIM.Model.Constans;
 
 namespace CIM.Model {
-    public class BoardcastModel {
-        public BoardcastModel()
+    public class ProductionDataModel {
+        public ProductionDataModel()
         { }
-        public BoardcastModel(DataFrame timeFrame)
+        public ProductionDataModel(DataFrame timeFrame)
         {
             Type = timeFrame;
         }

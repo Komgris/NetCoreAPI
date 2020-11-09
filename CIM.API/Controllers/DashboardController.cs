@@ -33,7 +33,7 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<string> GetDashboardCached(DashboardCachedCH cachedCH)
         {
-            return CacheForBoardcast<BoardcastModel>(await GetCached(CachedCHKey(cachedCH)));
+            return CacheForBoardcast<ProductionDataModel>(await GetCached(CachedCHKey(cachedCH)));
         }
 
         [HttpGet]

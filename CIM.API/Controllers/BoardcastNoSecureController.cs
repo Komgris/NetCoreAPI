@@ -72,7 +72,7 @@ namespace CIM.API.Controllers
 
         #region Management
 
-        internal async Task HandleBoardcastingData(string channelKey, BoardcastModel boardcastData)
+        internal async Task HandleBoardcastingData(string channelKey, ProductionDataModel boardcastData)
         {
             if (boardcastData != null)
             {
@@ -81,9 +81,9 @@ namespace CIM.API.Controllers
             }
         }
 
-        private async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        private async Task SetBoardcastDataCached(string channelKey, ProductionDataModel model)
         {
-            var cache = await GetCached<BoardcastModel>(channelKey);
+            var cache = await GetCached<ProductionDataModel>(channelKey);
             if (cache == null)
             {
                 cache = model;
@@ -142,7 +142,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
             if (cache is null)
@@ -176,36 +176,33 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
         {
-            var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
-            if (cache is null)
-            {
-                activeModel.ActiveProcesses[machineId].BoardcastData = model;
-            }
-            else
-            {
-                //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
-                {
-                    cache.SetData(dashboard);
-                }
-                activeModel.ActiveProcesses[machineId].BoardcastData = cache;
-            }
+            //var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
+            //if (cache is null)
+            //{
+            //    activeModel.ActiveProcesses[machineId].BoardcastData = model;
+            //}
+            //else
+            //{
+            //    //update only new dashboard
+            //    foreach (BoardcastDataModel dashboard in model.Data)
+            //    {
+            //        cache.SetData(dashboard);
+            //    }
+            //    activeModel.ActiveProcesses[machineId].BoardcastData = cache;
+            //}
 
             var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
             var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
-            //foreach (var machine in activeModel.ActiveProcesses[machineId].Route.MachineList)
+
+            //if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
             //{
-            //machine.Value.IsReady = recordingMachines.Contains(machine.Key);
-            if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
-            {
-                activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
-            }
+            //    activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
             //}
 
-            await _responseCacheService.SetAsync(channelKey, activeModel);
-            activeModel.ActiveProcesses[machineId].Alerts = LimitAlert(activeModel.ActiveProcesses[machineId].Alerts);
+            //await _responseCacheService.SetAsync(channelKey, activeModel);
+            //activeModel.ActiveProcesses[machineId].Alerts = LimitAlert(activeModel.ActiveProcesses[machineId].Alerts);
 
             return activeModel;
         }

@@ -74,7 +74,7 @@ namespace CIM.API.Controllers
 
         #region Management
 
-        internal async Task HandleBoardcastingData(string channelKey, BoardcastModel boardcastData)
+        internal async Task HandleBoardcastingData(string channelKey, ProductionDataModel boardcastData)
         {
             if (boardcastData != null)
             {
@@ -83,9 +83,9 @@ namespace CIM.API.Controllers
             }
         }
 
-        private async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        private async Task SetBoardcastDataCached(string channelKey, ProductionDataModel model)
         {
-            var cache = await GetCached<BoardcastModel>(channelKey);
+            var cache = await GetCached<ProductionDataModel>(channelKey);
             if (cache == null)
             {
                 cache = model;
@@ -143,7 +143,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
             if (cache is null)
@@ -177,7 +177,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
             if (cache is null)
