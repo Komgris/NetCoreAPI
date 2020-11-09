@@ -245,7 +245,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , model.MachineId, productionPlan);
 
                     //dole dashboard
                     //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
@@ -275,7 +275,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , model.MachineId, productionPlan);
 
                     //if (model.WasteList.Count > 0)
                     //{
@@ -311,7 +311,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , model.MachineId, productionPlan);
 
                     //dole dashboard
                     //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);

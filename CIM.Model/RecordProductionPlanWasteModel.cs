@@ -14,7 +14,7 @@ namespace CIM.Model
         public int WasteLevel2Id { get; set; }
         public string WasteLevel2 { get; set; }
         public string WasteDescription { get; set; }
-        public int? CauseMachineId { get; set; }
+        public int CauseMachineId { get; set; }
         public string Machine { get; set; }
         public string Reason { get; set; }
         public int? RecordManufacturingLossId { get; set; }

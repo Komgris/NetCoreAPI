@@ -423,7 +423,7 @@ namespace CIM.API.Controllers
             {
                 await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
                     , model.ProductionPlanId
-                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), 
+                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).FirstOrDefault(), 
                     model);
 
                 output.IsSuccess = true;

@@ -13,7 +13,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
         public int WasteId { get; set; }
-        public int? CauseMachineId { get; set; }
+        public int CauseMachineId { get; set; }
         public string Reason { get; set; }
         public int? RecordManufacturingLossId { get; set; }
         public int Hour { get; set; }

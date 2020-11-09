@@ -287,7 +287,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , model.CauseMachineId, productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
@@ -315,7 +315,7 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , model.CauseMachineId, productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
@@ -344,7 +344,9 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
-                        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                        , dbModel.CauseMachineId, productionPlan);
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
+                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
