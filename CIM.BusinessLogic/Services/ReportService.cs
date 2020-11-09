@@ -92,7 +92,7 @@ namespace CIM.BusinessLogic.Services {
         {
             return _directSqlRepository.ExecuteSPWithQuery("sp_report_activeproductionplan_output", null).AsEnumerable().ToDictionary<DataRow, string, int>(row => row.Field<string>(0), r => r.Field<int>(1)); ;
         }
-        public ProductionUnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId)
+        public BoardcastDataModel GetActiveMachineInfo(string planId, int routeId, int machineId)
         {
             var paramsList = new Dictionary<string, object>() {
                 {"@planid", planId },
@@ -101,7 +101,7 @@ namespace CIM.BusinessLogic.Services {
             };
 
             var dset = _directSqlRepository.ExecuteSPWithQueryDSet("sp_Report_Active_Machine_Details", paramsList);
-            var result = new ProductionUnitDataModel
+            var result = new BoardcastDataModel
             {
                 Name = "MachineDetails",
                 JsonData = JsonConvert.SerializeObject(dset.Tables[0]),

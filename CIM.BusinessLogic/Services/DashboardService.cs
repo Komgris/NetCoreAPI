@@ -93,9 +93,9 @@ namespace CIM.BusinessLogic.Services {
             return boardcastData;
         }
 
-        private ProductionUnitDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new ProductionUnitDataModel();
+            var dashboarddata = new BoardcastDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -111,9 +111,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboarddata;
         }
 
-        private ProductionUnitDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private BoardcastDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new ProductionUnitDataModel();
+            var dashboarddata = new BoardcastDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;

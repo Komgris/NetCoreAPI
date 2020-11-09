@@ -12,7 +12,7 @@ namespace CIM.BusinessLogic.Interfaces {
         PagingModel<object> GetWasteHistory(string planId, int routeId, DateTime? from, DateTime? to, int page);
         Dictionary<string, int> GetActiveProductionPlanOutput();
         PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null);
-        ProductionUnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
+        BoardcastDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
         DataTable GetOEEReport(ReportTimeCriteriaModel data);
         DataTable GetOutputReport(ReportTimeCriteriaModel data);
         DataTable GetWasteReport(ReportTimeCriteriaModel data);
