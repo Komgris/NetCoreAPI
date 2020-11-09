@@ -264,7 +264,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                output.Data = await _service.Get(id);
+                output.Data = await _service.Get3M(id);
                 output.IsSuccess = true;
             }
             catch (Exception e)
@@ -348,6 +348,23 @@ namespace CIM.API.Controllers
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
+        [HttpGet]
+        [Route("GetReportWaste3M")]
+        public async Task<ProcessReponseModel<object>> GetReportWaste3M(string planId, int machineId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetReportWaste3M(planId, machineId), JsonsSetting));
                 output.IsSuccess = true;
             }
             catch (Exception e)

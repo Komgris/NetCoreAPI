@@ -12,12 +12,12 @@ namespace CIM.Domain.Models
 
         public int Id { get; set; }
         public string ProductionPlanId { get; set; }
-        //public int RouteId { get; set; }
         public int WasteId { get; set; }
         public int? CauseMachineId { get; set; }
         public string Reason { get; set; }
         public int? RecordManufacturingLossId { get; set; }
         public int Hour { get; set; }
+        public int Date { get; set; }
         public int WeekNumber { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
@@ -27,8 +27,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public virtual RecordManufacturingLoss RecordManufacturingLoss { get; set; }
-        ////public virtual WasteLevel2 WasteLevel2 { get; set; }
+
         public virtual ICollection<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
     }
 }

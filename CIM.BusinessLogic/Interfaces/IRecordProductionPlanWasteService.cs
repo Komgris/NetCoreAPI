@@ -29,5 +29,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<RecordProductionPlanWasteModel> Create3M(RecordProductionPlanWasteModel model);
         Task Update3M(RecordProductionPlanWasteModel model);
         Task Delete3M(int id);
+        DataTable GetReportWaste3M(string planId, int machineId);
     }
 }

@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -221,9 +222,17 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<RecordProductionPlanWasteModel> Get3M(int id)
         {
-            var dbModel = await _recordProductionPlanWasteRepository.Get(id);
-            var output = MapperHelper.AsModel(dbModel, new RecordProductionPlanWasteModel(), new[] { "WasteLevel2" });
-            output.Materials = dbModel.RecordProductionPlanWasteMaterials.Select(x => MapperHelper.AsModel(x, new RecordProductionPlanWasteMaterialModel())).ToList();
+            var dbModel = await _recordProductionPlanWasteRepository.Where(x => x.Id == id).Select(x => new
+            {
+                Waste = x,
+                Masterials = x.RecordProductionPlanWasteMaterials
+            }).FirstOrDefaultAsync();
+
+            dbModel.Waste.RecordProductionPlanWasteMaterials = dbModel.Masterials;
+            var wastedbModel = dbModel.Waste;
+
+            var output = MapperHelper.AsModel(wastedbModel, new RecordProductionPlanWasteModel());
+            output.Materials = wastedbModel.RecordProductionPlanWasteMaterials.Select(x => MapperHelper.AsModel(x, new RecordProductionPlanWasteMaterialModel())).ToList();
             return output;
         }
 
@@ -251,7 +260,7 @@ namespace CIM.BusinessLogic.Services
             //}
             //await _unitOfWork.CommitAsync();
 
-            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ProductionPlan_Waste", new Dictionary<string, object>()
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ProductionPlan_Waste_Create", new Dictionary<string, object>()
                 {
                     {"@productionPlanId", model.ProductionPlanId},
                     {"@machineId", model.CauseMachineId},
@@ -297,8 +306,18 @@ namespace CIM.BusinessLogic.Services
             //     dbModel.IsDelete = true;
             //     _recordProductionPlanWasteRepository.Edit(dbModel);
             // }
-            await _unitOfWork.CommitAsync();
-
+            //await _unitOfWork.CommitAsync();
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ProductionPlan_Waste_Update", new Dictionary<string, object>()
+                {
+                    {"@id", model.Id},
+                    {"@productionPlanId", model.ProductionPlanId},
+                    {"@machineId", model.CauseMachineId},
+                    {"@wasteId", model.WasteId},
+                    {"@reason", model.Reason},
+                    {"@amountUnit", model.AmountUnit},
+                    {"@updatedBy", CurrentUser.UserId},
+                    {"@updatedAt", DateTime.Now}
+                });
         }
 
         public async Task Delete3M(int id)
@@ -307,6 +326,16 @@ namespace CIM.BusinessLogic.Services
             dbModel.IsDelete = true;
             _recordProductionPlanWasteRepository.Edit(dbModel);
             await _unitOfWork.CommitAsync();
+        }
+
+        public DataTable GetReportWaste3M(string planId, int machineId)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@plan_id", planId },
+                {"@machine_id", machineId }
+            };
+
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
         }
     }
 }
