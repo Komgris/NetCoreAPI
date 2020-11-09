@@ -116,7 +116,7 @@ namespace CIM.API.Controllers
 
             //dole dashboard
             var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
-            if (boardcastData?.Data.Count > 0)
+            if (boardcastData?.UnitData.Count > 0)
             {
                 await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
             }

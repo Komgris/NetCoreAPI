@@ -82,9 +82,9 @@ namespace CIM.BusinessLogic.Services
         {
             try
             {
-                model.UpdateTime = DateTime.Now;
-                model.LastAction = actionFrom;
-                if (!model.IsFinished)
+                //model.UpdateTime = DateTime.Now;
+                //model.LastAction = actionFrom;
+                if (model.Status != PRODUCTION_PLAN_STATUS.Finished)
                 {
                     BaseService.baseListActive[model.ProductionPlanId] = model;
                     var key = GetKey(model.ProductionPlanId);

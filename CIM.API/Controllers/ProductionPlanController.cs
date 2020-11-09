@@ -303,7 +303,7 @@ namespace CIM.API.Controllers
                 var result = await _activeProductionPlanService.Start(planId, routeId, target);
                 output = await HandleResult3M(result);
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
                 }

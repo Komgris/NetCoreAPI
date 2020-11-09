@@ -93,9 +93,9 @@ namespace CIM.BusinessLogic.Services {
             return boardcastData;
         }
 
-        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private UnitDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new BoardcastDataModel();
+            var dashboarddata = new UnitDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -111,9 +111,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboarddata;
         }
 
-        private BoardcastDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private UnitDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new BoardcastDataModel();
+            var dashboarddata = new UnitDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -215,7 +215,7 @@ namespace CIM.BusinessLogic.Services {
             var customtData = new ProductionDataModel();
             foreach (var dbtype in dashboardType)
             {
-                customtData.Data.Add(
+                customtData.UnitData.Add(
                                         GetdDataSpecific(CustomDashboardConfig[dbtype], null));
             }
             return customtData;
@@ -327,7 +327,7 @@ namespace CIM.BusinessLogic.Services {
             var managementData = new ProductionDataModel(timeFrame);
             foreach (var dbtype in dashboardType)
             {
-                managementData.Data.Add(
+                managementData.UnitData.Add(
                                         GetdData(ManagementDashboardConfig[dbtype]
                                         , paramsList));
             }
@@ -341,7 +341,7 @@ namespace CIM.BusinessLogic.Services {
         public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(DataTypeGroup updateType, string productionPlan, int routeId)
         {
             var boardcastData = await GenerateBoardcast(updateType, productionPlan, routeId);
-            if (boardcastData.Data.Count > 0)
+            if (boardcastData.UnitData.Count > 0)
             {
                 //to add data to activeproduction plan
                 var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);

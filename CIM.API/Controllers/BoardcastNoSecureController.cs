@@ -90,7 +90,7 @@ namespace CIM.API.Controllers
             }
             else
             {
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (UnitDataModel dashboard in model.UnitData)
                 {
                     cache.SetData(dashboard);
                 }
@@ -113,7 +113,7 @@ namespace CIM.API.Controllers
             foreach (var r in routeId)
             {
                 var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, r);
-                if (boardcastData.Data.Count > 0)
+                if (boardcastData.UnitData.Count > 0)
                 {
                     activeModel = await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
                 }
@@ -132,7 +132,7 @@ namespace CIM.API.Controllers
             foreach (var m in machineId)
             {
                 var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, m);
-                if (boardcastData.Data.Count > 0)
+                if (boardcastData.UnitData.Count > 0)
                 {
                     activeModel = await SetBoardcastActiveDataCached3M(rediskey, m, activeModel, boardcastData);
                 }
@@ -152,7 +152,7 @@ namespace CIM.API.Controllers
             else
             {
                 //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (UnitDataModel dashboard in model.UnitData)
                 {
                     cache.SetData(dashboard);
                 }
