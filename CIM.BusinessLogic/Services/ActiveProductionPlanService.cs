@@ -115,6 +115,27 @@ namespace CIM.BusinessLogic.Services
         /// <param name="routeId"></param>
         /// <param name="target"></param>
         /// <returns></returns>
+        /// 
+
+
+
+        public async Task ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
+        {
+            var activeModel = await GetCached3M(planId);
+            if(activeModel?.Status != statusId)
+            {
+                if(statusId == PRODUCTION_PLAN_STATUS.Production)
+                {
+                    //close prepare process(loss)
+
+                    //set plan status to production
+
+                    //
+                }
+            }
+
+        }
+
         public async Task<ActiveProductionPlan3MModel> Start(string planId, int routeId, int? target)
         {
             ActiveProductionPlan3MModel output = null;
