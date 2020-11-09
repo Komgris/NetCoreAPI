@@ -4,8 +4,6 @@ using CIM.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
@@ -78,12 +76,10 @@ namespace CIM.BusinessLogic.Services
             return $"{RedisKey.ACTIVE_PRODUCTION_PLAN}:{planId}";
         }
 
-        public async Task SetActivePlan(ActiveProductionPlan3MModel model, string actionFrom)
+        public async Task SetActivePlan(ActiveProductionPlan3MModel model)
         {
             try
             {
-                //model.UpdateTime = DateTime.Now;
-                //model.LastAction = actionFrom;
                 if (model.Status != PRODUCTION_PLAN_STATUS.Finished)
                 {
                     BaseService.baseListActive[model.ProductionPlanId] = model;
@@ -93,8 +89,30 @@ namespace CIM.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                HelperUtility.Logging("SetCached-Err.txt", $"{model.ProductionPlanId} | {actionFrom} | {ex.Message}");
+                HelperUtility.Logging("SetCached-Err.txt", $"{model.ProductionPlanId} | {ex.Message}");
             }
         }
+
+        public ActiveProductionPlan3MModel GetActivePlan(string planId)
+        {
+            if (BaseService.baseListActive.ContainsKey(planId))
+            {
+                return BaseService.baseListActive[planId];
+            }
+            else
+            {
+                var key = GetKey(planId);
+                return GetAsTypeAsync<ActiveProductionPlan3MModel>(key).Result;
+            }
+        }
+
+        public void RemoveActivePlan(string planId)
+        {
+            BaseService.baseListActive.Remove(planId);
+
+            var key = GetKey(planId);
+            RemoveAsync(key).Wait();
+        }
+
     }
 }

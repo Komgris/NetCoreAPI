@@ -80,10 +80,10 @@ namespace CIM.BusinessLogic.Services
             return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(key);
         }
 
-        public async Task<ActiveProductionPlan3MModel> GetCached3M(string id)
+        public async Task<ActiveProductionPlan3MModel> GetCached3M(string planId)
         {
-            var key = GetKey(id);
-            return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(key);
+            //var key = GetKey(id);
+            return  _responseCacheService.GetActivePlan(planId);
         }
 
         public async Task SetCached(ActiveProductionPlanModel model)
@@ -93,7 +93,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task SetCached3M(ActiveProductionPlan3MModel model)
         {
-            await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
+             _responseCacheService.SetActivePlan(model);
         }
 
         public async Task RemoveCached(string id)
@@ -184,7 +184,7 @@ namespace CIM.BusinessLogic.Services
 
                         step = "เจน BoardcastData";
                         activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
-                        await _responseCacheService.SetActivePlan(activeProductionPlan, "Start");
+                        await SetCached3M(activeProductionPlan);
                         //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
                         //var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
