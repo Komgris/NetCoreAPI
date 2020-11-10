@@ -140,7 +140,7 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Name = $"{item.Name} - {item.Description}",
-                    ProcessTypeId = item.ProcessTypeId,
+                    //ProcessTypeId = item.ProcessTypeId,
                     LossLevel2Id = item.LossLevel2Id,
                     //Components = _lossLevel3ComponentMapping.Where(x => x.LossLevelId == item.Id).Select(x => x.ComponentId).ToArray()
                 };
@@ -334,7 +334,7 @@ namespace CIM.BusinessLogic.Services
                 case MasterDataType.All:
                     //_lossLevel3ComponentMapping = await _lossLevel3Repository.ListComponentMappingAsync();
                     //_lossLevel3MachineMapping = await _lossLevel3Repository.ListMachineMappingAsync();
-                    _lossLevel3s = (await _lossLevel3Repository.AllAsync()).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
+                    _lossLevel3s = (await _lossLevel3Repository.WhereAsync(x => x.IsActive && x.LossLevel2Id == 32)).Select(x => MapperHelper.AsModel(x, new LossLevel3DictionaryModel())).ToList();
                     //_wastesLevel1 = await _wasteLevel1Repository.ListAsDictionary();
                     //_wastesLevel2 = await _wasteLevel2Repository.ListAsDictionary();
                     _productBOM = await _materialRepository.ListProductBOM();
