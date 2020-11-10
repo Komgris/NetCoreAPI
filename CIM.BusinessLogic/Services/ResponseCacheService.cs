@@ -41,7 +41,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task SetAsync(string key, object model)
         {
-            if(model == null)
+            if (model == null)
             {
                 _distributedCache.Remove(key);
             }
@@ -51,7 +51,7 @@ namespace CIM.BusinessLogic.Services
                 await _distributedCache.SetStringAsync(key, stringJson);
             }
         }
-        public async Task SetAsyncExpire(string key, object model,int ttlMin)
+        public async Task SetAsyncExpire(string key, object model, int ttlMin)
         {
             if (model == null)
             {
@@ -59,7 +59,8 @@ namespace CIM.BusinessLogic.Services
             }
             else
             {
-                var option = new DistributedCacheEntryOptions(){
+                var option = new DistributedCacheEntryOptions()
+                {
                     SlidingExpiration = new TimeSpan(0, ttlMin, 0)
                 };
                 var stringJson = JsonConvert.SerializeObject(model);
@@ -71,25 +72,22 @@ namespace CIM.BusinessLogic.Services
             _distributedCache.Remove(key);
         }
 
-        string GetKey(string planId)
+        string GetKeyPlan(string planId)
         {
             return $"{RedisKey.ACTIVE_PRODUCTION_PLAN}:{planId}";
+        }
+        string GetKeyMachine(int machineId)
+        {
+            return $"{RedisKey.MACHINE}:{machineId}";
         }
 
         public async Task SetActivePlan(ActiveProductionPlan3MModel model)
         {
-            try
+            if (model.Status != PRODUCTION_PLAN_STATUS.Finished)
             {
-                if (model.Status != PRODUCTION_PLAN_STATUS.Finished)
-                {
-                    BaseService.baseListActive[model.ProductionPlanId] = model;
-                    var key = GetKey(model.ProductionPlanId);
-                    await SetAsync(key, model);
-                }
-            }
-            catch (Exception ex)
-            {
-                HelperUtility.Logging("SetCached-Err.txt", $"{model.ProductionPlanId} | {ex.Message}");
+                BaseService.baseListActive[model.ProductionPlanId] = model;
+                var key = GetKeyPlan(model.ProductionPlanId);
+                await SetAsync(key, model);
             }
         }
 
@@ -101,7 +99,7 @@ namespace CIM.BusinessLogic.Services
             }
             else
             {
-                var key = GetKey(planId);
+                var key = GetKeyPlan(planId);
                 return GetAsTypeAsync<ActiveProductionPlan3MModel>(key).Result;
             }
         }
@@ -110,8 +108,28 @@ namespace CIM.BusinessLogic.Services
         {
             BaseService.baseListActive.Remove(planId);
 
-            var key = GetKey(planId);
+            var key = GetKeyPlan(planId);
             RemoveAsync(key).Wait();
+        }
+
+        public ActiveMachine3MModel GetActiveMachine(int machineId)
+        {
+            if (BaseService.baseListMachine.ContainsKey(machineId))
+            {
+                return BaseService.baseListMachine[machineId];
+            }
+            else
+            {
+                var key = GetKeyMachine(machineId);
+                return GetAsTypeAsync<ActiveMachine3MModel>(key).Result;
+            }
+        }
+
+        public async Task SetActiveMachine(ActiveMachine3MModel model)
+        {
+            BaseService.baseListMachine[model.Id] = model;
+            var key = GetKeyMachine(model.Id);
+            await SetAsync(key, model);
         }
 
     }
