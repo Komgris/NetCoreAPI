@@ -300,6 +300,35 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [HttpDelete]
+        [Route("api/[controller]/Delete3M")]
+        public async Task<ProcessReponseModel<object>> Delete3M(int id)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var dbModel = await _service.Get3M(id);
+                await _service.Delete3M(id);
+                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
+                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
+                if (productionPlan != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
+                        , dbModel.MachineId, productionPlan);
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
+                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    //dole dashboard
+                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         [HttpPost]
         [Route("api/[controller]/End3M")]
         public async Task<ProcessReponseModel<object>> End3M(RecordManufacturingLossModel model)

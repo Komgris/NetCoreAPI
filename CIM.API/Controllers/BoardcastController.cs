@@ -29,7 +29,7 @@ namespace CIM.API.Controllers
             IDashboardService service,
             IConfiguration config,
             IActiveProductionPlanService activeProductionPlanService
-            ) 
+            )
         {
             _hub = hub;
             _responseCacheService = responseCacheService;
@@ -124,19 +124,16 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int[] machineId, ActiveProductionPlan3MModel activeModel)
+        internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int machineId, ActiveProductionPlan3MModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
 
             //generate data for boardcast
-            foreach (var m in machineId)
+            var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, machineId);
+            if (boardcastData.UnitData.Count > 0)
             {
-                var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, m);
-                if (boardcastData.UnitData.Count > 0)
-                {
-                    activeModel = await SetBoardcastActiveDataCached3M(rediskey, m, activeModel, boardcastData);
-                }
+                activeModel = await SetBoardcastActiveDataCached3M(rediskey, machineId, activeModel, boardcastData);
             }
 
             await BoardcastClientData(channelKey, activeModel);

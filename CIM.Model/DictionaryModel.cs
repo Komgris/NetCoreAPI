@@ -35,5 +35,6 @@ namespace CIM.Model
         public IDictionary<int, ProductDictionaryModel> ProductProcesstype { get; set; } = new Dictionary<int, ProductDictionaryModel>();
         public IDictionary<int, AppModel> LanguageVersion { get; set; } = new Dictionary<int, AppModel>();
         public IDictionary<int, string> Color { get; set; } = new Dictionary<int, string>();
+        public IDictionary<int, List<WasteModel>> WasteByMachine { get; set; } = new Dictionary<int, List<WasteModel>>();
     }
 }
