@@ -131,7 +131,7 @@ namespace CIM.API.Controllers
 
             //generate data for boardcast
             var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, machineId);
-            if (boardcastData.Data.Count > 0)
+            if (boardcastData.UnitData.Count > 0)
             {
                 activeModel = await SetBoardcastActiveDataCached3M(rediskey, machineId, activeModel, boardcastData);
             }
