@@ -349,9 +349,9 @@ namespace CIM.BusinessLogic.Services
                 _machineRepository.Edit(dbmachine);
             }
 
-            var machine = activeProductionPlan.ActiveProcesses[machineId].Machine;
-            machine.StatusId = status;
-            await _machineService.SetCached3M(machineId, machine);
+            //var machine = activeProductionPlan.ActiveProcesses[machineId].Machine;
+            //machine.StatusId = status;
+            //await _machineService.SetCached3M(machineId, machine);
             await SetCached3M(activeProductionPlan);
             await _unitOfWork.CommitAsync();
             return activeProductionPlan;
@@ -381,13 +381,13 @@ namespace CIM.BusinessLogic.Services
                 if (dbModel.Timespan < 60 && dbModel.IsAuto)
                 {
                     dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //var sploss = activeProductionPlan.ActiveProcesses[model.RouteId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                     //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
+                    //if (sploss != null)
+                    //{
+                    //    sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                    //    sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    //}
                 }
                 _recordManufacturingLossRepository.Edit(dbModel);
 
@@ -407,7 +407,7 @@ namespace CIM.BusinessLogic.Services
                 StatusId = Constans.MACHINE_STATUS.Stop,
                 Id = guid
             };
-            activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.Add(alert);
+            //activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.Add(alert);
 
             return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Stop, activeProductionPlan);
         }
@@ -420,13 +420,13 @@ namespace CIM.BusinessLogic.Services
             var activeProductionPlan = await GetCached3M(model.ProductionPlanId);
             if (activeProductionPlan != null)
             {
-                var alert = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
+                //var alert = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(model.Guid));
                 //handle case alert is removed from redis
-                if (alert != null)
-                {
-                    alert.LossLevel3Id = model.LossLevelId;
-                    alert.StatusId = (int)Constans.AlertStatus.Edited;
-                }
+                //if (alert != null)
+                //{
+                //    alert.LossLevel3Id = model.LossLevelId;
+                //    alert.StatusId = (int)Constans.AlertStatus.Edited;
+                //}
                 await SetCached3M(activeProductionPlan);
             }
             dbModel.LossLevel3Id = model.LossLevelId;
@@ -457,24 +457,24 @@ namespace CIM.BusinessLogic.Services
                 if (dbModel.Timespan < 60 && dbModel.IsAuto)
                 {
                     dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //var sploss = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                     //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
+                    //if (sploss != null)
+                    //{
+                    //    sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                    //    sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    //}
                 }
 
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
 
-                var alert = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
-                if (alert != null)
-                {
-                    alert.EndAt = now;
-                    alert.StatusId = (int)Constans.AlertStatus.Edited;
-                }
+                //var alert = activeProductionPlan.ActiveProcesses[model.MachineId].Alerts.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
+                //if (alert != null)
+                //{
+                //    alert.EndAt = now;
+                //    alert.StatusId = (int)Constans.AlertStatus.Edited;
+                //}
 
             }
 

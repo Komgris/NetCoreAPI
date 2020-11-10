@@ -325,7 +325,7 @@ namespace CIM.API.Controllers
                 var result = await _activeProductionPlanService.Start(planId, machineId, target);
                 output = await HandleResult3M(result);
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
                 }
@@ -443,10 +443,10 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             if (model != null)
             {
-                await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
-                    , model.ProductionPlanId
-                    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), 
-                    model);
+                //await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                //    , model.ProductionPlanId
+                //    , model.ActiveProcesses.Where(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished).Select(o => o.Key).ToArray(), 
+                //    model);
 
                 output.IsSuccess = true;
             }

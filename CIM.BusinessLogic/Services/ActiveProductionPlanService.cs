@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 using static CIM.Model.Constans;
 using Newtonsoft.Json;
 
-namespace CIM.BusinessLogic.Services {
-    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService {
+namespace CIM.BusinessLogic.Services
+{
+    public class ActiveProductionPlanService : BaseService, IActiveProductionPlanService
+    {
         IDashboardService _dashboardService;
         private IResponseCacheService _responseCacheService;
         private IMasterDataService _masterDataService;
@@ -78,10 +80,10 @@ namespace CIM.BusinessLogic.Services {
             return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlanModel>(key);
         }
 
-        public async Task<ActiveProductionPlan3MModel> GetCached3M(string id)
+        public async Task<ActiveProductionPlan3MModel> GetCached3M(string planId)
         {
-            var key = GetKey(id);
-            return await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(key);
+            //var key = GetKey(id);
+            return  _responseCacheService.GetActivePlan(planId);
         }
 
         public async Task SetCached(ActiveProductionPlanModel model)
@@ -91,7 +93,7 @@ namespace CIM.BusinessLogic.Services {
 
         public async Task SetCached3M(ActiveProductionPlan3MModel model)
         {
-            await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
+             _responseCacheService.SetActivePlan(model);
         }
 
         public async Task RemoveCached(string id)
@@ -113,29 +115,28 @@ namespace CIM.BusinessLogic.Services {
         /// <param name="routeId"></param>
         /// <param name="target"></param>
         /// <returns></returns>
+        /// 
 
-        //public async Task<ActiveProductionPlan3MModel> StartProduction(string planId, int machineId, int? target)
-        //{
-        //    ActiveProductionPlan3MModel output = null;
-        //    var cmtxt = $"Plan:{planId}";
-        //    var step = "";
-        //    var now = DateTime.Now;
-        //    var paramsList = new Dictionary<string, object>() {
-        //        {"@planid", planId },
-        //        {"@target", target },
-        //    };
-        //    var message = _directSqlRepository.ExecuteFunction<string>("dbo.fn_validation_plan_start", paramsList);
-        //    if (message != "")
-        //    {
-        //        throw (new Exception(message));
-        //    }
 
-        //    var currentPlan = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
-        //    currentPlan.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.Production;
 
-        //    var dmodel = await _recordManufacturingLossRepository.WhereAsync(x => x.MachineId == machineId && x.IsAuto == true && x.EndAt.HasValue == false);
-        //}
-        public async Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target)
+        public async Task ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
+        {
+            var activeModel = await GetCached3M(planId);
+            if(activeModel?.Status != statusId)
+            {
+                if(statusId == PRODUCTION_PLAN_STATUS.Production)
+                {
+                    //close prepare process(loss)
+
+                    //set plan status to production
+
+                    //
+                }
+            }
+
+        }
+
+        public async Task<ActiveProductionPlan3MModel> Start(string planId, int routeId, int? target)
         {
             ActiveProductionPlan3MModel output = null;
             var cmtxt = $"Plan:{planId}";
@@ -179,13 +180,10 @@ namespace CIM.BusinessLogic.Services {
 
 
                         step = "สร้าง ActiveProcess Cached";
-                        activeProductionPlan.ActiveProcesses[machineId] = new ActiveProcess3MModel
-                        {
-                            ProductionPlanId = planId,
-                            ProductId = machineId,
-                            Status = Constans.PRODUCTION_PLAN_STATUS.Preparatory,
-                            Machine = activeMachines
-                        };
+                        activeProductionPlan.ProductionPlanId = planId;
+                        activeProductionPlan.ProductId = dbModel.ProductId;
+                        activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Production;
+                        //activeProductionPlan.Machine = activeMachines;
 
 
                         step = "Change idle to Running";
@@ -202,22 +200,11 @@ namespace CIM.BusinessLogic.Services {
                         }
 
                         step = "เจน BoardcastData";
-                        activeProductionPlan.ActiveProcesses[machineId].BoardcastData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, machineId);
-                        await _responseCacheService.SetActivePlan(activeProductionPlan, "Start");
+                        activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
+                        await SetCached3M(activeProductionPlan);
                         //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
-                        var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
-
-                        step = "Add Preparatory";
-                        //record time loss on process ramp-up #139
-                        var rampupModel = new RecordManufacturingLossModel()
-                        {
-                            ProductionPlanId = planId,
-                            MachineId = machineId,
-                            LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
-                            IsAuto = true
-                        };
-                        await _recordManufacturingLossService.Create3M(rampupModel);
+                        //var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
                     }
                 }
                 catch (Exception ex)
@@ -483,14 +470,14 @@ namespace CIM.BusinessLogic.Services {
                 {
                     //foreach (var routeId in cachedMachine.RouteIds.Distinct())
                     //{
-                        if (output.ActiveProcesses.ContainsKey(machineId))
-                        {
-                            UpdateMachineStatus(machineId, statusId);
-                            activeRoute.Add(machineId);
+                    //if (output.ActiveProcesses.ContainsKey(machineId))
+                    //{
+                    //    UpdateMachineStatus(machineId, statusId);
+                    //    activeRoute.Add(machineId);
 
-                            output.ActiveProcesses[machineId].Machine.StatusId = statusId;
-                            output = await HandleMachineByStatus3M(machineId, statusId, output, isAuto);
-                        }
+                    //    output.Machine.StatusId = statusId;
+                    //    output = await HandleMachineByStatus3M(machineId, statusId, output, isAuto);
+                    //}
                     //}
                     await SetCached3M(output);
                 }
@@ -595,9 +582,9 @@ namespace CIM.BusinessLogic.Services {
 
             foreach (var dbModel in losses)
             {
-                var alert = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
-                if (alert != null)
-                    alert.EndAt = now;
+                //var alert = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                //if (alert != null)
+                //    alert.EndAt = now;
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
@@ -605,13 +592,13 @@ namespace CIM.BusinessLogic.Services {
                 if (dbModel.Timespan < 60 && dbModel.IsAuto)
                 {
                     dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    //var sploss = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                     //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
+                    //if (sploss != null)
+                    //{
+                    //    sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                    //    sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    //}
                 }
                 _recordManufacturingLossRepository.Edit(dbModel);
             }
@@ -684,42 +671,26 @@ namespace CIM.BusinessLogic.Services {
             var now = DateTime.Now;
 
             var cachedMachine = await _machineService.GetCached3M(machineId);
-            //var firstRoute = cachedMachine.RouteIds.First();
-            //if (cachedMachine.RouteIds.Count() > 0)
+  
+            //if (!activeProductionPlan.ActiveProcesses[machineId].Machine.IsReady) // has unclosed record inside
             //{
-                // create new alert and record only on first route of machine
-                //var isFirstRoute = firstRoute == routeId;
-                if (!activeProductionPlan.ActiveProcesses[machineId].Machine.IsReady) // has unclosed record inside
+                AlertModel alert;
+
+         
+                alert = new AlertModel
                 {
-                    AlertModel alert;
+                    StatusId = (int)Constans.AlertStatus.New,
+                    ItemStatusId = statusId,
+                    CreatedAt = now,
+                    Id = Guid.NewGuid(),
+                    LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
+                    ItemId = machineId,
+                    ItemType = (int)Constans.AlertType.MACHINE,
+               
+                };
 
-                    //if (isFirstRoute)
-                    //{
-                        alert = new AlertModel
-                        {
-                            StatusId = (int)Constans.AlertStatus.New,
-                            ItemStatusId = statusId,
-                            CreatedAt = now,
-                            Id = Guid.NewGuid(),
-                            LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
-                            ItemId = machineId,
-                            ItemType = (int)Constans.AlertType.MACHINE,
-                            //RouteId = routeId
-                        };
 
-                        //_recordManufacturingLossRepository.Add(new RecordManufacturingLoss
-                        //{
-                        //    CreatedBy = CurrentUser.UserId,
-                        //    //Guid = alert.Id.ToString(),
-                        //    IsAuto = isAuto,
-                        //    LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
-                        //    MachineId = machineId,
-                        //    ProductionPlanId = activeProductionPlan.ProductionPlanId,
-                        //    StartedAt = now,
-                        //    //RouteId = routeId
-                        //});
-
-                        var paramsList = new Dictionary<string, object>() {
+                var paramsList = new Dictionary<string, object>() {
                             {"@startedAt", now },
                             {"@productionPlanId", activeProductionPlan.ProductionPlanId },
                             {"@machineId", machineId },
@@ -728,26 +699,13 @@ namespace CIM.BusinessLogic.Services {
                             {"@createdBy", CurrentUser.UserId },
                             {"@guid", alert.Id.ToString() }
                         };
-                        _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
 
-                //}
-                // else reuse existing alert of first route and don't insert new other record
-                //else
-                //{
-                //    alert = activeProductionPlan.ActiveProcesses[firstRoute].Alerts
-                //        .Where(x =>
-                //            x.ItemId == machineId &&
-                //            x.StatusId == (int)Constans.AlertStatus.New &&
-                //            x.EndAt == null).OrderByDescending(x => x.CreatedAt).First();
-
-                //    alert.RouteId = routeId;
-                //}
-
-                activeProductionPlan.ActiveProcesses[machineId].Alerts.Add(alert);
-
-                }
+  
+                //activeProductionPlan.ActiveProcesses[machineId].Alerts.Add(alert);
 
             //}
+
             return activeProductionPlan;
         }
 
@@ -757,7 +715,7 @@ namespace CIM.BusinessLogic.Services {
                 {"@plan_id", productionPlanId }
             });
         }
-       
+
         public async Task<int[]> ListMachineLossRecording(string productionPlanId)
         {
             return await _recordManufacturingLossRepository.ListMachineLossRecording(new Dictionary<string, object> {
@@ -806,7 +764,7 @@ namespace CIM.BusinessLogic.Services {
                                                             .OrderByDescending(x => x.CreatedAt)
                                                             .Take(2).ToListAsync();
 
-                    if (dbOutput.Count > 0 && dbOutput[0].TotalOut > item.CounterOut )
+                    if (dbOutput.Count > 0 && dbOutput[0].TotalOut > item.CounterOut)
                     {
                         //do nothing
                     }
@@ -822,7 +780,7 @@ namespace CIM.BusinessLogic.Services {
                                 //// Logging
                                 //var textErr = $"Plan:{cachedMachine.ProductionPlanId} | Machine:{item.MachineId} | Hour:{dbOutput[0].Hour}<->{hour} | RecordsCnt:{dbOutput.Count}";
                                 //HelperUtility.Logging("CounterAdd_logging.txt", textErr);
-                          
+
                             }
                             else//close ramp-up records and start to operating time #139
                             {
@@ -867,7 +825,7 @@ namespace CIM.BusinessLogic.Services {
                         }
                         _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
                     }
-                   
+
                     //set cache
                     cachedMachine.RecordProductionPlanOutput = new RecordProductionPlanOutputModel { Hour = hour, Input = item.CounterIn, Output = item.CounterOut };
                     machineList.Add(cachedMachine);
@@ -888,10 +846,10 @@ namespace CIM.BusinessLogic.Services {
             return activeProductionPlanList;
         }
 
-        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int? machineId, int? routeId, int amount, int? hour,string remark)
+        public async Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int? machineId, int? routeId, int amount, int? hour, string remark)
         {
             var now = DateTime.Now;
-            if(machineId != null)
+            if (machineId != null)
             {
                 var cachedMachine = await _machineService.GetCached((int)machineId);
                 if (cachedMachine?.ProductionPlanId != null)
@@ -922,10 +880,10 @@ namespace CIM.BusinessLogic.Services {
             return activeProductionPlan;
         }
 
-        private void UpdateMachineStatus(int machineId,int statusId)
+        private void UpdateMachineStatus(int machineId, int statusId)
         {
             var mc = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
-            if(mc != null)
+            if (mc != null)
             {
                 mc.UpdatedAt = DateTime.Now;
                 mc.UpdatedBy = CurrentUser.UserId;

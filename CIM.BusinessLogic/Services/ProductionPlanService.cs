@@ -351,26 +351,26 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<ProductionPlanoverview3MModel> Load3M(string id, int routeId)
+        public async Task<ProductionPlanOverviewModel> Load3M(string planId,int machineId)
         {
-            var productionPlan = await _productionPlanRepository.Load(id, routeId);
-            var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
-            var route = new ActiveProcess3MModel();
-            if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
-            {
-                route = activeProductionPlan.ActiveProcesses[routeId];
-            }
-            else
-            {
-                route = new ActiveProcess3MModel
-                {
-                    Status = Constans.PRODUCTION_PLAN_STATUS.New
-                };
-            }
-            return new ProductionPlanoverview3MModel
+            var productionPlan = await _productionPlanRepository.Load3M(planId);
+            //var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
+            //if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(machineId))
+            //{
+            //    route = activeProductionPlan?.ActiveProcesses[machineId];
+            //}
+            //else
+            //{
+            //    route = new ActiveProcess3MModel
+            //    {
+            //        //Route = new ActiveRouteModel { Id = routeId },
+            //        Status = Constans.PRODUCTION_PLAN_STATUS.New
+            //    };
+            //}
+            return new ProductionPlanOverviewModel
             {
                 ProductionPlan = productionPlan,
-                Route = route
+                //Route = route
             };
         }
 
@@ -414,7 +414,7 @@ namespace CIM.BusinessLogic.Services
         {
             var output = await _activeProductionPlanService.GetCached3M(id);
 
-            var alertList = output.ActiveProcesses[routeId].Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
+            var alertList = output.Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
             foreach (var item in alertList)
             {
                 item.StatusId = (int)Constans.AlertStatus.Processing;
