@@ -327,10 +327,16 @@ namespace CIM.API.Controllers
             {
                 var result = await _activeProductionPlanService.Start(planId, machineId, target);
                 output = await HandleResult3M(result);
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.UnitData.Count > 0)
+                //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                //if (boardcastData?.UnitData.Count > 0)
+                //{
+                //    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
+                //}
+                if (result != null)
                 {
-                    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                        , planId
+                        , result);
                 }
                 output.IsSuccess = true;
             }
