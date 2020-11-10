@@ -13,6 +13,8 @@ namespace CIM.BusinessLogic.Interfaces
         Task<string> GetAsync(string key);
         Task<T> GetAsTypeAsync<T>(string key);
         Task RemoveAsync(string key);
-        Task SetActivePlan(ActiveProductionPlan3MModel model, string actionFrom);
+        Task SetActivePlan(ActiveProductionPlan3MModel model);
+        ActiveProductionPlan3MModel GetActivePlan(string planId);
+        void RemoveActivePlan(string planId);
     }
 }

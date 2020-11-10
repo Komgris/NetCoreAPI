@@ -33,7 +33,7 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<string> GetDashboardCached(DashboardCachedCH cachedCH)
         {
-            return CacheForBoardcast<BoardcastModel>(await GetCached(CachedCHKey(cachedCH)));
+            return CacheForBoardcast<ProductionDataModel>(await GetCached(CachedCHKey(cachedCH)));
         }
 
         [HttpGet]
@@ -43,7 +43,7 @@ namespace CIM.API.Controllers
             try
             {
                 var boardcastData = await _dashboardService.GenerateCustomDashboard(updateType);
-                if (boardcastData?.Data.Count > 0)
+                if (boardcastData?.UnitData.Count > 0)
                 {
                     await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
                 }

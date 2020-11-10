@@ -81,9 +81,9 @@ namespace CIM.BusinessLogic.Services {
 
         #region General
 
-        private BoardcastModel GetOptionData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private ProductionDataModel GetOptionData(BoardcastType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
-            var boardcastData = new BoardcastModel(timeFrame);
+            var boardcastData = new ProductionDataModel(timeFrame);
             foreach (var dbtype in dashboardType)
             {
                 boardcastData.SetData(
@@ -93,9 +93,9 @@ namespace CIM.BusinessLogic.Services {
             return boardcastData;
         }
 
-        private BoardcastDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private UnitDataModel GetdData(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new BoardcastDataModel();
+            var dashboarddata = new UnitDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -111,9 +111,9 @@ namespace CIM.BusinessLogic.Services {
             return dashboarddata;
         }
 
-        private BoardcastDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
+        private UnitDataModel GetdDataSpecific(getdataConfig dashboardConfig, Dictionary<string, object> paramsList)
         {
-            var dashboarddata = new BoardcastDataModel();
+            var dashboarddata = new UnitDataModel();
             try
             {
                 dashboarddata.Name = dashboardConfig.Name;
@@ -135,9 +135,9 @@ namespace CIM.BusinessLogic.Services {
 
         #region CIM dashboard
 
-        public async Task<BoardcastModel> GenerateCustomDashboard(DataTypeGroup updateType)
+        public async Task<ProductionDataModel> GenerateCustomDashboard(DataTypeGroup updateType)
         {
-            var boardcastData = new BoardcastModel();
+            var boardcastData = new ProductionDataModel();
 
             return await Task.Run(() =>
             {
@@ -210,12 +210,12 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        private BoardcastModel CustomDashboard(CustomDashboardType[] dashboardType)
+        private ProductionDataModel CustomDashboard(CustomDashboardType[] dashboardType)
         {
-            var customtData = new BoardcastModel();
+            var customtData = new ProductionDataModel();
             foreach (var dbtype in dashboardType)
             {
-                customtData.Data.Add(
+                customtData.UnitData.Add(
                                         GetdDataSpecific(CustomDashboardConfig[dbtype], null));
             }
             return customtData;
@@ -225,9 +225,9 @@ namespace CIM.BusinessLogic.Services {
 
         #region  Cim-Mng dashboard
 
-        public async Task<BoardcastModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
+        public async Task<ProductionDataModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType)
         {
-            var boardcastData = new BoardcastModel(timeFrame);
+            var boardcastData = new ProductionDataModel(timeFrame);
             var paramsList = new Dictionary<string, object>() { { "@timeFrame", timeFrame } };
             return await Task.Run(() =>
             {
@@ -285,13 +285,13 @@ namespace CIM.BusinessLogic.Services {
             });
         }
 
-        public async Task<BoardcastModel> GetManagementDashboard(DataFrame frame)
+        public async Task<ProductionDataModel> GetManagementDashboard(DataFrame frame)
         {
             var cacheKey = $"mngdashboard-{frame}";
-            var dashboard = await _responseCacheService.GetAsTypeAsync<BoardcastModel>(cacheKey);
+            var dashboard = await _responseCacheService.GetAsTypeAsync<ProductionDataModel>(cacheKey);
             if (dashboard == null || dashboard.LastUpdate.AddMinutes(1) < DateTime.Now)
             {
-                dashboard = new BoardcastModel();
+                dashboard = new ProductionDataModel();
                 var paramsList = new Dictionary<string, object>() { { "@timeFrame", (int)frame } };
                 switch (frame)
                 {
@@ -322,12 +322,12 @@ namespace CIM.BusinessLogic.Services {
             return dashboard;
         }
 
-        private async Task<BoardcastModel> GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
+        private async Task<ProductionDataModel> GenerateDashboardData(ManagementDashboardType[] dashboardType, DataFrame timeFrame, Dictionary<string, object> paramsList)
         {
-            var managementData = new BoardcastModel(timeFrame);
+            var managementData = new ProductionDataModel(timeFrame);
             foreach (var dbtype in dashboardType)
             {
-                managementData.Data.Add(
+                managementData.UnitData.Add(
                                         GetdData(ManagementDashboardConfig[dbtype]
                                         , paramsList));
             }
@@ -341,7 +341,7 @@ namespace CIM.BusinessLogic.Services {
         public async Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(DataTypeGroup updateType, string productionPlan, int routeId)
         {
             var boardcastData = await GenerateBoardcast(updateType, productionPlan, routeId);
-            if (boardcastData.Data.Count > 0)
+            if (boardcastData.UnitData.Count > 0)
             {
                 //to add data to activeproduction plan
                 var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
@@ -349,9 +349,9 @@ namespace CIM.BusinessLogic.Services {
             return null;
         }
 
-        public async Task<BoardcastModel> GenerateBoardcast(DataTypeGroup relateType, string productionPlan, int routeId)
+        public async Task<ProductionDataModel> GenerateBoardcast(DataTypeGroup relateType, string productionPlan, int routeId)
         {
-            var boardcastData = new BoardcastModel();
+            var boardcastData = new ProductionDataModel();
             var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan } };
             return await Task.Run(() =>
             {

@@ -74,7 +74,7 @@ namespace CIM.API.Controllers
 
         #region Management
 
-        internal async Task HandleBoardcastingData(string channelKey, BoardcastModel boardcastData)
+        internal async Task HandleBoardcastingData(string channelKey, ProductionDataModel boardcastData)
         {
             if (boardcastData != null)
             {
@@ -83,16 +83,16 @@ namespace CIM.API.Controllers
             }
         }
 
-        private async Task SetBoardcastDataCached(string channelKey, BoardcastModel model)
+        private async Task SetBoardcastDataCached(string channelKey, ProductionDataModel model)
         {
-            var cache = await GetCached<BoardcastModel>(channelKey);
+            var cache = await GetCached<ProductionDataModel>(channelKey);
             if (cache == null)
             {
                 cache = model;
             }
             else
             {
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (UnitDataModel dashboard in model.UnitData)
                 {
                     cache.SetData(dashboard);
                 }
@@ -114,7 +114,7 @@ namespace CIM.API.Controllers
             foreach (var r in routeId)
             {
                 var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, r);
-                if (boardcastData.Data.Count > 0)
+                if (boardcastData.UnitData.Count > 0)
                 {
                     activeModel = await SetBoardcastActiveDataCached(rediskey, r, activeModel, boardcastData);
                 }
@@ -140,7 +140,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;
             if (cache is null)
@@ -150,7 +150,7 @@ namespace CIM.API.Controllers
             else
             {
                 //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (UnitDataModel dashboard in model.UnitData)
                 {
                     cache.SetData(dashboard);
                 }
@@ -174,33 +174,36 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, BoardcastModel model)
+        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
         {
-            var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
+            var cache = activeModel.ProductionData;
             if (cache is null)
             {
-                activeModel.ActiveProcesses[machineId].BoardcastData = model;
+                activeModel.ProductionData = model;
             }
             else
             {
                 //update only new dashboard
-                foreach (BoardcastDataModel dashboard in model.Data)
+                foreach (UnitDataModel dashboard in model.UnitData)
                 {
                     cache.SetData(dashboard);
                 }
-                activeModel.ActiveProcesses[machineId].BoardcastData = cache;
+                activeModel.ProductionData = cache;
             }
 
             var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
             var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
-
-            if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
-            {
-                activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
-            }
+            //foreach (var machine in activeModel.ActiveProcesses[machineId].MachineList)
+            //{
+            //    machine.Value.IsReady = recordingMachines.Contains(machine.Key);
+                //if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
+                //{
+                //    activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
+                //}
+            //}
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
-            activeModel.ActiveProcesses[machineId].Alerts = LimitAlert(activeModel.ActiveProcesses[machineId].Alerts);
+            activeModel.Alerts = LimitAlert(activeModel.Alerts);
 
             return activeModel;
         }

@@ -84,9 +84,9 @@ namespace CIM.API.Controllers
                 // Production plan of this component doesn't started yet
                 if (productionPlan != null)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlanId}";
-                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    , MachineId, productionPlan);
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
+                    //, productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
                 output.IsSuccess = true;
