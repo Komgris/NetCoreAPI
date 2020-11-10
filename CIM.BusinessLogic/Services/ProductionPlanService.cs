@@ -351,7 +351,7 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<ProductionPlanOverviewModel> Load3M(string planId,int machineId)
+        public async Task<ProductionPlanOverviewModel> Load3M(string planId)
         {
             var productionPlan = await _productionPlanRepository.Load3M(planId);
             //var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);

@@ -136,7 +136,7 @@ namespace CIM.BusinessLogic.Services
 
         }
 
-        public async Task<ActiveProductionPlan3MModel> Start(string planId, int routeId, int? target)
+        public async Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target)
         {
             ActiveProductionPlan3MModel output = null;
             var cmtxt = $"Plan:{planId}";
@@ -181,8 +181,8 @@ namespace CIM.BusinessLogic.Services
 
                         step = "สร้าง ActiveProcess Cached";
                         activeProductionPlan.ProductionPlanId = planId;
-                        activeProductionPlan.ProductId = dbModel.ProductId;
-                        activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Production;
+                        activeProductionPlan.ProductId = machineId;
+                        activeProductionPlan.Status = PRODUCTION_PLAN_STATUS.Preparatory;
                         //activeProductionPlan.Machine = activeMachines;
 
 
@@ -199,12 +199,27 @@ namespace CIM.BusinessLogic.Services
                             UpdateMachineStatus(mcId, Constans.MACHINE_STATUS.Running);
                         }
 
+                        step = "List for Reset counter";
+                        //var mcfirstStart = machine.Where(x => x.Value.RouteIds.Count == 1).Select(o => o.Key).ToList();
+                        //await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
+
                         step = "เจน BoardcastData";
-                        activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
+                        activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, machineId);
                         await SetCached3M(activeProductionPlan);
-                        //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
                         //var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
+
+                        step = "Add Preparatory";
+                        //record time loss on process ramp-up #139
+                        var rampupModel = new RecordManufacturingLossModel()
+                        {
+                            ProductionPlanId = planId,
+                            MachineId = machineId,
+                            LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                            IsAuto = true
+                        };
+                        await _recordManufacturingLossService.Create3M(rampupModel);
+
                     }
                 }
                 catch (Exception ex)
@@ -216,7 +231,6 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return output;
         }
-
         /// <summary>
         /// Change Production Plan status
         /// 

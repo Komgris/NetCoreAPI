@@ -8,6 +8,6 @@ namespace CIM.Model
     {
         public ProductionPlanModel ProductionPlan { get; set; }
 
-        public ActiveProcess3MModel Route { get; set; }
+        //public ActiveProcess3MModel Route { get; set; }
     }
 }
