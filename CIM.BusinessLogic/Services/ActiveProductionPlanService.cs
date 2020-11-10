@@ -119,21 +119,43 @@ namespace CIM.BusinessLogic.Services
 
 
 
-        public async Task ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
+        public async Task<ActiveProductionPlan3MModel> ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
         {
+            var now = DateTime.Now;
             var activeModel = await GetCached3M(planId);
-            if(activeModel?.Status != statusId)
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+            var activePlan = await _activeproductionPlanRepository.FirstOrDefaultAsync(x => x.ProductionPlanPlanId == planId);
+            if (activeModel?.Status != statusId)
             {
                 if(statusId == PRODUCTION_PLAN_STATUS.Production)
                 {
                     //close prepare process(loss)
+                    var LossModel = new RecordManufacturingLossModel()
+                    {
+                        ProductionPlanId = planId,
+                        MachineId = dbModel.MachineId
+                    };
+                    await _recordManufacturingLossService.End3M(LossModel);
 
                     //set plan status to production
-
-                    //
+                    dbModel.StatusId = activePlan.StatusId = (int)PRODUCTION_PLAN_STATUS.Production;
+                    dbModel.UpdatedAt = now;
+                    dbModel.UpdatedBy = CurrentUser.UserId;
+                    //activePlan.StatusId = (int)PRODUCTION_PLAN_STATUS.Production;
+                    _productionPlanRepository.Edit(dbModel);
+                    _activeproductionPlanRepository.Edit(activePlan);
+                    //setCahce
+                    activeModel.Status = PRODUCTION_PLAN_STATUS.Production;
+                    await SetCached3M(activeModel);
+                    //return activeModel;
                 }
+                await _unitOfWork.CommitAsync();
+                return activeModel;
             }
-
+            else
+            {
+                return null;
+            }
         }
 
         public async Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static CIM.Model.Constans;
 
 namespace CIM.BusinessLogic.Interfaces
 {
@@ -25,6 +26,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<int[]> ListMachineReady(string productionPlanId);
         Task<int[]> ListMachineLossRecording(string productionPlanId);
         Task<int[]> ListMachineLossAutoRecording(string productionPlanId);
+        Task<ActiveProductionPlan3MModel> ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId);
     }
 
 }

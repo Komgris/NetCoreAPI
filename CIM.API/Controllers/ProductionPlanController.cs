@@ -292,28 +292,31 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Production Process
-        //[Route("api/ProductionPlanStartProduction")]
-        //[HttpGet]
-        //public async Task<ProcessReponseModel<object>> StartProduction(string planId, int machineId, int? target)
-        //{
-        //    var output = new ProcessReponseModel<object>();
-        //    try
-        //    {
-        //        var result = await _activeProductionPlanService.Start(planId, machineId, target);
-        //        output = await HandleResult3M(result);
-        //        var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-        //        if (boardcastData?.Data.Count > 0)
-        //        {
-        //            await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
-        //        }
-        //        output.IsSuccess = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        output.Message = ex.Message;
-        //    }
-        //    return output;
-        //}
+        [Route("api/ChangeStatus")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> ChangeStatus(string planId,PRODUCTION_PLAN_STATUS statusId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                //var result = await 
+                var result = await _activeProductionPlanService.ChangeProductionStatus(planId, statusId);
+                output = await HandleResult3M(result);
+                //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (result != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                        , planId
+                        , result);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
 
         [Route("api/ProductionPlanStart")]
         [HttpGet]
