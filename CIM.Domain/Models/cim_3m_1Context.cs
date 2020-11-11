@@ -44,7 +44,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordProductionPlanInformationDetail> RecordProductionPlanInformationDetail { get; set; }
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
         public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
-        public virtual DbSet<RecordProductionPlanWasteMaterial> RecordProductionPlanWasteMaterial { get; set; }
+        public virtual DbSet<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Waste> Waste { get; set; }
@@ -54,7 +54,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12,1433;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -155,6 +155,8 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<LossLevel3>(entity =>
             {
+                entity.Property(e => e.Code).HasMaxLength(10);
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -976,9 +978,9 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Year).HasDefaultValueSql("([dbo].[fn_get_yearnumber](DEFAULT))");
             });
 
-            modelBuilder.Entity<RecordProductionPlanWasteMaterial>(entity =>
+            modelBuilder.Entity<RecordProductionPlanWasteMaterials>(entity =>
             {
-                entity.ToTable("Record_ProductionPlan_Waste_Material");
+                entity.ToTable("Record_ProductionPlan_Waste_Materials");
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 3)");
 
@@ -989,6 +991,12 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.MaterialId).HasColumnName("Material_Id");
 
                 entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
+
+                entity.HasOne(d => d.Waste)
+                    .WithMany(p => p.RecordProductionPlanWasteMaterials)
+                    .HasForeignKey(d => d.WasteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_ProductionPlan_Waste_Material_Record_ProductionPlan_Waste");
             });
 
             modelBuilder.Entity<Units>(entity =>

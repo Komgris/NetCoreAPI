@@ -88,6 +88,7 @@ namespace CIM.BusinessLogic.Services
         private async Task NewRecordManufacturingLoss(RecordManufacturingLossModel model, DateTime now, string guid)
         {
             var newDbModel = new RecordManufacturingLoss();
+            newDbModel.IsActive = true;
             newDbModel.Guid = guid;
             newDbModel.CreatedBy = CurrentUser.UserId;
             newDbModel.StartedAt = now;

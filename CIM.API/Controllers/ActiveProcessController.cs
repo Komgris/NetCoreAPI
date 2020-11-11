@@ -49,16 +49,14 @@ namespace CIM.API.Controllers
 
             try
             {
-                var productionPlan = await _activeProductionPlanService.GetCached(productionPlanId);
+                var productionPlan = await _activeProductionPlanService.GetCached3M(productionPlanId);
                 if (productionPlan == null)
                 {
-                    productionPlan = new ActiveProductionPlanModel(productionPlanId);
-                }
+                    productionPlan = new ActiveProductionPlan3MModel(productionPlanId);
+                    productionPlan.Status = PRODUCTION_PLAN_STATUS.New;
 
-                foreach (var item in productionPlan.ActiveProcesses)
-                {
-                    item.Value.Alerts = LimitAlert(item.Value.Alerts);
                 }
+                 //productionPlan.Alerts = LimitAlert(item.Value.Alerts);
 
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
