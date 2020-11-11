@@ -133,7 +133,7 @@ namespace CIM.API.Controllers
             var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, machineId);
             if (boardcastData.UnitData.Count > 0)
             {
-                activeModel = await SetBoardcastActiveDataCached3M(rediskey, machineId, activeModel, boardcastData);
+                activeModel = await SetBoardcastActiveDataCached3M(rediskey, activeModel, boardcastData);
             }
 
             await BoardcastClientData(channelKey, activeModel);
@@ -174,7 +174,7 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
+        private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ProductionData;
             if (cache is null)

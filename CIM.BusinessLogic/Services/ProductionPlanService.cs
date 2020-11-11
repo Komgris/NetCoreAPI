@@ -335,13 +335,12 @@ namespace CIM.BusinessLogic.Services
             var route = new ActiveProcessModel();
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
-                route = activeProductionPlan?.ActiveProcesses[routeId];
+                route = activeProductionPlan.ActiveProcesses[routeId];
             }
             else
             {
                 route = new ActiveProcessModel
                 {
-                    Route = new ActiveRouteModel { Id = routeId },
                     Status = Constans.PRODUCTION_PLAN_STATUS.New
                 };
             }
@@ -352,7 +351,7 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<ProductionPlanOverviewModel> Load3M(string planId,int machineId)
+        public async Task<ProductionPlanOverviewModel> Load3M(string planId)
         {
             var productionPlan = await _productionPlanRepository.Load3M(planId);
             //var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
@@ -370,7 +369,7 @@ namespace CIM.BusinessLogic.Services
             //}
             return new ProductionPlanOverviewModel
             {
-                ProductionPlan = productionPlan
+                ProductionPlan = productionPlan,
                 //Route = route
             };
         }
