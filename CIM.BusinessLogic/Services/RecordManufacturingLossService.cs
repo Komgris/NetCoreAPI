@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
@@ -340,6 +341,14 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        public async Task<RecordManufacturingLossModel> Get3M(int id)
+        {
+            var dbModel = await _recordManufacturingLossRepository.Where(x => x.Id == id).FirstOrDefaultAsync();  
+            var output = MapperHelper.AsModel(dbModel, new RecordManufacturingLossModel());
+            output.LossLevelId = output.LossLevel3Id;
+            return output;
+        }
+
         private async Task<ActiveProductionPlan3MModel> UpdateActiveProductionPlanMachine3M(int machineId, int status, ActiveProductionPlan3MModel activeProductionPlan)
         {
             var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
@@ -442,6 +451,14 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
 
             return activeProductionPlan;
+        }
+
+        public async Task Delete3M(int id)
+        {
+            var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.Id == id);
+            dbModel.IsActive = false;
+            _recordManufacturingLossRepository.Edit(dbModel);
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<ActiveProductionPlan3MModel> End3M(RecordManufacturingLossModel model)

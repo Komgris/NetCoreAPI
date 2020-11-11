@@ -110,6 +110,7 @@ namespace CIM.API {
             services.AddTransient<IRecordProductionPlanInformationRepository, RecordProductionPlanInformationRepository>();
             services.AddTransient<IRecordProductionPlanColorOrderRepository, RecordProductionPlanColorOrderRepository>();
             services.AddTransient<IRecordProductionPlanColorOrderDetailRepository, RecordProductionPlanColorOrderDetailRepository>();
+            services.AddTransient<IWasteRepository, WasteRepository>();
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();

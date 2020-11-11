@@ -71,13 +71,13 @@ namespace CIM.API.Controllers
 
         [Route("TakeAction")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId, int routeId)
+        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId, int MachineId)
         {
             var output = new ProcessReponseModel<object>();
 
             try
             {
-                var productionPlan = await _productionPlanService.TakeAction3M(productionPlanId, routeId);
+                var productionPlan = await _productionPlanService.TakeAction3M(productionPlanId, MachineId);
 
                 // Production plan of this component doesn't started yet
                 if (productionPlan != null)

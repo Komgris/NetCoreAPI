@@ -18,8 +18,10 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<RecordManufacturingLossModel>> ListByDate(DateTime date, string keyword, int page, int howmany, string planId, int? routeId = null);
         Task<List<RecordManufacturingLossModel>> List3M(string planId, int machineId, bool isAuto, string keyword);
         Task<RecordManufacturingLossModel> GetByGuid3M(Guid guid);
+        Task<RecordManufacturingLossModel> Get3M(int id);
         Task<ActiveProductionPlan3MModel> Create3M(RecordManufacturingLossModel model);
         Task<ActiveProductionPlan3MModel> Update3M(RecordManufacturingLossModel model);
+        Task Delete3M(int id);
         Task<ActiveProductionPlan3MModel> End3M(RecordManufacturingLossModel model);
         DataTable GetReportLoss3M(string planId, int machineId);
     }

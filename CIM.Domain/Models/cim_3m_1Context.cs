@@ -946,6 +946,8 @@ namespace CIM.Domain.Models
             {
                 entity.ToTable("Record_ProductionPlan_Waste");
 
+                entity.Property(e => e.AmountUnit).HasColumnType("numeric(18, 2)");
+
                 entity.Property(e => e.CauseMachineId).HasColumnName("CauseMachine_Id");
 
                 entity.Property(e => e.CreatedAt)
@@ -955,6 +957,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
                     .HasMaxLength(128);
+
+                entity.Property(e => e.Date).HasDefaultValueSql("([dbo].[fn_get_datenumber](DEFAULT))");
 
                 entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
 
@@ -972,6 +976,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+
+                entity.Property(e => e.WasteId).HasColumnName("Waste_Id");
 
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
