@@ -294,7 +294,7 @@ namespace CIM.API.Controllers
         #region Production Process
         [Route("api/ChangeStatus")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> ChangeStatus(string planId,PRODUCTION_PLAN_STATUS statusId)
+        public async Task<ProcessReponseModel<object>> ChangeStatus(string planId,int machineId,PRODUCTION_PLAN_STATUS statusId)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -307,6 +307,7 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
                         , planId
+                        , machineId
                         , result);
                 }
                 output.IsSuccess = true;
@@ -336,6 +337,7 @@ namespace CIM.API.Controllers
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
                         , planId
+                        , machineId
                         , result);
                 }
                 output.IsSuccess = true;
