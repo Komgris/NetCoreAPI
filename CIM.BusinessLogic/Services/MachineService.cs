@@ -104,7 +104,7 @@ namespace CIM.BusinessLogic.Services
         }
         public async Task<ActiveMachine3MModel> GetCached3M(int id)
         {
-            return await _responseCacheService.GetAsTypeAsync<ActiveMachine3MModel>(CachedKey(id));
+            return _responseCacheService.GetActiveMachine(id);
         }
 
         public async Task SetCached3M(ActiveMachine3MModel model)

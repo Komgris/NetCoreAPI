@@ -86,6 +86,10 @@ namespace CIM.BusinessLogic.Services
             return _responseCacheService.GetActivePlan(planId);
         }
 
+        public async Task<ActiveMachine3MModel> GetCachedMachine3M(int machineId)
+        {
+            return _responseCacheService.GetActiveMachine(machineId);
+        }
         public async Task SetCached(ActiveProductionPlanModel model)
         {
             await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
@@ -94,6 +98,11 @@ namespace CIM.BusinessLogic.Services
         public async Task SetCached3M(ActiveProductionPlan3MModel model)
         {
             _responseCacheService.SetActivePlan(model);
+        }
+
+        public async Task SetCachedMachine3M(ActiveMachine3MModel model)
+        {
+            _responseCacheService.SetActiveMachine(model);
         }
 
         public async Task RemoveCached(string id)
@@ -195,15 +204,15 @@ namespace CIM.BusinessLogic.Services
 
                         step = "Change idle to Running";
                         var runningMachineIds = machine.Where(x => x.Value.StatusId == Constans.MACHINE_STATUS.Idle).Select(x => x.Key).ToArray();
-                        foreach (var machineId in runningMachineIds)
+                        foreach (var mcId in runningMachineIds)
                         {
                             _recordMachineStatusRepository.Add(new RecordMachineStatus
                             {
                                 CreatedAt = now,
-                                MachineId = machineId,
+                                MachineId = mcId,
                                 MachineStatusId = Constans.MACHINE_STATUS.Running,
                             });
-                            UpdateMachineStatus(machineId, Constans.MACHINE_STATUS.Running);
+                            UpdateMachineStatus(mcId, Constans.MACHINE_STATUS.Running);
                         }
 
                         step = "List for Reset counter";
@@ -211,11 +220,13 @@ namespace CIM.BusinessLogic.Services
                         //await _machineService.SetListMachinesResetCounter(mcfirstStart, true);
 
                         step = "เจน BoardcastData";
-                        activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, routeId);
+                        activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, machineId);
                         await SetCached3M(activeProductionPlan);
-                        //await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
-                        //var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
+
+                        step = "Set machine cached";
+                        mccached.ResetNewPlan(planId);
+                        await _responseCacheService.SetActiveMachine(mccached);
                     }
                 }
                 catch (Exception ex)
@@ -235,10 +246,10 @@ namespace CIM.BusinessLogic.Services
         /// <param name="planId"></param>
         /// <param name="routeId"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
+        public async Task<ActiveProductionPlanModel> Finish(string planId, int machineId)
         {
             ActiveProductionPlanModel output = null;
-            var cmtxt = $"Plan:{planId} | Route:{routeId}";
+            var cmtxt = $"Plan:{planId} | Machine:{machineId}";
             string step = "";
             var now = DateTime.Now;
             var lastFinished = await _responseCacheService.GetAsync("LastPlanFinished");
@@ -252,7 +263,7 @@ namespace CIM.BusinessLogic.Services
             {
                 var paramsList = new Dictionary<string, object>() {
                     {"@planid", planId },
-                    {"@routeid", routeId }
+                    {"@routeid", machineId }
                 };
 
                 //get message for descripe validation result
@@ -276,8 +287,8 @@ namespace CIM.BusinessLogic.Services
                         {
                             step = "GetCached activeProductionPlan ไม่ได้"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             var mcliststopCounting = new List<int>();
-                            var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                            activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            var activeProcess = activeProductionPlan.ActiveProcesses[machineId];
+                            activeProductionPlan.ActiveProcesses[machineId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                             var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
 
                             //update another route are use the same machines
@@ -286,14 +297,14 @@ namespace CIM.BusinessLogic.Services
                             {
                                 foreach (var r in mcmultiRoute.Value.RouteIds)
                                 {
-                                    if (r != routeId)
-                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                                    if (r != machineId)
+                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(machineId);
                                 }
                             }
                             step = "loop MachineList"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             foreach (var machine in activeProcess.Route.MachineList)
                             {
-                                machine.Value.RouteIds.Remove(routeId);
+                                machine.Value.RouteIds.Remove(machineId);
                                 if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
                                 if (!isPlanActive) machine.Value.ProductionPlanId = null;
                                 await _machineService.SetCached(machine.Key, machine.Value);
@@ -313,6 +324,11 @@ namespace CIM.BusinessLogic.Services
                                 step = "RemoveCached(activeProductionPlan.ProductionPlanId)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                                 await RemoveCached(activeProductionPlan.ProductionPlanId);
                                 activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+
+                                step = "delete production plan from machine";
+                                var mccached = _responseCacheService.GetActiveMachine(machineId);
+                                mccached.ProductionPlanId = "";
+                                await _responseCacheService.SetActiveMachine(mccached);
                             }
                         }
                         output = activeProductionPlan;
@@ -321,7 +337,7 @@ namespace CIM.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                var textErr = $"Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex}";
+                var textErr = $"Plan:{planId} | Machine:{machineId} | RecordsStep:{step} | RecordError:{ex}";
                 HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
@@ -468,10 +484,10 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = machine.Id,
                     UserId = CurrentUser.UserId,
-                    StatusId = statusId,
                     StartedAt = DateTime.Now
                 };
             }
+            cachedMachine.StatusId = statusId;
 
             //if machine is apart of production plan
             if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) /*&& cachedMachine.RouteIds != null*/)
@@ -479,6 +495,11 @@ namespace CIM.BusinessLogic.Services
                 output = await GetCached3M(cachedMachine.ProductionPlanId);
                 if (output != null)
                 {
+                    //machine CH
+
+
+                    //activeprocess CH
+
                     //foreach (var routeId in cachedMachine.RouteIds.Distinct())
                     //{
                     //if (output.ActiveProcesses.ContainsKey(machineId))
@@ -493,6 +514,8 @@ namespace CIM.BusinessLogic.Services
                     await SetCached3M(output);
                 }
             }
+
+            await SetCachedMachine3M(cachedMachine);
 
             //handle machine status
             //var recordMachineStatusId = statusId;

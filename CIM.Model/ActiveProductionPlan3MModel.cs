@@ -14,8 +14,7 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
         public int ProductId { get; set; }
         public PRODUCTION_PLAN_STATUS Status { get; set; }
-        public ProductionDataModel ProductionData { get; set; }
-        public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
+        public ProductionDataModel ProductionData { get; set; }        
 
         /// <summary>
         /// Key = MachineId
