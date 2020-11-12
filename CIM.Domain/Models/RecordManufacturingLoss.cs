@@ -17,12 +17,12 @@ namespace CIM.Domain.Models
         public int? WeekNumber { get; set; }
         public int? Month { get; set; }
         public int? Year { get; set; }
+        public bool IsActive { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public string EndBy { get; set; }
         public bool IsAuto { get; set; }
-        public bool IsActive { get; set; }
         public string Guid { get; set; }
     }
 }

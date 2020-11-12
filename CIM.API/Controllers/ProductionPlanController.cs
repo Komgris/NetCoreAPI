@@ -222,12 +222,12 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Load")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Load(string id, int routeId)
+        public async Task<ProcessReponseModel<object>> Load(string id)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load(id, routeId)), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject((await _productionPlanService.Load3M(id)), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -292,20 +292,53 @@ namespace CIM.API.Controllers
         #endregion
 
         #region Production Process
-
-        [Route("api/ProductionPlanStart")]
+        [Route("api/ChangeStatus")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Start(string planId, int routeId, int? target)
+        public async Task<ProcessReponseModel<object>> ChangeStatus(string planId,int machineId,PRODUCTION_PLAN_STATUS statusId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Start(planId, routeId, target);
+                //var result = await 
+                var result = await _activeProductionPlanService.ChangeProductionStatus(planId, statusId);
                 output = await HandleResult3M(result);
-                var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
-                if (boardcastData?.UnitData.Count > 0)
+                //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                if (result != null)
                 {
-                    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                        , planId
+                        , machineId
+                        , result);
+                }
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [Route("api/ProductionPlanStart")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> Start(string planId, int machineId, int? target)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var result = await _activeProductionPlanService.Start(planId, machineId, target);
+                output = await HandleResult3M(result);
+                //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Operators);
+                //if (boardcastData?.UnitData.Count > 0)
+                //{
+                //    await HandleBoardcastingData(CHActivePlan(planId), boardcastData);
+                //}
+                if (result != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                        , planId
+                        , machineId
+                        , result);
                 }
                 output.IsSuccess = true;
             }

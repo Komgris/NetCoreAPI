@@ -23,6 +23,7 @@ namespace CIM.BusinessLogic.Services
         private IProductionPlanRepository _productionPlanRepository;
         private IUnitOfWorkCIM _unitOfWork;
         private IActiveProductionPlanService _activeProductionPlanService;
+        private IMachineService _machineService;
         private IReportService _reportService;
         private IDirectSqlRepository _directSqlRepository;
 
@@ -33,7 +34,8 @@ namespace CIM.BusinessLogic.Services
             IUnitOfWorkCIM unitOfWork,
             IProductionPlanRepository productionPlanRepository,
             IActiveProductionPlanService activeProductionPlanService,
-            IReportService reportService
+            IReportService reportService,
+            IMachineService machineService
             )
         {
             _responseCacheService = responseCacheService;
@@ -43,6 +45,7 @@ namespace CIM.BusinessLogic.Services
             _unitOfWork = unitOfWork;
             _activeProductionPlanService = activeProductionPlanService;
             _reportService = reportService;
+            _machineService = machineService;
         }
 
         public List<ProductionPlanModel> Get()
@@ -335,13 +338,12 @@ namespace CIM.BusinessLogic.Services
             var route = new ActiveProcessModel();
             if (activeProductionPlan != null && activeProductionPlan.ActiveProcesses.ContainsKey(routeId))
             {
-                route = activeProductionPlan?.ActiveProcesses[routeId];
+                route = activeProductionPlan.ActiveProcesses[routeId];
             }
             else
             {
                 route = new ActiveProcessModel
                 {
-                    Route = new ActiveRouteModel { Id = routeId },
                     Status = Constans.PRODUCTION_PLAN_STATUS.New
                 };
             }
@@ -352,7 +354,7 @@ namespace CIM.BusinessLogic.Services
             };
         }
 
-        public async Task<ProductionPlanOverviewModel> Load3M(string planId,int machineId)
+        public async Task<ProductionPlanOverviewModel> Load3M(string planId)
         {
             var productionPlan = await _productionPlanRepository.Load3M(planId);
             //var activeProductionPlan = await _activeProductionPlanService.GetCached3M(id);
@@ -370,7 +372,7 @@ namespace CIM.BusinessLogic.Services
             //}
             return new ProductionPlanOverviewModel
             {
-                ProductionPlan = productionPlan
+                ProductionPlan = productionPlan,
                 //Route = route
             };
         }
@@ -411,16 +413,16 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<ActiveProductionPlan3MModel> TakeAction3M(string id, int routeId)
+        public async Task<ActiveMachine3MModel> TakeAction3M(string id, int machineId)
         {
-            var output = await _activeProductionPlanService.GetCached3M(id);
+            var output = await _machineService.GetCached3M(machineId);            
 
             var alertList = output.Alerts.Where(x => x.StatusId == (int)Constans.AlertStatus.New);
             foreach (var item in alertList)
             {
                 item.StatusId = (int)Constans.AlertStatus.Processing;
             }
-            await _activeProductionPlanService.SetCached3M(output);
+            await _machineService.SetCached3M(output);
             return output;
         }
 

@@ -128,21 +128,43 @@ namespace CIM.BusinessLogic.Services
 
 
 
-        public async Task ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
+        public async Task<ActiveProductionPlan3MModel> ChangeProductionStatus(string planId, PRODUCTION_PLAN_STATUS statusId)
         {
+            var now = DateTime.Now;
             var activeModel = await GetCached3M(planId);
+            var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+            var activePlan = await _activeproductionPlanRepository.FirstOrDefaultAsync(x => x.ProductionPlanPlanId == planId);
             if (activeModel?.Status != statusId)
             {
                 if (statusId == PRODUCTION_PLAN_STATUS.Production)
                 {
                     //close prepare process(loss)
+                    var LossModel = new RecordManufacturingLossModel()
+                    {
+                        ProductionPlanId = planId,
+                        MachineId = dbModel.MachineId
+                    };
+                    await _recordManufacturingLossService.End3M(LossModel);
 
                     //set plan status to production
-
-                    //
+                    dbModel.StatusId = activePlan.StatusId = (int)PRODUCTION_PLAN_STATUS.Production;
+                    dbModel.UpdatedAt = now;
+                    dbModel.UpdatedBy = CurrentUser.UserId;
+                    //activePlan.StatusId = (int)PRODUCTION_PLAN_STATUS.Production;
+                    _productionPlanRepository.Edit(dbModel);
+                    _activeproductionPlanRepository.Edit(activePlan);
+                    //setCahce
+                    activeModel.Status = PRODUCTION_PLAN_STATUS.Production;
+                    await SetCached3M(activeModel);
+                    //return activeModel;
                 }
+                await _unitOfWork.CommitAsync();
+                return activeModel;
             }
-
+            else
+            {
+                return null;
+            }
         }
 
         public async Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target)
@@ -173,9 +195,9 @@ namespace CIM.BusinessLogic.Services
             {
                 try
                 {
-                    var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
+                    //var dbModel = await _productionPlanRepository.FirstOrDefaultAsync(x => x.PlanId == planId);
                     paramsList.Add("@user", CurrentUser.UserId);
-                    paramsList.Add("@machineid", dbModel.MachineId);
+                    paramsList.Add("@machineid", machineId);
                     var affect = _directSqlRepository.ExecuteSPNonQuery("sp_process_production_start", paramsList);
                     //var affect = 1;
                     if (affect > 0)
@@ -188,17 +210,17 @@ namespace CIM.BusinessLogic.Services
                         var active = new ActiveMachine3MModel
                         {
                             ProductionPlanId = planId,
-                            Id = dbModel.MachineId,
+                            Id = machineId,
                             StatusId = Constans.MACHINE_STATUS.Idle
                         };
-                        machine.Add(dbModel.MachineId, active);
-                        var activeMachines = await _machineService.BulkCacheMachines3M(planId, dbModel.MachineId);
+                        machine.Add(machineId, active);
+                        var activeMachines = await _machineService.BulkCacheMachines3M(planId, machineId);
 
 
                         step = "สร้าง ActiveProcess Cached";
                         activeProductionPlan.ProductionPlanId = planId;
-                        activeProductionPlan.ProductId = dbModel.ProductId;
-                        activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Production;
+                        activeProductionPlan.ProductId = machineId;
+                        activeProductionPlan.Status = PRODUCTION_PLAN_STATUS.Preparatory;
                         //activeProductionPlan.Machine = activeMachines;
 
 
@@ -223,10 +245,19 @@ namespace CIM.BusinessLogic.Services
                         activeProductionPlan.ProductionData = await _dashboardService.GenerateBoardcast(DataTypeGroup.All, planId, machineId);
                         await SetCached3M(activeProductionPlan);
                         output = activeProductionPlan;
+                        //var lstr = output.ActiveProcesses.Select(o => o.Key).ToList();
 
-                        step = "Set machine cached";
-                        mccached.ResetNewPlan(planId);
-                        await _responseCacheService.SetActiveMachine(mccached);
+                        step = "Add Preparatory";
+                        //record time loss on process ramp-up #139
+                        var rampupModel = new RecordManufacturingLossModel()
+                        {
+                            ProductionPlanId = planId,
+                            MachineId = machineId,
+                            LossLevelId = _config.GetValue<int>("DefaultProcessDrivenlv3Id"),
+                            IsAuto = true
+                        };
+                        await _recordManufacturingLossService.Create3M(rampupModel);
+
                     }
                 }
                 catch (Exception ex)
@@ -238,7 +269,6 @@ namespace CIM.BusinessLogic.Services
             await _unitOfWork.CommitAsync();
             return output;
         }
-
         /// <summary>
         /// Change Production Plan status
         /// 
