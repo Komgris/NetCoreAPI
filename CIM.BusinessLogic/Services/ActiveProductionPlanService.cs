@@ -260,10 +260,10 @@ namespace CIM.BusinessLogic.Services
         /// <param name="planId"></param>
         /// <param name="routeId"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
+        public async Task<ActiveProductionPlan3MModel> Finish(string planId)
         {
-            ActiveProductionPlanModel output = null;
-            var cmtxt = $"Plan:{planId} | Route:{routeId}";
+            ActiveProductionPlan3MModel output = null;
+            var cmtxt = $"Plan:{planId}";
             string step = "";
             var now = DateTime.Now;
             var lastFinished = await _responseCacheService.GetAsync("LastPlanFinished");
@@ -276,8 +276,7 @@ namespace CIM.BusinessLogic.Services
             try
             {
                 var paramsList = new Dictionary<string, object>() {
-                    {"@planid", planId },
-                    {"@routeid", routeId }
+                    {"@planid", planId }
                 };
 
                 //get message for descripe validation result
@@ -295,50 +294,58 @@ namespace CIM.BusinessLogic.Services
                     //Transaction success
                     if (affect > 0)
                     {
-                        step = "Transaction success"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                        var activeProductionPlan = await GetCached(planId);
+                        step = "Transaction success"; //HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                        var activeProductionPlan = await GetCached3M(planId);
                         if (activeProductionPlan != null)
                         {
-                            step = "GetCached activeProductionPlan ไม่ได้"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            step = "GetCached activeProductionPlan ไม่ได้"; //HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             var mcliststopCounting = new List<int>();
-                            var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                            activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
-                            var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
+                            //var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
+                            activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            //var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
 
                             //update another route are use the same machines
-                            step = "loop mcmultiRoute"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                            foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
-                            {
-                                foreach (var r in mcmultiRoute.Value.RouteIds)
-                                {
-                                    if (r != routeId)
-                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
-                                }
-                            }
-                            step = "loop MachineList"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                            foreach (var machine in activeProcess.Route.MachineList)
-                            {
-                                machine.Value.RouteIds.Remove(routeId);
-                                if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
-                                if (!isPlanActive) machine.Value.ProductionPlanId = null;
-                                await _machineService.SetCached(machine.Key, machine.Value);
-                            }
+                            //step = "loop mcmultiRoute"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            //foreach (var mcmultiRoute in activeProcess.Route.MachineList.Where(a => a.Value.RouteIds.Count > 1))
+                            //{
+                            //    foreach (var r in mcmultiRoute.Value.RouteIds)
+                            //    {
+                            //        if (r != routeId)
+                            //            activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                            //    }
+                            //}
+
+                            //var active = new ActiveMachine3MModel
+                            //{
+                            //    ProductionPlanId = planId,
+                            //    Id = machineId,
+                            //    StatusId = Constans.MACHINE_STATUS.Idle
+                            //};
+
+                            //step = "loop MachineList"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            //foreach (var machine in activeProcess.Route.MachineList)
+                            //{
+                            //    machine.Value.RouteIds.Remove(routeId);
+                            //    if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
+                            //    if (!isPlanActive) machine.Value.ProductionPlanId = null;
+                            //    await _machineService.SetCached3M(machine.Key, machine.Value);
+                            //}
 
 
                             //stop counting output
-                            step = "loop SetListMachinesResetCounter"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                            await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
-                            if (isPlanActive)
-                            {
-                                step = "SetCached(activeProductionPlan)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                                await SetCached(activeProductionPlan);
-                            }
-                            else
-                            {
-                                step = "RemoveCached(activeProductionPlan.ProductionPlanId)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
-                                await RemoveCached(activeProductionPlan.ProductionPlanId);
-                                activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
-                            }
+                            //step = "loop SetListMachinesResetCounter"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            //await _machineService.SetListMachinesResetCounter(mcliststopCounting, false);
+                            //if (isPlanActive)
+                            //{
+                            //    step = "SetCached(activeProductionPlan)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            //    await SetCached3M(activeProductionPlan);
+                            //}
+                            //else
+                            //{
+                            step = "RemoveCached(activeProductionPlan.ProductionPlanId)"; //HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
+                            await RemoveCached(activeProductionPlan.ProductionPlanId);
+                            activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            //}
                         }
                         output = activeProductionPlan;
                     }
@@ -346,7 +353,7 @@ namespace CIM.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                var textErr = $"Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex}";
+                var textErr = $"Plan:{planId} | RecordsStep:{step} | RecordError:{ex}";
                 HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 

@@ -351,14 +351,19 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlanFinish")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> Finish(string planId, int routeId)
+        public async Task<ProcessReponseModel<object>> Finish(string planId, int machineId)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Finish(planId, routeId);
-                await HandleBoardcastingActiveProcess(DataTypeGroup.None, planId
-                        , new int[] { routeId }, result);
+                var result = await _activeProductionPlanService.Finish(planId);
+                if (result != null)
+                {
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.All
+                        , planId
+                        , machineId
+                        , result);
+                }
                 output.IsSuccess = true;
             }
             catch (Exception ex)
