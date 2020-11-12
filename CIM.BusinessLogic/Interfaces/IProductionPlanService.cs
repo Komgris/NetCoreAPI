@@ -30,7 +30,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ProductionPlanOverviewModel> Load(string id, int routeId);
         Task<ProductionPlanOverviewModel> Load3M(string planId);
         Task<ActiveProductionPlanModel> TakeAction(string id, int routeId);
-        Task<ActiveProductionPlan3MModel> TakeAction3M(string id, int routeId);
+        Task<ActiveMachine3MModel> TakeAction3M(string id, int machineId);
         FilterLoadProductionPlanListModel FilterLoadProductionPlan(int? productId, int? routeId, int? statusId, string planId, int? processTypeId);
     }
 }

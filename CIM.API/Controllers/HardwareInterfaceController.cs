@@ -129,15 +129,8 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/SetStatus3M")]
         public async Task<string> SetStatus3M(int id, int statusId, bool isAuto = true)
         {
-            var productionPlan = await _activeProductionPlanService.UpdateByMachine3M(id, statusId, isAuto);
-
-            // Production plan of this component doesn't started yet
-            if (productionPlan != null)
-            {
-                var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan.ProductionPlanId}";
-                //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-            }
+            await _activeProductionPlanService.UpdateByMachine3M(id, statusId, isAuto);
+            await HandleBoardcastingActiveMachine3M();
 
             //dole dashboard
             //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
@@ -145,7 +138,7 @@ namespace CIM.API.Controllers
             //{
             //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
             //}
-            _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.McCalc);
+            //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.McCalc);
 
             return "OK";
         }

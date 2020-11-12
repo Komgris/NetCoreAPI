@@ -18,7 +18,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveMachine3MModel> GetCached3M(int id);
         Task RemoveCached(int id, ActiveMachineModel model);
         Task SetCached(int id, ActiveMachineModel model);
-        Task SetCached3M(int id, ActiveMachine3MModel model);
+        Task SetCached3M(ActiveMachine3MModel model);
         Task<Dictionary<int, ActiveMachineModel>> BulkCacheMachines(string productionPlanId, int routeId, Dictionary<int, ActiveMachineModel> machineList);
         Task<ActiveMachine3MModel> BulkCacheMachines3M(string productionPlanId, int machineId);
         Task<List<RouteMachineModel>> GetMachineByRoute(int routeId);

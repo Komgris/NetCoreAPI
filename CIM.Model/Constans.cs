@@ -19,11 +19,12 @@ namespace CIM.Model
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
             public const string CHANNEL_MASTER_DATA = "master-data";
             public const string CHANNEL_MASTER_DATA_OPERATION = "master-data-operation";
+            public const string CHANNEL_MACHINE = "machine";
         }
         
         public class RedisKey {
 
-            public const string MACHINE = "machine";
+            public const string MACHINE = "machine-3m";
             public const string MACHINE_LIST = "machine-list";
             public const string PRODUCTION_PLAN = "production-plan";
             public const string COMPONENT = "component-production-plan";

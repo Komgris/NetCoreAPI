@@ -85,7 +85,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task Update(MachineListModel model)
         {
-            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id );
+            var dbModel = await _machineRepository.FirstOrDefaultAsync(x => x.Id == model.Id);
             dbModel = MapperHelper.AsModel(model, dbModel);
             dbModel.UpdatedBy = CurrentUser.UserId;
             dbModel.UpdatedAt = DateTime.Now;
@@ -104,12 +104,12 @@ namespace CIM.BusinessLogic.Services
         }
         public async Task<ActiveMachine3MModel> GetCached3M(int id)
         {
-            return await _responseCacheService.GetAsTypeAsync<ActiveMachine3MModel>(CachedKey(id));
+            return _responseCacheService.GetActiveMachine(id);
         }
 
-        public async Task SetCached3M(int id, ActiveMachine3MModel model)
+        public async Task SetCached3M(ActiveMachine3MModel model)
         {
-            await _responseCacheService.SetAsync(CachedKey(id), model);
+            await _responseCacheService.SetActiveMachine(model);
         }
 
         public async Task SetCached(int id, ActiveMachineModel model)
@@ -117,39 +117,40 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetAsync(CachedKey(id), model);
         }
 
+
         public async Task RemoveCached(int id, ActiveMachineModel model)
         {
             await _responseCacheService.RemoveAsync(CachedKey(id));
         }
-        public async Task<ActiveMachine3MModel> BulkCacheMachines3M(string productionPlanId,int machineId)
+        public async Task<ActiveMachine3MModel> BulkCacheMachines3M(string productionPlanId, int machineId)
         {
             var output = new ActiveMachine3MModel();
             //var seq = 0;
             //foreach (var machine in machineList)
             //{
-                //seq++;
-                var key = CachedKey(machineId);
-                var cachedMachine = await GetCached3M(machineId);
-                if(cachedMachine == null)
+            //seq++;
+            var key = CachedKey(machineId);
+            var cachedMachine = await GetCached3M(machineId);
+            if (cachedMachine == null)
+            {
+                cachedMachine = new ActiveMachine3MModel
                 {
-                    cachedMachine = new ActiveMachine3MModel
-                    {
-                        Id = machineId,
-                        //Sequence = seq,
-                        UserId = CurrentUser.UserId,
-                        StartedAt = DateTime.Now,
-                        StatusId = Constans.MACHINE_STATUS.NA,
-                    };
-                }
-                if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA)
-                {
-                    var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
-                    if (dbModel != null)
-                        cachedMachine.StatusId = dbModel.MachineStatusId;
-                }
-                cachedMachine.ProductionPlanId = productionPlanId;
+                    Id = machineId,
+                    //Sequence = seq,
+                    UserId = CurrentUser.UserId,
+                    StartedAt = DateTime.Now,
+                    StatusId = Constans.MACHINE_STATUS.NA,
+                };
+            }
+            if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA)
+            {
+                var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machineId).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+                if (dbModel != null)
+                    cachedMachine.StatusId = dbModel.MachineStatusId;
+            }
+            cachedMachine.ProductionPlanId = productionPlanId;
 
-                await SetCached3M(machineId, cachedMachine);
+            await SetCached3M(cachedMachine);
             //output.Add(cachedMachine);
             //}
             return output;
@@ -189,7 +190,7 @@ namespace CIM.BusinessLogic.Services
 
                     cachedMachine.Sequence = seq;
                 }
-                
+
                 if (cachedMachine.StatusId == Constans.MACHINE_STATUS.NA /*|| cachedMachine.StatusId == Constans.MACHINE_STATUS.Unknown*/)
                 {
                     var dbModel = await _recordMachineStatusRepository.Where(x => x.MachineId == machine.Key).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
@@ -201,11 +202,11 @@ namespace CIM.BusinessLogic.Services
                 await SetCached(machine.Key, cachedMachine);
                 output.Add(cachedMachine);
             }
-            return output.ToDictionary( x=>x.Id, x => x);
+            return output.ToDictionary(x => x.Id, x => x);
 
         }
 
-        public async Task InsertMappingRouteMachine( List<RouteMachineModel> data)
+        public async Task InsertMappingRouteMachine(List<RouteMachineModel> data)
         {
             await DeleteMapping(data[0].RouteId);
             int sequence = 1;
@@ -247,12 +248,12 @@ namespace CIM.BusinessLogic.Services
             return await _machineRepository.GetMachineTags();
         }
 
-        public async Task SetListMachinesResetCounter(List<int> machines,bool isCounting)
+        public async Task SetListMachinesResetCounter(List<int> machines, bool isCounting)
         {
             if (machines!.Count > 0)
             {
                 var model = await GetSystemParamters();
-                foreach (var mcid in machines) 
+                foreach (var mcid in machines)
                 {
                     if (!model.ListMachineIdsResetCounter.ContainsKey(mcid))
                     {
@@ -282,22 +283,21 @@ namespace CIM.BusinessLogic.Services
         }
 
         public async Task InitialMachineCache()
-        { 
+        {
             var masterdata = await _masterDataService.GetData();
             foreach (var mc in masterdata.Machines)
             {
                 var mccache = GetCached(mc.Key).Result;
                 if (mccache == null)
                 {
-                    await SetCached(mc.Key,
-                                           new ActiveMachineModel
-                                           {
-                                               Id = mc.Key,
-                                               Image = mc.Value.Image,
-                                               UserId = CurrentUser.UserId,
-                                               StatusId = 2,
-                                               StartedAt = DateTime.Now
-                                           });
+                    await SetCached3M(new ActiveMachine3MModel
+                    {
+                        Id = mc.Key,
+                        Image = mc.Value.Image,
+                        UserId = CurrentUser.UserId,
+                        StatusId = 2,
+                        StartedAt = DateTime.Now
+                    });
                 }
                 else
                 {

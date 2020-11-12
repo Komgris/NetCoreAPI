@@ -49,6 +49,11 @@ namespace CIM.API.Controllers
             return $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_PRODUCTION_PLAN}:{planId}";//Ex. dashboard-CachedCH-Dole_Custom_Dashboard
         }
 
+        internal string CHActiveMachine(int machineId)
+        {
+            return $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}";//Ex. dashboard-CachedCH-Dole_Custom_Dashboard
+        }
+
         internal string CacheForBoardcast<T>(string cache)
         {
             var model = JsonConvert.DeserializeObject<T>(cache);
@@ -203,7 +208,7 @@ namespace CIM.API.Controllers
             //}
 
             await _responseCacheService.SetAsync(channelKey, activeModel);
-            activeModel.Alerts = LimitAlert(activeModel.Alerts);
+            //activeModel.Alerts = LimitAlert(activeModel.Alerts);
 
             return activeModel;
         }
