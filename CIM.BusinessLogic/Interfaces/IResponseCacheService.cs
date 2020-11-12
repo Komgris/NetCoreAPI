@@ -16,5 +16,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetActivePlan(ActiveProductionPlan3MModel model);
         ActiveProductionPlan3MModel GetActivePlan(string planId);
         void RemoveActivePlan(string planId);
+        ActiveMachine3MModel GetActiveMachine(int machineId);
+        Task SetActiveMachine(ActiveMachine3MModel model);
     }
 }

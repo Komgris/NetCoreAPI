@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CIM.API.Cache;
 using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -140,6 +141,25 @@ namespace CIM.API.Controllers
 
             await BoardcastClientData(channelKey, activeModel);
             return activeModel;
+        }
+
+        internal async Task<object> HandleBoardcastingActiveMachine3M()
+        {
+            var activeMachines = BaseService.baseListMachine;
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}";
+
+            ////generate data for boardcast
+            //foreach (var m in machineId)
+            //{
+            //    var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, m);
+            //    if (boardcastData.UnitData.Count > 0)
+            //    {
+            //        activeModel = await SetBoardcastActiveDataCached3M(rediskey, m, activeModel, boardcastData);
+            //    }
+            //}
+
+            await BoardcastClientData(channelKey, activeMachines);
+            return activeMachines;
         }
 
         private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, ProductionDataModel model)

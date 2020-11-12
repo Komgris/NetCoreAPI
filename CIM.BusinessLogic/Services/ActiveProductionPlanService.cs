@@ -83,9 +83,13 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveProductionPlan3MModel> GetCached3M(string planId)
         {
             //var key = GetKey(id);
-            return  _responseCacheService.GetActivePlan(planId);
+            return _responseCacheService.GetActivePlan(planId);
         }
 
+        public async Task<ActiveMachine3MModel> GetCachedMachine3M(int machineId)
+        {
+            return _responseCacheService.GetActiveMachine(machineId);
+        }
         public async Task SetCached(ActiveProductionPlanModel model)
         {
             await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
@@ -93,7 +97,12 @@ namespace CIM.BusinessLogic.Services
 
         public async Task SetCached3M(ActiveProductionPlan3MModel model)
         {
-             _responseCacheService.SetActivePlan(model);
+            _responseCacheService.SetActivePlan(model);
+        }
+
+        public async Task SetCachedMachine3M(ActiveMachine3MModel model)
+        {
+            _responseCacheService.SetActiveMachine(model);
         }
 
         public async Task RemoveCached(string id)
@@ -127,7 +136,7 @@ namespace CIM.BusinessLogic.Services
             var activePlan = await _activeproductionPlanRepository.FirstOrDefaultAsync(x => x.ProductionPlanPlanId == planId);
             if (activeModel?.Status != statusId)
             {
-                if(statusId == PRODUCTION_PLAN_STATUS.Production)
+                if (statusId == PRODUCTION_PLAN_STATUS.Production)
                 {
                     //close prepare process(loss)
                     var LossModel = new RecordManufacturingLossModel()
@@ -164,6 +173,13 @@ namespace CIM.BusinessLogic.Services
             var cmtxt = $"Plan:{planId}";
             var step = "";
             var now = DateTime.Now;
+
+            //validation machine is avaiable
+            var mccached = _responseCacheService.GetActiveMachine(machineId);
+            if (mccached.ProductionPlanId != "")
+            {
+                throw (new Exception($"This machine is using in Plan:{mccached.ProductionPlanId}"));
+            }
 
             //validation
             var paramsList = new Dictionary<string, object>() {
@@ -260,10 +276,10 @@ namespace CIM.BusinessLogic.Services
         /// <param name="planId"></param>
         /// <param name="routeId"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlanModel> Finish(string planId, int routeId)
+        public async Task<ActiveProductionPlanModel> Finish(string planId, int machineId)
         {
             ActiveProductionPlanModel output = null;
-            var cmtxt = $"Plan:{planId} | Route:{routeId}";
+            var cmtxt = $"Plan:{planId} | Machine:{machineId}";
             string step = "";
             var now = DateTime.Now;
             var lastFinished = await _responseCacheService.GetAsync("LastPlanFinished");
@@ -277,7 +293,7 @@ namespace CIM.BusinessLogic.Services
             {
                 var paramsList = new Dictionary<string, object>() {
                     {"@planid", planId },
-                    {"@routeid", routeId }
+                    {"@routeid", machineId }
                 };
 
                 //get message for descripe validation result
@@ -301,8 +317,8 @@ namespace CIM.BusinessLogic.Services
                         {
                             step = "GetCached activeProductionPlan ไม่ได้"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             var mcliststopCounting = new List<int>();
-                            var activeProcess = activeProductionPlan.ActiveProcesses[routeId];
-                            activeProductionPlan.ActiveProcesses[routeId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+                            var activeProcess = activeProductionPlan.ActiveProcesses[machineId];
+                            activeProductionPlan.ActiveProcesses[machineId].Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
                             var isPlanActive = activeProductionPlan.ActiveProcesses.Count(x => x.Value.Status != Constans.PRODUCTION_PLAN_STATUS.Finished) > 0;
 
                             //update another route are use the same machines
@@ -311,14 +327,14 @@ namespace CIM.BusinessLogic.Services
                             {
                                 foreach (var r in mcmultiRoute.Value.RouteIds)
                                 {
-                                    if (r != routeId)
-                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(routeId);
+                                    if (r != machineId)
+                                        activeProductionPlan.ActiveProcesses[r].Route.MachineList[mcmultiRoute.Key].RouteIds.Remove(machineId);
                                 }
                             }
                             step = "loop MachineList"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                             foreach (var machine in activeProcess.Route.MachineList)
                             {
-                                machine.Value.RouteIds.Remove(routeId);
+                                machine.Value.RouteIds.Remove(machineId);
                                 if (machine.Value.RouteIds.Count == 0) mcliststopCounting.Add(machine.Key);
                                 if (!isPlanActive) machine.Value.ProductionPlanId = null;
                                 await _machineService.SetCached(machine.Key, machine.Value);
@@ -338,6 +354,11 @@ namespace CIM.BusinessLogic.Services
                                 step = "RemoveCached(activeProductionPlan.ProductionPlanId)"; HelperUtility.Logging("FinishPlanLog.txt", $"{cmtxt} | {step}");
                                 await RemoveCached(activeProductionPlan.ProductionPlanId);
                                 activeProductionPlan.Status = Constans.PRODUCTION_PLAN_STATUS.Finished;
+
+                                step = "delete production plan from machine";
+                                var mccached = _responseCacheService.GetActiveMachine(machineId);
+                                mccached.ProductionPlanId = "";
+                                await _responseCacheService.SetActiveMachine(mccached);
                             }
                         }
                         output = activeProductionPlan;
@@ -346,7 +367,7 @@ namespace CIM.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                var textErr = $"Plan:{planId} | Route:{routeId} | RecordsStep:{step} | RecordError:{ex}";
+                var textErr = $"Plan:{planId} | Machine:{machineId} | RecordsStep:{step} | RecordError:{ex}";
                 HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
@@ -493,10 +514,10 @@ namespace CIM.BusinessLogic.Services
                 {
                     Id = machine.Id,
                     UserId = CurrentUser.UserId,
-                    StatusId = statusId,
                     StartedAt = DateTime.Now
                 };
             }
+            cachedMachine.StatusId = statusId;
 
             //if machine is apart of production plan
             if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) /*&& cachedMachine.RouteIds != null*/)
@@ -504,6 +525,11 @@ namespace CIM.BusinessLogic.Services
                 output = await GetCached3M(cachedMachine.ProductionPlanId);
                 if (output != null)
                 {
+                    //machine CH
+
+
+                    //activeprocess CH
+
                     //foreach (var routeId in cachedMachine.RouteIds.Distinct())
                     //{
                     //if (output.ActiveProcesses.ContainsKey(machineId))
@@ -518,6 +544,8 @@ namespace CIM.BusinessLogic.Services
                     await SetCached3M(output);
                 }
             }
+
+            await SetCachedMachine3M(cachedMachine);
 
             //handle machine status
             //var recordMachineStatusId = statusId;
@@ -538,7 +566,7 @@ namespace CIM.BusinessLogic.Services
             //}
 
             await _unitOfWork.CommitAsync();
-            await _machineService.SetCached3M(machineId, cachedMachine);
+            await _machineService.SetCached3M(cachedMachine);
 
             return output;
         }
@@ -707,26 +735,26 @@ namespace CIM.BusinessLogic.Services
             var now = DateTime.Now;
 
             var cachedMachine = await _machineService.GetCached3M(machineId);
-  
+
             //if (!activeProductionPlan.ActiveProcesses[machineId].Machine.IsReady) // has unclosed record inside
             //{
-                AlertModel alert;
-
-         
-                alert = new AlertModel
-                {
-                    StatusId = (int)Constans.AlertStatus.New,
-                    ItemStatusId = statusId,
-                    CreatedAt = now,
-                    Id = Guid.NewGuid(),
-                    LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
-                    ItemId = machineId,
-                    ItemType = (int)Constans.AlertType.MACHINE,
-               
-                };
+            AlertModel alert;
 
 
-                var paramsList = new Dictionary<string, object>() {
+            alert = new AlertModel
+            {
+                StatusId = (int)Constans.AlertStatus.New,
+                ItemStatusId = statusId,
+                CreatedAt = now,
+                Id = Guid.NewGuid(),
+                LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
+                ItemId = machineId,
+                ItemType = (int)Constans.AlertType.MACHINE,
+
+            };
+
+
+            var paramsList = new Dictionary<string, object>() {
                             {"@startedAt", now },
                             {"@productionPlanId", activeProductionPlan.ProductionPlanId },
                             {"@machineId", machineId },
@@ -735,10 +763,10 @@ namespace CIM.BusinessLogic.Services
                             {"@createdBy", CurrentUser.UserId },
                             {"@guid", alert.Id.ToString() }
                         };
-                _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
 
-  
-                //activeProductionPlan.ActiveProcesses[machineId].Alerts.Add(alert);
+
+            //activeProductionPlan.ActiveProcesses[machineId].Alerts.Add(alert);
 
             //}
 

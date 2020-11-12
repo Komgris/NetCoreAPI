@@ -11,11 +11,20 @@ namespace CIM.Model
         public string Image { get; set; }
         public string ProductionPlanId { get; set; }
         public int StatusId { get; set; }
-        public bool IsReady { get; set; }
-        public bool IsAutoLossRecord { get; set; }
+        public bool IsAutoRecord { get; set; }
         public bool LossRecording { get; set; }
         public string UserId { get; set; }
         public DateTime StartedAt { get; set; }
-        public RecordProductionPlanOutputModel RecordProductionPlanOutput { get; set; }
+        public int CounterIn { get; set; } = 0;
+        public int CounterOut { get; set; } = 0;
+        public int Hour { get; set; } = DateTime.Now.Hour;
+        public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
+        public void ResetNewPlan(string planId)
+        {
+            ProductionPlanId = planId;
+            CounterIn = 0;
+            CounterOut = 0;
+            Hour = DateTime.Now.Hour;
+        } 
     }
 }
