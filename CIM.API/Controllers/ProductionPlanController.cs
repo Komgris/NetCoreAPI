@@ -356,7 +356,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var result = await _activeProductionPlanService.Finish(planId);
+                var result = await _activeProductionPlanService.Finish(planId, machineId);
                 if (result != null)
                 {
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.All

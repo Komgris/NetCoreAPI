@@ -195,21 +195,6 @@ namespace CIM.API.Controllers
                 }
                 activeModel.ProductionData = cache;
             }
-
-            var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
-            var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
-            //foreach (var machine in activeModel.ActiveProcesses[machineId].MachineList)
-            //{
-            //    machine.Value.IsReady = recordingMachines.Contains(machine.Key);
-                //if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
-                //{
-                //    activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
-                //}
-            //}
-
-            await _responseCacheService.SetAsync(channelKey, activeModel);
-            //activeModel.Alerts = LimitAlert(activeModel.Alerts);
-
             return activeModel;
         }
 
