@@ -16,7 +16,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetCached3M(ActiveProductionPlan3MModel model);
         Task RemoveCached(string id);
         Task<ActiveProductionPlan3MModel> Start(string planId, int machineId, int? target);
-        Task<ActiveProductionPlanModel> Finish(string planId, int route);
+        Task<ActiveProductionPlan3MModel> Finish(string planId, int machineId);
         Task<ActiveProductionPlanModel> Pause(string planId, int route, int lossLevel3);
         Task<ActiveProductionPlanModel> Resume(string planId, int route);
         Task<ActiveProductionPlanModel> UpdateByMachine(int id, int statusId, bool isAuto);
