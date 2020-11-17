@@ -89,20 +89,20 @@ namespace CIM.BusinessLogic.Services
         }
 
 
-        public async Task<List<ProductionPlanModel>> CheckDuplicate(List<ProductionPlanModel> import)
+        public async Task<List<ProductionPlan3MModel>> CheckDuplicate(List<ProductionPlan3MModel> import)
         {
-            List<ProductionPlanModel> db_list = new List<ProductionPlanModel>();
+            List<ProductionPlan3MModel> db_list = new List<ProductionPlan3MModel>();
             var masterData = await _masterDataService.GetData();
-            var productionPlanDict = masterData.ProductionPlan;
+            var planList = await _productionPlanRepository.AllAsync();
             foreach (var plan in import)
             {
-                if (productionPlanDict.ContainsKey(plan.PlanId))
+                if (planList.Where(x => x.PlanId == plan.PlanId) != null)
                 {
-                    await Update(plan);
+                    await Update3M(plan);
                 }
                 else
                 {
-                    var model = CreatePlan(plan);
+                    var model = CreatePlan3M(plan);
                     db_list.Add(model);
                 }
             }
@@ -141,11 +141,46 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
+        public async Task Update3M(ProductionPlan3MModel model)
+        {
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan());
+
+            db_model.PlanId = model.PlanId.Trim();
+            db_model.UpdatedBy = CurrentUser.UserId;
+            db_model.IsActive = true;
+            db_model.UpdatedAt = DateTime.Now;
+            _productionPlanRepository.Edit(db_model);
+            await _unitOfWork.CommitAsync();
+
+            ////recalc target per active-route
+            //var dbmodel = _productionPlanRepository.Where(x => x.PlanId == model.PlanId && x.StatusId == 2).FirstOrDefault();
+            //if (dbmodel != null)
+            //{
+            //    var paramsList = new Dictionary<string, object>() {
+            //                {"@planid", model.PlanId },
+            //                {"@user", CurrentUser.UserId}
+            //            };
+            //    _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_RecalcTarget", paramsList);
+            //}
+        }
+
         public ProductionPlanModel CreatePlan(ProductionPlanModel model)
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan(), new[] { "Route", "Unit" });
             db_model.PlanId = model.PlanId.Trim();
             db_model.UnitId = model.Unit;
+            db_model.CreatedBy = CurrentUser.UserId;
+            db_model.CreatedAt = DateTime.Now;
+            db_model.IsActive = true;
+            db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
+            _productionPlanRepository.Add(db_model);
+            return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+        }
+
+        public ProductionPlanModel CreatePlan3M(ProductionPlan3MModel model)
+        {
+            var db_model = MapperHelper.AsModel(model, new ProductionPlan());
+            db_model.PlanId = model.PlanId.Trim();
             db_model.CreatedBy = CurrentUser.UserId;
             db_model.CreatedAt = DateTime.Now;
             db_model.IsActive = true;
@@ -228,6 +263,70 @@ namespace CIM.BusinessLogic.Services
                 }
             }
             return import;
+        }
+        public async Task<List<ProductionPlan3MModel>> validatePlan(List<ProductionPlan3MModel> data)
+        {
+            var masterData = await _masterDataService.GetData();
+            var planList = await _productionPlanRepository.AllAsync();
+            var productCodeToIds = masterData.Dictionary.ProductsByCode;
+            //var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
+            var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
+            //var targetBuffer = (int)Constans.ProductionPlanBuffer.TARGET_BUFFER;
+
+            DateTime timeNow = DateTime.Now;
+
+            foreach (var plan in data)
+            {
+                plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
+                if (plan.ProductId != 0)
+                {
+                    if (plan.PlanStart == null || plan.PlanFinish == null)
+                    {
+                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                    }
+                    else
+                    {
+                        if (planList.Where(x=>x.PlanId == plan.PlanId) != null)
+                        {
+                            plan.StatusId = await planStatus(plan.PlanId);
+                            plan.CompareResult = Constans.CompareMapping.Inprocess;
+                            //Validate updated production plan status with current existing
+                            switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
+                            {
+                                case Constans.PRODUCTION_PLAN_STATUS.Production:
+                                case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                                case Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                                case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                                case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                                    if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
+                                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                                    //else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
+                                    //    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
+                                    //        plan.CompareResult = Constans.CompareMapping.InvalidTarget;
+                                    break;
+                                case Constans.PRODUCTION_PLAN_STATUS.New:
+                                case Constans.PRODUCTION_PLAN_STATUS.Hold:
+                                case Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                                    break;
+                                case Constans.PRODUCTION_PLAN_STATUS.Finished:
+                                    plan.CompareResult = Constans.CompareMapping.PlanFinished;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            plan.CompareResult = Constans.CompareMapping.NEW;
+                        }
+                    }
+                }
+                else
+                {
+                    plan.CompareResult = Constans.CompareMapping.NoProduct;
+                }
+            }
+            return data;
         }
         public async Task<int> planStatus(string planId)
         {
