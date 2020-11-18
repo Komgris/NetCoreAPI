@@ -177,7 +177,7 @@ namespace CIM.BusinessLogic.Services
             return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
         }
 
-        public ProductionPlanModel CreatePlan3M(ProductionPlan3MModel model)
+        public ProductionPlan3MModel CreatePlan3M(ProductionPlan3MModel model)
         {
             var db_model = MapperHelper.AsModel(model, new ProductionPlan());
             db_model.PlanId = model.PlanId.Trim();
@@ -186,7 +186,7 @@ namespace CIM.BusinessLogic.Services
             db_model.IsActive = true;
             db_model.StatusId = (int)Constans.PRODUCTION_PLAN_STATUS.New;
             _productionPlanRepository.Add(db_model);
-            return (MapperHelper.AsModel(db_model, new ProductionPlanModel()));
+            return (MapperHelper.AsModel(db_model, new ProductionPlan3MModel()));
         }
 
         public async Task Delete(string id)
@@ -277,6 +277,7 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var plan in data)
             {
+                plan.PlanId = $"{plan.MachineCode}_{plan.Sequence}_{DateTime.Now.ToString("MM")}_{DateTime.Now.ToString("yy")}";
                 plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
                 if (plan.ProductId != 0)
                 {
@@ -286,7 +287,7 @@ namespace CIM.BusinessLogic.Services
                     }
                     else
                     {
-                        if (planList.Where(x=>x.PlanId == plan.PlanId) != null)
+                        if (planList.FirstOrDefault(x=>x.PlanId == plan.PlanId) != null)
                         {
                             plan.StatusId = await planStatus(plan.PlanId);
                             plan.CompareResult = Constans.CompareMapping.Inprocess;
@@ -300,9 +301,6 @@ namespace CIM.BusinessLogic.Services
                                 case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
                                     if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
                                         plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                                    //else if (activeProductionPlanOutput != null && activeProductionPlanOutput.ContainsKey(plan.PlanId))
-                                    //    if (activeProductionPlanOutput[plan.PlanId] > plan.Target + targetBuffer)
-                                    //        plan.CompareResult = Constans.CompareMapping.InvalidTarget;
                                     break;
                                 case Constans.PRODUCTION_PLAN_STATUS.New:
                                 case Constans.PRODUCTION_PLAN_STATUS.Hold:
