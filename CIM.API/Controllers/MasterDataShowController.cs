@@ -29,16 +29,6 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/GetListDefect")]
         public async Task<string> GetListDefect()
         {
-            //var output = new ProcessReponseModel<object>();
-            //try
-            //{
-            //    output.Data = JsonConvert.SerializeObject(await _service.GetListWaste());
-            //    output.IsSuccess = true;
-            //}
-            //catch (Exception ex)
-            //{
-            //    output.Message = ex.ToString();
-            //}
             return JsonConvert.SerializeObject(await _service.GetListWaste()); 
         }
 
@@ -46,16 +36,6 @@ namespace CIM.API.Controllers
         [Route("api/[controller]/GetListMaterial")]
         public async Task<string> GetListMaterial()
         {
-            //var output = new ProcessReponseModel<List<MaterialMasterShowModel>>();
-            //try
-            //{
-            //    output.Data = await _service.GetListMaterial();
-            //    output.IsSuccess = true;
-            //}
-            //catch (Exception ex)
-            //{
-            //    output.Message = ex.ToString();
-            //}
             return JsonConvert.SerializeObject(await _service.GetListMaterial());
         }
 
