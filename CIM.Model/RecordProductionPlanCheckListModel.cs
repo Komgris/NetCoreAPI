@@ -13,6 +13,7 @@ namespace CIM.Model
         public int CheckListId { get; set; }
         public int DetailId { get; set; }
         public int ExampleNumber { get; set; }
+        public string Remark { get; set; }
         public bool IsCheck { get; set; }
         public int Hour { get; set; }
         public int Date { get; set; }
