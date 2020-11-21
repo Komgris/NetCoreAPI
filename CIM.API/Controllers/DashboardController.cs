@@ -118,6 +118,19 @@ namespace CIM.API.Controllers
             return "OK";
         }
 
+        [HttpGet]
+        public async Task<string> BoardcastingActiveOperation3M(DataTypeGroup updateType, string productionPlan, int machineId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var activeProductionPlan = await GetCached<ActiveProductionPlan3MModel>(channelKey);
+            if (activeProductionPlan != null)
+            {
+                return JsonConvert.SerializeObject(
+                    await HandleBoardcastingActiveProcess3M(updateType, productionPlan, machineId, activeProductionPlan));
+            }
+            return "OK";
+        }
+
         #endregion
 
         #region apart of Production data

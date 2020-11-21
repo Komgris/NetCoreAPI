@@ -130,7 +130,7 @@ namespace CIM.API.Controllers
         public async Task<string> SetStatus3M(int id, int statusId, bool isAuto = true)
         {
             await _activeProductionPlanService.UpdateByMachine3M(id, statusId, isAuto);
-            await HandleBoardcastingActiveMachine3M();
+            await HandleBoardcastingActiveMachine3M(id);
 
             //dole dashboard
             //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);

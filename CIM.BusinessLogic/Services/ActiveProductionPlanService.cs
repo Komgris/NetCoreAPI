@@ -86,10 +86,6 @@ namespace CIM.BusinessLogic.Services
             return _responseCacheService.GetActivePlan(planId);
         }
 
-        public async Task<ActiveMachine3MModel> GetCachedMachine3M(int machineId)
-        {
-            return _responseCacheService.GetActiveMachine(machineId);
-        }
         public async Task SetCached(ActiveProductionPlanModel model)
         {
             await _responseCacheService.SetAsync(GetKey(model.ProductionPlanId), model);
@@ -232,7 +228,7 @@ namespace CIM.BusinessLogic.Services
         /// <param name="planId"></param>
         /// <param name="routeId"></param>
         /// <returns></returns>
-        public async Task<ActiveProductionPlan3MModel> Finish(string planId,int machineId)
+        public async Task<ActiveProductionPlan3MModel> Finish(string planId, int machineId)
         {
             ActiveProductionPlan3MModel output = null;
             var cmtxt = $"Plan:{planId}";
@@ -416,14 +412,14 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        public async Task<ActiveProductionPlan3MModel> UpdateByMachine3M(int machineId, int statusId, bool isAuto)
+        public async Task<ActiveMachine3MModel> UpdateByMachine3M(int machineId, int statusId, bool isAuto)
         {
             var now = DateTime.Now;
             var activeRoute = new List<int>();
             var cachedMachine = await _machineService.GetCached3M(machineId);
             var masterData = await _masterDataService.GetData();
             var machine = masterData.Machines[machineId];
-            ActiveProductionPlan3MModel output = null;
+            //ActiveProductionPlan3MModel output = null;
 
             // If Production Plan doesn't start but machine just start to send status
             if (cachedMachine == null)
@@ -436,57 +432,60 @@ namespace CIM.BusinessLogic.Services
                 };
             }
             cachedMachine.StatusId = statusId;
-
-            //if machine is apart of production plan
-            if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) /*&& cachedMachine.RouteIds != null*/)
-            {
-                output = await GetCached3M(cachedMachine.ProductionPlanId);
-                if (output != null)
-                {
-                    //machine CH
-
-
-                    //activeprocess CH
-
-                    //foreach (var routeId in cachedMachine.RouteIds.Distinct())
-                    //{
-                    //if (output.ActiveProcesses.ContainsKey(machineId))
-                    //{
-                    //    UpdateMachineStatus(machineId, statusId);
-                    //    activeRoute.Add(machineId);
-
-                    //    output.Machine.StatusId = statusId;
-                    //    output = await HandleMachineByStatus3M(machineId, statusId, output, isAuto);
-                    //}
-                    //}
-                    await SetCached3M(output);
-                }
-            }
-
+            UpdateMachineStatus(machineId, statusId);
+            await HandleMachineByStatus3M(machineId, statusId, cachedMachine, isAuto);
             await SetCachedMachine3M(cachedMachine);
 
-            //handle machine status
-            //var recordMachineStatusId = statusId;
-            //if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
+            //if machine is apart of production plan
+            //if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId) /*&& cachedMachine.RouteIds != null*/)
             //{
-            //    recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
+            //    output = await GetCached3M(cachedMachine.ProductionPlanId);
+            //    if (output != null)
+            //    {
+            //machine CH
+
+
+            //activeprocess CH
+
+            //foreach (var routeId in cachedMachine.RouteIds.Distinct())
+            //{
+            //    if (output.ActiveProcesses.ContainsKey(machineId))
+            //    {
+            //UpdateMachineStatus(machineId, statusId);
+            //activeRoute.Add(machineId);
+
+            //output.Machine.StatusId = statusId;
+            //output = await HandleMachineByStatus3M(machineId, statusId, output, isAuto);
+            //    }
+            //}
+            //await SetCached3M(output);
+            //    }
             //}
 
-            //if (cachedMachine.StatusId != recordMachineStatusId)
-            //{
-            //    cachedMachine.StatusId = recordMachineStatusId;
-            //    var paramsList = new Dictionary<string, object>() {
-            //        {"@planid", cachedMachine.ProductionPlanId },
-            //        {"@mcid", machineId },
-            //        {"@statusid", recordMachineStatusId }
-            //    };
-            //    _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
-            //}
+            //await SetCachedMachine3M(cachedMachine);
+
+            //handle machine status
+            var recordMachineStatusId = statusId;
+            if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
+            {
+                recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
+            }
+
+            if (cachedMachine.StatusId != recordMachineStatusId)
+            {
+                cachedMachine.StatusId = recordMachineStatusId;
+                var paramsList = new Dictionary<string, object>() {
+                    {"@planid", cachedMachine.ProductionPlanId },
+                    {"@mcid", machineId },
+                    {"@statusid", recordMachineStatusId }
+                };
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+            }
 
             await _unitOfWork.CommitAsync();
-            await _machineService.SetCached3M(cachedMachine);
+            //await _machineService.SetCached3M(cachedMachine);
 
-            return output;
+            return cachedMachine;
         }
 
         private async Task<ActiveProductionPlanModel> HandleMachineByStatus(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
@@ -500,15 +499,15 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
-        private async Task<ActiveProductionPlan3MModel> HandleMachineByStatus3M(int machineId, int statusId, ActiveProductionPlan3MModel activeProductionPlan, bool isAuto)
+        private async Task<ActiveMachine3MModel> HandleMachineByStatus3M(int machineId, int statusId, ActiveMachine3MModel activeMachine, bool isAuto)
         {
             switch (statusId)
             {
-                case Constans.MACHINE_STATUS.Stop: activeProductionPlan = await HandleMachineStop3M(machineId, statusId, activeProductionPlan, isAuto); break;
-                case Constans.MACHINE_STATUS.Running: activeProductionPlan = await HandleMachineRunning3M(machineId, statusId, activeProductionPlan, isAuto); break;
+                case Constans.MACHINE_STATUS.Stop: activeMachine = await HandleMachineStop3M(machineId, statusId, activeMachine, isAuto); break;
+                case Constans.MACHINE_STATUS.Running: activeMachine = await HandleMachineRunning3M(machineId, statusId, activeMachine, isAuto); break;
                 default: break;
             }
-            return activeProductionPlan;
+            return activeMachine;
         }
 
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
@@ -549,10 +548,10 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
-        private async Task<ActiveProductionPlan3MModel> HandleMachineRunning3M(int machineId, int statusId, ActiveProductionPlan3MModel activeProductionPlan, bool isAuto)
+        private async Task<ActiveMachine3MModel> HandleMachineRunning3M(int machineId, int statusId, ActiveMachine3MModel activeMachine, bool isAuto)
         {
             var losses = await _recordManufacturingLossRepository
-                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null /*&& x.RouteId == routeId */
+                .WhereAsync(x => x.MachineId == machineId && x.EndAt == null
                                 && x.IsAuto == true
                                 && !(
                                         (x.LossLevel3Id == _config.GetValue<int>("DefaultChangeOverlv3Id") || x.LossLevel3Id == _config.GetValue<int>("DefaultProcessDrivenlv3Id"))
@@ -564,9 +563,9 @@ namespace CIM.BusinessLogic.Services
 
             foreach (var dbModel in losses)
             {
-                //var alert = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
-                //if (alert != null)
-                //    alert.EndAt = now;
+                var alert = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                if (alert != null)
+                    alert.EndAt = now;
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
@@ -574,17 +573,17 @@ namespace CIM.BusinessLogic.Services
                 if (dbModel.Timespan < 60 && dbModel.IsAuto)
                 {
                     dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    //var sploss = activeProductionPlan.ActiveProcesses[machineId].Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
+                    var sploss = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                     //handle case alert is removed from redis
-                    //if (sploss != null)
-                    //{
-                    //    sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                    //    sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    //}
+                    if (sploss != null)
+                    {
+                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
+                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
+                    }
                 }
                 _recordManufacturingLossRepository.Edit(dbModel);
             }
-            return activeProductionPlan;
+            return activeMachine;
         }
 
         private async Task<ActiveProductionPlanModel> HandleMachineStop(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
@@ -648,47 +647,39 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
-        private async Task<ActiveProductionPlan3MModel> HandleMachineStop3M(int machineId, int statusId, ActiveProductionPlan3MModel activeProductionPlan, bool isAuto)
+        private async Task<ActiveMachine3MModel> HandleMachineStop3M(int machineId, int statusId, ActiveMachine3MModel activeMachine, bool isAuto)
         {
             var now = DateTime.Now;
+            //var cachedMachine = await _machineService.GetCached3M(machineId);
 
-            var cachedMachine = await _machineService.GetCached3M(machineId);
-
-            //if (!activeProductionPlan.ActiveProcesses[machineId].Machine.IsReady) // has unclosed record inside
-            //{
-            AlertModel alert;
-
-
-            alert = new AlertModel
+            if (!activeMachine.LossRecording) // has unclosed record inside
             {
-                StatusId = (int)Constans.AlertStatus.New,
-                ItemStatusId = statusId,
-                CreatedAt = now,
-                Id = Guid.NewGuid(),
-                LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
-                ItemId = machineId,
-                ItemType = (int)Constans.AlertType.MACHINE,
+                AlertModel alert = new AlertModel
+                {
+                    StatusId = (int)Constans.AlertStatus.New,
+                    ItemStatusId = statusId,
+                    CreatedAt = now,
+                    Id = Guid.NewGuid(),
+                    LossLevel3Id = _config.GetValue<int>("DefaultLosslv3Id"),
+                    ItemId = machineId,
+                    ItemType = (int)Constans.AlertType.MACHINE,
 
-            };
+                };
 
-
-            var paramsList = new Dictionary<string, object>() {
+                var paramsList = new Dictionary<string, object>() {
                             {"@startedAt", now },
-                            {"@productionPlanId", activeProductionPlan.ProductionPlanId },
+                            {"@productionPlanId", activeMachine.ProductionPlanId },
                             {"@machineId", machineId },
                             {"@lossLevel3Id", _config.GetValue<int>("DefaultLosslv3Id") },
                             {"@isAuto", isAuto },
                             {"@createdBy", CurrentUser.UserId },
                             {"@guid", alert.Id.ToString() }
                         };
-            _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
 
-
-            //activeProductionPlan.ActiveProcesses[machineId].Alerts.Add(alert);
-
-            //}
-
-            return activeProductionPlan;
+                activeMachine.Alerts.Add(alert);
+            }
+            return activeMachine;
         }
 
         public async Task<int[]> ListMachineReady(string productionPlanId)

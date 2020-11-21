@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -241,11 +242,13 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.Create3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.Create3M(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{model.MachineId}";
+                if (activeMachine != null)
                 {
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await BoardcastClientData(channelKey, activeMachine);
+
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, activeMachine.ProductionPlanId, model.MachineId, activeMachine);
 
                     //dole dashboard
                     //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
@@ -271,9 +274,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.Update3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.Update3M(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{model.MachineId}";
+                if (activeMachine != null)
                 {
+                    await BoardcastClientData(channelKey, activeMachine);
+
                     //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
@@ -309,12 +315,16 @@ namespace CIM.API.Controllers
             {
                 var dbModel = await _service.Get3M(id);
                 await _service.Delete3M(id);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
-                if (productionPlan != null)
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{dbModel.MachineId}";
+                var activeMachine = _responseCacheService.GetActiveMachine(dbModel.MachineId);
+                if (activeMachine != null)
                 {
-                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
-                        , dbModel.MachineId, productionPlan);
+                    await BoardcastClientData(channelKey, activeMachine);
+
+                    //var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
+                    //var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
+                    //if (productionPlan != null)
+                    //{
                     //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
                     //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                     //dole dashboard
@@ -336,9 +346,12 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.End3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.End3M(model);
+                var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{model.MachineId}";
+                if (activeMachine != null)
                 {
+                    await BoardcastClientData(channelKey, activeMachine);
+
                     //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
                     //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
 
