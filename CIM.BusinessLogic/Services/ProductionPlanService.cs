@@ -269,6 +269,7 @@ namespace CIM.BusinessLogic.Services
             var masterData = await _masterDataService.GetData();
             var planList = await _productionPlanRepository.AllAsync();
             var productCodeToIds = masterData.Dictionary.ProductsByCode;
+            var machineCodeToIds = masterData.Dictionary.MachineByCode;
             //var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
             var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
             //var targetBuffer = (int)Constans.ProductionPlanBuffer.TARGET_BUFFER;
@@ -278,8 +279,9 @@ namespace CIM.BusinessLogic.Services
             foreach (var plan in data)
             {
                 plan.PlanId = $"{plan.MachineCode}_{plan.Sequence}_{DateTime.Now.ToString("MM")}_{DateTime.Now.ToString("yy")}";
+                plan.MachineId = MachineCodeToId(plan.MachineCode, machineCodeToIds);
                 plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
-                if (plan.ProductId != 0)
+                if (plan.ProductId != 0 && plan.MachineId != 0)
                 {
                     if (plan.PlanStart == null || plan.PlanFinish == null)
                     {
@@ -340,7 +342,14 @@ namespace CIM.BusinessLogic.Services
             else
                 return null;
         }
-
+        public int MachineCodeToId(string Code,IDictionary<string, int> machineDict)
+        {
+            int machineId;
+            if (machineDict.TryGetValue(Code, out machineId))
+                return machineId;
+            else
+                return 0;
+        }
         public int ProductCodeToId(string Code, IDictionary<string, int> productDict)
         {
             int productCode;

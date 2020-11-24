@@ -381,6 +381,8 @@ namespace CIM.BusinessLogic.Services
                     //masterData.Dictionary.LanguageVersion = masterDataOper.Dictionary.LanguageVersion = await GetLanguageUrlDictionary();
                     masterData.Dictionary.Color = masterDataOper.Dictionary.Color = masterData.Dictionary.Color = await GetColorDictionary(); 
                     masterData.Dictionary.WasteByMachine = masterDataOper.Dictionary.WasteByMachine = await GetWasteByMachineAsync(_waste);
+                    masterData.Dictionary.MachineById = masterDataOper.Dictionary.MachineById  = await GetMachineCode();
+                    masterData.Dictionary.MachineByCode = masterDataOper.Dictionary.MachineByCode = masterData.Dictionary.MachineById.ToDictionary(x => x.Value, x => x.Key);
                     break;
 
                 case MasterDataType.LossLevel3s:
@@ -583,6 +585,18 @@ namespace CIM.BusinessLogic.Services
                 output.Add(item.Id, item);
             }
             return output;
+        }
+
+        private async Task<IDictionary<int,string>> GetMachineCode()
+        {
+            var db = (await _machineRepository.WhereAsync(x => x.IsActive == true));
+            var outupt = new Dictionary<int, string>();
+            foreach(var item in db)
+            {
+                if (!outupt.ContainsKey(item.Id))
+                    outupt.Add(item.Id, item.Code);
+            }
+            return outupt;
         }
 
         private async Task<IDictionary<int, string>> GetUnitsDictionary()
