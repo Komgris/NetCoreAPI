@@ -151,16 +151,16 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
-
-                foreach (var productionPlan in productionPlans)
+                await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
+                foreach (var item in listData)
                 {
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
-                                                                , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await HandleBoardcastingActiveMachine3M(item.MachineId);
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Produce, productionPlan.ProductionPlanId
+                    //                                            , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
                 //dole dashboard
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
+                //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
 
                 output.IsSuccess = true;
             }

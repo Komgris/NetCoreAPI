@@ -16,15 +16,15 @@ namespace CIM.Model
         public bool LossRecording { get; set; }
         public string UserId { get; set; }
         public DateTime StartedAt { get; set; }
-        public int CounterIn { get; set; } = 0;
-        public int CounterOut { get; set; } = 0;
-        public int CounterDefect { get; set; } = 0;
+        public int? CounterLastHr { get; set; } = 0;
+        public int? CounterOut { get; set; } = 0;
+        public decimal  CounterDefect { get; set; } = 0;
         public int Hour { get; set; } = DateTime.Now.Hour;
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
         public void ResetNewPlan(string planId)
         {
             ProductionPlanId = planId;
-            CounterIn = 0;
+            CounterLastHr = 0;
             CounterOut = 0;
             Hour = DateTime.Now.Hour;
         } 
