@@ -43,15 +43,17 @@ namespace CIM.API.Controllers
         #region Production plan mng 
         [Route("api/[controller]/ReadImport")]
         [HttpPost]
-        public async Task<List<ProductionPlan3MModel>> ReadImport([FromBody] List<ProductionPlan3MModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlan3MModel>>> ReadImport([FromBody] List<ProductionPlan3MModel> data)
         {
-            var output = new List<ProductionPlan3MModel>();
+            var output = new ProcessReponseModel<List<ProductionPlan3MModel>>();
             try
             {
-                output = await _productionPlanService.validatePlan(data);
+                output.Data = await _productionPlanService.validatePlan(data);
+                output.IsSuccess = true;
             }
             catch (Exception ex)
             {
+                output.Message = ex.Message;
             }
             return output;
         }
