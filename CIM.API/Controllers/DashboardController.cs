@@ -107,7 +107,6 @@ namespace CIM.API.Controllers
 
         public async Task<string> GetActiveBoardcastCached3M(string productionPlan, int machineId)
         {
-            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var activeProductionPlan = _responseCacheService.GetActivePlan(productionPlan);
             if (activeProductionPlan != null)
             {
@@ -116,6 +115,12 @@ namespace CIM.API.Controllers
             }
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
+        }
+
+        public async Task<string> GetActiveMachineBoardcastCached3M(int machineId)
+        {
+            var activeMachine = _responseCacheService.GetActiveMachine(machineId);   
+            return JsonConvert.SerializeObject(activeMachine, JsonsSetting);
         }
 
         [HttpGet]
