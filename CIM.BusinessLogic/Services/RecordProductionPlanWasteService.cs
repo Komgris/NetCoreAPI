@@ -314,11 +314,11 @@ namespace CIM.BusinessLogic.Services
         public DataTable GetReportWaste3M(string planId, int machineId)
         {
             var paramsList = new Dictionary<string, object>() {
-                {"@plan_id", planId },
+                {"@planid", planId },
                 {"@machine_id", machineId }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_machines", paramsList);
         }
     }
 }

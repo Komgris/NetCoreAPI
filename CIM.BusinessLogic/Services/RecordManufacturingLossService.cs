@@ -408,17 +408,17 @@ namespace CIM.BusinessLogic.Services
 
             await _unitOfWork.CommitAsync();
 
-            var alert = new AlertModel
-            {
-                CreatedAt = now,
-                ItemId = model.MachineId,
-                ItemStatusId = (int)Constans.AlertStatus.Edited,
-                ItemType = (int)Constans.AlertType.MACHINE,
-                LossLevel3Id = model.LossLevelId,
-                StatusId = Constans.MACHINE_STATUS.Stop,
-                Id = guid
-            };
-            activeMachine.Alerts.Add(alert);
+            //var alert = new AlertModel
+            //{
+            //    CreatedAt = now,
+            //    ItemId = model.MachineId,
+            //    ItemStatusId = (int)Constans.AlertStatus.Edited,
+            //    ItemType = (int)Constans.AlertType.MACHINE,
+            //    LossLevel3Id = model.LossLevelId,
+            //    StatusId = Constans.MACHINE_STATUS.Stop,
+            //    Id = guid
+            //};
+            //activeMachine.Alerts.Add(alert);
 
             return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Stop, activeMachine);
         }
@@ -501,11 +501,11 @@ namespace CIM.BusinessLogic.Services
         public DataTable GetReportLoss3M(string planId, int machineId)
         {
             var paramsList = new Dictionary<string, object>() {
-                {"@plan_id", planId },
+                {"@planid", planId },
                 {"@machine_id", machineId }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Loss", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_WCMLosses", paramsList);
         }
     }
 }
