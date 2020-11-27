@@ -349,7 +349,7 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
-        private async Task<ActiveMachine3MModel> UpdateActiveProductionPlanMachine3M(int machineId, int status, ActiveMachine3MModel activeMachine)
+        private async Task<ActiveMachine3MModel> UpdateActiveMachine3M(int machineId, int status, ActiveMachine3MModel activeMachine)
         {
             var dbmachine = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();
             //when machine is auto
@@ -357,14 +357,11 @@ namespace CIM.BusinessLogic.Services
             {
                 dbmachine.StatusId = status;
                 _machineRepository.Edit(dbmachine);
-            }
-
-            var machine = activeMachine;
-            machine.StatusId = status;
-            await _responseCacheService.SetActiveMachine(machine);
-
-            await _unitOfWork.CommitAsync();
-            return machine;
+                activeMachine.StatusId = status;
+                await _responseCacheService.SetActiveMachine(activeMachine);
+                await _unitOfWork.CommitAsync();
+            }  
+            return activeMachine;
         }
 
         public async Task<ActiveMachine3MModel> Create3M(RecordManufacturingLossModel model)
@@ -373,45 +370,26 @@ namespace CIM.BusinessLogic.Services
             var guid = Guid.NewGuid();
             var activeProductionPlan = await GetCached3M(model.ProductionPlanId);
             var activeMachine = _responseCacheService.GetActiveMachine(model.MachineId);
-
             var dbModel = await _recordManufacturingLossRepository.FirstOrDefaultAsync(x => x.MachineId == model.MachineId && x.EndAt.HasValue == false);
-            // doesn't exist
-            if (dbModel == null)
-            {
-                await NewRecordManufacturingLoss(model, now, guid.ToString());
-            }
 
             // already exist and and processing manually
-            if (dbModel != null && model.IsAuto == false)
+            if (dbModel != null)
             {
                 //End current loss
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto)
-                {
-                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
-                    //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
-                }
-                _recordManufacturingLossRepository.Edit(dbModel);              
-
-                //Create new
-                await NewRecordManufacturingLoss(model, now, guid.ToString());
+                _recordManufacturingLossRepository.Edit(dbModel);
             }
 
+            //Create new
+            await NewRecordManufacturingLoss(model, now, guid.ToString());
             await _unitOfWork.CommitAsync();
 
-            activeMachine.LossRecording = Constans.LossRecordingStatus.Manual;
-            activeMachine.IsAutoRecord = false;
-
-            return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Stop, activeMachine);
+            activeMachine.LossRecording = Constans.LossRecordingType.Manual;
+            await _responseCacheService.SetActiveMachine(activeMachine);
+            return activeMachine;
         }
 
         public async Task<ActiveMachine3MModel> Update3M(RecordManufacturingLossModel model)
@@ -437,11 +415,7 @@ namespace CIM.BusinessLogic.Services
             dbModel.UpdatedAt = DateTime.Now;
             _recordManufacturingLossRepository.Edit(dbModel);
 
-            if (model.IsWasteChanged)
-                dbModel = await HandleWaste(dbModel, model, now);
-
             await _unitOfWork.CommitAsync();
-
             return activeMachine;
         }
 
@@ -464,32 +438,14 @@ namespace CIM.BusinessLogic.Services
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto)
-                {
-                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
-                    //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
-                }
 
                 _recordManufacturingLossRepository.Edit(dbModel);
                 await _unitOfWork.CommitAsync();
-
-                var alert = activeMachine.Alerts.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.ItemId == model.MachineId && x.EndAt == null);
-                if (alert != null)
-                {
-                    alert.EndAt = now;
-                    alert.StatusId = (int)Constans.AlertStatus.Edited;
-                }
             }
 
-            activeMachine.LossRecording = Constans.LossRecordingStatus.None;
-
-            return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Running, activeMachine);
+            activeMachine.LossRecording = Constans.LossRecordingType.None;
+            await _responseCacheService.SetActiveMachine(activeMachine);
+            return activeMachine;
         }
 
         public DataTable GetReportLoss3M(string planId, int machineId)

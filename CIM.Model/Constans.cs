@@ -230,7 +230,7 @@ namespace CIM.Model
             MachineCounter = 5
         }
 
-        public enum LossRecordingStatus
+        public enum LossRecordingType
         {
             Auto = 0,
             Manual = 1,

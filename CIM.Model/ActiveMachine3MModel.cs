@@ -13,8 +13,7 @@ namespace CIM.Model
         public string ProductionPlanId { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
-        public bool IsAutoRecord { get; set; }
-        public LossRecordingStatus LossRecording { get; set; }
+        public LossRecordingType LossRecording { get; set; }
         public string UserId { get; set; }
         public DateTime StartedAt { get; set; }
         public int? CounterLastHr { get; set; } = 0;

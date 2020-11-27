@@ -534,24 +534,15 @@ namespace CIM.BusinessLogic.Services
             {
                 var alert = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                 if (alert != null)
-                    alert.EndAt = now;
+                    alert.StatusId = (int)Constans.AlertStatus.Edited; 
+
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
                 dbModel.Timespan = Convert.ToInt64((now - dbModel.StartedAt).TotalSeconds);
                 dbModel.IsBreakdown = dbModel.Timespan >= 600;//10 minute
-                if (dbModel.Timespan < 60 && dbModel.IsAuto)
-                {
-                    dbModel.LossLevel3Id = _config.GetValue<int>("DefaultSpeedLosslv3Id");
-                    var sploss = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
-                    //handle case alert is removed from redis
-                    if (sploss != null)
-                    {
-                        sploss.LossLevel3Id = dbModel.LossLevel3Id;
-                        sploss.StatusId = (int)Constans.AlertStatus.Edited;
-                    }
-                }
+
                 _recordManufacturingLossRepository.Edit(dbModel);
-                activeMachine.LossRecording = LossRecordingStatus.None;
+                activeMachine.LossRecording = LossRecordingType.None;
             }
             return activeMachine;
         }
@@ -621,7 +612,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
 
-            if (activeMachine.LossRecording != LossRecordingStatus.None) // has unclosed record inside
+            if (activeMachine.LossRecording != LossRecordingType.None) // has unclosed record inside
             {
                 AlertModel alert = new AlertModel
                 {
@@ -644,8 +635,7 @@ namespace CIM.BusinessLogic.Services
                             {"@guid", alert.Id.ToString() }
                         };
                 _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
-                activeMachine.LossRecording = LossRecordingStatus.Auto;
-                activeMachine.IsAutoRecord = true;
+                activeMachine.LossRecording = isAuto? LossRecordingType.Auto : LossRecordingType.Manual;
                 activeMachine.Alerts.Add(alert);
             }
             return activeMachine;
