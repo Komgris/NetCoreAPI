@@ -184,7 +184,7 @@ namespace CIM.BusinessLogic.Services
                     Id = item.Id,
                     Name = item.Name,
                     Image = image,
-                    MachineTypeId = item.MachineTypeId,
+                    MachineTypeId = item.MachineTypeId
                     //ComponentList = machineComponents.Select(x => x.Value).ToList(),
                     //LossList = _lossLevel3MachineMapping.Where(x => x.MachineId == item.Id).Select(x => x.LossLevelId).ToArray(),
                     //RouteList = routeMachines.Where(x => x.Value.Contains(item.Id)).Select(x => x.Key).ToList()
@@ -938,14 +938,14 @@ namespace CIM.BusinessLogic.Services
 
         private async Task<IDictionary<int, List<WasteModel>>> GetWasteByMachineAsync(IList<WasteModel> waste)
         {
-            //var output = new Dictionary<int, List<WasteModel>>();
-            //var machineDb = await _machineRepository.WhereAsync(x => x.IsActive);
+            var output = new Dictionary<int, List<WasteModel>>();
+            var machineDb = await _machineRepository.WhereAsync(x => x.IsActive);
 
-            //foreach (var item in machineDb)
-            //{
-            //    output[item.Id] = waste.Where(x => x.MachineId == item.Id).Select(x => MapperHelper.AsModel(x, new WasteModel())).ToList();
-            //}
-            return null;
+            foreach (var item in machineDb)
+            {
+                output[item.Id] = waste.Where(x => x.MachineId == item.Id).Select(x => MapperHelper.AsModel(x, new WasteModel())).ToList();
+            }
+            return output;
         }
     }
 }

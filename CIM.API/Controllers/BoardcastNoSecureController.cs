@@ -124,29 +124,26 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
-        internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int[] machineId, ActiveProductionPlan3MModel activeModel)
+        internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int machineId, ActiveProductionPlan3MModel activeModel)
         {
             var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
             var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
 
             //generate data for boardcast
-            foreach (var m in machineId)
+            var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, machineId);
+            if (boardcastData.UnitData.Count > 0)
             {
-                var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, m);
-                if (boardcastData.UnitData.Count > 0)
-                {
-                    activeModel = await SetBoardcastActiveDataCached3M(rediskey, m, activeModel, boardcastData);
-                }
+                activeModel = await SetBoardcastActiveDataCached3M(rediskey, machineId, activeModel, boardcastData);
             }
 
             await BoardcastClientData(channelKey, activeModel);
             return activeModel;
         }
 
-        internal async Task<object> HandleBoardcastingActiveMachine3M()
+        internal async Task<object> HandleBoardcastingActiveMachine3M(int machineId)
         {
-            var activeMachines = BaseService.baseListMachine;
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}";
+            var activeMachines = _responseCacheService.GetActiveMachine(machineId);
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{machineId}";
 
             ////generate data for boardcast
             //foreach (var m in machineId)
@@ -198,31 +195,34 @@ namespace CIM.API.Controllers
 
         private async Task<ActiveProductionPlan3MModel> SetBoardcastActiveDataCached3M(string channelKey, int machineId, ActiveProductionPlan3MModel activeModel, ProductionDataModel model)
         {
-            //var cache = activeModel.ActiveProcesses[machineId].BoardcastData;
-            //if (cache is null)
+            var cacheProductionData = activeModel.ProductionData;
+            if (cacheProductionData is null)
+            {
+                activeModel.ProductionData = model;
+            }
+            else
+            {
+                //update only new dashboard
+                foreach (UnitDataModel dashboard in model.UnitData)
+                {
+                    cacheProductionData.SetData(dashboard);
+                }
+                activeModel.ProductionData = cacheProductionData;
+            }
+
+            //var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
+            //var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
+
+            var cacheMachine = _responseCacheService.GetActiveMachine(machineId);
+            //cacheMachine.LossRecording = recordingMachines.Contains(machineId);
+            //if (cacheMachine.LossRecording)
             //{
-            //    activeModel.ActiveProcesses[machineId].BoardcastData = model;
-            //}
-            //else
-            //{
-            //    //update only new dashboard
-            //    foreach (BoardcastDataModel dashboard in model.Data)
-            //    {
-            //        cache.SetData(dashboard);
-            //    }
-            //    activeModel.ActiveProcesses[machineId].BoardcastData = cache;
+            //    cacheMachine.IsAutoRecord = autorecordingMachines.Contains(machineId);
             //}
 
-            var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
-            var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
-
-            //if (activeModel.ActiveProcesses[machineId].Machine.IsReady)
-            //{
-            //    activeModel.ActiveProcesses[machineId].Machine.IsAutoLossRecord = autorecordingMachines.Contains(machineId);
-            //}
-
-            //await _responseCacheService.SetAsync(channelKey, activeModel);
-            //activeModel.ActiveProcesses[machineId].Alerts = LimitAlert(activeModel.ActiveProcesses[machineId].Alerts);
+            await _responseCacheService.SetActivePlan(activeModel);
+            await _responseCacheService.SetActiveMachine(cacheMachine);
+            cacheMachine.Alerts = LimitAlert(cacheMachine.Alerts);
 
             return activeModel;
         }
