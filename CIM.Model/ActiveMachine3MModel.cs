@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static CIM.Model.Constans;
 
 namespace CIM.Model
 {
@@ -13,7 +14,7 @@ namespace CIM.Model
         public int StatusId { get; set; }
         public string Status { get; set; }
         public bool IsAutoRecord { get; set; }
-        public bool LossRecording { get; set; }
+        public LossRecordingStatus LossRecording { get; set; }
         public string UserId { get; set; }
         public DateTime StartedAt { get; set; }
         public int? CounterLastHr { get; set; } = 0;

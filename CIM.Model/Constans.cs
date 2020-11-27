@@ -229,6 +229,13 @@ namespace CIM.Model
             MachineStatus = 4,
             MachineCounter = 5
         }
+
+        public enum LossRecordingStatus
+        {
+            Auto = 0,
+            Manual = 1,
+            None = 2
+        }
         #endregion
 
         }

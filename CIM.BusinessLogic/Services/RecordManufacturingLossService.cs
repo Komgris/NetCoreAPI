@@ -400,7 +400,7 @@ namespace CIM.BusinessLogic.Services
                         sploss.StatusId = (int)Constans.AlertStatus.Edited;
                     }
                 }
-                _recordManufacturingLossRepository.Edit(dbModel);
+                _recordManufacturingLossRepository.Edit(dbModel);              
 
                 //Create new
                 await NewRecordManufacturingLoss(model, now, guid.ToString());
@@ -408,17 +408,8 @@ namespace CIM.BusinessLogic.Services
 
             await _unitOfWork.CommitAsync();
 
-            //var alert = new AlertModel
-            //{
-            //    CreatedAt = now,
-            //    ItemId = model.MachineId,
-            //    ItemStatusId = (int)Constans.AlertStatus.Edited,
-            //    ItemType = (int)Constans.AlertType.MACHINE,
-            //    LossLevel3Id = model.LossLevelId,
-            //    StatusId = Constans.MACHINE_STATUS.Stop,
-            //    Id = guid
-            //};
-            //activeMachine.Alerts.Add(alert);
+            activeMachine.LossRecording = Constans.LossRecordingStatus.Manual;
+            activeMachine.IsAutoRecord = false;
 
             return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Stop, activeMachine);
         }
@@ -495,6 +486,9 @@ namespace CIM.BusinessLogic.Services
                     alert.StatusId = (int)Constans.AlertStatus.Edited;
                 }
             }
+
+            activeMachine.LossRecording = Constans.LossRecordingStatus.None;
+
             return await UpdateActiveProductionPlanMachine3M(model.MachineId, Constans.MACHINE_STATUS.Running, activeMachine);
         }
 

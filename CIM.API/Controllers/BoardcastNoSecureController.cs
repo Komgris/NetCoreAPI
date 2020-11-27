@@ -210,15 +210,15 @@ namespace CIM.API.Controllers
                 activeModel.ProductionData = cacheProductionData;
             }
 
-            var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
-            var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
+            //var recordingMachines = await _activeProductionPlanService.ListMachineLossRecording(activeModel.ProductionPlanId);
+            //var autorecordingMachines = await _activeProductionPlanService.ListMachineLossAutoRecording(activeModel.ProductionPlanId);
 
             var cacheMachine = _responseCacheService.GetActiveMachine(machineId);
-            cacheMachine.LossRecording = recordingMachines.Contains(machineId);
-            if (cacheMachine.LossRecording)
-            {
-                cacheMachine.IsAutoRecord = autorecordingMachines.Contains(machineId);
-            }
+            //cacheMachine.LossRecording = recordingMachines.Contains(machineId);
+            //if (cacheMachine.LossRecording)
+            //{
+            //    cacheMachine.IsAutoRecord = autorecordingMachines.Contains(machineId);
+            //}
 
             await _responseCacheService.SetActivePlan(activeModel);
             await _responseCacheService.SetActiveMachine(cacheMachine);
