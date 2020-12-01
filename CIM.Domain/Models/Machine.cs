@@ -8,6 +8,7 @@ namespace CIM.Domain.Models
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string Image { get; set; }
         public int StatusId { get; set; }
         public int MachineTypeId { get; set; }
         public string StatusTag { get; set; }

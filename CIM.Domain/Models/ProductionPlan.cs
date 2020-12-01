@@ -15,7 +15,7 @@ namespace CIM.Domain.Models
         public int ProductId { get; set; }
         public int MachineId { get; set; }
         public string ShopNo { get; set; }
-        public int Target { get; set; }
+        public double Target { get; set; }
         public decimal? Sequence { get; set; }
         public int? UnitId { get; set; }
         public DateTime? PlanStart { get; set; }

@@ -96,7 +96,7 @@ namespace CIM.BusinessLogic.Services
             var planList = await _productionPlanRepository.AllAsync();
             foreach (var plan in import)
             {
-                if (planList.Where(x => x.PlanId == plan.PlanId) != null)
+                if (planList.FirstOrDefault(x => x.PlanId == plan.PlanId) != null)
                 {
                     await Update3M(plan);
                 }
@@ -490,7 +490,7 @@ namespace CIM.BusinessLogic.Services
                         {
                             PlanId = x.PlanId,
                             ProductId = x.ProductId,
-                            Target = x.Target,
+                            //Target = x.Target,
                             Unit = x.UnitId,
                             PlanStart = x.PlanStart,
                             PlanFinish = x.PlanFinish,

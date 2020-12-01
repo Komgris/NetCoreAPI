@@ -22,6 +22,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<LossLevel2> LossLevel2 { get; set; }
         public virtual DbSet<LossLevel3> LossLevel3 { get; set; }
         public virtual DbSet<Machine> Machine { get; set; }
+        public virtual DbSet<MachineCode> MachineCode { get; set; }
         public virtual DbSet<MachineStatus> MachineStatus { get; set; }
         public virtual DbSet<MachineType> MachineType { get; set; }
         public virtual DbSet<Material> Material { get; set; }
@@ -54,7 +55,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.245.164.12,1433;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -196,6 +197,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.Image).HasMaxLength(50);
+
                 entity.Property(e => e.MachineTypeId).HasColumnName("MachineType_Id");
 
                 entity.Property(e => e.Name)
@@ -209,6 +212,17 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<MachineCode>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
+
+                entity.Property(e => e.StatusId).HasColumnName("Status_Id");
             });
 
             modelBuilder.Entity<MachineStatus>(entity =>
@@ -906,9 +920,7 @@ namespace CIM.Domain.Models
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.CreatedBy)
-                    .IsRequired()
-                    .HasMaxLength(128);
+                entity.Property(e => e.CreatedBy).HasMaxLength(128);
 
                 entity.Property(e => e.Date).HasDefaultValueSql("([dbo].[fn_get_datenumber](DEFAULT))");
 
@@ -917,6 +929,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.FactorMultiply).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Hour).HasDefaultValueSql("([dbo].[fn_get_hr24number](DEFAULT))");
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.MachineId).HasColumnName("Machine_Id");
 
