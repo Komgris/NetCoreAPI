@@ -281,49 +281,56 @@ namespace CIM.BusinessLogic.Services
                 plan.PlanId = $"{plan.MachineCode}_{plan.Sequence}_{DateTime.Now.ToString("MM")}_{DateTime.Now.ToString("yy")}";
                 plan.MachineId = MachineCodeToId(plan.MachineCode, machineCodeToIds);
                 plan.ProductId = ProductCodeToId(plan.ProductCode, productCodeToIds);
-                if (plan.ProductId != 0 && plan.MachineId != 0)
+                if (plan.MachineId != 0)
                 {
-                    if (plan.PlanStart == null || plan.PlanFinish == null)
+                    if (plan.ProductId != 0)
                     {
-                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                    }
-                    else
-                    {
-                        if (planList.FirstOrDefault(x=>x.PlanId == plan.PlanId) != null)
+                        if (plan.PlanStart == null || plan.PlanFinish == null)
                         {
-                            plan.StatusId = await planStatus(plan.PlanId);
-                            plan.CompareResult = Constans.CompareMapping.Inprocess;
-                            //Validate updated production plan status with current existing
-                            switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
-                            {
-                                case Constans.PRODUCTION_PLAN_STATUS.Production:
-                                case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
-                                case Constans.PRODUCTION_PLAN_STATUS.Changeover:
-                                case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
-                                case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                    if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
-                                        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                                    break;
-                                case Constans.PRODUCTION_PLAN_STATUS.New:
-                                case Constans.PRODUCTION_PLAN_STATUS.Hold:
-                                case Constans.PRODUCTION_PLAN_STATUS.Cancel:
-                                    break;
-                                case Constans.PRODUCTION_PLAN_STATUS.Finished:
-                                    plan.CompareResult = Constans.CompareMapping.PlanFinished;
-                                    break;
-                                default:
-                                    break;
-                            }
+                            plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
                         }
                         else
                         {
-                            plan.CompareResult = Constans.CompareMapping.NEW;
+                            if (planList.FirstOrDefault(x => x.PlanId == plan.PlanId) != null)
+                            {
+                                plan.StatusId = await planStatus(plan.PlanId);
+                                plan.CompareResult = Constans.CompareMapping.Inprocess;
+                                //Validate updated production plan status with current existing
+                                switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
+                                {
+                                    case Constans.PRODUCTION_PLAN_STATUS.Production:
+                                    case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
+                                    case Constans.PRODUCTION_PLAN_STATUS.Changeover:
+                                    case Constans.PRODUCTION_PLAN_STATUS.CleaningAndSanitation:
+                                    case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
+                                        if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
+                                            plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                                        break;
+                                    case Constans.PRODUCTION_PLAN_STATUS.New:
+                                    case Constans.PRODUCTION_PLAN_STATUS.Hold:
+                                    case Constans.PRODUCTION_PLAN_STATUS.Cancel:
+                                        break;
+                                    case Constans.PRODUCTION_PLAN_STATUS.Finished:
+                                        plan.CompareResult = Constans.CompareMapping.PlanFinished;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                plan.CompareResult = Constans.CompareMapping.NEW;
+                            }
                         }
+                    }
+                    else
+                    {
+                        plan.CompareResult = Constans.CompareMapping.NoProduct;
                     }
                 }
                 else
                 {
-                    plan.CompareResult = Constans.CompareMapping.NoProduct;
+                    plan.CompareResult = Constans.CompareMapping.NoMachine;
                 }
             }
             return data;
