@@ -20,6 +20,7 @@ namespace CIM.Model
         public string ShopNo { get; set; }
         public int? Target { get; set; }
         public string Unit { get; set; }
+        public int StatusId { get; set; }
         public string Status { get; set; }
         public DateTime? Started { get; set; }
         public DateTime? Finished { get; set; }

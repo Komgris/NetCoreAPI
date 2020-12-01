@@ -31,6 +31,7 @@ namespace CIM.Model
 
         public List<int> IngredientsMaterials { get; set; }
         public decimal AmountUnit { get; set; }
+        public decimal AmountUnitOld { get; set; }
         public int ProductId { get; set; }
         public DateTime StartedAt { get; set; }
 

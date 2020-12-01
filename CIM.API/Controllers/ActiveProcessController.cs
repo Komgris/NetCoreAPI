@@ -56,7 +56,7 @@ namespace CIM.API.Controllers
                     productionPlan.Status = PRODUCTION_PLAN_STATUS.New;
 
                 }
-                 //productionPlan.Alerts = LimitAlert(item.Value.Alerts);
+                //productionPlan.Alerts = LimitAlert(item.Value.Alerts);
 
                 output.Data = JsonConvert.SerializeObject(productionPlan, JsonsSetting);
                 output.IsSuccess = true;
@@ -69,22 +69,48 @@ namespace CIM.API.Controllers
             return output;
         }
 
-        [Route("TakeAction")]
+        [Route("Machine")]
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId, int MachineId)
+        //Use to open channel
+        public async Task<ProcessReponseModel<object>> OpenChannelMachine(int machineId)
         {
             var output = new ProcessReponseModel<object>();
 
             try
             {
-                var productionPlan = await _productionPlanService.TakeAction3M(productionPlanId, MachineId);
-
-                // Production plan of this component doesn't started yet
-                if (productionPlan != null)
+                var activeMachine = _responseCacheService.GetActiveMachine(machineId);
+                if (activeMachine == null)
                 {
-                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}-{productionPlanId}";
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    //, productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    activeMachine = new ActiveMachine3MModel();
+                }
+                //activeMachine.Alerts = LimitAlert(item.Value.Alerts);
+
+                output.Data = JsonConvert.SerializeObject(activeMachine, JsonsSetting);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
+        [Route("TakeAction")]
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> TakeAction(string productionPlanId, int machineId)
+        {
+            var output = new ProcessReponseModel<object>();
+
+            try
+            {
+                var activeMachine = await _productionPlanService.TakeAction3M(productionPlanId, machineId);
+                var activeProductionPlan = _responseCacheService.GetActivePlan(productionPlanId);
+                // Production plan of this component doesn't started yet
+                if (activeMachine != null)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlanId}";
+                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlanId, machineId, activeProductionPlan);
                 }
 
                 output.IsSuccess = true;

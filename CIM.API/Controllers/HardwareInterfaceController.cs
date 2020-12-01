@@ -130,7 +130,7 @@ namespace CIM.API.Controllers
         public async Task<string> SetStatus3M(int id, int statusId, bool isAuto = true)
         {
             await _activeProductionPlanService.UpdateByMachine3M(id, statusId, isAuto);
-            await HandleBoardcastingActiveMachine3M();
+            await HandleBoardcastingActiveMachine3M(id);
 
             //dole dashboard
             //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
@@ -151,16 +151,16 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlans = await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
-
-                foreach (var productionPlan in productionPlans)
+                await _activeProductionPlanService.UpdateMachineOutput(listData, hr);
+                foreach (var item in listData)
                 {
-                    await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
-                                                                , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await HandleBoardcastingActiveMachine3M(item.MachineId);
+                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Produce, productionPlan.ProductionPlanId
+                    //                                            , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
                 }
 
                 //dole dashboard
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
+                //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
 
                 output.IsSuccess = true;
             }
