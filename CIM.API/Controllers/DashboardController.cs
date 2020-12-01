@@ -104,6 +104,26 @@ namespace CIM.API.Controllers
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
+        [HttpGet]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public async Task<string> GetActiveBoardcastCached3M(string productionPlan, int machineId)
         {
@@ -116,7 +136,7 @@ namespace CIM.API.Controllers
 
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
-
+        [HttpGet]
         public async Task<string> GetActiveMachineBoardcastCached3M(int machineId)
         {
             var activeMachine = _responseCacheService.GetActiveMachine(machineId);   
