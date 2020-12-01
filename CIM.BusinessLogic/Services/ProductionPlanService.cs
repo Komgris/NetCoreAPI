@@ -96,9 +96,10 @@ namespace CIM.BusinessLogic.Services
             var planList = await _productionPlanRepository.AllAsync();
             foreach (var plan in import)
             {
-                if (planList.FirstOrDefault(x => x.PlanId == plan.PlanId) != null)
+                var dbModel = planList.FirstOrDefault(x => x.PlanId == plan.PlanId);
+                if (dbModel != null)
                 {
-                    await Update3M(plan);
+                    await Update3M(plan, dbModel);
                 }
                 else
                 {
@@ -141,27 +142,22 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        public async Task Update3M(ProductionPlan3MModel model)
+        public async Task Update3M(ProductionPlan3MModel model, ProductionPlan db_model)
         {
-            var db_model = MapperHelper.AsModel(model, new ProductionPlan());
-
             db_model.PlanId = model.PlanId.Trim();
+            db_model.ProductId = model.ProductId;
+            db_model.MachineId = model.MachineId;
+            db_model.ShopNo = model.ShopNo;
+            db_model.Target = model.Target;
+            db_model.Sequence = model.Sequence;
+            db_model.PlanStart = model.PlanStart;
+            db_model.PlanFinish = model.PlanFinish;
+            db_model.Sequence = model.Sequence;
             db_model.UpdatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
             _productionPlanRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
-
-            ////recalc target per active-route
-            //var dbmodel = _productionPlanRepository.Where(x => x.PlanId == model.PlanId && x.StatusId == 2).FirstOrDefault();
-            //if (dbmodel != null)
-            //{
-            //    var paramsList = new Dictionary<string, object>() {
-            //                {"@planid", model.PlanId },
-            //                {"@user", CurrentUser.UserId}
-            //            };
-            //    _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_RecalcTarget", paramsList);
-            //}
         }
 
         public ProductionPlanModel CreatePlan(ProductionPlanModel model)
