@@ -159,9 +159,7 @@ namespace CIM.BusinessLogic.Services
 
                     if (dbModel.MachineId != 1)//reset not guilotine
                     {
-                        List<int> machineList = new List<int>();
-                        machineList.Add(dbModel.MachineId);
-                        await _machineService.SetListMachinesResetCounter(machineList, true);
+                        await _machineService.SetMachinesResetCounter3M(dbModel.MachineId, true);
                     }
                 }
                 await _unitOfWork.CommitAsync();
@@ -224,9 +222,7 @@ namespace CIM.BusinessLogic.Services
 
                         if (machineId == 1)//reset guilotine
                         {
-                            List<int> machineList = new List<int>();
-                            machineList.Add(machineId);
-                            await _machineService.SetListMachinesResetCounter(machineList, true);
+                            await _machineService.SetMachinesResetCounter3M(machineId, true);
                         }
                     }
                 }
@@ -294,9 +290,7 @@ namespace CIM.BusinessLogic.Services
                             await _responseCacheService.SetActiveMachine(mccached);
                         }
                         step = "Reset Machine Counter";
-                        List<int> machineList = new List<int>();
-                        machineList.Add(machineId);
-                        await _machineService.SetListMachinesResetCounter(machineList, true);
+                        await _machineService.SetMachinesResetCounter3M(machineId, true);
 
                         output = activeProductionPlan;
                     }
