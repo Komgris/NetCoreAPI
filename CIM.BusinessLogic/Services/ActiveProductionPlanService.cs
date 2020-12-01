@@ -152,6 +152,11 @@ namespace CIM.BusinessLogic.Services
                     activeModel.Status = PRODUCTION_PLAN_STATUS.Production;
                     await SetCached3M(activeModel);
                     //return activeModel;
+
+                    if (dbModel.MachineId != 1)//reset not guilotine
+                    {
+                        await _machineService.SetMachinesResetCounter3M(dbModel.MachineId, true);
+                    }
                 }
                 await _unitOfWork.CommitAsync();
                 return activeModel;
@@ -210,6 +215,11 @@ namespace CIM.BusinessLogic.Services
                         step = "Set machine cached";
                         mccached.ResetNewPlan(planId);
                         await _responseCacheService.SetActiveMachine(mccached);
+
+                        if (machineId == 1)//reset guilotine
+                        {
+                            await _machineService.SetMachinesResetCounter3M(machineId, true);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -275,6 +285,9 @@ namespace CIM.BusinessLogic.Services
                             mccached.ProductionPlanId = "";
                             await _responseCacheService.SetActiveMachine(mccached);
                         }
+                        step = "Reset Machine Counter";
+                        await _machineService.SetMachinesResetCounter3M(machineId, true);
+
                         output = activeProductionPlan;
                     }
                 }

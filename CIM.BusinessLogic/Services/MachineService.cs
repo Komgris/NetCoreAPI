@@ -317,6 +317,21 @@ namespace CIM.BusinessLogic.Services
             return cache;
         }
 
+        public async Task SetMachinesResetCounter3M(int machineId, bool isCounting)
+        {
+            
+                var model = await GetSystemParamters();
+                    if (!model.ListMachineIdsResetCounter.ContainsKey(machineId))
+                    {
+                        model.ListMachineIdsResetCounter.Add(machineId, isCounting);
+                    }
+                    else
+                    {
+                        model.ListMachineIdsResetCounter[machineId] = isCounting;
+                    }
+                await _responseCacheService.SetAsync(systemparamtersKey, model);           
+        }
+
         #endregion
     }
 }
