@@ -243,23 +243,6 @@ namespace CIM.BusinessLogic.Services
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
 
-            //var productMats = _productmaterialRepository.Where(x => x.ProductId == model.ProductId).ToDictionary(t => t.MaterialId, t => t.IngredientPerUnit);
-            //var mats = _materialRepository.Where(x => productMats.Keys.Contains(x.Id)).ToDictionary(t => t.Id, t => t.BhtperUnit);
-
-            //foreach (var material in model.Materials)
-            //{
-                //var mat = MapperHelper.AsModel(material, new RecordProductionPlanWasteMaterials());
-                //if (model.AmountUnit > 0 && model.IngredientsMaterials.Contains(mat.MaterialId)) mat.Amount += productMats[mat.MaterialId] * model.AmountUnit;
-                //mat.Cost = (mat.Amount * mats[mat.MaterialId]);
-                //if (mat.Amount > 0) dbModel.RecordProductionPlanWasteMaterials.Add(mat);
-            //}
-
-            //if (dbModel.RecordProductionPlanWasteMaterials.Count > 0)
-            //{
-                //_recordProductionPlanWasteRepository.Add(dbModel);
-            //}
-            //await _unitOfWork.CommitAsync();
-
             _directSqlRepository.ExecuteSPNonQuery("sp_Process_ProductionPlan_Waste_Create", new Dictionary<string, object>()
                 {
                     {"@productionPlanId", model.ProductionPlanId},
@@ -331,11 +314,11 @@ namespace CIM.BusinessLogic.Services
         public DataTable GetReportWaste3M(string planId, int machineId)
         {
             var paramsList = new Dictionary<string, object>() {
-                {"@plan_id", planId },
+                {"@planid", planId },
                 {"@machine_id", machineId }
             };
 
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_report_waste_machines", paramsList);
         }
     }
 }

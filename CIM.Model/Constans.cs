@@ -225,7 +225,16 @@ namespace CIM.Model
         public enum TriggerType {
             CustomDashboard = 1,
             ActiveProcess= 2,
-            CalcHour=3
+            CalcHour=3,
+            MachineStatus = 4,
+            MachineCounter = 5
+        }
+
+        public enum LossRecordingType
+        {
+            Auto = 0,
+            Manual = 1,
+            None = 2
         }
         #endregion
 

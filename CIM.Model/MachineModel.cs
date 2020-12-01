@@ -11,6 +11,7 @@ namespace CIM.Model
         public string Image { get; set; }
         public string Name { get; set; }
         public int StatusId { get; set; }
+        public string Status { get; set; }
         public int MachineTypeId { get; set; }
         public string Type { get; set; }
         public string Plcaddress { get; set; }
