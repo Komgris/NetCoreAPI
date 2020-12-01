@@ -268,12 +268,8 @@ namespace CIM.BusinessLogic.Services
         {
             var masterData = await _masterDataService.GetData();
             var planList = await _productionPlanRepository.AllAsync();
-            var activePlan = planList.Where(x=>x.StatusId == (int))
             var productCodeToIds = masterData.Dictionary.ProductsByCode;
             var machineCodeToIds = masterData.Dictionary.MachineByCode;
-            //var activeProductionPlanOutput = _reportService.GetActiveProductionPlanOutput();
-            var timeBuffer = (int)Constans.ProductionPlanBuffer.HOUR_BUFFER;
-            //var targetBuffer = (int)Constans.ProductionPlanBuffer.TARGET_BUFFER;
 
             DateTime timeNow = DateTime.Now;
 
@@ -296,7 +292,6 @@ namespace CIM.BusinessLogic.Services
                             {
                                 plan.StatusId = await planStatus(plan.PlanId);
                                 plan.CompareResult = Constans.CompareMapping.Inprocess;
-                                //Validate updated production plan status with current existing
                                 switch ((Constans.PRODUCTION_PLAN_STATUS)plan.StatusId)
                                 {
                                     case Constans.PRODUCTION_PLAN_STATUS.Production:
@@ -305,10 +300,6 @@ namespace CIM.BusinessLogic.Services
                                     case Constans.PRODUCTION_PLAN_STATUS.Preparatory:
                                         plan.CompareResult = Constans.CompareMapping.Preparatory;
                                         break;
-                                    //case Constans.PRODUCTION_PLAN_STATUS.MealTeaBreak:
-                                    //    if (plan.PlanFinish.Value < timeNow.AddHours(timeBuffer))
-                                    //        plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
-                                    //    break;
                                     case Constans.PRODUCTION_PLAN_STATUS.New:
                                         break;
                                     case Constans.PRODUCTION_PLAN_STATUS.Finished:
