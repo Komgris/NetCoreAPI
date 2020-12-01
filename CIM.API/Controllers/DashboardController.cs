@@ -105,6 +105,24 @@ namespace CIM.API.Controllers
             return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
         }
 
+        public async Task<string> GetActiveBoardcastCached3M(string productionPlan, int machineId)
+        {
+            var activeProductionPlan = _responseCacheService.GetActivePlan(productionPlan);
+            if (activeProductionPlan != null)
+            {
+                activeProductionPlan.ProductionData =
+                    await _dashboardService.GenerateBoardcast(DataTypeGroup.All, productionPlan, machineId);
+            }
+
+            return JsonConvert.SerializeObject(activeProductionPlan, JsonsSetting);
+        }
+
+        public async Task<string> GetActiveMachineBoardcastCached3M(int machineId)
+        {
+            var activeMachine = _responseCacheService.GetActiveMachine(machineId);   
+            return JsonConvert.SerializeObject(activeMachine, JsonsSetting);
+        }
+
         [HttpGet]
         public async Task<string> BoardcastingActiveOperation(DataTypeGroup updateType, string productionPlan, int routeId)
         {
@@ -114,6 +132,19 @@ namespace CIM.API.Controllers
             {
                 return JsonConvert.SerializeObject(
                     await HandleBoardcastingActiveProcess(updateType, productionPlan, new int[] { routeId }, activeProductionPlan));
+            }
+            return "OK";
+        }
+
+        [HttpGet]
+        public async Task<string> BoardcastingActiveOperation3M(DataTypeGroup updateType, string productionPlan, int machineId)
+        {
+            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var activeProductionPlan = await GetCached<ActiveProductionPlan3MModel>(channelKey);
+            if (activeProductionPlan != null)
+            {
+                return JsonConvert.SerializeObject(
+                    await HandleBoardcastingActiveProcess3M(updateType, productionPlan, machineId, activeProductionPlan));
             }
             return "OK";
         }

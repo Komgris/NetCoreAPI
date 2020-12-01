@@ -145,6 +145,15 @@ namespace CIM.API.Controllers
             return activeModel;
         }
 
+        internal async Task<object> HandleBoardcastingActiveMachine3M(int machineId)
+        {
+            var activeMachines = _responseCacheService.GetActiveMachine(machineId);
+            var channelKey = $"{Constans.SIGNAL_R_CHANNEL.CHANNEL_MACHINE}:{machineId}";
+
+            await BoardcastClientData(channelKey, activeMachines);
+            return activeMachines;
+        }
+
         private async Task<ActiveProductionPlanModel> SetBoardcastActiveDataCached(string channelKey, int routeId, ActiveProductionPlanModel activeModel, ProductionDataModel model)
         {
             var cache = activeModel.ActiveProcesses[routeId].BoardcastData;

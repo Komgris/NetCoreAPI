@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
 using CIM.BusinessLogic.Interfaces;
+using CIM.BusinessLogic.Services;
 using CIM.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -241,18 +242,20 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.Create3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.Create3M(model);
+                if (activeMachine != null)
                 {
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await HandleBoardcastingActiveMachine3M(model.MachineId);
 
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
+                    var productionPlan = _responseCacheService.GetActivePlan(model.ProductionPlanId);
+                    if (productionPlan != null)
+                    {
+                        await HandleBoardcastingActiveProcess3M(DataTypeGroup.Loss, model.ProductionPlanId
+                            , model.MachineId, productionPlan);
+
+                        //dole dashboard
+                        //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -271,24 +274,20 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.Update3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.Update3M(model);
+                if (activeMachine != null)
                 {
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await HandleBoardcastingActiveMachine3M(model.MachineId);
 
-                    //if (model.WasteList.Count > 0)
-                    //{
-                    //    await HandleBoardcastingActiveProcess(DataTypeGroup.Waste, productionPlan.ProductionPlanId
-                    //        , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-                    //}
+                    var productionPlan = _responseCacheService.GetActivePlan(model.ProductionPlanId);
+                    if (productionPlan != null)
+                    {
+                        await HandleBoardcastingActiveProcess3M(DataTypeGroup.Loss, model.ProductionPlanId
+                            , model.MachineId, productionPlan);
 
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
+                        //dole dashboard
+                        //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -309,16 +308,21 @@ namespace CIM.API.Controllers
             {
                 var dbModel = await _service.Get3M(id);
                 await _service.Delete3M(id);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
-                if (productionPlan != null)
+
+                var activeMachine = _responseCacheService.GetActiveMachine(dbModel.MachineId);
+                if (activeMachine != null)
                 {
-                    await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
-                        , dbModel.MachineId, productionPlan);
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
-                    //dole dashboard
-                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    await HandleBoardcastingActiveMachine3M(dbModel.MachineId);
+
+                    var productionPlan = _responseCacheService.GetActivePlan(dbModel.ProductionPlanId);
+                    if (productionPlan != null)
+                    {
+                        await HandleBoardcastingActiveProcess3M(DataTypeGroup.Loss, dbModel.ProductionPlanId
+                            , dbModel.MachineId, productionPlan);
+
+                        //dole dashboard
+                        //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    }
                 }
                 output.IsSuccess = true;
             }
@@ -336,18 +340,20 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<object>();
             try
             {
-                var productionPlan = await _service.End3M(model);
-                if (productionPlan != null)
+                var activeMachine = await _service.End3M(model);
+                if (activeMachine != null)
                 {
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Machine, productionPlan.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+                    await HandleBoardcastingActiveMachine3M(model.MachineId);
 
-                    //dole dashboard
-                    //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Loss);
-                    //if (boardcastData?.Data.Count > 0)
-                    //{
-                    //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-                    //}
+                    var productionPlan = _responseCacheService.GetActivePlan(model.ProductionPlanId);
+                    if (productionPlan != null)
+                    {
+                        await HandleBoardcastingActiveProcess3M(DataTypeGroup.Loss, model.ProductionPlanId
+                            , model.MachineId, productionPlan);
+
+                        //dole dashboard
+                        //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
+                    }
                 }
                 output.IsSuccess = true;
             }

@@ -281,13 +281,19 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
-                output.Data = await _service.Create3M(model);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
+                output.Data = await _service.Create3M(model);               
+
+                var productionPlan = _responseCacheService.GetActivePlan(model.ProductionPlanId);
                 if (productionPlan != null)
                 {
+                    var activeMachine = _responseCacheService.GetActiveMachine(model.CauseMachineId);
+                    activeMachine.CounterDefect += model.AmountUnit;
+                    await _responseCacheService.SetActiveMachine(activeMachine);
+                    await HandleBoardcastingActiveMachine3M(model.CauseMachineId);
+
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
+
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
@@ -309,13 +315,20 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<RecordProductionPlanWasteModel>();
             try
             {
+                //FernDev!!!
                 await _service.Update3M(model);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{model.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
+
+                var productionPlan = _responseCacheService.GetActivePlan(model.ProductionPlanId);
                 if (productionPlan != null)
                 {
+                    var activeMachine = _responseCacheService.GetActiveMachine(model.CauseMachineId);
+                    activeMachine.CounterDefect += model.AmountUnit - model.AmountUnitOld;
+                    await _responseCacheService.SetActiveMachine(activeMachine);
+                    await HandleBoardcastingActiveMachine3M(model.CauseMachineId);
+
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
+
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
@@ -339,14 +352,18 @@ namespace CIM.API.Controllers
             {
                 var dbModel = await _service.Get3M(id);
                 await _service.Delete3M(id);
-                var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{dbModel.ProductionPlanId}";
-                var productionPlan = await _responseCacheService.GetAsTypeAsync<ActiveProductionPlan3MModel>(rediskey);
+
+                var productionPlan = _responseCacheService.GetActivePlan(dbModel.ProductionPlanId);
                 if (productionPlan != null)
                 {
+                    var activeMachine = _responseCacheService.GetActiveMachine(dbModel.CauseMachineId);
+                    activeMachine.CounterDefect -= dbModel.AmountUnit;
+                    await _responseCacheService.SetActiveMachine(activeMachine);
+                    await HandleBoardcastingActiveMachine3M(dbModel.CauseMachineId);
+
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , dbModel.CauseMachineId, productionPlan);
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
-                    //    , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
+
                     //dole dashboard
                     //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.Waste);
                 }
