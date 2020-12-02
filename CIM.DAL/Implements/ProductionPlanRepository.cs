@@ -40,7 +40,7 @@ namespace CIM.DAL.Implements
                 {
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
-                    Target = x.Target,
+                    //Target = x.Target,
                     Unit = x.UnitId,
                     StatusId = x.StatusId,
                     IsActive = x.IsActive,
@@ -87,7 +87,7 @@ namespace CIM.DAL.Implements
                 {
                     PlanId = x.PlanId,
                     ProductId = x.ProductId,
-                    Target = x.Target,
+                    //Target = x.Target,
                     Unit = x.UnitId,
                     StatusId = x.StatusId,
                 }).ToList();
