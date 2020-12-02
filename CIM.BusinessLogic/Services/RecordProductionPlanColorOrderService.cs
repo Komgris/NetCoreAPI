@@ -36,13 +36,13 @@ namespace CIM.BusinessLogic.Services
             }
             else
             {
-                return await Update(model);
+                return await Update(model, recordColor.Id);
             }
         }
 
-        public async Task<RecordProductionPlanColorOrderModel> Update(RecordProductionPlanColorOrderModel model)
+        public async Task<RecordProductionPlanColorOrderModel> Update(RecordProductionPlanColorOrderModel model,int reacordId)
         {
-                var dbModel = await _recordProductionPlanColorOrderRepository.Get(model.Id);
+                var dbModel = await _recordProductionPlanColorOrderRepository.Get(reacordId);
                 int order = 1;
                 foreach (var item in dbModel.RecordProductionPlanColorOrderDetail)
                 {
