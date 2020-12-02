@@ -39,7 +39,7 @@ namespace CIM.DAL.Implements
                 var query = _entities.Machine;
                 var output = query.Where(x=>x.IsActive)
                                 .Select(
-                                            x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.CounterInTag, x.CounterOutTag, x.CounterResetTag))
+                                            x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.SpeedTag, x.CounterOutTag, x.CounterResetTag))
                                 .ToList();
                 return output;
             });
