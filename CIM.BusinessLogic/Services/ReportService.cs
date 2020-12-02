@@ -133,22 +133,32 @@ namespace CIM.BusinessLogic.Services {
             return paramsList;
         }
 
+        private Dictionary<string, object> ReportDate(ReportDateModel data)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@date_from", data.DateFrom },
+                {"@date_to", data.DateTo },
+            };
+
+            return paramsList;
+        }
+
         public DataTable GetOEEReport(ReportTimeCriteriaModel data)
         {
             var paramsList = ReportCreiteria(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_Report_OEE", paramsList);
         }
 
-        public DataTable GetOutputReport(ReportTimeCriteriaModel data)
+        public DataTable GetOutputReport(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Output", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Output", paramsList);
         }
 
-        public DataTable GetWasteReport(ReportTimeCriteriaModel data)
+        public DataTable GetWasteReport(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Waste", paramsList);
         }
 
         public DataTable GetMachineLossReport(ReportTimeCriteriaModel data)

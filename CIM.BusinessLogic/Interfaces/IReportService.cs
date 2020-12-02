@@ -14,8 +14,8 @@ namespace CIM.BusinessLogic.Interfaces {
         PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null);
         UnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
         DataTable GetOEEReport(ReportTimeCriteriaModel data);
-        DataTable GetOutputReport(ReportTimeCriteriaModel data);
-        DataTable GetWasteReport(ReportTimeCriteriaModel data);
+        DataTable GetOutputReport(ReportDateModel data);
+        DataTable GetWasteReport(ReportDateModel data);
         DataTable GetMachineLossReport(ReportTimeCriteriaModel data);
         DataTable GetQualityReport(ReportTimeCriteriaModel data);
         DataTable GetSPCReport(ReportTimeCriteriaModel data);

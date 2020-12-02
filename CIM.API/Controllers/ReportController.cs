@@ -129,7 +129,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> OutputReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> OutputReport([FromBody]ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -145,7 +145,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> WasteReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> WasteReport([FromBody]ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
