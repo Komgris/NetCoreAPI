@@ -65,7 +65,7 @@ namespace CIM.BusinessLogic.Services
                             MachineTypeId = x.MachineTypeId,
                             //Type = x.MachineType.Name,
                             StatusTag = x.StatusTag,
-                            CounterInTag = x.CounterInTag,
+                            CounterInTag = x.SpeedTag,
                             CounterOutTag = x.CounterOutTag,
                             CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
