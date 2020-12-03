@@ -155,6 +155,12 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Output", paramsList);
         }
 
+        public DataTable GetProductionPlanList(ReportDateModel data)
+        {
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
+        }
+
         public DataTable GetWasteReport(ReportDateModel data)
         {
             var paramsList = ReportDate(data);
