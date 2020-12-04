@@ -113,7 +113,7 @@ namespace CIM.API.Controllers {
         #region Cim-Mng Report
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> OEEReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> OEEReport([FromBody] ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -161,7 +161,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> MachineLossReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> MachineLossReport([FromBody]ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -177,12 +177,12 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> QualityReport([FromBody]ReportTimeCriteriaModel data)
+        public async Task<ProcessReponseModel<object>> ORReport([FromBody] ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetQualityReport(data), JsonsFormatting));
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetORReport(data), JsonsFormatting));
                 output.IsSuccess = true;
             }
             catch (Exception ex)
