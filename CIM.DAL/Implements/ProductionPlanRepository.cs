@@ -54,7 +54,7 @@ namespace CIM.DAL.Implements
             };
         }
 
-        public async Task<PagingModel<ProductionPlanListModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? machineId)
+        public async Task<PagingModel<ProductionPlan3MModel>> ListAsPaging(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? machineId)
         {
             return await Task.Run(() =>
                                     {
@@ -75,7 +75,7 @@ namespace CIM.DAL.Implements
                                         if (dt.Rows.Count > 0)
                                             totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"] ?? 0);
 
-                                        return ToPagingModel(dt.ToModel<ProductionPlanListModel>(), totalCount, page, howmany);
+                                        return ToPagingModel(dt.ToModel<ProductionPlan3MModel>(), totalCount, page, howmany);
                                     });
         }
 
