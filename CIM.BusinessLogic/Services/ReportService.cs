@@ -133,34 +133,50 @@ namespace CIM.BusinessLogic.Services {
             return paramsList;
         }
 
-        public DataTable GetOEEReport(ReportTimeCriteriaModel data)
+        private Dictionary<string, object> ReportDate(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_OEE", paramsList);
+            var paramsList = new Dictionary<string, object>() {
+                {"@date_from", data.DateFrom },
+                {"@date_to", data.DateTo },
+            };
+
+            return paramsList;
         }
 
-        public DataTable GetOutputReport(ReportTimeCriteriaModel data)
+        public DataTable GetOEEReport(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Output", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_Record_OperationFinish", paramsList);
         }
 
-        public DataTable GetWasteReport(ReportTimeCriteriaModel data)
+        public DataTable GetOutputReport(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Waste", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Output", paramsList);
         }
 
-        public DataTable GetMachineLossReport(ReportTimeCriteriaModel data)
+        public DataTable GetWasteReport(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Machine_Loss", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Waste", paramsList);
         }
 
-        public DataTable GetQualityReport(ReportTimeCriteriaModel data)
+        public DataSet GetWasteReports(ReportDateModel data)
         {
-            var paramsList = ReportCreiteria(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_Report_Quality", paramsList);
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQueryDSet("sp_AdminReport_Waste", paramsList);
+        }
+
+        public DataTable GetMachineLossReport(ReportDateModel data)
+        {
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Loss", paramsList);
+        }
+
+        public DataTable GetORReport(ReportDateModel data)
+        {
+            var paramsList = ReportDate(data);
+            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_OR", paramsList);
         }
 
         public DataTable GetSPCReport(ReportTimeCriteriaModel data)
