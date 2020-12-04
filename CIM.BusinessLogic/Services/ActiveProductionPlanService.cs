@@ -295,6 +295,7 @@ namespace CIM.BusinessLogic.Services
             catch (Exception ex)
             {
                 var textErr = $"Plan:{planId} | RecordsStep:{step} | RecordError:{ex}";
+                throw (new Exception(ex.Message));
                 //HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
@@ -649,6 +650,7 @@ namespace CIM.BusinessLogic.Services
                         };
                 _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
                 activeMachine.LossRecording = isAuto ? LossRecordingType.Auto : LossRecordingType.Manual;
+                activeMachine.Alerts.Clear();
                 activeMachine.Alerts.Add(alert);
             }
             return activeMachine;

@@ -34,15 +34,16 @@ namespace CIM.DAL.Implements
 
         public async Task<List<MachineTagsModel>> GetMachineTags()
         {
-            return await Task.Run(() =>
-            {
-                var query = _entities.Machine;
-                var output = query.Where(x=>x.IsActive)
-                                .Select(
-                                            x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.SpeedTag, x.CounterOutTag, x.CounterResetTag))
-                                .ToList();
-                return output;
-            });
+            //return await Task.Run(() =>
+            //{
+            //    var query = _entities.Machine;
+            //    var output = query.Where(x=>x.IsActive)
+            //                    .Select(
+            //                                x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.SpeedTag, x.CounterOutTag, x.CounterResetTag, x.oee))
+            //                    .ToList();
+            //    return output;
+            //});
+            return new List<MachineTagsModel>();
         }
     }
 }
