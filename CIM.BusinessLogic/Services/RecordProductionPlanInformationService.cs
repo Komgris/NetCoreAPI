@@ -36,7 +36,7 @@ namespace CIM.BusinessLogic.Services
             }
             else
             {
-                return await Update(model);
+                return await Update(model, recordChecklist.Id);
             }
         }
 
@@ -59,9 +59,9 @@ namespace CIM.BusinessLogic.Services
             return model;
         }
 
-        public async Task<RecordProductionPlanInformationModel> Update(RecordProductionPlanInformationModel model)
+        public async Task<RecordProductionPlanInformationModel> Update(RecordProductionPlanInformationModel model, int recordId)
         {
-            var dbModel = await _recordProductionPlanInformationRepository.Get(model.Id);
+            var dbModel = await _recordProductionPlanInformationRepository.Get(recordId);
             foreach (var item in dbModel.RecordProductionPlanInformationDetail)
             {
                 _recordProductionPlanInformationDetailRepository.Delete(item);

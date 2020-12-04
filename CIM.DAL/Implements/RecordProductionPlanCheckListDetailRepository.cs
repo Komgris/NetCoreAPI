@@ -29,7 +29,7 @@ namespace CIM.DAL.Implements
                 Remark = x.Remark,
                 CheckList = new ProductionPlanCheckList
                 {
-                    Id =x.Id,
+                    Id = x.Id,
                     CheckListTypeId = x.CheckList.CheckListTypeId
                 }
             }).FirstOrDefaultAsync();

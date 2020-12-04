@@ -65,7 +65,7 @@ namespace CIM.BusinessLogic.Services
                             MachineTypeId = x.MachineTypeId,
                             //Type = x.MachineType.Name,
                             StatusTag = x.StatusTag,
-                            CounterInTag = x.CounterInTag,
+                            CounterInTag = x.SpeedTag,
                             CounterOutTag = x.CounterOutTag,
                             CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
@@ -315,6 +315,21 @@ namespace CIM.BusinessLogic.Services
                 cache = new SystemParametersModel();
             }
             return cache;
+        }
+
+        public async Task SetMachinesResetCounter3M(int machineId, bool isCounting)
+        {
+            
+                var model = await GetSystemParamters();
+                    if (!model.ListMachineIdsResetCounter.ContainsKey(machineId))
+                    {
+                        model.ListMachineIdsResetCounter.Add(machineId, isCounting);
+                    }
+                    else
+                    {
+                        model.ListMachineIdsResetCounter[machineId] = isCounting;
+                    }
+                await _responseCacheService.SetAsync(systemparamtersKey, model);           
         }
 
         #endregion

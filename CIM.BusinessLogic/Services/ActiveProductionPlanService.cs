@@ -152,6 +152,11 @@ namespace CIM.BusinessLogic.Services
                     activeModel.Status = PRODUCTION_PLAN_STATUS.Production;
                     await SetCached3M(activeModel);
                     //return activeModel;
+
+                    if (dbModel.MachineId != 1)//reset not guilotine
+                    {
+                        await _machineService.SetMachinesResetCounter3M(dbModel.MachineId, true);
+                    }
                 }
                 await _unitOfWork.CommitAsync();
                 return activeModel;
@@ -210,6 +215,11 @@ namespace CIM.BusinessLogic.Services
                         step = "Set machine cached";
                         mccached.ResetNewPlan(planId);
                         await _responseCacheService.SetActiveMachine(mccached);
+
+                        if (machineId == 1)//reset guilotine
+                        {
+                            await _machineService.SetMachinesResetCounter3M(machineId, true);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -275,6 +285,9 @@ namespace CIM.BusinessLogic.Services
                             mccached.ProductionPlanId = "";
                             await _responseCacheService.SetActiveMachine(mccached);
                         }
+                        step = "Reset Machine Counter";
+                        await _machineService.SetMachinesResetCounter3M(machineId, true);
+
                         output = activeProductionPlan;
                     }
                 }
@@ -282,7 +295,7 @@ namespace CIM.BusinessLogic.Services
             catch (Exception ex)
             {
                 var textErr = $"Plan:{planId} | RecordsStep:{step} | RecordError:{ex}";
-                HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
+                //HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
             return output;
@@ -430,25 +443,25 @@ namespace CIM.BusinessLogic.Services
             }
             cachedMachine.StatusId = statusId;
             UpdateMachineStatus(machineId, statusId);
-
-            await HandleMachineByStatus3M(machineId, statusId, cachedMachine, isAuto);
-
-            //handle machine status
-            var recordMachineStatusId = statusId;
-            if (string.IsNullOrEmpty(cachedMachine.ProductionPlanId) && statusId == Constans.MACHINE_STATUS.Running)
+            
+            //handle machine status           
+            if (cachedMachine.StatusId != statusId)
             {
-                recordMachineStatusId = Constans.MACHINE_STATUS.Idle;
-            }
-
-            if (cachedMachine.StatusId != recordMachineStatusId)
-            {
-                cachedMachine.StatusId = recordMachineStatusId;
+                cachedMachine.StatusId = statusId;
                 var paramsList = new Dictionary<string, object>() {
                     {"@planid", cachedMachine.ProductionPlanId },
                     {"@mcid", machineId },
-                    {"@statusid", recordMachineStatusId }
+                    {"@statusid", statusId }
                 };
                 _directSqlRepository.ExecuteSPNonQuery("sp_Process_Machine_Status", paramsList);
+            }
+
+            //skip when plan not production status
+            if (!string.IsNullOrEmpty(cachedMachine.ProductionPlanId))
+            {
+                var activeProductionPlan = _responseCacheService.GetActivePlan(cachedMachine.ProductionPlanId);
+                if (activeProductionPlan.Status == PRODUCTION_PLAN_STATUS.Production)
+                    await HandleMachineByStatus3M(machineId, statusId, cachedMachine, isAuto);
             }
 
             await _unitOfWork.CommitAsync();
@@ -534,7 +547,7 @@ namespace CIM.BusinessLogic.Services
             {
                 var alert = activeMachine.Alerts.FirstOrDefault(x => x.Id == Guid.Parse(dbModel.Guid));
                 if (alert != null)
-                    alert.StatusId = (int)Constans.AlertStatus.Edited; 
+                    alert.StatusId = (int)Constans.AlertStatus.Edited;
 
                 dbModel.EndAt = now;
                 dbModel.EndBy = CurrentUser.UserId;
@@ -612,7 +625,7 @@ namespace CIM.BusinessLogic.Services
         {
             var now = DateTime.Now;
 
-            if (activeMachine.LossRecording != LossRecordingType.None) // has unclosed record inside
+            if (activeMachine.LossRecording == LossRecordingType.None) // has unclosed record inside
             {
                 AlertModel alert = new AlertModel
                 {
@@ -635,7 +648,7 @@ namespace CIM.BusinessLogic.Services
                             {"@guid", alert.Id.ToString() }
                         };
                 _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
-                activeMachine.LossRecording = isAuto? LossRecordingType.Auto : LossRecordingType.Manual;
+                activeMachine.LossRecording = isAuto ? LossRecordingType.Auto : LossRecordingType.Manual;
                 activeMachine.Alerts.Add(alert);
             }
             return activeMachine;
@@ -667,41 +680,44 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached3M(item.MachineId);
-                if (cachedMachine?.ProductionPlanId != null)
+                
+                if (!string.IsNullOrEmpty(cachedMachine?.ProductionPlanId))
                 {
-                    //via store
-                    var paramsList = new Dictionary<string, object>() {
+                    var cachedProductionPlan = _responseCacheService.GetActivePlan(cachedMachine.ProductionPlanId);
+                    if (cachedProductionPlan.Status == PRODUCTION_PLAN_STATUS.Production)
+                    {
+                        //via store
+                        var paramsList = new Dictionary<string, object>() {
                             {"@planid", cachedMachine.ProductionPlanId },
                             {"@mcid", item.MachineId },
                             {"@hr", hour},
                             {"@tOut", item.CounterOut}
                         };
 
-                    if (cachedMachine.CounterOut > item.CounterOut)
-                    {
-                        //do nothing
-                    }
-                    else if (cachedMachine != null)
-                    {
-                        if (cachedMachine.CounterOut == 0 || cachedMachine.Hour != hour)
-                        {
-                            paramsList.Add("@isnewrecord", true);
-                            paramsList.Add("@cOut", item.CounterOut - cachedMachine.CounterOut);
-                            cachedMachine.CounterLastHr = cachedMachine.CounterOut;
+                        if (cachedMachine.CounterOut < item.CounterOut)
+                        {                            
+                            if (cachedMachine.CounterOut == 0 || cachedMachine.Hour != hour)
+                            {
+                                //new record
+                                paramsList.Add("@isnewrecord", true);
+                                paramsList.Add("@cOut", item.CounterOut - cachedMachine.CounterOut);
+                                cachedMachine.CounterLastHr = cachedMachine.CounterOut;
+                            }
+                            else
+                            {
+                                //update
+                                paramsList.Add("@cOut", item.CounterOut - cachedMachine.CounterLastHr);
+                            }
+                            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
                         }
-                        else
-                        {
-                            //update
-                            paramsList.Add("@cOut", item.CounterOut - cachedMachine.CounterLastHr);
-                        }
-                        _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter", paramsList);
-                    }
 
-                    //set cache
-                    cachedMachine.CounterOut = item.CounterOut;
-                    cachedMachine.Hour = hour;
-                    machineList.Add(cachedMachine);
-                    await _machineService.SetCached3M(cachedMachine);
+                        //set cache
+                        cachedMachine.CounterOut = item.CounterOut;
+                        cachedMachine.Hour = hour;
+                        cachedMachine.Speed = item.Speed;
+                        machineList.Add(cachedMachine);
+                        await _machineService.SetCached3M(cachedMachine);
+                    }
                 }
             }
 
