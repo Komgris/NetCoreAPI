@@ -126,8 +126,8 @@ namespace CIM.API.Controllers
 
         internal async Task<ActiveProductionPlan3MModel> HandleBoardcastingActiveProcess3M(DataTypeGroup updateType, string productionPlan, int machineId, ActiveProductionPlan3MModel activeModel)
         {
-            var rediskey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
+            var rediskey = $"{RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
+            var channelKey = $"{SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{productionPlan}";
 
             //generate data for boardcast
             var boardcastData = await _dashboardService.GenerateBoardcast(updateType, productionPlan, machineId);

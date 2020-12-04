@@ -3,6 +3,7 @@ using CIM.BusinessLogic.Utility;
 using CIM.DAL.Interfaces;
 using CIM.Domain.Models;
 using CIM.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,38 +54,32 @@ namespace CIM.BusinessLogic.Services
             return model;
         }
 
-        public async Task<RecordProductionPlanCheckListModel> Update(RecordProductionPlanCheckListModel model)
+        public async Task<RecordProductionPlanCheckListModel> Update(RecordProductionPlanCheckListModel model,int recordId)
         {
             var checklistTyp = model.checkListdetail[0].CheckListTypeId;
-            if(model.Id == 0)
+            var recordChecklist = await _recordProductionPlanCheckListRepository.Get(recordId);
+            var recordChecklistType = recordChecklist.RecordProductionPlanCheckListDetail.Where(x => x.CheckListTypeId == checklistTyp);
+            foreach (var item in recordChecklistType)
             {
-                return await Create(model);
+                _recordProductionPlanCheckListDetailRepository.Delete(item);
+                recordChecklist.RecordProductionPlanCheckListDetail.Remove(item);
             }
-            else
-            {
-                var recordChecklist = await _recordProductionPlanCheckListRepository.Get(model.Id);
-                var recordChecklistType = recordChecklist.RecordProductionPlanCheckListDetail.ToList().Where(x => x.CheckListTypeId == checklistTyp);
-                foreach (var item in recordChecklistType)
-                {
-                    _recordProductionPlanCheckListDetailRepository.Delete(item);
-                }
-                recordChecklist.RecordProductionPlanCheckListDetail.Clear();
-                foreach (var datails in model.checkListdetail)
-                {
-                    var checklist = MapperHelper.AsModel(datails, new RecordProductionPlanCheckListDetail());
-                    recordChecklist.RecordProductionPlanCheckListDetail.Add(checklist);
-                }
 
-                if (recordChecklist.RecordProductionPlanCheckListDetail.Count > 0)
-                {
-                    recordChecklist.UpdatedAt = DateTime.Now;
-                    recordChecklist.UpdatedBy = CurrentUser.UserId;
-                    _recordProductionPlanCheckListRepository.Edit(recordChecklist);
-                }
-                await _unitOfWork.CommitAsync();
+            foreach (var datails in model.checkListdetail)
+            {
+                var checklist = MapperHelper.AsModel(datails, new RecordProductionPlanCheckListDetail());
+                recordChecklist.RecordProductionPlanCheckListDetail.Add(checklist);
+            }
+
+            if (recordChecklist.RecordProductionPlanCheckListDetail.Count > 0)
+            {
+                recordChecklist.UpdatedAt = DateTime.Now;
+                recordChecklist.UpdatedBy = CurrentUser.UserId;
+                _recordProductionPlanCheckListRepository.Edit(recordChecklist);
+            }
+            await _unitOfWork.CommitAsync();
                 return model;
 
-            }
         }
 
         public async Task<RecordProductionPlanCheckListModel> Compare(RecordProductionPlanCheckListModel model)
@@ -96,7 +91,7 @@ namespace CIM.BusinessLogic.Services
             }
             else
             {
-                return await Update(model);
+                return await Update(model, recordChecklist.Id);
             }
         }
 

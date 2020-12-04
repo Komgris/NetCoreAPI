@@ -19,4 +19,10 @@ namespace CIM.Model
         public int? YearTo { get; set; }
         public int? IPDTo { get; set; }
     }
+
+    public class ReportDateModel
+    {
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+    }
 }

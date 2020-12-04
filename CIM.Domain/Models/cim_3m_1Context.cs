@@ -183,8 +183,6 @@ namespace CIM.Domain.Models
             {
                 entity.Property(e => e.Code).HasMaxLength(50);
 
-                entity.Property(e => e.CounterInTag).HasMaxLength(100);
-
                 entity.Property(e => e.CounterOutTag).HasMaxLength(100);
 
                 entity.Property(e => e.CounterResetTag).HasMaxLength(100);
@@ -204,6 +202,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.SpeedTag).HasMaxLength(100);
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 

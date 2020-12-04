@@ -13,11 +13,11 @@ namespace CIM.BusinessLogic.Interfaces {
         Dictionary<string, int> GetActiveProductionPlanOutput();
         PagingModel<object> GetMachineStatusHistory(int howMany, int page, string planId, int routeId, int? machineId, DateTime? from = null, DateTime? to = null);
         UnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
-        DataTable GetOEEReport(ReportTimeCriteriaModel data);
-        DataTable GetOutputReport(ReportTimeCriteriaModel data);
-        DataTable GetWasteReport(ReportTimeCriteriaModel data);
-        DataTable GetMachineLossReport(ReportTimeCriteriaModel data);
-        DataTable GetQualityReport(ReportTimeCriteriaModel data);
+        DataTable GetOEEReport(ReportDateModel data);
+        DataTable GetOutputReport(ReportDateModel data);
+        DataTable GetWasteReport(ReportDateModel data);
+        DataTable GetMachineLossReport(ReportDateModel data);
+        DataTable GetORReport(ReportDateModel data);
         DataTable GetSPCReport(ReportTimeCriteriaModel data);
         DataTable GetElectricityReport(ReportTimeCriteriaModel data);
         DataTable GetProductionSummaryReport(ReportTimeCriteriaModel data);
@@ -27,6 +27,7 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data);
         DataTable GetHSEReport(ReportTimeCriteriaModel data);
         DataTable GetAttendantReport(ReportTimeCriteriaModel data);
+        DataSet GetWasteReports(ReportDateModel data);
 
     }
 

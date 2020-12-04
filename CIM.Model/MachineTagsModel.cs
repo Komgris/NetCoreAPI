@@ -11,12 +11,12 @@ namespace CIM.Model
 
         }
 
-        public MachineTagsModel(int id, string name, string runningStatus="", string counterIn="", string counterOut="", string counterReset="")
+        public MachineTagsModel(int id, string name, string runningStatus="", string Speed= "", string counterOut="", string counterReset="")
         {
             this.Id = id;
             this.Name = name;
             this.RunningStatus = new KepwareTagModel<bool>(runningStatus, false);
-            this.CounterIn = new KepwareTagModel<int>(counterIn, 0);
+            this.Speed = new KepwareTagModel<int>(Speed, 0);
             this.CounterOut = new KepwareTagModel<int>(counterOut, 0);
             this.CounterReset = new KepwareTagModel<bool>(counterReset, false);
         }
@@ -24,7 +24,7 @@ namespace CIM.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public KepwareTagModel<bool> RunningStatus { get; set; }
-        public KepwareTagModel<int> CounterIn { get; set; }
+        public KepwareTagModel<int> Speed { get; set; }
         public KepwareTagModel<int> CounterOut { get; set; }
         public KepwareTagModel<bool> CounterReset { get; set; }
     }
