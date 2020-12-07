@@ -216,6 +216,11 @@ namespace CIM.BusinessLogic.Services
                         mccached.ResetNewPlan(planId);
                         await _responseCacheService.SetActiveMachine(mccached);
 
+                        step = "Set Product Info";
+                        var info = _machineService.GetProductInfo(planId);
+                        await _machineService.SetProductInfoCache(machineId, info);
+
+
                         if (machineId == 1)//reset guilotine
                         {
                             await _machineService.SetMachinesResetCounter3M(machineId, true);
@@ -284,6 +289,10 @@ namespace CIM.BusinessLogic.Services
                             var mccached = _responseCacheService.GetActiveMachine(machineId);
                             mccached.ProductionPlanId = "";
                             await _responseCacheService.SetActiveMachine(mccached);
+
+                            step = "RemoveProductInfoCache";
+                            var info = await  _machineService.GetProductInfoCache(machineId);
+                            info.ResetProductInfo(machineId);
                         }
                         step = "Reset Machine Counter";
                         await _machineService.SetMachinesResetCounter3M(machineId, true);

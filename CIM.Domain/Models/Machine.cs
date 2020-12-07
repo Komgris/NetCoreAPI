@@ -12,7 +12,7 @@ namespace CIM.Domain.Models
         public int StatusId { get; set; }
         public int MachineTypeId { get; set; }
         public string StatusTag { get; set; }
-        public string SpeedTag { get; set; }
+        public string CounterInTag { get; set; }
         public string CounterOutTag { get; set; }
         public string CounterResetTag { get; set; }
         public bool IsActive { get; set; }
@@ -21,5 +21,15 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public string Oee { get; set; }
+        public string Performance { get; set; }
+        public string Availability { get; set; }
+        public string Quality { get; set; }
+        public string ProductionPlanId { get; set; }
+        public string ProductCode { get; set; }
+        public string ShopNo { get; set; }
+        public string Sequence { get; set; }
+        public string Target { get; set; }
+        public string Speed { get; set; }
     }
 }

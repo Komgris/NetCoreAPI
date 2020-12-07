@@ -55,7 +55,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.245.164.12,1433;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -181,7 +181,11 @@ namespace CIM.Domain.Models
 
             modelBuilder.Entity<Machine>(entity =>
             {
+                entity.Property(e => e.Availability).HasMaxLength(100);
+
                 entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.CounterInTag).HasMaxLength(100);
 
                 entity.Property(e => e.CounterOutTag).HasMaxLength(100);
 
@@ -203,11 +207,29 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.SpeedTag).HasMaxLength(100);
+                entity.Property(e => e.Oee)
+                    .HasColumnName("OEE")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Performance).HasMaxLength(100);
+
+                entity.Property(e => e.ProductCode).HasMaxLength(100);
+
+                entity.Property(e => e.ProductionPlanId).HasMaxLength(100);
+
+                entity.Property(e => e.Quality).HasMaxLength(100);
+
+                entity.Property(e => e.Sequence).HasMaxLength(100);
+
+                entity.Property(e => e.ShopNo).HasMaxLength(100);
+
+                entity.Property(e => e.Speed).HasMaxLength(100);
 
                 entity.Property(e => e.StatusId).HasColumnName("Status_Id");
 
                 entity.Property(e => e.StatusTag).HasMaxLength(100);
+
+                entity.Property(e => e.Target).HasMaxLength(100);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

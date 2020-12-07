@@ -11,7 +11,7 @@ namespace CIM.Model
 
         }
 
-        public MachineTagsModel(int id, string name, string runningStatus="", string Speed= "", string counterOut="", string counterReset="", string OEE ="", string Performance ="", string Availability ="", string Quality ="",string ProductionPlanId= "",string ProductCode="",string ShopNo ="", string Sequence ="", string target ="")
+        public MachineTagsModel(int id, string name, string runningStatus="", string Speed= "", string counterOut="", string counterReset="", string OEE ="", string Performance ="", string Availability ="", string Quality ="",string ProductionPlanId= "",string ProductCode="",string ShopNo ="", string Sequence ="", string Target ="")
         {
             this.Id = id;
             this.Name = name;
@@ -19,15 +19,15 @@ namespace CIM.Model
             this.Speed = new KepwareTagModel<int>(Speed, 0);
             this.CounterOut = new KepwareTagModel<int>(counterOut, 0);
             this.CounterReset = new KepwareTagModel<bool>(counterReset, false);
-            this.OEE = new KepwareTagModel<float>(counterReset, 0);
-            this.Performance = new KepwareTagModel<float>(counterReset, 0);
-            this.Availability = new KepwareTagModel<float>(counterReset, 0);
-            this.Quality = new KepwareTagModel<float>(counterReset, 0);
-            this.ProductionPlanId = new KepwareTagModel<string>(counterReset, "");
-            this.ProductCode = new KepwareTagModel<string>(counterReset, "");
-            this.ShopNo = new KepwareTagModel<string>(counterReset, "");
-            this.Sequence = new KepwareTagModel<int>(counterReset, 0);
-            this.Target = new KepwareTagModel<int>(counterReset, 0);
+            this.Oee = new KepwareTagModel<float>(OEE, 0);
+            this.Performance = new KepwareTagModel<float>(Performance, 0);
+            this.Availability = new KepwareTagModel<float>(Availability, 0);
+            this.Quality = new KepwareTagModel<float>(Quality, 0);
+            this.ProductionPlanId = new KepwareTagModel<string>(ProductionPlanId, "");
+            this.ProductCode = new KepwareTagModel<string>(ProductCode, "");
+            this.ShopNo = new KepwareTagModel<string>(ShopNo, "");
+            this.Sequence = new KepwareTagModel<int>(Sequence, 0);
+            this.Target = new KepwareTagModel<int>(Target, 0);
 
         }
 
@@ -38,7 +38,7 @@ namespace CIM.Model
         public KepwareTagModel<int> CounterOut { get; set; }
         public KepwareTagModel<bool> CounterReset { get; set; }
         public DateTime LastChanged { get; set; } = DateTime.Now;
-        public KepwareTagModel<float> OEE { get; set; } = new KepwareTagModel<float>();
+        public KepwareTagModel<float> Oee { get; set; } = new KepwareTagModel<float>();
         public KepwareTagModel<float> Performance { get; set; } = new KepwareTagModel<float>();
         public KepwareTagModel<float> Availability { get; set; } = new KepwareTagModel<float>();
         public KepwareTagModel<float> Quality { get; set; } = new KepwareTagModel<float>();
