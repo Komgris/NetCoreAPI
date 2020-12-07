@@ -92,6 +92,9 @@ namespace CIM.Model
             public const int NEW = 4;
             public const int NoProduct = 5;
             public const int Inprocess = 6;
+            public const int NoMachine = 7;
+            public const int Preparatory = 8;
+            public const int Production = 9;
         }
 
         #endregion

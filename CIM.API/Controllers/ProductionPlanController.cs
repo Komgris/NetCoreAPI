@@ -41,6 +41,22 @@ namespace CIM.API.Controllers
         }
 
         #region Production plan mng 
+        [Route("api/[controller]/ReadImport")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<List<ProductionPlan3MModel>>> ReadImport([FromBody] List<ProductionPlan3MModel> data)
+        {
+            var output = new ProcessReponseModel<List<ProductionPlan3MModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.validatePlan(data);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
 
         [Route("api/[controller]/Compare")]
         [HttpPost]
@@ -72,9 +88,9 @@ namespace CIM.API.Controllers
 
         [Route("api/ProductionPlans")]
         [HttpGet]
-        public async Task<ProcessReponseModel<PagingModel<ProductionPlanListModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? machineId = null)
+        public async Task<ProcessReponseModel<PagingModel<ProductionPlan3MModel>>> List(int howmany = 10, int page = 1, string keyword = "", int? productId = null, int? routeId = null, string statusIds = null, int? machineId = null)
         {
-            var output = new ProcessReponseModel<PagingModel<ProductionPlanListModel>>();
+            var output = new ProcessReponseModel<PagingModel<ProductionPlan3MModel>>();
             try
             {
                 output.Data = await _productionPlanService.List(page, howmany, keyword, productId, routeId, true, statusIds, machineId);
@@ -142,15 +158,15 @@ namespace CIM.API.Controllers
 
         [Route("api/[controller]/Import")]
         [HttpPost]
-        public async Task<ProcessReponseModel<List<ProductionPlanModel>>> Import([FromBody] List<ProductionPlanModel> data)
+        public async Task<ProcessReponseModel<List<ProductionPlan3MModel>>> Import([FromBody] List<ProductionPlan3MModel> data)
         {
-            var output = new ProcessReponseModel<List<ProductionPlanModel>>();
+            var output = new ProcessReponseModel<List<ProductionPlan3MModel>>();
             try
             {
                 output.Data = await _productionPlanService.CheckDuplicate(data);
-                await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
-                //dole dashboard
-                _triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
+                //await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
+                ////dole dashboard
+                //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
                 output.IsSuccess = true;
             }
             catch (Exception ex)

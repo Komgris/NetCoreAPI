@@ -12,7 +12,7 @@ namespace CIM.BusinessLogic.Interfaces
         string GetProductionPlanKey(string id);
         List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
-        Task<List<ProductionPlanModel>> CheckDuplicate(List<ProductionPlanModel> import);
+        Task<List<ProductionPlan3MModel>> CheckDuplicate(List<ProductionPlan3MModel> import);
         Task Delete(string id);
         Task Update(ProductionPlanModel model);
         Task<ProductionPlanModel> Create(ProductionPlanModel model);
@@ -24,9 +24,9 @@ namespace CIM.BusinessLogic.Interfaces
         Task<PagingModel<ProductionOutputModel>> ListOutputByDate(DateTime date, int page, int howmany);
         Task<PagingModel<ProductionPlanListModel>> ListByDate(DateTime date, int page, int howmany, string statusIds, int? processTypeId);
         Task<ProductionPlanModel> Get(string id);
-        Task<PagingModel<ProductionPlanListModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? machineId);
+        Task<PagingModel<ProductionPlan3MModel>> List(int page, int howmany, string keyword, int? productId, int? routeId, bool isActive, string statusIds, int? machineId);
         Task<PagingModel<ProductionOutputModel>> ListOutput(int page, int howmany, string keyword, bool isActive, string statusIds);
-
+        Task<List<ProductionPlan3MModel>> validatePlan(List<ProductionPlan3MModel> data);
         Task<ProductionPlanOverviewModel> Load(string id, int routeId);
         Task<ProductionPlanOverviewModel> Load3M(string planId);
         Task<ActiveProductionPlanModel> TakeAction(string id, int routeId);
