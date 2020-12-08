@@ -29,5 +29,8 @@ namespace CIM.BusinessLogic.Interfaces
         Task<SystemParametersModel> CheckSystemParamters();
         Task ForceInitialTags();
         Task InitialMachineCache();
+        Task<ProductionInfoModel> GetProductInfoCache(int machineId);
+        Task SetProductInfoCache(int machineId, ProductionInfoModel info);
+        ProductionInfoModel GetProductInfo(string planId);
     }
 }

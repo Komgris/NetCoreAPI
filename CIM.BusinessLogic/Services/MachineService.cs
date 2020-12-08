@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -18,6 +19,7 @@ namespace CIM.BusinessLogic.Services
         private readonly IMachineRepository _machineRepository;
         private readonly IRouteMachineRepository _routeMachineRepository;
         private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
+        private readonly IDirectSqlRepository _directSqlRepository;
         private IUnitOfWorkCIM _unitOfWork;
         IMasterDataService _masterDataService;
         private string systemparamtersKey = "SystemParamters";
@@ -28,9 +30,11 @@ namespace CIM.BusinessLogic.Services
             IMasterDataService masterDataService,
             IResponseCacheService responseCacheService,
             IRouteMachineRepository routeMachineRepository,
-            IRecordMachineStatusRepository recordMachineStatusRepository
+            IRecordMachineStatusRepository recordMachineStatusRepository,
+            IDirectSqlRepository directSqlRepository
             )
         {
+            _directSqlRepository = directSqlRepository;
             _machineRepository = machineRepository;
             _unitOfWork = unitOfWork;
             _responseCacheService = responseCacheService;
@@ -65,7 +69,7 @@ namespace CIM.BusinessLogic.Services
                             MachineTypeId = x.MachineTypeId,
                             //Type = x.MachineType.Name,
                             StatusTag = x.StatusTag,
-                            CounterInTag = x.SpeedTag,
+                            CounterInTag = x.Speed,
                             CounterOutTag = x.CounterOutTag,
                             CounterResetTag = x.CounterResetTag,
                             IsActive = x.IsActive,
@@ -330,6 +334,34 @@ namespace CIM.BusinessLogic.Services
                         model.ListMachineIdsResetCounter[machineId] = isCounting;
                     }
                 await _responseCacheService.SetAsync(systemparamtersKey, model);           
+        }
+        public ProductionInfoModel GetProductInfo(string planId)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@planid", planId }
+            };
+            var dt =  JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList));
+            return JsonConvert.DeserializeObject<ProductionInfoModel>(dt);
+        }
+        public async Task SetProductInfoCache(int machineId, ProductionInfoModel info)
+        {
+                var model = await GetSystemParamters();
+                model.listMachineIdsProductionInfo[machineId] = info;
+                BaseService.baseListProductInfo[machineId] = info;
+                await _responseCacheService.SetAsync(systemparamtersKey, model);
+        }
+
+        public async Task<ProductionInfoModel> GetProductInfoCache(int machineId)
+        {
+            if (BaseService.baseListProductInfo.ContainsKey(machineId))
+            {
+                return BaseService.baseListProductInfo[machineId];
+            }
+            else
+            {
+                var model = await GetSystemParamters();
+                return model.listMachineIdsProductionInfo[machineId];
+            }
         }
 
         #endregion

@@ -37,12 +37,13 @@ namespace CIM.DAL.Implements
             return await Task.Run(() =>
             {
                 var query = _entities.Machine;
-                var output = query.Where(x=>x.IsActive)
+                var output = query.Where(x => x.IsActive)
                                 .Select(
-                                            x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.SpeedTag, x.CounterOutTag, x.CounterResetTag))
+                                            x => new MachineTagsModel(x.Id, x.Name, x.StatusTag, x.Speed, x.CounterOutTag, x.CounterResetTag, x.Oee, x.Performance, x.Availability, x.Quality, x.ProductionPlanId, x.ProductCode, x.ShopNo, x.Sequence, x.Target))
                                 .ToList();
                 return output;
             });
+            //return new List<MachineTagsModel>();
         }
     }
 }

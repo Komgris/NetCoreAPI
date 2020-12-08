@@ -156,6 +156,7 @@ namespace CIM.API.Controllers
             //}
 
             await BoardcastClientData(channelKey, activeMachines);
+            activeMachines.Alerts.Clear();
             return activeMachines;
         }
 
