@@ -13,5 +13,6 @@ namespace CIM.Model
         public string Group { get; set; }
         public List<AppModel> Apps { get; set; }
         public string Token { get; set; }
+        public string Email { get; set; }
     }
 }

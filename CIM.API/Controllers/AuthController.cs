@@ -33,6 +33,29 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
+        [Route("CreateUser")]
+        public async Task<ProcessReponseModel<object>> CreateUser(string username, string password, string email, string name)
+        {
+            try
+            {
+                var result = new ProcessReponseModel<object>();
+                var results = await _userService.Create(new AdminUsersModel
+                {
+                    UserName = username,
+                    Password = password,
+                    Email = email,
+                    Name = name
+                });
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpGet]
         [Route("VerifyTokenWithApp")]
         public async Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId)
         {

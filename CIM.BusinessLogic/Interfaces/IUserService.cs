@@ -8,7 +8,7 @@ namespace CIM.BusinessLogic.Interfaces
 {
     public interface IUserService : IBaseService
     {
-        Task Create(UserModel model);
+        Task<string> Create(AdminUsersModel model);
         Task<AuthModel> Auth(string username, string password);
         Task<bool> GetCurrentUserModel(string token, int appId);
         string HashPassword(UserModel model);

@@ -24,7 +24,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<UserModel>();
             try
             {
-                await _service.Create(model);
+                //await _service.Create(model);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
