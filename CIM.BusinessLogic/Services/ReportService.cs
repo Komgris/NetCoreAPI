@@ -2,6 +2,7 @@
 using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Configuration;
+using MMM.Domain.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -143,6 +144,15 @@ namespace CIM.BusinessLogic.Services {
             return paramsList;
         }
 
+        private Dictionary<string, object> PlanId(string data)
+        {
+            var paramsList = new Dictionary<string, object>() {
+                {"@plan_id", data },
+            };
+
+            return paramsList;
+        }
+
         public DataTable GetOEEReport(ReportTimeCriteriaModel data)
         {
             var paramsList = ReportCreiteria(data);
@@ -159,6 +169,200 @@ namespace CIM.BusinessLogic.Services {
         {
             var paramsList = ReportDate(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
+        }
+        public ReportProductionPlanPackingModel GetPackingReport(string data)
+        {
+            var paramsList = PlanId(data);
+            var report = _directSqlRepository.ExecuteSPWithQueryDSet("sp_AdminReport_Packing", paramsList);
+            //report.Tables[0].TableName = "ProductDescription";
+            ReportProductionPlanPackingModel resultObject = new ReportProductionPlanPackingModel();
+
+
+            var reult1 = (from rw in report.Tables[0].AsEnumerable()
+                         select new
+                         {
+                             PlanId = Convert.ToString(rw["PlanId"]),
+                             ProductCode = Convert.ToString(rw["ProductCode"]),
+                             Description = Convert.ToString(rw["Description"]),
+                             ShopNo = Convert.ToString(rw["ShopNo"]),
+                             Target = Convert.ToString(rw["Target"])
+                         }).ToList();
+
+            var reult2 = (from rw in report.Tables[1].AsEnumerable()
+                          select new
+                          {
+                              Material_StockNo = Convert.ToString(rw["Material_StockNo"]),
+                              Material_QCNo = Convert.ToString(rw["Material_QCNo"]),
+                              Component = Convert.ToString(rw["Component"]),
+                              Component_StockNo = Convert.ToString(rw["Component_StockNo"]),
+                              Component_LotNo = Convert.ToString(rw["Component_LotNo"]),
+                              Color = Convert.ToString(rw["Color"]),
+                          }).ToList();
+
+            var reult3 = (from rw in report.Tables[2].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              IsCheck = Convert.ToString(rw["IsCheck"]),
+                              Remark = Convert.ToString(rw["Remark"]),
+                          }).ToList();
+
+            var reult4 = (from rw in report.Tables[3].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              Example_1 = Convert.ToBoolean(rw["Example_1"]),
+                              Example_2 = Convert.ToBoolean(rw["Example_2"]),
+                              Example_3 = Convert.ToBoolean(rw["Example_3"]),
+                              Example_4 = Convert.ToBoolean(rw["Example_4"]),
+                              Example_5 = Convert.ToBoolean(rw["Example_5"]),
+                              Remark = Convert.ToString(rw["Remark"]),
+                          }).ToList();
+
+            var reult5 = (from rw in report.Tables[4].AsEnumerable()
+                          select new
+                          {
+                              Name = Convert.ToString(rw["Name"])
+                          }).ToList();
+
+            var reult6 = (from rw in report.Tables[5].AsEnumerable()
+                          select new
+                          {
+                              Date = Convert.ToString(rw["Date"]),
+                              StartTime = Convert.ToString(rw["StartTime"]),
+                              EndTime = Convert.ToString(rw["EndTime"]),
+                              SetUpHr = Convert.ToString(rw["SetUpHr"]),
+                              MachineHr = Convert.ToString(rw["MachineHr"]),
+                              ReSetupHr = Convert.ToString(rw["ReSetupHr"]),
+                              ProdDownHr = Convert.ToString(rw["ProdDownHr"]),
+                              MachDownHr = Convert.ToString(rw["MachDownHr"]),
+                              SumHr = Convert.ToString(rw["SumHr"]),
+                              GoodPad = Convert.ToString(rw["GoodPad"]),
+                              BadPad = Convert.ToString(rw["BadPad"]),
+                              Remark = Convert.ToString(rw["Remark"])
+                          }).ToList();
+
+            resultObject.Header = reult1[0].PlanId;
+            resultObject.Shop_No = reult1[0].ShopNo;
+            resultObject.ProductDescription = new SubClassProductDescription
+            {
+                ProductCode = reult1[0].ProductCode,
+                Description = reult1[0].Description,
+                Target = reult1[0].Target
+            };
+            resultObject.RawMaterials = new List<RawMaterial>();
+            foreach (var item in reult2)
+            {
+                resultObject.RawMaterials.Add(new RawMaterial
+                {
+                    Material_StockNo = item.Material_StockNo,
+                    Material_QCNo = item.Material_QCNo,
+                    Component = item.Component,
+                    Component_StockNo = item.Component_StockNo,
+                    Component_LotNo = item.Component_LotNo,
+                    Color = item.Color
+                });
+
+            }
+            resultObject.MachinePreConditionAndSetup = new List<PreconditionsAndSetup>();
+            foreach (var item in reult3)
+            {
+                resultObject.MachinePreConditionAndSetup.Add(new PreconditionsAndSetup
+                {
+                    Description = item.Description,
+                    Remark = item.Remark,
+                    IsCheck = bool.Parse(item.IsCheck)
+                });
+
+            }
+            resultObject.FiveTestingRecord = new List<FiveTesting>();
+            foreach (var item in reult4)
+            {
+                resultObject.FiveTestingRecord.Add(new FiveTesting
+                {
+                    Description = item.Description,
+                    Example_1 = item.Example_1,
+                    Example_2 = item.Example_2,
+                    Example_3 = item.Example_3,
+                    Example_4 = item.Example_4,
+                    Example_5 = item.Example_5,
+                    Remark = item.Remark
+                });
+
+            }
+            resultObject.ColorSorting = new List<ColorSortingRecord>();
+            foreach (var item in reult5)
+            {
+                resultObject.ColorSorting.Add(new ColorSortingRecord
+                {
+                    Name = item.Name
+                });
+
+            }
+
+            //resultObject.PackingProcess.PackingProcessRecord = new List<PackingProcessRecord>();
+            //foreach (var item in reult6)
+            //{
+            //    resultObject.PackingProcess.PackingProcessRecord.Add(new PackingProcessRecord
+            //    {
+            //        Date = item.Date,
+            //        StartTime = item.StartTime,
+            //        EndTime = item.EndTime,
+            //        SetUpHr = double.Parse(item.SetUpHr),
+            //        MachineHr = double.Parse(item.MachineHr),
+            //        ReSetupHr = double.Parse(item.ReSetupHr),
+            //        ProdDownHr = double.Parse(item.ProdDownHr),
+            //        MachDownHr = double.Parse(item.MachDownHr),
+            //        SumHr = double.Parse(item.SumHr),
+            //        GoodPad = double.Parse(item.GoodPad),
+            //        BadPad = double.Parse(item.BadPad),
+            //        Remark = item.Remark
+
+            //    });
+
+            //}
+
+
+
+
+            //List < SubClassProductDescription >
+
+
+            //var convertedList = (from rw in dt.AsEnumerable()
+            //                         select new MyObj()
+            //                         {
+            //                             ID = Convert.ToInt32(rw["ID"]),
+            //                             Name = Convert.ToString(rw["Name"])
+            //                         }).ToList();
+
+            //return convertedList;
+            //ReportProductionPlanPackingModel asd = new ReportProductionPlanPackingModel
+            //{
+            //    ProductDescription = new SubClassProductDescription
+            //    {
+            //        ProductCode = report.Tables[0],
+            //        Description = "3X100SHTS",
+            //        Target = "2400"
+            //    },
+            //    Shop_No = "123456",
+            //    RawMaterials = JsonConvert.DeserializeObject<List<RawMaterial>>(File.ReadAllText(@"D:\RawMat.json")),
+            //    MachinePreConditionAndSetup = JsonConvert.DeserializeObject<List<PreconditionsAndSetup>>(File.ReadAllText(@"D:\PreCon.json")),
+            //    FiveTestingRecord = JsonConvert.DeserializeObject<List<FiveTesting>>(File.ReadAllText(@"D:\Test5.json")),
+            //    ColorSorting = JsonConvert.DeserializeObject<List<ColorSortingRecord>>(File.ReadAllText(@"D:\Colors.json")),
+            //    TheEmployee = "วาริช, ธีระพงษ์",
+            //    PackingProcess = new SubClassPackingProcess
+            //    {
+            //        PackingProcessRecord = JsonConvert.DeserializeObject<List<PackingProcessRecord>>(File.ReadAllText(@"D:\Packing.json")),
+            //        Sum = new SumOfPackingProcessRecord()
+            //    },
+            //    WasteAnalysis = new SubClassWasteAnalysis
+            //    {
+            //        WasteAnalysisRecord = JsonConvert.DeserializeObject<List<WasteAnalysis>>(File.ReadAllText(@"D:\WasteAnalysis.json"))
+            //    },
+            //    AverageCal = 12.2
+
+            return resultObject;
+
         }
 
         public DataTable GetWasteReport(ReportDateModel data)

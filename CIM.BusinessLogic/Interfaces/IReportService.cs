@@ -1,4 +1,5 @@
 ﻿using CIM.Model;
+using MMM.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,6 +29,8 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetCostAnalysisReport(ReportTimeCriteriaModel data);
         DataTable GetHSEReport(ReportTimeCriteriaModel data);
         DataTable GetAttendantReport(ReportTimeCriteriaModel data);
+        ReportProductionPlanPackingModel GetPackingReport(string planId);
+
 
     }
 
