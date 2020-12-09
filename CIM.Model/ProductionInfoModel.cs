@@ -8,28 +8,47 @@ namespace CIM.Model
     {
         public ProductionInfoModel() { }
 
-        public ProductionInfoModel(int mcId) : this()
-        {
-            MachineId = mcId;
-        }
-        public int MachineId { get; set; }
-        public float Oee { get; set; } = 0;
+        public float OEE { get; set; } = 0;
         public float Performance { get; set; } = 0;
         public float Availability { get; set; } = 0;
         public float Quality { get; set; } = 0;
-        public string ProductionPlanId { get; set; }
-        public string ProductCode { get; set; }
+
+        public Dictionary<int, MachineInfoModel> MachineInfoList { get; set; } = new Dictionary<int, MachineInfoModel>();
+    }
+
+    public class MachineInfoModel {
+
+        public MachineInfoModel() { }
+
+        public MachineInfoModel(int mcId) : this()
+        {
+            MachineId = mcId;
+        }
+
+        public int MachineId { get; set; }
+        public float OEE { get; set; } = 0;
+        public float Performance { get; set; } = 0;
+        public float Availability { get; set; } = 0;
+        public float Quality { get; set; } = 0;
+
+        public string ProductSKU { get; set; }
+        public string Description { get; set; }
         public string ShopNo { get; set; }
-        public int Sequence { get; set; }
         public int Target { get; set; }
-        public void ResetProductInfo(int machineId)
+        public int Defect { get; set; }
+        public void ResetMachineInfo(int machineId)
         {
             MachineId = machineId;
-            ProductionPlanId = "";
-            ProductCode = "";
+            ProductSKU = "";
+            Description = "";
             ShopNo = "";
-            Sequence = 0;
             Target = 0;
+            Defect = 0;
+
+            OEE = 0;
+            Performance = 0;
+            Availability = 0;
+            Quality = 0;
         }
     }
 }

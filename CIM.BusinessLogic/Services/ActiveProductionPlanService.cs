@@ -292,7 +292,7 @@ namespace CIM.BusinessLogic.Services
 
                             step = "RemoveProductInfoCache";
                             var info = await  _machineService.GetProductInfoCache(machineId);
-                            info.ResetProductInfo(machineId);
+                            info.ResetMachineInfo(machineId);
                         }
                         step = "Reset Machine Counter";
                         await _machineService.SetMachinesResetCounter3M(machineId, true);
