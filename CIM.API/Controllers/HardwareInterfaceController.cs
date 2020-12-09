@@ -203,5 +203,22 @@ namespace CIM.API.Controllers
             }
             return output;
         }
+
+        [HttpGet]
+        [Route("api/[controller]/GetProductInfo")]
+        public async Task<ProcessReponseModel<ProductionInfoModel>> GetProductInfo(int machineId)
+        {
+            var output = new ProcessReponseModel<ProductionInfoModel>();
+            try
+            {
+                output.Data = await _machineService.GetProductInfoCache(machineId);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
     }
 }
