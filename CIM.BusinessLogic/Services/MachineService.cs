@@ -282,6 +282,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<SystemParametersModel> CheckSystemParamters()
         {
             var result = await GetSystemParamters();
+            result.ProductionInfo = GetCached xxxx
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
         }
