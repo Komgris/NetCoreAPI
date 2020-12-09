@@ -30,6 +30,8 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetHSEReport(ReportTimeCriteriaModel data);
         DataTable GetAttendantReport(ReportTimeCriteriaModel data);
         ReportProductionPlanPackingModel GetPackingReport(string planId);
+        ReportProductionPlanGuillotineModel GetGuillotineReport(string planId);
+
 
 
     }

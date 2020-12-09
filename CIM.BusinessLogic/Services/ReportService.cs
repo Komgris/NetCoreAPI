@@ -170,6 +170,213 @@ namespace CIM.BusinessLogic.Services {
             var paramsList = ReportDate(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
         }
+        
+        public ReportProductionPlanGuillotineModel GetGuillotineReport(string data)
+        {
+            var paramsList = PlanId(data);
+            var report = _directSqlRepository.ExecuteSPWithQueryDSet("sp_AdminReport_Guillotine", paramsList);
+            //report.Tables[0].TableName = "ProductDescription";
+            ReportProductionPlanGuillotineModel resultObject = new ReportProductionPlanGuillotineModel();
+
+            var reult1 = (from rw in report.Tables[0].AsEnumerable()
+                          select new
+                          {
+                              PlanId = Convert.ToString(rw["PlanId"]),
+                              ProductCode = Convert.ToString(rw["ProductCode"]),
+                              Description = Convert.ToString(rw["Description"]),
+                              ShopNo = Convert.ToString(rw["ShopNo"]),
+                              Target = Convert.ToString(rw["Target"])
+                          }).ToList();
+
+            var reult2 = (from rw in report.Tables[1].AsEnumerable()
+                          select new
+                          {
+                              Material_StockNo = Convert.ToString(rw["Material_StockNo"]),
+                              Material_QCNo = Convert.ToString(rw["Material_QCNo"]),
+                              Component = Convert.ToString(rw["Component"]),
+                              Component_StockNo = Convert.ToString(rw["Component_StockNo"]),
+                              Component_LotNo = Convert.ToString(rw["Component_LotNo"]),
+                              Color = Convert.ToString(rw["Color"]),
+                          }).ToList();
+
+            var reult3 = (from rw in report.Tables[2].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              IsCheck = Convert.ToString(rw["IsCheck"]),
+                              Remark = Convert.ToString(rw["Remark"]),
+                          }).ToList();
+
+            var reult4 = (from rw in report.Tables[3].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              IsCheck = Convert.ToString(rw["IsCheck"])
+                          }).ToList();
+
+            var reult5 = (from rw in report.Tables[4].AsEnumerable()
+                          select new
+                          {
+                              Name = Convert.ToString(rw["Name"])
+                          }).ToList();
+
+            var reult6 = (from rw in report.Tables[5].AsEnumerable()
+                          select new
+                          {
+                              Date = Convert.ToString(rw["Date"]),
+                              StartTime = Convert.ToString(rw["StartTime"]),
+                              EndTime = Convert.ToString(rw["EndTime"]),
+                              SetUpHr = Convert.ToString(rw["SetUpHr"]),
+                              MachineHr = Convert.ToString(rw["MachineHr"]),
+                              ReSetupHr = Convert.ToString(rw["ReSetupHr"]),
+                              ProdDownHr = Convert.ToString(rw["ProdDownHr"]),
+                              MachDownHr = Convert.ToString(rw["MachDownHr"]),
+                              SumHr = Convert.ToString(rw["SumHr"]),
+                              CalPad = Convert.ToString(rw["CalPad"]),
+                              GoodPad = Convert.ToString(rw["GoodPad"]),
+                              BadPad = Convert.ToString(rw["BadPad"]),
+                              Remark = Convert.ToString(rw["Remark"])
+                          }).ToList();
+
+            var reult7 = (from rw in report.Tables[6].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              IsCheck = Convert.ToString(rw["IsCheck"]),
+                          }).ToList();
+
+            var reult9 = (from rw in report.Tables[7].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              Amount = Convert.ToString(rw["Amount"])
+                          }).ToList();
+
+            resultObject.Shop_No = reult1[0].ShopNo;
+            resultObject.ProductDescription = new SubClassProductDescription
+            {
+                ProductCode = reult1[0].ProductCode,
+                Description = reult1[0].Description,
+                Target = reult1[0].Target
+            };
+
+            resultObject.RawMaterials = new List<RawMaterial>();
+            foreach (var item in reult2)
+            {
+                resultObject.RawMaterials.Add(new RawMaterial
+                {
+                    Material_StockNo = item.Material_StockNo,
+                    Material_QCNo = item.Material_QCNo,
+                    Component = item.Component,
+                    Component_StockNo = item.Component_StockNo,
+                    Component_LotNo = item.Component_LotNo,
+                    Color = item.Color
+                });
+
+            }
+
+            resultObject.MachinePreConditionAndSetup = new List<PreconditionsAndSetup>();
+            foreach (var item in reult3)
+            {
+                resultObject.MachinePreConditionAndSetup.Add(new PreconditionsAndSetup
+                {
+                    Description = item.Description,
+                    Remark = item.Remark,
+                    IsCheck = bool.Parse(item.IsCheck)
+                });
+
+            }
+
+            resultObject.CuttingPrograms = new List<CuttingProgram>();
+            foreach (var item in reult4)
+            {
+                resultObject.CuttingPrograms.Add(new CuttingProgram
+                {
+                    Description = item.Description,
+                    IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
+                });
+
+            }
+
+            resultObject.ColorSorting = new List<ColorSortingRecord>();
+            foreach (var item in reult5)
+            {
+                resultObject.ColorSorting.Add(new ColorSortingRecord
+                {
+                    Name = item.Name
+                });
+
+            }
+
+            resultObject.CuttingProcess = new SubClassCuttingProcess();
+            resultObject.CuttingProcess.CuttingProcessRecord = new List<CuttingProcessRecord>();
+            foreach (var item in reult6)
+            {
+                resultObject.CuttingProcess.CuttingProcessRecord.Add(new CuttingProcessRecord
+                {
+                    Date = item.Date,
+                    StartTime = item.StartTime,
+                    EndTime = item.EndTime,
+                    SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
+                    ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
+                    ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
+                    MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    SumHr = double.Parse(item.SumHr),
+                    CalPad = double.Parse(item.GoodPad),
+                    GoodPad = double.Parse(item.GoodPad),
+                    BadPad = double.Parse(item.BadPad)
+
+                });
+            }
+
+            resultObject.InProcessInspections = new List<InProcessInspection>();
+            foreach (var item in reult7)
+            {
+                resultObject.InProcessInspections.Add(new InProcessInspection
+                {
+                    Description = item.Description,
+                    IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
+                });
+
+            }
+
+            resultObject.OutgoingInspection = new SubClassOutgoingInspection();
+            resultObject.OutgoingInspection.OutgoingInspectionRecord = new List<OutgoingInspection>();
+            foreach (var item in reult6)
+            {
+                resultObject.OutgoingInspection.OutgoingInspectionRecord.Add(new OutgoingInspection
+                {
+                    Date = item.Date,
+                    StartTime = item.StartTime,
+                    EndTime = item.EndTime,
+                    SumTime = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    GoodPad = double.Parse(item.GoodPad),
+                    BadPad = double.Parse(item.BadPad),
+                    PackingEmployee = "Employee",
+                    Remark = item.Remark,
+
+
+                });
+            }
+
+            resultObject.WasteAnalysis = new SubClassWasteAnalysis();
+            resultObject.WasteAnalysis.WasteAnalysisRecord = new List<WasteAnalysis>();
+            foreach (var item in reult9)
+            {
+                resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
+                {
+                    Description = item.Description,
+                    Amount = int.TryParse(item.Amount, out var Amount) ? Amount : 0
+                });
+
+            }
+
+
+
+            return resultObject;
+        }
+
         public ReportProductionPlanPackingModel GetPackingReport(string data)
         {
             var paramsList = PlanId(data);
@@ -242,6 +449,14 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"])
                           }).ToList();
 
+            var reult7 = (from rw in report.Tables[6].AsEnumerable()
+                          select new
+                          {
+                              Description = Convert.ToString(rw["Description"]),
+                              Amount = Convert.ToInt16(rw["Amount"]),
+                              Remark = Convert.ToString(rw["Remark"])
+                          }).ToList();
+
             resultObject.Header = reult1[0].PlanId;
             resultObject.Shop_No = reult1[0].ShopNo;
             resultObject.ProductDescription = new SubClassProductDescription
@@ -300,66 +515,41 @@ namespace CIM.BusinessLogic.Services {
 
             }
 
-            //resultObject.PackingProcess.PackingProcessRecord = new List<PackingProcessRecord>();
-            //foreach (var item in reult6)
-            //{
-            //    resultObject.PackingProcess.PackingProcessRecord.Add(new PackingProcessRecord
-            //    {
-            //        Date = item.Date,
-            //        StartTime = item.StartTime,
-            //        EndTime = item.EndTime,
-            //        SetUpHr = double.Parse(item.SetUpHr),
-            //        MachineHr = double.Parse(item.MachineHr),
-            //        ReSetupHr = double.Parse(item.ReSetupHr),
-            //        ProdDownHr = double.Parse(item.ProdDownHr),
-            //        MachDownHr = double.Parse(item.MachDownHr),
-            //        SumHr = double.Parse(item.SumHr),
-            //        GoodPad = double.Parse(item.GoodPad),
-            //        BadPad = double.Parse(item.BadPad),
-            //        Remark = item.Remark
+            resultObject.PackingProcess = new SubClassPackingProcess();
+            resultObject.PackingProcess.PackingProcessRecord = new List<PackingProcessRecord>();
+            foreach (var item in reult6)
+            {
+                resultObject.PackingProcess.PackingProcessRecord.Add(new PackingProcessRecord
+                {
+                    Date = item.Date,
+                    StartTime = item.StartTime,
+                    EndTime = item.EndTime,
+                    SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
+                    ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
+                    ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
+                    MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    SumHr = double.Parse(item.SumHr),
+                    GoodPad = double.Parse(item.GoodPad),
+                    BadPad = double.Parse(item.BadPad),
+                    Remark = item.Remark
 
-            //    });
+                });
 
-            //}
+            }
 
+            resultObject.WasteAnalysis = new SubClassWasteAnalysis();
+            resultObject.WasteAnalysis.WasteAnalysisRecord = new List<WasteAnalysis>();
+            foreach (var item in reult7)
+            {
+                resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
+                {
+                    Description = item.Description,
+                    Amount = item.Amount,
+                    Remark = item.Remark
+                });
 
-
-
-            //List < SubClassProductDescription >
-
-
-            //var convertedList = (from rw in dt.AsEnumerable()
-            //                         select new MyObj()
-            //                         {
-            //                             ID = Convert.ToInt32(rw["ID"]),
-            //                             Name = Convert.ToString(rw["Name"])
-            //                         }).ToList();
-
-            //return convertedList;
-            //ReportProductionPlanPackingModel asd = new ReportProductionPlanPackingModel
-            //{
-            //    ProductDescription = new SubClassProductDescription
-            //    {
-            //        ProductCode = report.Tables[0],
-            //        Description = "3X100SHTS",
-            //        Target = "2400"
-            //    },
-            //    Shop_No = "123456",
-            //    RawMaterials = JsonConvert.DeserializeObject<List<RawMaterial>>(File.ReadAllText(@"D:\RawMat.json")),
-            //    MachinePreConditionAndSetup = JsonConvert.DeserializeObject<List<PreconditionsAndSetup>>(File.ReadAllText(@"D:\PreCon.json")),
-            //    FiveTestingRecord = JsonConvert.DeserializeObject<List<FiveTesting>>(File.ReadAllText(@"D:\Test5.json")),
-            //    ColorSorting = JsonConvert.DeserializeObject<List<ColorSortingRecord>>(File.ReadAllText(@"D:\Colors.json")),
-            //    TheEmployee = "วาริช, ธีระพงษ์",
-            //    PackingProcess = new SubClassPackingProcess
-            //    {
-            //        PackingProcessRecord = JsonConvert.DeserializeObject<List<PackingProcessRecord>>(File.ReadAllText(@"D:\Packing.json")),
-            //        Sum = new SumOfPackingProcessRecord()
-            //    },
-            //    WasteAnalysis = new SubClassWasteAnalysis
-            //    {
-            //        WasteAnalysisRecord = JsonConvert.DeserializeObject<List<WasteAnalysis>>(File.ReadAllText(@"D:\WasteAnalysis.json"))
-            //    },
-            //    AverageCal = 12.2
+            }
 
             return resultObject;
 
