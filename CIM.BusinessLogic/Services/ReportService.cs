@@ -389,6 +389,7 @@ namespace CIM.BusinessLogic.Services {
                          select new
                          {
                              PlanId = Convert.ToString(rw["PlanId"]),
+                             Header = Convert.ToString(rw["MachineName"]),
                              ProductCode = Convert.ToString(rw["ProductCode"]),
                              Description = Convert.ToString(rw["Description"]),
                              ShopNo = Convert.ToString(rw["ShopNo"]),
@@ -457,7 +458,7 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"])
                           }).ToList();
 
-            resultObject.Header = reult1[0].PlanId;
+            resultObject.Header = reult1[0].Header;
             resultObject.Shop_No = reult1[0].ShopNo;
             resultObject.ProductDescription = new SubClassProductDescription
             {
