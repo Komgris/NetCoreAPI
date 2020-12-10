@@ -247,10 +247,10 @@ namespace CIM.BusinessLogic.Services
 
         #region HW interface
 
-        public async Task<List<MachineTagsModel>> GetMachineTags()
-        {
-            return await _machineRepository.GetMachineTags();
-        }
+        //public async Task<List<MachineTagsModel>> GetMachineTags()
+        //{
+        //    return await _machineRepository.GetMachineTags();
+        //}
 
         public async Task SetListMachinesResetCounter(List<int> machines, bool isCounting)
         {
@@ -282,7 +282,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<SystemParametersModel> CheckSystemParamters()
         {
             var result = await GetSystemParamters();
-            result.ProductionInfo = GetCached xxxx
+            result.ProductionInfo = await GetProductInfoCache();
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
         }
@@ -344,27 +344,25 @@ namespace CIM.BusinessLogic.Services
             var dt =  JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList));
             return JsonConvert.DeserializeObject<ProductionInfoModel>(dt);
         }
-        public async Task SetProductInfoCache(int machineId, ProductionInfoModel info)
+        public async Task SetProductInfoCache(ProductionInfoModel info)
         {
-                var model = await GetSystemParamters();
-                model.listMachineIdsProductionInfo[machineId] = info;
-                BaseService.baseListProductInfo[machineId] = info;
-                await _responseCacheService.SetAsync(systemparamtersKey, model);
+            await _responseCacheService.SetProductionInfo(info);
         }
 
-        public async Task<ProductionInfoModel> GetProductInfoCache(int machineId)
+        public async Task<ProductionInfoModel> GetProductInfoCache()
         {
-            if (BaseService.baseListProductInfo.ContainsKey(machineId))
-            {
-                return BaseService.baseListProductInfo[machineId];
-            }
-            else
-            {
-                var model = await GetSystemParamters();
-                return model.listMachineIdsProductionInfo[machineId];
-            }
+            return  _responseCacheService.GetProductionInfo();
         }
 
+        public async Task SetMachineInfoCache(MachineInfoModel info)
+        {
+            await _responseCacheService.SetMachineInfo(info);
+        }
+
+        public async Task<MachineInfoModel> GetMachineInfoCache(int machineId)
+        {
+            return _responseCacheService.GetMachineInfo(machineId);
+        }
         #endregion
     }
 }

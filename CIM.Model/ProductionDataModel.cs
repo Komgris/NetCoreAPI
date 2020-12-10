@@ -46,4 +46,12 @@ namespace CIM.Model {
             StoreName = storeName;
         }
     }
+
+    public class KPI
+    {
+        public float OEE { get; set; }
+        public float Performance { get; set; }
+        public float Availability { get; set; }
+        public float Quality { get; set; }
+    }
 }
