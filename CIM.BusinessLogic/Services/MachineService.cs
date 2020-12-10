@@ -353,16 +353,6 @@ namespace CIM.BusinessLogic.Services
         {
             return  _responseCacheService.GetProductionInfo();
         }
-
-        public async Task SetMachineInfoCache(MachineInfoModel info)
-        {
-            await _responseCacheService.SetMachineInfo(info);
-        }
-
-        public async Task<MachineInfoModel> GetMachineInfoCache(int machineId)
-        {
-            return _responseCacheService.GetMachineInfo(machineId);
-        }
         #endregion
     }
 }

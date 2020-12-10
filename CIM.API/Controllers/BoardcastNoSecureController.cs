@@ -139,15 +139,12 @@ namespace CIM.API.Controllers
                 if (kpi.IsSuccess)
                 {
                     var jsonData = JsonConvert.DeserializeObject<List<KPI>>(kpi.JsonData);
-                    //var productionInfo = _responseCacheService.GetProductionInfo();
-                    //await _responseCacheService.SetProductionInfo(productionInfo);
-                    //Fern
-                    var machineInfo = _responseCacheService.GetMachineInfo(machineId);
-                    machineInfo.OEE = jsonData[0].OEE;
-                    machineInfo.Performance = jsonData[0].Performance;
-                    machineInfo.Availability = jsonData[0].Availability;
-                    machineInfo.Quality = jsonData[0].Quality;
-                    await _responseCacheService.SetMachineInfo(machineInfo);
+                    var productionInfo = _responseCacheService.GetProductionInfo() ?? new ProductionInfoModel();
+                    productionInfo.MachineInfoList[machineId].OEE = jsonData[0].OEE;
+                    productionInfo.MachineInfoList[machineId].Performance = jsonData[0].Performance;
+                    productionInfo.MachineInfoList[machineId].Availability = jsonData[0].Availability;
+                    productionInfo.MachineInfoList[machineId].Quality = jsonData[0].Quality;
+                    await _responseCacheService.SetProductionInfo(productionInfo);
                 }
             }
 

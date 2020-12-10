@@ -220,21 +220,6 @@ namespace CIM.BusinessLogic.Services
                         var info = _machineService.GetProductInfo(planId);
                         await _machineService.SetProductInfoCache(info);
 
-                        step = "Set Machine Info";
-                        var machineInfo = _responseCacheService.GetMachineInfo(machineId);
-                        if(machineInfo == null)
-                        {
-                            machineInfo = new MachineInfoModel();                
-                        }
-                        //Fern
-                        machineInfo.ResetMachineInfo(machineId);
-                        machineInfo.ProductSKU = "";
-                        machineInfo.Description = "";
-                        machineInfo.ShopNo = "";
-                        machineInfo.Target = (int)target;
-                        await _machineService.SetMachineInfoCache(machineInfo);
-
-
                         if (machineId == 1)//reset guilotine
                         {
                             await _machineService.SetMachinesResetCounter3M(machineId, true);
@@ -307,10 +292,6 @@ namespace CIM.BusinessLogic.Services
                             step = "RemoveProductInfoCache";
                             var info = await  _machineService.GetProductInfoCache();
                             info.MachineInfoList[machineId].ResetMachineInfo(machineId);
-
-                            step = "RemoveMachineInfoCache";
-                            var machineInfo = await _machineService.GetMachineInfoCache(machineId);
-                            machineInfo.ResetMachineInfo(machineId);
                         }
                         step = "Reset Machine Counter";
                         await _machineService.SetMachinesResetCounter3M(machineId, true);

@@ -295,10 +295,6 @@ namespace CIM.API.Controllers
                     productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
                     await _responseCacheService.SetProductionInfo(productionInfo);
 
-                    var machineInfo = _responseCacheService.GetMachineInfo(model.CauseMachineId);
-                    machineInfo.Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetMachineInfo(machineInfo);
-
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
 
@@ -338,10 +334,6 @@ namespace CIM.API.Controllers
                     productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
                     await _responseCacheService.SetProductionInfo(productionInfo);
 
-                    var machineInfo = _responseCacheService.GetMachineInfo(model.CauseMachineId);
-                    machineInfo.Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetMachineInfo(machineInfo);
-
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
 
@@ -380,10 +372,6 @@ namespace CIM.API.Controllers
                     var productionInfo = _responseCacheService.GetProductionInfo();
                     productionInfo.MachineInfoList[dbModel.CauseMachineId].Defect = activeMachine.CounterDefect;
                     await _responseCacheService.SetProductionInfo(productionInfo);
-
-                    var machineInfo = _responseCacheService.GetMachineInfo(dbModel.CauseMachineId);
-                    machineInfo.Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetMachineInfo(machineInfo);
 
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , dbModel.CauseMachineId, productionPlan);

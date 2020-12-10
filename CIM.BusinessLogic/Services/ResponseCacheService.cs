@@ -158,27 +158,7 @@ namespace CIM.BusinessLogic.Services
             BaseService.baseProductionInfo = model;
             var key = GetKeyProductionInfo();
             await SetAsync(key, model);
-        }
-
-        public MachineInfoModel GetMachineInfo(int machineId)
-        {
-            if (BaseService.baseListMachineInfo.ContainsKey(machineId))
-            {
-                return BaseService.baseListMachineInfo[machineId];
-            }
-            else
-            {
-                var key = GetKeyMachineInfo(machineId);
-                return GetAsTypeAsync<MachineInfoModel>(key).Result;
-            }
-        }
-
-        public async Task SetMachineInfo(MachineInfoModel model)
-        {
-            BaseService.baseListMachineInfo[model.MachineId] = model;
-            var key = GetKeyMachineInfo(model.MachineId);
-            await SetAsync(key, model);
-        }
+        }       
 
     }
 }

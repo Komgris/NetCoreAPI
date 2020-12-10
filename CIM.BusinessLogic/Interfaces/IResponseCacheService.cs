@@ -20,7 +20,5 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetActiveMachine(ActiveMachine3MModel model);
         ProductionInfoModel GetProductionInfo();
         Task SetProductionInfo(ProductionInfoModel model);
-        MachineInfoModel GetMachineInfo(int machineId);
-        Task SetMachineInfo(MachineInfoModel model);
     }
 }

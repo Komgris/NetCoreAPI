@@ -32,7 +32,5 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ProductionInfoModel> GetProductInfoCache();
         Task SetProductInfoCache(ProductionInfoModel info);
         ProductionInfoModel GetProductInfo(string planId);
-        Task SetMachineInfoCache(MachineInfoModel info);
-        Task<MachineInfoModel> GetMachineInfoCache(int machineId);
     }
 }
