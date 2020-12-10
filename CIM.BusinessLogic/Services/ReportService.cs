@@ -170,7 +170,7 @@ namespace CIM.BusinessLogic.Services {
             var paramsList = ReportDate(data);
             return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
         }
-        
+
         public ReportProductionPlanGuillotineModel GetGuillotineReport(string data)
         {
             var paramsList = PlanId(data);
