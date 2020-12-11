@@ -13,14 +13,20 @@ namespace MMM.Domain.Models
 
     public class RawMaterial
     {
-        public string Material_StockNo { get; set; }
-        public string Material_QCNo { get; set; }
+        public string StockNo { get; set; }
+        public string QCNo { get; set; }
         public string Color { get; set; }
-        public string Component { get; set; }
-        public string Component_StockNo { get; set; }
-        public string Component_LotNo { get; set; }
 
     }
+
+    public class RawComponent
+    {
+        public string Component { get; set; }
+        public string StockNo { get; set; }
+        public string LotNo { get; set; }
+
+    }
+
 
     public class PreconditionsAndSetup
     {
@@ -34,6 +40,7 @@ namespace MMM.Domain.Models
     {
         public string Description { get; set; }
         public bool IsCheck { get; set; }
+        public double TrimWaste { get; set; }
     }
 
     public class ColorSortingRecord
