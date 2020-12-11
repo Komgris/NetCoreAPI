@@ -149,7 +149,15 @@ namespace CIM.BusinessLogic.Services
             else
             {
                 var key = GetKeyProductionInfo();
-                return GetAsTypeAsync<ProductionInfoModel>(key).Result;
+                var cache = GetAsTypeAsync<ProductionInfoModel>(key).Result;
+                if (cache is null)
+                {
+                   return  new ProductionInfoModel();
+                }
+                else
+                {
+                    return cache;
+                }
             }
         }
 

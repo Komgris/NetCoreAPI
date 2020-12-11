@@ -62,8 +62,8 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in recordChecklistType)
             {
                 _recordProductionPlanCheckListDetailRepository.Delete(item);
-                recordChecklist.RecordProductionPlanCheckListDetail.Remove(item);
             }
+            recordChecklist.RecordProductionPlanCheckListDetail.ToList().RemoveAll(x => x.CheckListTypeId == checklistTyp);
 
             foreach (var datails in model.checkListdetail)
             {

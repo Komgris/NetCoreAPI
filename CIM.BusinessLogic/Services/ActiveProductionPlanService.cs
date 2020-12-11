@@ -217,8 +217,14 @@ namespace CIM.BusinessLogic.Services
                         await _responseCacheService.SetActiveMachine(mccached);
 
                         step = "Set Product Info";
-                        var info = _machineService.GetProductInfo(planId);
-                        await _machineService.SetProductInfoCache(info);
+                        var mcData = _machineService.GetProductInfoData(planId);
+                        var productInfo = await  _machineService.GetProductInfoCache();
+                        productInfo.MachineInfoList[machineId].ResetMachineInfo(machineId);
+                        var mcInfo = new Dictionary<int, MachineInfoModel>() {
+                            { machineId, mcData}
+                        };
+                        productInfo.MachineInfoList = mcInfo;
+                        await _machineService.SetProductInfoCache(productInfo);
 
                         if (machineId == 1)//reset guilotine
                         {

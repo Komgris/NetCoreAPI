@@ -22,7 +22,7 @@ namespace CIM.BusinessLogic.Services
         private readonly IDirectSqlRepository _directSqlRepository;
         private IUnitOfWorkCIM _unitOfWork;
         IMasterDataService _masterDataService;
-        private string systemparamtersKey = "SystemParamters";
+        private string systemparamtersKey = "SystemParamters_3M";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
@@ -281,8 +281,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<SystemParametersModel> CheckSystemParamters()
         {
-            var result = await GetSystemParamters();
-            result.ProductionInfo = await GetProductInfoCache();
+            var result = await GetSystemParamters();           
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
         }
@@ -319,6 +318,7 @@ namespace CIM.BusinessLogic.Services
             {
                 cache = new SystemParametersModel();
             }
+            cache.ProductionInfo = await GetProductInfoCache();
             return cache;
         }
 
@@ -336,13 +336,14 @@ namespace CIM.BusinessLogic.Services
                     }
                 await _responseCacheService.SetAsync(systemparamtersKey, model);           
         }
-        public ProductionInfoModel GetProductInfo(string planId)
+        public MachineInfoModel GetProductInfoData(string planId)
         {
             var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId }
+                {"@plan_id", planId }
             };
             var dt =  JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList));
-            return JsonConvert.DeserializeObject<ProductionInfoModel>(dt);
+            var list = JsonConvert.DeserializeObject<List<MachineInfoModel>>(dt);
+            return list.FirstOrDefault();
         }
         public async Task SetProductInfoCache(ProductionInfoModel info)
         {
