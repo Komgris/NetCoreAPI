@@ -10,6 +10,7 @@ namespace MMM.Domain.Models
         public string Shop_No { get; set; }
         public SubClassProductDescription ProductDescription { get; set; }
         public List<RawMaterial> RawMaterials { get; set; }
+        public List<RawComponent> RawComponents { get; set; }
         public List<PreconditionsAndSetup> MachinePreConditionAndSetup { get; set; }
         public List<FiveTesting> FiveTestingRecord { get; set; }
         public List<ColorSortingRecord> ColorSorting { get; set; }

@@ -191,11 +191,8 @@ namespace CIM.BusinessLogic.Services {
             var reult2 = (from rw in report.Tables[1].AsEnumerable()
                           select new
                           {
-                              Material_StockNo = Convert.ToString(rw["Material_StockNo"]),
-                              Material_QCNo = Convert.ToString(rw["Material_QCNo"]),
-                              Component = Convert.ToString(rw["Component"]),
-                              Component_StockNo = Convert.ToString(rw["Component_StockNo"]),
-                              Component_LotNo = Convert.ToString(rw["Component_LotNo"]),
+                              StockNo = Convert.ToString(rw["StockNo"]),
+                              QCNo = Convert.ToString(rw["QCNo"]),
                               Color = Convert.ToString(rw["Color"]),
                           }).ToList();
 
@@ -211,7 +208,8 @@ namespace CIM.BusinessLogic.Services {
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
-                              IsCheck = Convert.ToString(rw["IsCheck"])
+                              IsCheck = Convert.ToString(rw["IsCheck"]),
+                              TrimWaste = Convert.ToString(rw["TrimWaste"])
                           }).ToList();
 
             var reult5 = (from rw in report.Tables[4].AsEnumerable()
@@ -265,11 +263,8 @@ namespace CIM.BusinessLogic.Services {
             {
                 resultObject.RawMaterials.Add(new RawMaterial
                 {
-                    Material_StockNo = item.Material_StockNo,
-                    Material_QCNo = item.Material_QCNo,
-                    Component = item.Component,
-                    Component_StockNo = item.Component_StockNo,
-                    Component_LotNo = item.Component_LotNo,
+                    StockNo = item.StockNo,
+                    QCNo = item.QCNo,
                     Color = item.Color
                 });
 
@@ -294,6 +289,8 @@ namespace CIM.BusinessLogic.Services {
                 {
                     Description = item.Description,
                     IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
+                    TrimWaste = double.TryParse(item.TrimWaste, out double TrimWaste) ? TrimWaste : 0,
+
                 });
 
             }
@@ -399,15 +396,19 @@ namespace CIM.BusinessLogic.Services {
             var reult2 = (from rw in report.Tables[1].AsEnumerable()
                           select new
                           {
-                              Material_StockNo = Convert.ToString(rw["Material_StockNo"]),
-                              Material_QCNo = Convert.ToString(rw["Material_QCNo"]),
-                              Component = Convert.ToString(rw["Component"]),
-                              Component_StockNo = Convert.ToString(rw["Component_StockNo"]),
-                              Component_LotNo = Convert.ToString(rw["Component_LotNo"]),
+                              StockNo = Convert.ToString(rw["StockNo"]),
+                              QCNo = Convert.ToString(rw["QCNo"]),
                               Color = Convert.ToString(rw["Color"]),
                           }).ToList();
+            var listRawComponent = (from rw in report.Tables[2].AsEnumerable()
+                                    select new
+                                    {
+                                        Component = Convert.ToString(rw["Component"]),
+                                        StockNo = Convert.ToString(rw["StockNo"]),
+                                        LotNo = Convert.ToString(rw["LotNo"]),
+                                    }).ToList();
 
-            var reult3 = (from rw in report.Tables[2].AsEnumerable()
+            var reult3 = (from rw in report.Tables[3].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -415,7 +416,7 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"]),
                           }).ToList();
 
-            var reult4 = (from rw in report.Tables[3].AsEnumerable()
+            var reult4 = (from rw in report.Tables[4].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -427,13 +428,13 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"]),
                           }).ToList();
 
-            var reult5 = (from rw in report.Tables[4].AsEnumerable()
+            var reult5 = (from rw in report.Tables[5].AsEnumerable()
                           select new
                           {
                               Name = Convert.ToString(rw["Name"])
                           }).ToList();
 
-            var reult6 = (from rw in report.Tables[5].AsEnumerable()
+            var reult6 = (from rw in report.Tables[6].AsEnumerable()
                           select new
                           {
                               Date = Convert.ToString(rw["Date"]),
@@ -450,7 +451,7 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"])
                           }).ToList();
 
-            var reult7 = (from rw in report.Tables[6].AsEnumerable()
+            var reult7 = (from rw in report.Tables[7].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -471,12 +472,20 @@ namespace CIM.BusinessLogic.Services {
             {
                 resultObject.RawMaterials.Add(new RawMaterial
                 {
-                    Material_StockNo = item.Material_StockNo,
-                    Material_QCNo = item.Material_QCNo,
-                    Component = item.Component,
-                    Component_StockNo = item.Component_StockNo,
-                    Component_LotNo = item.Component_LotNo,
+                    StockNo = item.StockNo,
+                    QCNo = item.QCNo,
                     Color = item.Color
+                });
+
+            }
+            resultObject.RawComponents = new List<RawComponent>();
+            foreach (var item in listRawComponent)
+            {
+                resultObject.RawComponents.Add(new RawComponent
+                {
+                    Component = item.Component,
+                    StockNo = item.StockNo,
+                    LotNo = item.LotNo
                 });
 
             }
