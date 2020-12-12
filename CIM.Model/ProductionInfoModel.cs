@@ -8,10 +8,10 @@ namespace CIM.Model
     {
         public ProductionInfoModel() { }
 
-        public float OEE { get; set; } = 0;
-        public float Performance { get; set; } = 0;
-        public float Availability { get; set; } = 0;
-        public float Quality { get; set; } = 0;
+        public double OEE { get; set; } = 0;
+        public double Performance { get; set; } = 0;
+        public double Availability { get; set; } = 0;
+        public double Quality { get; set; } = 0;
 
         public Dictionary<int, MachineInfoModel> MachineInfoList { get; set; } = new Dictionary<int, MachineInfoModel>();
     }
@@ -26,11 +26,13 @@ namespace CIM.Model
         }
 
         public int MachineId { get; set; }
-        public float OEE { get; set; } = 0;
-        public float Performance { get; set; } = 0;
-        public float Availability { get; set; } = 0;
-        public float Quality { get; set; } = 0;
+        public double OEE { get; set; } = 0;
+        public double Performance { get; set; } = 0;
+        public double Availability { get; set; } = 0;
+        public double Quality { get; set; } = 0;
+        public double ProductionRate { get; set; } = 0;
 
+        public string PlanId { get; set; }
         public string ProductSKU { get; set; }
         public string Description { get; set; }
         public string ShopNo { get; set; }
@@ -44,11 +46,13 @@ namespace CIM.Model
             ShopNo = "";
             Target = 0;
             Defect = 0;
+            PlanId = "";
 
             OEE = 0;
             Performance = 0;
             Availability = 0;
             Quality = 0;
+            ProductionRate = 0;
         }
     }
 }

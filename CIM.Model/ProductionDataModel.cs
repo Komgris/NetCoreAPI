@@ -22,6 +22,7 @@ namespace CIM.Model {
         public void SetData(UnitDataModel dashboard)
         {
             if (dashboard == null) return;
+            if (UnitData == null) UnitData = new List<UnitDataModel>();
             UnitData.Remove(UnitData.Where(x => x.Name == dashboard.Name).FirstOrDefault());
             UnitData.Add(dashboard);
         }

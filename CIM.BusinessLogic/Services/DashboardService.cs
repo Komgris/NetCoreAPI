@@ -1,5 +1,6 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.DAL.Interfaces;
+using CIM.DAL.Utility;
 using CIM.Model;
 using Newtonsoft.Json;
 using System;
@@ -13,11 +14,14 @@ namespace CIM.BusinessLogic.Services {
 
         private IDirectSqlRepository _directSqlRepository;
         private IResponseCacheService _responseCacheService;
+        private IMachineService _machineService;
         public DashboardService(IDirectSqlRepository directSqlRepository,
-            IResponseCacheService responseCacheService)
+            IResponseCacheService responseCacheService,
+            IMachineService machineService)
         {
             _directSqlRepository = directSqlRepository;
             _responseCacheService = responseCacheService;
+            _machineService = machineService;
         }
 
         #region Config
@@ -347,6 +351,56 @@ namespace CIM.BusinessLogic.Services {
                 var activeProductionPlan = new ActiveProductionPlanModel(productionPlan);
             }
             return null;
+        }
+
+        public async Task<List<ActiveProductionPlan3MModel>> GenerateOperationBroadcast3M()
+        {
+            //var boardcastData = new ProductionDatMaModel();
+            var list =  _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_ActiveProcess", null);
+            var kpiList = list.ToModel<MachineInfoModel>();
+
+            //setProductionInfo
+            var productInfo = await _machineService.GetProductInfoCache();
+            foreach (var item in kpiList)
+            {
+                if(item.MachineId == 0)
+                {
+                    productInfo.OEE = item.OEE;
+                    productInfo.Availability = item.Availability;
+                    productInfo.Performance = item.Performance;
+                    productInfo.Quality = item.Quality;
+                }
+                else if(productInfo.MachineInfoList.ContainsKey(item.MachineId))
+                {
+                    productInfo.MachineInfoList[item.MachineId].OEE = item.OEE;
+                    productInfo.MachineInfoList[item.MachineId].Availability = item.Availability;
+                    productInfo.MachineInfoList[item.MachineId].Performance = item.Performance;
+                    productInfo.MachineInfoList[item.MachineId].Quality = item.Quality;
+                    productInfo.MachineInfoList[item.MachineId].ProductionRate = item.ProductionRate;
+                }
+            }
+            await _machineService.SetProductInfoCache(productInfo);
+
+            var activeList = new List<ActiveProductionPlan3MModel>();
+            //setActiveProcess
+            foreach(var item in kpiList)
+            {
+                var active = _responseCacheService.GetActivePlan(item.PlanId);
+                if(active != null)
+                {
+                    var unitdata = new UnitDataModel()
+                    {
+                        Name = "KPI",
+                        JsonData = JsonConvert.SerializeObject(item)
+                    };
+                    if (active.ProductionData == null) active.ProductionData = new ProductionDataModel();
+                    active.ProductionData.SetData(unitdata);
+                    await _responseCacheService.SetActivePlan(active);
+                    activeList.Add(active);
+                }
+            }
+            return activeList;
+            //var paramsList = new Dictionary<string, object>() { { "@planid", productionPlan } };
         }
 
         public async Task<ProductionDataModel> GenerateBoardcast(DataTypeGroup relateType, string productionPlan, int routeId)
