@@ -38,6 +38,7 @@ namespace CIM.BusinessLogic.Services
         public async Task<RecordProductionPlanCheckListModel> Create(RecordProductionPlanCheckListModel model)
         {
             var dbModel = MapperHelper.AsModel(model, new RecordProductionPlanCheckList());
+            dbModel.PadNumber = model.PadNumber;
             dbModel.CreatedAt = DateTime.Now;
             dbModel.CreatedBy = CurrentUser.UserId;
             foreach (var datails in model.checkListdetail)
@@ -47,7 +48,7 @@ namespace CIM.BusinessLogic.Services
             }
 
             if (dbModel.RecordProductionPlanCheckListDetail.Count > 0)
-            {
+            {                  
                     _recordProductionPlanCheckListRepository.Add(dbModel);
             }
             await _unitOfWork.CommitAsync();
@@ -73,6 +74,7 @@ namespace CIM.BusinessLogic.Services
 
             if (recordChecklist.RecordProductionPlanCheckListDetail.Count > 0)
             {
+                recordChecklist.PadNumber = model.PadNumber;
                 recordChecklist.UpdatedAt = DateTime.Now;
                 recordChecklist.UpdatedBy = CurrentUser.UserId;
                 _recordProductionPlanCheckListRepository.Edit(recordChecklist);
