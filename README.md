@@ -26,3 +26,11 @@ redis-cli -h 103.70.6.198 -p 6379
 
 #Dapper
 https://dapper-tutorial.net/
+
+
+# run db using docker
+docker-compose up -d
+docker-compose ps
+docker cp 000_create_db.sql dashboard-db:.
+docker-compose exec dashboard-db bash
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Super_p4ssw0rd' -i 000_create_db.sql

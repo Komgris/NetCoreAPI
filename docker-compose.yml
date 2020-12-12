@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  dashboard-db:
+    container_name: dashboard-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "4433:1433"
+    expose:
+      - "4433"
+    environment:
+      SA_PASSWORD: "Super_p4ssw0rd"
+      ACCEPT_EULA: "Y"
