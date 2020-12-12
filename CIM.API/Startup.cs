@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using CIM.Model;
+using CIM.Domain.Dashboard;
 
 namespace CIM.API {
     public class Startup
@@ -44,8 +45,8 @@ namespace CIM.API {
             {
                 options.Providers.Add<GzipCompressionProvider>();
             });
-            services.AddDbContext<cim_3m_1Context>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
+            services.AddDbContext<cim_3m_1Context>(options => options.UseSqlServer(Configuration.GetConnectionString("CIMDatabase")));
+            services.AddDbContext<_3m_dashboard_dbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CIMDatabaseDashboard")));
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddTransient<IUnitOfWorkCIM, UnitOfWorkCIM>();
 

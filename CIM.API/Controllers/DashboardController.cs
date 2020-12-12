@@ -236,6 +236,23 @@ namespace CIM.API.Controllers
             return output;
         }
 
+
+        [HttpGet]
+        public async Task<ProcessReponseModel<object>> GetChartData(DateTime? datestamp, string chartData, string sourceData)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, chartData, sourceData), JsonsSetting));
+                output.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                output.Message = e.Message;
+            }
+            return output;
+        }
+
         #endregion
 
         #region Waste

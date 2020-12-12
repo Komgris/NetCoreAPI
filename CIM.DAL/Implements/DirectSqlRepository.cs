@@ -74,8 +74,8 @@ namespace CIM.DAL.Implements
             }
         }
 
-        public DataTable ExecuteSPWithQuery(string sql, Dictionary<string,object> parameters) {
-            var connectionString = _configuration.GetConnectionString("CIMDatabase");
+        public DataTable ExecuteSPWithQuery(string sql, Dictionary<string,object> parameters, string database = "CIMDatabase") {
+            var connectionString = _configuration.GetConnectionString(database);
             using (SqlConnection connection = new SqlConnection(connectionString)) {
                 using (SqlCommand command = new SqlCommand(sql, connection)) {
                     if (parameters != null) 

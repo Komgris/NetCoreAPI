@@ -9,6 +9,8 @@ make sure project build success before run below command :
 
 Scaffold-DbContext "Server=103.58.148.161,1433;initial catalog=cim_db;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -force
 
+Scaffold-DbContext "Server=.,4433;initial catalog=3m_dashboard_db;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Dashboard -force
+
 # client command 
 transfer-message
 

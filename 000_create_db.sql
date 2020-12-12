@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [3m_dashboard_db]    Script Date: 12/12/2020 4:52:48 PM ******/
+/****** Object:  Database [3m_dashboard_db]    Script Date: 12/12/2020 8:41:56 PM ******/
 CREATE DATABASE [3m_dashboard_db]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -80,28 +80,134 @@ ALTER DATABASE [3m_dashboard_db] SET QUERY_STORE = OFF
 GO
 USE [3m_dashboard_db]
 GO
-/****** Object:  Table [dbo].[production_target_output]    Script Date: 12/12/2020 4:52:48 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_get_active_process]    Script Date: 12/12/2020 8:41:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[production_target_output](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[datetime_stamp] [datetime] NOT NULL,
-	[mc_id] [int] NOT NULL,
-	[target] [int] NOT NULL,
-	[output] [int] NOT NULL,
- CONSTRAINT [PK_production_target_output] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_get_active_process]
+	@date datetime = null
+AS
+BEGIN
+
+Select * From  (values 
+ ('Guillotine'    ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Blister'       ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Bundler'       ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('3x3 Wrapper'   ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Multi Wrapper' ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+) A(machine,[order],product,product_desc,completion,rate_hr);
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_get_output]    Script Date: 12/12/2020 8:41:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_get_output]
+	@date datetime = null
+AS
+BEGIN
+
+Select * From  (values 
+ (CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int))
+) A(oee,availability,performance, quality);
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_get_production_target_output]    Script Date: 12/12/2020 8:41:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_get_production_target_output]
+	@date datetime = null
+AS
+BEGIN
+
+Select * From  (values 
+ ('Guillotine',CAST(RAND()*(2000-1500)+1500 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Blister',CAST(RAND()*(2000-1500)+1500 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Bundler',CAST(RAND()*(2000-1500)+1500 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('3x3 Wrapper',CAST(RAND()*(2000-1500)+1500 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Multi Wrapper',CAST(RAND()*(2000-1500)+1500 as int), CAST(RAND()*(2000-1500)+1500 as int))
+) A(category,Value1,Value2);
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_get_quality]    Script Date: 12/12/2020 8:41:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_get_quality]
+	@date datetime = null
+AS
+BEGIN
+
+Select * From  (values 
+ ('Guillotine'    ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
+,('Blister'       ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
+,('Bundler'       ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
+,('3x3 Wrapper'   ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
+,('Multi Wrapper' ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
+) A(category,qulity,defect);
+
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_get_runtime_losses]    Script Date: 12/12/2020 8:41:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_get_runtime_losses]
+	@date datetime = null
+AS
+BEGIN
+
+Select * From  (values 
+ ('Guillotine'    ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int))
+,('Blister'       ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int))
+,('Bundler'       ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int))
+,('3x3 Wrapper'   ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int))
+,('Multi Wrapper' ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(50-20)+20 as int))
+) A(category,Value1,Value2,Value3,Value4);
+
+
+END
 GO
 USE [master]
 GO
 ALTER DATABASE [3m_dashboard_db] SET  READ_WRITE 
 GO
-CREATE LOGIN sammdbu WITH PASSWORD = '8fdKJl3$nlNv3049jsKK';  
+----------------------------------------------------------------
+USE [master]
 GO
-ALTER AUTHORIZATION ON DATABASE::[3m_dashboard_db] TO [sammdbu]
+ALTER DATABASE [3m_dashboard_db] SET  READ_WRITE 
+GO
+CREATE LOGIN cim WITH PASSWORD = '4dev@cim';  
+GO
+ALTER AUTHORIZATION ON DATABASE::[3m_dashboard_db] TO [cim]
 GO
