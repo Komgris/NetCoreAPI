@@ -183,13 +183,8 @@ namespace CIM.API.Controllers
             try
             {
                 var activeMachine = await _activeProductionPlanService.AdditionalMachineOutput3M(planId, machineId, amount, hour, remark);
-                //if (productionPlan != null)
-                //{
-                    //await HandleBoardcastingActiveProcess3M(DataTypeGroup.Produce, productionPlan.ProductionPlanId, machineId, productionPlan);
+                await HandleBoardcastingActiveMachine3M(machineId);
 
-                    //dole dashboard
-                    //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.ProduceCalc);
-                //}
                 output.IsSuccess = true;
             }
             catch (Exception ex)

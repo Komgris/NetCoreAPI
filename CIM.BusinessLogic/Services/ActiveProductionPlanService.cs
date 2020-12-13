@@ -794,26 +794,15 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<ActiveMachine3MModel> AdditionalMachineOutput3M(string planId, int machineId, int amount, int? hour, string remark)
         {
-            var now = DateTime.Now;
-            if (machineId != null)
-            {
-                var cachedMachine = await _machineService.GetCached((int)machineId);
-                if (cachedMachine?.ProductionPlanId != null)
-                {
-                    //inActiveproductionplan stuck in cache
-                    if (GetCached(cachedMachine.ProductionPlanId).Result == null)
-                    {
-                        await RemoveCached(cachedMachine.ProductionPlanId);
-                    }
-                }
-            }
+            var activeMachine = _responseCacheService.GetActiveMachine(machineId);
+            activeMachine.CounterLastHr = activeMachine.CounterOut;
+            activeMachine.CounterOut += amount;
+            await _responseCacheService.SetActiveMachine(activeMachine);
 
             //store proc.
             var paramsList = new Dictionary<string, object>() {
                         {"@planid", planId },
-                        //{"@routeid", routeId },
                         {"@mcid", machineId },
-                        {"@user", CurrentUser.UserId},
                         {"@hr", hour},
                         {"@Add",  amount} ,
                         {"@remark",  remark}
@@ -821,8 +810,7 @@ namespace CIM.BusinessLogic.Services
 
             //db execute
             _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
-
-            var activeMachine = _responseCacheService.GetActiveMachine(machineId);
+            
             return activeMachine;
         }
 
