@@ -769,6 +769,40 @@ namespace CIM.BusinessLogic.Services
             return activeProductionPlan;
         }
 
+        public async Task<ActiveMachine3MModel> AdditionalMachineOutput3M(string planId, int machineId, int amount, int? hour, string remark)
+        {
+            var now = DateTime.Now;
+            if (machineId != null)
+            {
+                var cachedMachine = await _machineService.GetCached((int)machineId);
+                if (cachedMachine?.ProductionPlanId != null)
+                {
+                    //inActiveproductionplan stuck in cache
+                    if (GetCached(cachedMachine.ProductionPlanId).Result == null)
+                    {
+                        await RemoveCached(cachedMachine.ProductionPlanId);
+                    }
+                }
+            }
+
+            //store proc.
+            var paramsList = new Dictionary<string, object>() {
+                        {"@planid", planId },
+                        //{"@routeid", routeId },
+                        {"@mcid", machineId },
+                        {"@user", CurrentUser.UserId},
+                        {"@hr", hour},
+                        {"@Add",  amount} ,
+                        {"@remark",  remark}
+            };
+
+            //db execute
+            _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
+
+            var activeMachine = _responseCacheService.GetActiveMachine(machineId);
+            return activeMachine;
+        }
+
         private void UpdateMachineStatus(int machineId, int statusId)
         {
             var mc = _machineRepository.Where(x => x.Id == machineId).FirstOrDefault();

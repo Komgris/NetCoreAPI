@@ -23,6 +23,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveMachine3MModel> UpdateByMachine3M(int machineId, int statusId, bool isAuto);
         Task<List<ActiveMachine3MModel>> UpdateMachineOutput(List<MachineProduceCounterModel> listData, int hour);
         Task<ActiveProductionPlanModel> AdditionalMachineOutput(string planId, int? machineId, int? routeId, int amount, int? hour, string remark);
+        Task<ActiveMachine3MModel> AdditionalMachineOutput3M(string planId, int machineId, int amount, int? hour, string remark);
         Task<int[]> ListMachineReady(string productionPlanId);
         Task<int[]> ListMachineLossRecording(string productionPlanId);
         Task<int[]> ListMachineLossAutoRecording(string productionPlanId);
