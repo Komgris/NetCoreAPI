@@ -22,6 +22,7 @@ namespace CIM.Domain.Models
         public string UpdatedBy { get; set; }
         public string Remark { get; set; }
         public int? Sequence { get; set; }
+        public decimal? TrimWaste { get; set; }
 
         public virtual CheckListType CheckListType { get; set; }
         public virtual ICollection<RecordProductionPlanCheckListDetail> RecordProductionPlanCheckListDetail { get; set; }

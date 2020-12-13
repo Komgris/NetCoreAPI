@@ -134,6 +134,18 @@ namespace CIM.API.Controllers
             if (boardcastData.UnitData.Count > 0)
             {
                 activeModel = await SetBoardcastActiveDataCached3M(rediskey, machineId, activeModel, boardcastData);
+
+                var kpi = boardcastData.UnitData.Where(x => x.Name == "KPI").FirstOrDefault();
+                if (kpi.IsSuccess)
+                {
+                    var jsonData = JsonConvert.DeserializeObject<List<KPI>>(kpi.JsonData);
+                    var productionInfo = _responseCacheService.GetProductionInfo() ?? new ProductionInfoModel();
+                    productionInfo.MachineInfoList[machineId].OEE = jsonData[0].OEE;
+                    productionInfo.MachineInfoList[machineId].Performance = jsonData[0].Performance;
+                    productionInfo.MachineInfoList[machineId].Availability = jsonData[0].Availability;
+                    productionInfo.MachineInfoList[machineId].Quality = jsonData[0].Quality;
+                    await _responseCacheService.SetProductionInfo(productionInfo);
+                }
             }
 
             await BoardcastClientData(channelKey, activeModel);
