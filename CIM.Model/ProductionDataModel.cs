@@ -22,6 +22,7 @@ namespace CIM.Model {
         public void SetData(UnitDataModel dashboard)
         {
             if (dashboard == null) return;
+            if (UnitData == null) UnitData = new List<UnitDataModel>();
             UnitData.Remove(UnitData.Where(x => x.Name == dashboard.Name).FirstOrDefault());
             UnitData.Add(dashboard);
         }
@@ -45,5 +46,13 @@ namespace CIM.Model {
             Name = name;
             StoreName = storeName;
         }
+    }
+
+    public class KPI
+    {
+        public float OEE { get; set; }
+        public float Performance { get; set; }
+        public float Availability { get; set; }
+        public float Quality { get; set; }
     }
 }

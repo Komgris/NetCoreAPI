@@ -9,7 +9,7 @@ namespace CIM.DAL.Interfaces
 {
     public interface IMachineRepository : IRepository<Machine, MachineModel>
     {
-        Task<List<MachineTagsModel>> GetMachineTags();
+        //Task<List<MachineTagsModel>> GetMachineTags();
         Task<List<RouteMachineModel>> ListMachineByRoute(int routeId);
     }
 }

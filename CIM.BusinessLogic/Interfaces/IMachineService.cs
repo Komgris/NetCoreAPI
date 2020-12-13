@@ -23,14 +23,14 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ActiveMachine3MModel> BulkCacheMachines3M(string productionPlanId, int machineId);
         Task<List<RouteMachineModel>> GetMachineByRoute(int routeId);
         Task InsertMappingRouteMachine(List<RouteMachineModel> data);
-        Task<List<MachineTagsModel>> GetMachineTags();
+        //Task<List<MachineTagsModel>> GetMachineTags();
         Task SetListMachinesResetCounter(List<int> machines, bool isCounting);
         Task SetMachinesResetCounter3M(int machineId, bool isCounting);
         Task<SystemParametersModel> CheckSystemParamters();
         Task ForceInitialTags();
         Task InitialMachineCache();
-        Task<ProductionInfoModel> GetProductInfoCache(int machineId);
-        Task SetProductInfoCache(int machineId, ProductionInfoModel info);
-        ProductionInfoModel GetProductInfo(string planId);
+        Task<ProductionInfoModel> GetProductInfoCache();
+        Task SetProductInfoCache(ProductionInfoModel info);
+        MachineInfoModel GetProductInfoData(string planId);
     }
 }

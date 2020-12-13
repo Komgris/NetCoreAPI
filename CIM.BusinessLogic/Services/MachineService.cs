@@ -22,7 +22,7 @@ namespace CIM.BusinessLogic.Services
         private readonly IDirectSqlRepository _directSqlRepository;
         private IUnitOfWorkCIM _unitOfWork;
         IMasterDataService _masterDataService;
-        private string systemparamtersKey = "SystemParamters";
+        private string systemparamtersKey = "SystemParamters_3M";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
@@ -247,10 +247,10 @@ namespace CIM.BusinessLogic.Services
 
         #region HW interface
 
-        public async Task<List<MachineTagsModel>> GetMachineTags()
-        {
-            return await _machineRepository.GetMachineTags();
-        }
+        //public async Task<List<MachineTagsModel>> GetMachineTags()
+        //{
+        //    return await _machineRepository.GetMachineTags();
+        //}
 
         public async Task SetListMachinesResetCounter(List<int> machines, bool isCounting)
         {
@@ -281,7 +281,7 @@ namespace CIM.BusinessLogic.Services
 
         public async Task<SystemParametersModel> CheckSystemParamters()
         {
-            var result = await GetSystemParamters();
+            var result = await GetSystemParamters();           
             await _responseCacheService.SetAsync(systemparamtersKey, null);
             return result;
         }
@@ -318,6 +318,7 @@ namespace CIM.BusinessLogic.Services
             {
                 cache = new SystemParametersModel();
             }
+            cache.ProductionInfo = await GetProductInfoCache();
             return cache;
         }
 
@@ -335,35 +336,24 @@ namespace CIM.BusinessLogic.Services
                     }
                 await _responseCacheService.SetAsync(systemparamtersKey, model);           
         }
-        public ProductionInfoModel GetProductInfo(string planId)
+        public MachineInfoModel GetProductInfoData(string planId)
         {
             var paramsList = new Dictionary<string, object>() {
-                {"@planid", planId }
+                {"@plan_id", planId }
             };
             var dt =  JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList));
-            return JsonConvert.DeserializeObject<ProductionInfoModel>(dt);
+            var list = JsonConvert.DeserializeObject<List<MachineInfoModel>>(dt);
+            return list.FirstOrDefault();
         }
-        public async Task SetProductInfoCache(int machineId, ProductionInfoModel info)
+        public async Task SetProductInfoCache(ProductionInfoModel info)
         {
-                var model = await GetSystemParamters();
-                model.listMachineIdsProductionInfo[machineId] = info;
-                BaseService.baseListProductInfo[machineId] = info;
-                await _responseCacheService.SetAsync(systemparamtersKey, model);
+            await _responseCacheService.SetProductionInfo(info);
         }
 
-        public async Task<ProductionInfoModel> GetProductInfoCache(int machineId)
+        public async Task<ProductionInfoModel> GetProductInfoCache()
         {
-            if (BaseService.baseListProductInfo.ContainsKey(machineId))
-            {
-                return BaseService.baseListProductInfo[machineId];
-            }
-            else
-            {
-                var model = await GetSystemParamters();
-                return model.listMachineIdsProductionInfo[machineId];
-            }
+            return  _responseCacheService.GetProductionInfo();
         }
-
         #endregion
     }
 }
