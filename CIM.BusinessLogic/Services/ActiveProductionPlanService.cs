@@ -218,7 +218,7 @@ namespace CIM.BusinessLogic.Services
 
                         step = "Set Product Info";
                         var mcData = _machineService.GetProductInfoData(planId);
-                        var productInfo = await  _machineService.GetProductInfoCache();
+                        var productInfo = await  _machineService.GetProductionInfoCache();
                         productInfo.MachineInfoList[machineId].ResetMachineInfo(machineId);
                         var mcInfo = new Dictionary<int, MachineInfoModel>() {
                             { machineId, mcData}
@@ -296,7 +296,7 @@ namespace CIM.BusinessLogic.Services
                             await _responseCacheService.SetActiveMachine(mccached);
 
                             step = "RemoveProductInfoCache";
-                            var info = await  _machineService.GetProductInfoCache();
+                            var info = await  _machineService.GetProductionInfoCache();
                             info.MachineInfoList[machineId].ResetMachineInfo(machineId);
                         }
                         step = "Reset Machine Counter";
