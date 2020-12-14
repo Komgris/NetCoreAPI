@@ -360,7 +360,7 @@ namespace CIM.BusinessLogic.Services {
             var kpiList = list.ToModel<MachineInfoModel>();
 
             //setProductionInfo
-            var productInfo = await _machineService.GetProductInfoCache();
+            var productInfo = await _machineService.GetProductionInfoCache();
             foreach (var item in kpiList)
             {
                 if(item.MachineId == 0)

@@ -69,13 +69,13 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/CheckSystemParamters")]
-        public async Task<ProcessReponseModel<object>> CheckSystemParamters()
+        [Route("api/[controller]/GetSystemInterfaceInfo")]
+        public async Task<ProcessReponseModel<object>> GetSystemInterfaceInfo()
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _machineService.CheckSystemParamters(), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _machineService.GetSystemInterfaceInfo(), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -211,7 +211,7 @@ namespace CIM.API.Controllers
             var output = new ProcessReponseModel<ProductionInfoModel>();
             try
             {
-                output.Data = await _machineService.GetProductInfoCache();
+                output.Data = await _machineService.GetProductionInfoCache();
                 output.IsSuccess = true;
             }
             catch (Exception ex)
