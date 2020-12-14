@@ -137,7 +137,7 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet] 
-        public async Task<string> BoardcastingActiveOperation3M()
+        public async Task<ActiveProductionPlan3MModel> BoardcastingActiveOperation3M(string planId = null)
         {
             try
             {
@@ -149,11 +149,11 @@ namespace CIM.API.Controllers
                     var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{item.ProductionPlanId}";
                     await BoardcastClientData(channelKey, item);
                 }
-                return "OK";
+                return activeList.FirstOrDefault(x=>x.ProductionPlanId == planId);
             }
             catch (Exception e)
             {
-                return e.ToString();
+                return null;
             }
 
         }
