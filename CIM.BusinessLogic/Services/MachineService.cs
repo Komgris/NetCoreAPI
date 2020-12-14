@@ -15,14 +15,14 @@ namespace CIM.BusinessLogic.Services
 {
     public class MachineService : BaseService, IMachineService
     {
-        private readonly IResponseCacheService _responseCacheService;
-        private readonly IMachineRepository _machineRepository;
-        private readonly IRouteMachineRepository _routeMachineRepository;
-        private readonly IRecordMachineStatusRepository _recordMachineStatusRepository;
-        private readonly IDirectSqlRepository _directSqlRepository;
-        private IUnitOfWorkCIM _unitOfWork;
+        IResponseCacheService _responseCacheService;
+        IMachineRepository _machineRepository;
+        IRouteMachineRepository _routeMachineRepository;
+        IRecordMachineStatusRepository _recordMachineStatusRepository;
+        IDirectSqlRepository _directSqlRepository;
+        IUnitOfWorkCIM _unitOfWork;
         IMasterDataService _masterDataService;
-        private string systemparamtersKey = "SystemParamters_3M";
+        string systemInterfaceInfoKey = "systemInfoInter_3M";
 
         public MachineService(
             IUnitOfWorkCIM unitOfWork,
@@ -256,7 +256,7 @@ namespace CIM.BusinessLogic.Services
         {
             if (machines!.Count > 0)
             {
-                var model = await GetSystemParamters();
+                var model = await SystemInterfaceInfo();
                 foreach (var mcid in machines)
                 {
                     if (!model.ListMachineIdsResetCounter.ContainsKey(mcid))
@@ -268,21 +268,21 @@ namespace CIM.BusinessLogic.Services
                         model.ListMachineIdsResetCounter[mcid] = isCounting;
                     }
                 }
-                await _responseCacheService.SetAsync(systemparamtersKey, model);
+                await _responseCacheService.SetAsync(systemInterfaceInfoKey, model);
             }
         }
 
         public async Task ForceInitialTags()
         {
-            var model = await GetSystemParamters();
+            var model = await SystemInterfaceInfo();
             model.HasTagChanged = true;
-            await _responseCacheService.SetAsync(systemparamtersKey, model);
+            await _responseCacheService.SetAsync(systemInterfaceInfoKey, model);
         }
 
-        public async Task<SystemParametersModel> CheckSystemParamters()
+        public async Task<SystemInterfaceModel> GetSystemInterfaceInfo()
         {
-            var result = await GetSystemParamters();           
-            await _responseCacheService.SetAsync(systemparamtersKey, null);
+            var result = await SystemInterfaceInfo();           
+            await _responseCacheService.SetAsync(systemInterfaceInfoKey, null);
             return result;
         }
 
@@ -311,21 +311,21 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        private async Task<SystemParametersModel> GetSystemParamters()
+        private async Task<SystemInterfaceModel> SystemInterfaceInfo()
         {
-            var cache = await _responseCacheService.GetAsTypeAsync<SystemParametersModel>(systemparamtersKey);
+            var cache = await _responseCacheService.GetAsTypeAsync<SystemInterfaceModel>(systemInterfaceInfoKey);
             if (cache is null)
             {
-                cache = new SystemParametersModel();
+                cache = new SystemInterfaceModel();
             }
-            cache.ProductionInfo = await GetProductInfoCache();
+            cache.ProductionInfo = _responseCacheService.GetProductionInfo();
             return cache;
         }
 
         public async Task SetMachinesResetCounter3M(int machineId, bool isCounting)
         {
             
-                var model = await GetSystemParamters();
+                var model = await SystemInterfaceInfo();
                     if (!model.ListMachineIdsResetCounter.ContainsKey(machineId))
                     {
                         model.ListMachineIdsResetCounter.Add(machineId, isCounting);
@@ -334,7 +334,7 @@ namespace CIM.BusinessLogic.Services
                     {
                         model.ListMachineIdsResetCounter[machineId] = isCounting;
                     }
-                await _responseCacheService.SetAsync(systemparamtersKey, model);           
+                await _responseCacheService.SetAsync(systemInterfaceInfoKey, model);           
         }
         public MachineInfoModel GetProductInfoData(string planId)
         {
@@ -350,7 +350,7 @@ namespace CIM.BusinessLogic.Services
             await _responseCacheService.SetProductionInfo(info);
         }
 
-        public async Task<ProductionInfoModel> GetProductInfoCache()
+        public async Task<ProductionInfoModel> GetProductionInfoCache()
         {
             return  _responseCacheService.GetProductionInfo();
         }

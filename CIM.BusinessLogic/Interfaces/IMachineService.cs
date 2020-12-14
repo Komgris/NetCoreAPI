@@ -26,10 +26,10 @@ namespace CIM.BusinessLogic.Interfaces
         //Task<List<MachineTagsModel>> GetMachineTags();
         Task SetListMachinesResetCounter(List<int> machines, bool isCounting);
         Task SetMachinesResetCounter3M(int machineId, bool isCounting);
-        Task<SystemParametersModel> CheckSystemParamters();
+        Task<SystemInterfaceModel> GetSystemInterfaceInfo();
         Task ForceInitialTags();
         Task InitialMachineCache();
-        Task<ProductionInfoModel> GetProductInfoCache();
+        Task<ProductionInfoModel> GetProductionInfoCache();
         Task SetProductInfoCache(ProductionInfoModel info);
         MachineInfoModel GetProductInfoData(string planId);
     }
