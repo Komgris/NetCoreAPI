@@ -16,7 +16,7 @@ namespace CIM.BusinessLogic.Interfaces {
         UnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
         DataTable GetOEEReport(ReportTimeCriteriaModel data);
         DataTable GetOutputReport(ReportDateModel data);
-        DataTable GetProductionPlanList(ReportDateModel data);
+        List<ReportProductionPlanListModel> GetProductionPlanList(ReportDateModel data);
         DataTable GetWasteReport(ReportDateModel data);
         DataTable GetMachineLossReport(ReportTimeCriteriaModel data);
         DataTable GetQualityReport(ReportTimeCriteriaModel data);

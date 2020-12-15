@@ -165,10 +165,32 @@ namespace CIM.BusinessLogic.Services {
             return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_Output", paramsList);
         }
 
-        public DataTable GetProductionPlanList(ReportDateModel data)
+        public List<ReportProductionPlanListModel> GetProductionPlanList(ReportDateModel data)
         {
             var paramsList = ReportDate(data);
-            return _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
+            var res = _directSqlRepository.ExecuteSPWithQuery("sp_AdminReport_ProductionPlanList", paramsList);
+            var json = JsonConvert.SerializeObject(res);
+            List<ReportProductionPlanListModel> reports = new List<ReportProductionPlanListModel>();
+            foreach (DataRow row in res.Rows)
+            {
+                ReportProductionPlanListModel report = new ReportProductionPlanListModel();
+                report.PlanId = row["PlanId"].ToString();
+                report.ProductCode = row["ProductCode"].ToString();
+                report.MachineType_Id = Convert.ToInt32(row["MachineType_Id"]);
+                report.MachineName = row["MachineName"].ToString();
+                report.ShopNo = row["ShopNo"].ToString();
+                report.Sequence = Convert.ToInt32(row["Sequence"]);
+                report.ActualStart = Convert.ToDateTime(row["ActualStart"]);
+                report.ActualFinish = Convert.ToDateTime(row["ActualFinish"]);
+                reports.Add(report);
+            }
+            return reports;
+
+        }
+
+        private T ConvertDataTable<T>(DataTable res)
+        {
+            throw new NotImplementedException();
         }
 
         public ReportProductionPlanGuillotineModel GetGuillotineReport(string data)
