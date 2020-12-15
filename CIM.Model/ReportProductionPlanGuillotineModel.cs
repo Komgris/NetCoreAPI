@@ -13,6 +13,7 @@ namespace MMM.Domain.Models
         public List<CuttingProgram> CuttingPrograms { get; set; }
         public List<ColorSortingRecord> ColorSorting { get; set; }
         public SubClassCuttingProcess CuttingProcess { get; set; }
+        public int PadNumber { get; set; }
         public List<InProcessInspection> InProcessInspections { get; set; }
         public SubClassOutgoingInspection OutgoingInspection { get; set; }
         public SubClassPackWrap PackWrap { get; set; }
