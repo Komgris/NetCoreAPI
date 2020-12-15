@@ -161,7 +161,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> PackingReport(string planId)
+        public async Task<ProcessReponseModel<object>> PackingReport([FromBody] string planId)
         {
             var output = new ProcessReponseModel<object>();
             try
@@ -177,7 +177,7 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ProcessReponseModel<object>> GuillotineReport(string planId)
+        public async Task<ProcessReponseModel<object>> GuillotineReport([FromBody] string planId)
         {
             var output = new ProcessReponseModel<object>();
             try

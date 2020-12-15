@@ -428,7 +428,8 @@ namespace CIM.BusinessLogic.Services {
                 resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
                 {
                     Description = item.Description,
-                    Amount = int.TryParse(item.Amount, out var Amount) ? Amount : 0
+                    Amount = Convert.ToInt32(float.Parse(item.Amount == "" ? "0" : item.Amount))
+
                 });
 
             }
@@ -519,7 +520,7 @@ namespace CIM.BusinessLogic.Services {
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
-                              Amount = Convert.ToInt16(rw["Amount"]),
+                              Amount = Convert.ToString(rw["Amount"]),
                               Remark = Convert.ToString(rw["Remark"])
                           }).ToList();
 
@@ -619,7 +620,9 @@ namespace CIM.BusinessLogic.Services {
                 resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
                 {
                     Description = item.Description,
-                    Amount = item.Amount,
+                    //Amount = int.Parse(item.Amount == "" ? "0": item.Amount),
+                    Amount = Convert.ToInt32(float.Parse(item.Amount == "" ? "0" : item.Amount)),
+
                     Remark = item.Remark
                 });
 
