@@ -37,22 +37,22 @@ namespace CIM.API.Controllers
             _triggerService = triggerService;
         }
 
-        [HttpGet]
-        [Route("api/[controller]/GetMachineTags")]
-        public async Task<ProcessReponseModel<object>> GetMachineTags()
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
+        //[HttpGet]
+        //[Route("api/[controller]/GetMachineTags")]
+        //public async Task<ProcessReponseModel<object>> GetMachineTags()
+        //{
+        //    var output = new ProcessReponseModel<object>();
+        //    try
+        //    {
+        //        output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+        //        output.IsSuccess = true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.Message = ex.Message;
+        //    }
+        //    return output;
+        //}
 
         [HttpGet]
         [Route("api/[controller]/ForceInitialTags")]
@@ -69,13 +69,13 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/CheckSystemParamters")]
-        public async Task<ProcessReponseModel<object>> CheckSystemParamters()
+        [Route("api/[controller]/GetSystemInterfaceInfo")]
+        public async Task<ProcessReponseModel<object>> GetSystemInterfaceInfo()
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _machineService.CheckSystemParamters(), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _machineService.GetSystemInterfaceInfo(), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -206,12 +206,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductInfo")]
-        public async Task<ProcessReponseModel<ProductionInfoModel>> GetProductInfo(int machineId)
+        public async Task<ProcessReponseModel<ProductionInfoModel>> GetProductInfo()
         {
             var output = new ProcessReponseModel<ProductionInfoModel>();
             try
             {
-                output.Data = await _machineService.GetProductInfoCache(machineId);
+                output.Data = await _machineService.GetProductionInfoCache();
                 output.IsSuccess = true;
             }
             catch (Exception ex)

@@ -217,9 +217,14 @@ namespace CIM.BusinessLogic.Services
                         await _responseCacheService.SetActiveMachine(mccached);
 
                         step = "Set Product Info";
-                        var info = _machineService.GetProductInfo(planId);
-                        await _machineService.SetProductInfoCache(machineId, info);
-
+                        var mcData = _machineService.GetProductInfoData(planId);
+                        var productInfo = await  _machineService.GetProductionInfoCache();
+                        productInfo.MachineInfoList[machineId].ResetMachineInfo(machineId);
+                        var mcInfo = new Dictionary<int, MachineInfoModel>() {
+                            { machineId, mcData}
+                        };
+                        productInfo.MachineInfoList = mcInfo;
+                        await _machineService.SetProductInfoCache(productInfo);
 
                         if (machineId == 1)//reset guilotine
                         {
@@ -291,8 +296,8 @@ namespace CIM.BusinessLogic.Services
                             await _responseCacheService.SetActiveMachine(mccached);
 
                             step = "RemoveProductInfoCache";
-                            var info = await  _machineService.GetProductInfoCache(machineId);
-                            info.ResetProductInfo(machineId);
+                            var info = await  _machineService.GetProductionInfoCache();
+                            info.MachineInfoList[machineId].ResetMachineInfo(machineId);
                         }
                         step = "Reset Machine Counter";
                         await _machineService.SetMachinesResetCounter3M(machineId, true);
@@ -497,11 +502,30 @@ namespace CIM.BusinessLogic.Services
             {
                 case Constans.MACHINE_STATUS.Stop: activeMachine = await HandleMachineStop3M(machineId, statusId, activeMachine, isAuto); break;
                 case Constans.MACHINE_STATUS.Running: activeMachine = await HandleMachineRunning3M(machineId, statusId, activeMachine, isAuto); break;
+                case Constans.MACHINE_STATUS.Idle: activeMachine = await HandleMachineIdle3M(machineId, statusId, activeMachine, isAuto); break;
                 default: break;
             }
             return activeMachine;
         }
+        private async Task<ActiveMachine3MModel> HandleMachineIdle3M(int machineId, int statusId, ActiveMachine3MModel activeMachine, bool isAuto)
+        {
+            var now = DateTime.Now;
 
+            if (activeMachine.LossRecording == LossRecordingType.None) // has unclosed record inside
+            {
+                var paramsList = new Dictionary<string, object>() {
+                            {"@startedAt", now },
+                            {"@productionPlanId", activeMachine.ProductionPlanId },
+                            {"@machineId", machineId },
+                            {"@lossLevel3Id", _config.GetValue<int>("DefaultIdleStatusLosslv3Id") },
+                            {"@isAuto", isAuto },
+                            {"@createdBy", CurrentUser.UserId }
+                        };
+                _directSqlRepository.ExecuteSPNonQuery("sp_Process_ManufacturingLoss", paramsList);
+                activeMachine.LossRecording = isAuto ? LossRecordingType.Auto : LossRecordingType.Manual;
+            }
+            return activeMachine;
+        }
         private async Task<ActiveProductionPlanModel> HandleMachineRunning(int machineId, int statusId, ActiveProductionPlanModel activeProductionPlan, int routeId, bool isAuto)
         {
             var losses = await _recordManufacturingLossRepository
@@ -725,7 +749,6 @@ namespace CIM.BusinessLogic.Services
                         //set cache
                         cachedMachine.CounterOut = item.CounterOut;
                         cachedMachine.Hour = hour;
-                        cachedMachine.Speed = item.Speed;
                         machineList.Add(cachedMachine);
                         await _machineService.SetCached3M(cachedMachine);
                     }

@@ -55,7 +55,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.245.164.12;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12\\MSSQLSERVER2017,1435;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -596,6 +596,8 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.Remark).HasMaxLength(200);
 
+                entity.Property(e => e.TrimWaste).HasColumnType("decimal(5, 2)");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(128);
@@ -625,9 +627,7 @@ namespace CIM.Domain.Models
 
                 entity.Property(e => e.OperatorSetId).HasColumnName("OperatorSet_Id");
 
-                entity.Property(e => e.ProductionDate)
-                    .HasColumnType("date")
-                    .HasDefaultValueSql("([dbo].[fn_get_date_production](DEFAULT))");
+                entity.Property(e => e.ProductionDate).HasColumnType("date");
 
                 entity.Property(e => e.ProductionPlanPlanId)
                     .IsRequired()
@@ -1074,6 +1074,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

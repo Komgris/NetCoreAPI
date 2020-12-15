@@ -23,6 +23,7 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetProductionWCMLoss(string planId, int routeId, int? lossLv, int? mcId, int? lossId, DateTime? from, DateTime? to);
         DataTable GetProductionDasboard(string planId, int routeId, int mcId);
         Task<ProductionDataModel> GenerateBoardcast(DataTypeGroup updateType, string productionPlan, int routeId);
+        Task<List<ActiveProductionPlan3MModel>> GenerateOperationBroadcast3M();
         Task<ProductionDataModel> GenerateBoardcastManagementData(DataFrame timeFrame, BoardcastType updateType);
         Task<ActiveProductionPlanModel> GenerateBoardcastOperationData(DataTypeGroup updateType, string productionPlan, int routeId);
         Task<ProductionDataModel> GetManagementDashboard(DataFrame frame);
