@@ -236,7 +236,7 @@ namespace CIM.API.Controllers
             return output;
         }
 
-
+        //curl -X GET "https://localhost:44365/api/Dashboard/GetChartData?chartData=sp_get_active_process&sourceData=CIMDatabaseDashboard" -H "accept: text/plain"
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetChartData(DateTime? datestamp, string chartData, string sourceData)
         {
@@ -341,7 +341,6 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetActiveMachineEvents(string planId, int routeId)
         {

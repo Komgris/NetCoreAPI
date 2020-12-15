@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace CIM.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class SignalrController : BoardcastController
     {
@@ -39,6 +40,28 @@ namespace CIM.API.Controllers
             return "OK";
         }
 
+        //curl -X GET "https://localhost:44365/api/Signalr/SendChartData?channel=dashboard-CachedCH-Dole_Custom_Dashboard&procedure=sp_get_production_target_output&db=CIMDatabaseDashboard&chartId=OutputChart" -H "accept: text/plain"
+        [HttpGet]
+        public async Task<string> SendChartData(string channel, string procedure, string db, string chartId, DateTime? datestamp = null)
+        {
+            var chart = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, procedure, db), JsonsSetting));
 
+            var output = new ChartModel {
+                Name = chartId,
+                DataString = chart,
+            };
+
+            await _hub.Clients.All.SendAsync(channel, JsonConvert.SerializeObject(output, JsonsSetting));
+            return "OK";
+        }
+
+
+
+    }
+
+    public class ChartModel
+    {
+        public string DataString { get; set; }
+        public string Name { get; internal set; }
     }
 }
