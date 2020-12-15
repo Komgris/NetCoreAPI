@@ -218,7 +218,7 @@ namespace CIM.BusinessLogic.Services
 
                         step = "Set Product Info";
                         var mcData = _machineService.GetProductInfoData(planId);
-                        var productInfo = await  _machineService.GetProductionInfoCache();
+                        var productInfo = await _machineService.GetProductionInfoCache();
                         productInfo.MachineInfoList[machineId].ResetMachineInfo(machineId);
                         var mcInfo = new Dictionary<int, MachineInfoModel>() {
                             { machineId, mcData}
@@ -296,7 +296,7 @@ namespace CIM.BusinessLogic.Services
                             await _responseCacheService.SetActiveMachine(mccached);
 
                             step = "RemoveProductInfoCache";
-                            var info = await  _machineService.GetProductionInfoCache();
+                            var info = await _machineService.GetProductionInfoCache();
                             info.MachineInfoList[machineId].ResetMachineInfo(machineId);
                         }
                         step = "Reset Machine Counter";
@@ -458,7 +458,7 @@ namespace CIM.BusinessLogic.Services
             }
             cachedMachine.StatusId = statusId;
             UpdateMachineStatus(machineId, statusId);
-            
+
             //handle machine status           
             if (cachedMachine.StatusId != statusId)
             {
@@ -715,7 +715,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached3M(item.MachineId);
-                
+
                 if (!string.IsNullOrEmpty(cachedMachine?.ProductionPlanId))
                 {
                     var cachedProductionPlan = _responseCacheService.GetActivePlan(cachedMachine.ProductionPlanId);
@@ -730,7 +730,7 @@ namespace CIM.BusinessLogic.Services
                         };
 
                         if (cachedMachine.CounterOut < item.CounterOut)
-                        {                            
+                        {
                             if (cachedMachine.CounterOut == 0 || cachedMachine.Hour != hour)
                             {
                                 //new record
@@ -795,9 +795,12 @@ namespace CIM.BusinessLogic.Services
         public async Task<ActiveMachine3MModel> AdditionalMachineOutput3M(string planId, int machineId, int amount, int? hour, string remark)
         {
             var activeMachine = _responseCacheService.GetActiveMachine(machineId);
-            activeMachine.CounterLastHr = activeMachine.CounterOut;
-            activeMachine.CounterOut += amount;
-            await _responseCacheService.SetActiveMachine(activeMachine);
+            if (activeMachine != null)
+            {
+                activeMachine.CounterLastHr = activeMachine.CounterOut;
+                activeMachine.CounterOut += amount;
+                await _responseCacheService.SetActiveMachine(activeMachine);
+            }
 
             //store proc.
             var paramsList = new Dictionary<string, object>() {
@@ -810,7 +813,7 @@ namespace CIM.BusinessLogic.Services
 
             //db execute
             _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
-            
+
             return activeMachine;
         }
 
