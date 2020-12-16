@@ -273,13 +273,7 @@ namespace CIM.BusinessLogic.Services {
                               Date = Convert.ToString(rw["Date"]),
                               StartTime = Convert.ToString(rw["StartTime"]),
                               EndTime = Convert.ToString(rw["EndTime"]),
-                              SetUpHr = Convert.ToString(rw["SetUpHr"]),
-                              MachineHr = Convert.ToString(rw["MachineHr"]),
-                              ReSetupHr = Convert.ToString(rw["ReSetupHr"]),
-                              ProdDownHr = Convert.ToString(rw["ProdDownHr"]),
-                              MachDownHr = Convert.ToString(rw["MachDownHr"]),
-                              SumHr = Convert.ToString(rw["SumHr"]),
-                              CalPad = Convert.ToString(rw["CalPad"]),
+                              SumTime = Convert.ToString(rw["SumTime"]),
                               GoodPad = Convert.ToString(rw["GoodPad"]),
                               BadPad = Convert.ToString(rw["BadPad"]),
                               Remark = Convert.ToString(rw["Remark"]),
@@ -311,7 +305,8 @@ namespace CIM.BusinessLogic.Services {
             
 
             resultObject.Shop_No = reult1[0].ShopNo;
-            resultObject.PadNumber = int.TryParse(reult10[0].PadNumber, out int PadNumber) ? PadNumber : 0 ;
+            //resultObject.PadNumber = int.TryParse(reult10[0].PadNumber, out int PadNumber) ? PadNumber : 0 ;
+            resultObject.PadNumber = int.Parse(reult10[0].PadNumber == "" ? "0" : reult10[0].PadNumber);
             resultObject.ProductDescription = new SubClassProductDescription
             {
                 ProductCode = reult1[0].ProductCode,
@@ -349,8 +344,9 @@ namespace CIM.BusinessLogic.Services {
                 resultObject.CuttingPrograms.Add(new CuttingProgram
                 {
                     Description = item.Description,
-                    IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
-                    TrimWaste = double.TryParse(item.TrimWaste, out double TrimWaste) ? TrimWaste : 0,
+                    IsCheck = bool.Parse(item.IsCheck == "" ? "false" : item.IsCheck),
+                    TrimWaste = double.Parse(item.TrimWaste == "" ? "0" : item.TrimWaste),
+                    //TrimWaste = double.TryParse(item.TrimWaste, out double TrimWaste) ? TrimWaste : 0,
 
                 });
 
@@ -376,11 +372,16 @@ namespace CIM.BusinessLogic.Services {
                     Date = item.Date,
                     StartTime = item.StartTime,
                     EndTime = item.EndTime,
-                    SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
-                    MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
-                    ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
-                    ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
-                    MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    //SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    //MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
+                    //ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
+                    //ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
+                    //MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    SetUpHr = double.Parse(item.SetUpHr == "" ? "0" : item.SetUpHr),
+                    MachineHr = double.Parse(item.MachineHr == "" ? "0" : item.MachineHr),
+                    ReSetupHr = double.Parse(item.ReSetupHr == "" ? "0" : item.ReSetupHr),
+                    ProdDownHr = double.Parse(item.ProdDownHr == "" ? "0" : item.ProdDownHr),
+                    MachDownHr = double.Parse(item.MachDownHr == "" ? "0" : item.MachDownHr),
                     SumHr = double.Parse(item.SumHr),
                     CalPad = double.Parse(item.GoodPad),
                     GoodPad = double.Parse(item.GoodPad),
@@ -395,7 +396,8 @@ namespace CIM.BusinessLogic.Services {
                 resultObject.InProcessInspections.Add(new InProcessInspection
                 {
                     Description = item.Description,
-                    IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
+                    //IsCheck = bool.TryParse(item.IsCheck, out bool IsCheck) ? IsCheck : false,
+                    IsCheck = bool.Parse(item.IsCheck == "" ? "false" : item.IsCheck)
                 });
 
             }
@@ -409,7 +411,7 @@ namespace CIM.BusinessLogic.Services {
                     Date = item.Date,
                     StartTime = item.StartTime,
                     EndTime = item.EndTime,
-                    SumTime = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    SumTime = double.Parse(item.SumTime == "" ? "0" : item.SumTime),
                     GoodPad = double.Parse(item.GoodPad),
                     BadPad = double.Parse(item.BadPad),
                     PackingEmployee = item.PackingEmployee,
@@ -599,11 +601,16 @@ namespace CIM.BusinessLogic.Services {
                     Date = item.Date,
                     StartTime = item.StartTime,
                     EndTime = item.EndTime,
-                    SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
-                    MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
-                    ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
-                    ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
-                    MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    //SetUpHr = double.TryParse(item.SetUpHr, out double SetUpHr) ? SetUpHr : 0,
+                    //MachineHr = double.TryParse(item.MachineHr, out double MachineHr) ? MachineHr : 0,
+                    //ReSetupHr = double.TryParse(item.ReSetupHr, out double ReSetupHr) ? ReSetupHr : 0,
+                    //ProdDownHr = double.TryParse(item.ProdDownHr, out double ProdDownHr) ? ProdDownHr : 0,
+                    //MachDownHr = double.TryParse(item.MachDownHr, out double MachDownHr) ? MachDownHr : 0,
+                    SetUpHr = double.Parse(item.SetUpHr == "" ? "0" : item.SetUpHr),
+                    MachineHr = double.Parse(item.MachineHr == "" ? "0" : item.MachineHr),
+                    ReSetupHr = double.Parse(item.ReSetupHr == "" ? "0" : item.ReSetupHr),
+                    ProdDownHr = double.Parse(item.ProdDownHr == "" ? "0" : item.ProdDownHr),
+                    MachDownHr = double.Parse(item.MachDownHr == "" ? "0" : item.MachDownHr),
                     SumHr = double.Parse(item.SumHr),
                     GoodPad = double.Parse(item.GoodPad),
                     BadPad = double.Parse(item.BadPad),
