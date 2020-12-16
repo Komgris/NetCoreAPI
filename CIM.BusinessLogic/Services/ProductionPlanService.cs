@@ -501,6 +501,26 @@ namespace CIM.BusinessLogic.Services
             return output;
         }
 
+        public async Task<ProductionPlan3MModel> Get3M(string planId)
+        {
+            var output = await _productionPlanRepository.Where(x => x.PlanId == planId).Select(
+                        x => new ProductionPlan3MModel
+                        {
+                            PlanId = x.PlanId,
+                            PlanStart = x.PlanStart,
+                            PlanFinish = x.PlanFinish,
+                            ActualStart = x.ActualStart,
+                            ActualFinish = x.ActualFinish,
+                            StatusId = x.StatusId,
+                            IsActive = x.IsActive,
+                            CreatedAt = x.CreatedAt,
+                            CreatedBy = x.CreatedBy,
+                            UpdatedAt = x.UpdatedAt,
+                            UpdatedBy = x.UpdatedBy,
+                        }).FirstOrDefaultAsync();
+            return output;
+        }
+
         public async Task<ActiveProductionPlanModel> TakeAction(string id, int routeId)
         {
             var output = await _activeProductionPlanService.GetCached(id);

@@ -217,13 +217,18 @@ namespace CIM.BusinessLogic.Services
                         await _responseCacheService.SetActiveMachine(mccached);
 
                         step = "Set Product Info";
-                        var mcData = _machineService.GetProductInfoData(planId);
-                        var productInfo = await  _machineService.GetProductionInfoCache();
-                        productInfo.MachineInfoList[machineId].ResetMachineInfo(machineId);
-                        var mcInfo = new Dictionary<int, MachineInfoModel>() {
-                            { machineId, mcData}
+                        var planData = _machineService.GetProductInfoData(planId);
+                        var mcInfo = new MachineInfoModel
+                        {
+                            Description = planData.ProductDescription,
+                            ProductSKU = planData.ProductCode,
+                            PlanId = planId,
+                            ShopNo = planData.ShopNo,
+                            Target = (int)planData.Target,
+                            MachineId = planData.MachineId
                         };
-                        productInfo.MachineInfoList = mcInfo;
+                        var productInfo = await  _machineService.GetProductionInfoCache();
+                        productInfo.MachineInfoList[machineId] = mcInfo;
                         await _machineService.SetProductInfoCache(productInfo);
 
                         if (machineId == 1)//reset guilotine
@@ -295,12 +300,12 @@ namespace CIM.BusinessLogic.Services
                             mccached.ProductionPlanId = "";
                             await _responseCacheService.SetActiveMachine(mccached);
 
-                            step = "RemoveProductInfoCache";
-                            var info = await  _machineService.GetProductionInfoCache();
-                            info.MachineInfoList[machineId].ResetMachineInfo(machineId);
+                            step = "Reset ProductInfo Cache";
+                            var productionInfo = await  _machineService.GetProductionInfoCache();
+                            productionInfo.MachineInfoList[machineId].ResetMachineInfo();
                         }
                         step = "Reset Machine Counter";
-                        await _machineService.SetMachinesResetCounter3M(machineId, true);
+                        await _machineService.SetMachinesResetCounter3M(machineId, false);
 
                         output = activeProductionPlan;
                     }
@@ -310,7 +315,7 @@ namespace CIM.BusinessLogic.Services
             {
                 var textErr = $"Plan:{planId} | RecordsStep:{step} | RecordError:{ex}";
                 throw (new Exception(ex.Message));
-                //HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
+                HelperUtility.Logging("FinishPlanLog-Err.txt", textErr);
             }
 
             return output;

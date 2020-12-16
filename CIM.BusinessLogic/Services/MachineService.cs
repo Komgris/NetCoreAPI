@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using CIM.DAL.Utility;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -336,13 +337,13 @@ namespace CIM.BusinessLogic.Services
                     }
                 await _responseCacheService.SetAsync(systemInterfaceInfoKey, model);           
         }
-        public MachineInfoModel GetProductInfoData(string planId)
+        public ProductionPlan3MModel GetProductInfoData(string planId)
         {
             var paramsList = new Dictionary<string, object>() {
                 {"@plan_id", planId }
             };
-            var dt =  JsonConvert.SerializeObject(_directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList));
-            var list = JsonConvert.DeserializeObject<List<MachineInfoModel>>(dt);
+            var dt =  _directSqlRepository.ExecuteSPWithQuery("sp_GetProductInfo", paramsList);
+            var list = dt.ToModel<ProductionPlan3MModel>();
             return list.FirstOrDefault();
         }
         public async Task SetProductInfoCache(ProductionInfoModel info)
