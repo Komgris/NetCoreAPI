@@ -45,7 +45,7 @@ namespace CIM.BusinessLogic.Services
             _configuration = configuration;
             _userGroupAppRepository = userGroupAppRepository;
         }
-        public async Task Create(UserModel model)
+        public async Task<string> Create(AdminUsersModel model)
         {
             var dbModel = new Users
             {
@@ -54,13 +54,15 @@ namespace CIM.BusinessLogic.Services
                 IsActive = true,
                 Id = Guid.NewGuid().ToString(),
                 UserName = model.UserName.ToLower().Trim(),
-                HashedPassword = HashPassword(model),
+                HashedPassword = HashPassword(model.Password),
                 Email = model.Email,
-                UserGroupId = model.UserGroupId
+                Name = model.Name,
+                UserGroupId = 0
             };
 
             _userRepository.Add(dbModel);
             await _unitOfWork.CommitAsync();
+            return "";
         }
 
         public string HashPassword(UserModel model)
@@ -79,12 +81,63 @@ namespace CIM.BusinessLogic.Services
             return savedPasswordHash;
         }
 
+        public string HashPassword(string password)
+        {
+            byte[] salt;
+            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 1000);
+            byte[] hash = pbkdf2.GetBytes(20);
+
+            byte[] hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(hash, 0, hashBytes, 16, 20);
+
+            string savedPasswordHash = Convert.ToBase64String(hashBytes);
+            return savedPasswordHash;
+        }
+
         public async Task<AuthModel> Auth(string username, string password)
         {
             AuthModel result = new AuthModel();
-            //var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
-            //    .Select(
-            //        x => new
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
+                .Select(x => new
+                {
+                    UserName = x.UserName,
+                    Email = x.Email,
+                    Name = x.Name,
+                    HashedPassword = x.HashedPassword,
+                })
+                .FirstOrDefaultAsync(x => x.UserName == username);
+
+            if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
+            {
+                result.FullName = dbModel.Name;
+                result.UserId = dbModel.UserName;
+                result.IsSuccess = true;
+                result.Email = dbModel.Email;
+                //result.Token = await CreateToken(dbModel.Id);
+                //result.Group = dbModel.;
+                //result.Apps = dbModel.Apps.ToList();
+
+                //await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
+            }
+
+            //var dbModel = new Users
+            //{
+            //    CreatedAt = DateTime.Now,
+            //    CreatedBy = CurrentUser.UserId,
+            //    IsActive = true,
+            //    Id = Guid.NewGuid().ToString(),
+            //    UserName = model.UserName.ToLower().Trim(),
+            //    HashedPassword = HashPassword(model),
+            //    Email = model.Email,
+            //    UserGroupId = model.UserGroupId
+            //};
+
+            //dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true)
+            ////    .Select(
+            ////        x => new
             //        {
             //            //UserName = x.UserName,
             //            //FullName = x.Name.Select(x => x.FirstName).FirstOrDefault() + " " + x.Name.Select(x => x.LastName).FirstOrDefault(),

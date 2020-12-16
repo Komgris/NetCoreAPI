@@ -1089,6 +1089,9 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasDefaultValueSql("(N'NoUserName')");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Waste>(entity =>
