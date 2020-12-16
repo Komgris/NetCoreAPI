@@ -96,7 +96,7 @@ namespace CIM.API.IntegrationTests
                             //Image = null,
                             UserGroupId = adminGroup.Id,
                         };
-                        userService.Create(registerUserModel);
+                        //userService.Create(registerUserModel);
                         Admin = registerUserModel;
                         Admin.Id = db.Users.Where(x => x.UserName == Admin.UserName).Select(x => x.Id).FirstOrDefault();
                         AdminToken = userService.CreateToken(Admin.Id).Result;
