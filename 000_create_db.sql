@@ -96,12 +96,12 @@ AS
 BEGIN
 
 Select * From  (values 
- ('Guillotine'    ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
-,('Blister'       ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
-,('Bundler'       ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
-,('3x3 Wrapper'   ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
-,('Multi Wrapper' ,'TEST-ORD-01','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
-) A(machine,[order],product,product_desc,completion,rate_hr);
+ ('Guillotine'    ,'TEST-ORD-01','Run','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Blister'       ,'TEST-ORD-01','Run','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Bundler'       ,'TEST-ORD-01','Stop','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('3x3 Wrapper'   ,'TEST-ORD-01','Idle','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+,('Multi Wrapper' ,'TEST-ORD-01','Run','TEST-PRO-01','TEST-DESC-01',CAST(RAND()*(50-20)+20 as int), CAST(RAND()*(2000-1500)+1500 as int))
+) A(machine,[order], [status],product,product_desc,completion,rate_hr);
 
 END
 GO
@@ -116,8 +116,11 @@ AS
 BEGIN
 
 Select * From  (values 
- (CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int), CAST(RAND()*(100-20)+20 as int))
-) A(oee,availability,performance, quality);
+ ('oee'				,CAST(RAND()*(50-20)+20 as int))
+,('availability'	,CAST(RAND()*(50-20)+20 as int))
+,('performance'		,CAST(RAND()*(50-20)+20 as int))
+,('quality'			,CAST(RAND()*(50-20)+20 as int))
+) A(name,value);
 
 END
 GO
@@ -167,7 +170,7 @@ Select * From  (values
 ,('Bundler'       ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
 ,('3x3 Wrapper'   ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
 ,('Multi Wrapper' ,CAST(RAND()*(50-20)+20 as int),CAST(RAND()*(20-10)+10 as int))
-) A(category,qulity,defect);
+) A(category,good,defect);
 
 
 END

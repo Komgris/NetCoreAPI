@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using CIM.API.HubConfig;
@@ -44,7 +45,8 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<string> SendChartData(string channel, string procedure, string db, string chartId, DateTime? datestamp = null)
         {
-            var chart = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, procedure, db), JsonsSetting));
+            var chartData = _dashboardService.GetChartData(datestamp, procedure, db);
+            var chart = await Task.Run(() => JsonConvert.SerializeObject(chartData, JsonsSetting));
 
             var output = new ChartModel {
                 Name = chartId,

@@ -238,19 +238,9 @@ namespace CIM.API.Controllers
 
         //curl -X GET "https://localhost:44365/api/Dashboard/GetChartData?chartData=sp_get_active_process&sourceData=CIMDatabaseDashboard" -H "accept: text/plain"
         [HttpGet]
-        public async Task<ProcessReponseModel<object>> GetChartData(DateTime? datestamp, string chartData, string sourceData)
+        public async Task<object> GetChartData(DateTime? datestamp, string chartData, string sourceData)
         {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, chartData, sourceData), JsonsSetting));
-                output.IsSuccess = true;
-            }
-            catch (Exception e)
-            {
-                output.Message = e.Message;
-            }
-            return output;
+            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, chartData, sourceData), JsonsSetting));
         }
 
         #endregion
