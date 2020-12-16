@@ -1,4 +1,5 @@
 ﻿using CIM.Model;
+using MMM.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,6 +16,7 @@ namespace CIM.BusinessLogic.Interfaces {
         UnitDataModel GetActiveMachineInfo(string planId, int routeId, int machineId);
         DataTable GetOEEReport(ReportDateModel data);
         DataTable GetOutputReport(ReportDateModel data);
+        List<ReportProductionPlanListModel> GetProductionPlanList(ReportDateModel data);
         DataTable GetWasteReport(ReportDateModel data);
         DataTable GetMachineLossReport(ReportDateModel data);
         DataTable GetORReport(ReportDateModel data);
@@ -28,6 +30,10 @@ namespace CIM.BusinessLogic.Interfaces {
         DataTable GetHSEReport(ReportTimeCriteriaModel data);
         DataTable GetAttendantReport(ReportTimeCriteriaModel data);
         DataSet GetWasteReports(ReportDateModel data);
+        ReportProductionPlanPackingModel GetPackingReport(string planId);
+        ReportProductionPlanGuillotineModel GetGuillotineReport(string planId);
+
+
 
     }
 
