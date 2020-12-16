@@ -152,8 +152,6 @@ namespace CIM.BusinessLogic.Services {
 
             return paramsList;
         }
-
-        public DataTable GetOEEReport(ReportTimeCriteriaModel data)
         public DataTable GetOEEReport(ReportDateModel data)
         {
             var paramsList = ReportDate(data);
