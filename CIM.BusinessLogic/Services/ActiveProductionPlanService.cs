@@ -463,7 +463,7 @@ namespace CIM.BusinessLogic.Services
             }
             cachedMachine.StatusId = statusId;
             UpdateMachineStatus(machineId, statusId);
-            
+
             //handle machine status           
             if (cachedMachine.StatusId != statusId)
             {
@@ -720,7 +720,7 @@ namespace CIM.BusinessLogic.Services
             foreach (var item in listData)
             {
                 var cachedMachine = await _machineService.GetCached3M(item.MachineId);
-                
+
                 if (!string.IsNullOrEmpty(cachedMachine?.ProductionPlanId))
                 {
                     var cachedProductionPlan = _responseCacheService.GetActivePlan(cachedMachine.ProductionPlanId);
@@ -735,7 +735,7 @@ namespace CIM.BusinessLogic.Services
                         };
 
                         if (cachedMachine.CounterOut < item.CounterOut)
-                        {                            
+                        {
                             if (cachedMachine.CounterOut == 0 || cachedMachine.Hour != hour)
                             {
                                 //new record
@@ -795,6 +795,35 @@ namespace CIM.BusinessLogic.Services
 
             var activeProductionPlan = await GetCached(planId);
             return activeProductionPlan;
+        }
+
+        public async Task<ActiveMachine3MModel> AdditionalMachineOutput3M(string planId, int machineId, int amount, int? hour, string remark)
+        {
+            var hr = DateTime.Now.Hour;
+            var activeMachine = _responseCacheService.GetActiveMachine(machineId);
+            if (activeMachine != null)
+            {
+                activeMachine.CounterLastHr = activeMachine.CounterOut;
+                activeMachine.CounterOut += amount;
+                activeMachine.Hour = hr;
+            }
+
+            //store proc.
+            var paramsList = new Dictionary<string, object>() {
+                        {"@planid", planId },
+                        {"@mcid", machineId },
+                        {"@hr", hr},
+                        {"@Add",  amount} ,
+                        {"@remark",  remark}
+            };
+
+            //db execute
+            var affect = _directSqlRepository.ExecuteSPNonQuery("sp_Process_Production_Counter_Additional", paramsList);
+            if (affect > 0)
+            {
+                await _responseCacheService.SetActiveMachine(activeMachine);
+            }
+            return activeMachine;
         }
 
         private void UpdateMachineStatus(int machineId, int statusId)

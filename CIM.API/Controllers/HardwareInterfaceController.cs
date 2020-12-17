@@ -63,7 +63,7 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/SetListMachinesResetCounter")]
-        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines, bool isCounting)
+        public async Task SetListMachinesResetCounter([FromBody] List<int> machines, bool isCounting)
         {
             await _machineService.SetListMachinesResetCounter(machines, isCounting);
         }
@@ -150,13 +150,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/AdditionalMachineProduce")]
-        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId,int amount, int? hour, string remark="")
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId, int amount, int? hour, string remark = "")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
                 var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
-                if(productionPlan != null)
+                if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
@@ -175,15 +175,36 @@ namespace CIM.API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("api/[controller]/AdditionalMachineProduce3M")]
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce3M(string planId, int machineId, int amount, int? hour, string remark = "")
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var activeMachine = await _activeProductionPlanService.AdditionalMachineOutput3M(planId, machineId, amount, hour, remark);
+                await HandleBoardcastingActiveMachine3M(machineId);
+
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
         [HttpPost]
         [Route("api/[controller]/UpdateNetworkStatus")]
-        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData,bool isReset)
+        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData, bool isReset)
         {
             try
             {
                 await _hwinterfaceService.UpdateNetworkStatus(listData, isReset);
             }
-            catch {
+            catch
+            {
             }
         }
 
