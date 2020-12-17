@@ -38,9 +38,8 @@ namespace CIM.Model
         public string ShopNo { get; set; }
         public int Target { get; set; }
         public decimal Defect { get; set; }
-        public void ResetMachineInfo(int machineId)
+        public void ResetMachineInfo()
         {
-            MachineId = machineId;
             ProductSKU = "";
             Description = "";
             ShopNo = "";
