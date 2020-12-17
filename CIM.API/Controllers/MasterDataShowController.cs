@@ -60,6 +60,14 @@ namespace CIM.API.Controllers
             return JsonConvert.SerializeObject(await _service.GetListProduct());
         }
 
+        [HttpGet]
+        [Route("api/[controller]/GetListProduction")]
+        public async Task<string> GetListProduction()
+        {
+            return JsonConvert.SerializeObject(await _service.GetListProduction());
+        }
+
+
     }
 
 

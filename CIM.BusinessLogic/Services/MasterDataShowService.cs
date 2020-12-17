@@ -16,6 +16,8 @@ namespace CIM.BusinessLogic.Services
         private readonly IMachineMasterShowRepository _materialMachineShowRepository;
         private readonly IProductMasterShowRepository _productMasterShowRepository;
         private readonly ILossMasterShowRepository _lossMasterShowRepository;
+        private readonly IProductionMasterShowRepository _productionMasterShowRepository;
+
         private IUnitOfWorkCIM _unitOfWork;
 
         public MasterDataShowService(
@@ -24,7 +26,8 @@ namespace CIM.BusinessLogic.Services
             IMaterialMasterShowRepository materialMasterShowRepository,
             IMachineMasterShowRepository materialMachineShowRepository,
             IProductMasterShowRepository productMasterShowRepository,
-            ILossMasterShowRepository lossMasterShowRepository
+            ILossMasterShowRepository lossMasterShowRepository,
+            IProductionMasterShowRepository productionMasterShowRepository
             )
         {
             _wasteRepository = wasteRepository;
@@ -32,6 +35,7 @@ namespace CIM.BusinessLogic.Services
             _materialMachineShowRepository = materialMachineShowRepository;
             _productMasterShowRepository = productMasterShowRepository;
             _lossMasterShowRepository = lossMasterShowRepository;
+            _productionMasterShowRepository = productionMasterShowRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -58,6 +62,10 @@ namespace CIM.BusinessLogic.Services
         public async Task<List<WasteModel>> GetListWaste()
         {
             return await _wasteRepository.List("[dbo].[sp_ListWasteMaster]", null);
+        }
+        public async Task<List<ProductionMasterShowModel>> GetListProduction()
+        {
+            return await _productionMasterShowRepository.List("[dbo].[sp_AdminReport_ProductionPlan]", null);
         }
     }
 }
