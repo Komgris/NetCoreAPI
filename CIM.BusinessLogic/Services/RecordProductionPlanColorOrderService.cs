@@ -51,6 +51,7 @@ namespace CIM.BusinessLogic.Services
                 dbModel.RecordProductionPlanColorOrderDetail.Clear();
                 foreach (var datails in model.Colordetail)
                 {
+                    datails.Id = 0;
                     var colorList = MapperHelper.AsModel(datails, new RecordProductionPlanColorOrderDetail());
                     colorList.Sequence = order;
                     dbModel.RecordProductionPlanColorOrderDetail.Add(colorList);

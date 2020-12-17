@@ -32,6 +32,8 @@ namespace CIM.Model
             public const string MASTER_DATA = "master-data";
             public const string MASTER_DATA_Oper = "master-data-Oper";
             public const string TOKEN = "token";
+            public const string PRODUCTION = "production";
+            public const string MACHINE_INFO = "machine-info";
         }
 
         public enum DashboardCachedCH {

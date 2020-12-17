@@ -116,6 +116,8 @@ namespace CIM.API {
             services.AddTransient<IMachineMasterShowRepository, MachineMasterShowRepository>();
             services.AddTransient<ILossMasterShowRepository, LossMasterShowRepository>();
             services.AddTransient<IProductMasterShowRepository, ProductMasterShowRepository>();
+            services.AddTransient<IProductionMasterShowRepository, ProductionMasterShowRepository>();
+
 
             services.AddTransient<IProductionPlanService, ProductionPlanService>();
             services.AddTransient<IDirectSqlService, DirectSqlService>();

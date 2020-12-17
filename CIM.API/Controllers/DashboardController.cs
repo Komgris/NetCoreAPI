@@ -136,17 +136,26 @@ namespace CIM.API.Controllers
             return "OK";
         }
 
-        [HttpGet]
-        public async Task<string> BoardcastingActiveOperation3M(DataTypeGroup updateType, string productionPlan, int machineId)
+        [HttpGet] 
+        public async Task<ActiveProductionPlan3MModel> BoardcastingActiveOperation3M(string planId = null)
         {
-            var channelKey = $"{Constans.RedisKey.ACTIVE_PRODUCTION_PLAN}:{productionPlan}";
-            var activeProductionPlan = await GetCached<ActiveProductionPlan3MModel>(channelKey);
-            if (activeProductionPlan != null)
+            try
             {
-                return JsonConvert.SerializeObject(
-                    await HandleBoardcastingActiveProcess3M(updateType, productionPlan, machineId, activeProductionPlan));
+
+                var activeList = await _dashboardService.GenerateOperationBroadcast3M();
+                //Boardcast activeprocess
+                foreach(var item in activeList)
+                {
+                    var channelKey = $"{Constans.SIGNAL_R_CHANNEL_PRODUCTION_PLAN}:{item.ProductionPlanId}";
+                    await BoardcastClientData(channelKey, item);
+                }
+                return activeList.FirstOrDefault(x=>x.ProductionPlanId == planId);
             }
-            return "OK";
+            catch (Exception e)
+            {
+                return null;
+            }
+
         }
 
         #endregion

@@ -80,6 +80,14 @@ namespace CIM.BusinessLogic.Services
         {
             return $"{RedisKey.MACHINE}:{machineId}";
         }
+        string GetKeyProductionInfo()
+        {
+            return $"{RedisKey.PRODUCTION}";
+        }
+        string GetKeyMachineInfo(int machineId)
+        {
+            return $"{RedisKey.MACHINE_INFO}:{machineId}";
+        }
 
         public async Task SetActivePlan(ActiveProductionPlan3MModel model)
         {
@@ -131,6 +139,34 @@ namespace CIM.BusinessLogic.Services
             var key = GetKeyMachine(model.Id);
             await SetAsync(key, model);
         }
+
+        public ProductionInfoModel GetProductionInfo()
+        {
+            if (BaseService.baseProductionInfo !=null)
+            {
+                return BaseService.baseProductionInfo;
+            }
+            else
+            {
+                var key = GetKeyProductionInfo();
+                var cache = GetAsTypeAsync<ProductionInfoModel>(key).Result;
+                if (cache is null)
+                {
+                   return  new ProductionInfoModel();
+                }
+                else
+                {
+                    return cache;
+                }
+            }
+        }
+
+        public async Task SetProductionInfo(ProductionInfoModel model)
+        {
+            BaseService.baseProductionInfo = model;
+            var key = GetKeyProductionInfo();
+            await SetAsync(key, model);
+        }       
 
     }
 }

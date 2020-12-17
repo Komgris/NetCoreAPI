@@ -16,7 +16,8 @@ namespace CIM.BusinessLogic.Services
         public static bool IsVerifyTokenPass { get; set; }
         public static Dictionary<string, ActiveProductionPlan3MModel> baseListActive { get; set; } = new Dictionary<string, ActiveProductionPlan3MModel>();
         public static Dictionary<int, ActiveMachine3MModel> baseListMachine { get; set; } = new Dictionary<int, ActiveMachine3MModel>();
-        public static Dictionary<int, ProductionInfoModel> baseListProductInfo { get; set; } = new Dictionary<int, ProductionInfoModel>();
+        public static Dictionary<int, MachineInfoModel> baseListMachineInfo { get; set; } = new Dictionary<int, MachineInfoModel>();
+        public static ProductionInfoModel baseProductionInfo { get; set; }
 
         public JsonSerializerSettings JsonsSetting { get; } = new JsonSerializerSettings
         {

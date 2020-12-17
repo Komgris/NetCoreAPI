@@ -17,5 +17,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task<List<LossMasterShowModel>> GetListLoss();
 
         Task<List<ProductMasterShowModel>> GetListProduct();
+
+        Task<List<ProductionMasterShowModel>> GetListProduction();
     }
 }

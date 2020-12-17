@@ -37,22 +37,22 @@ namespace CIM.API.Controllers
             _triggerService = triggerService;
         }
 
-        [HttpGet]
-        [Route("api/[controller]/GetMachineTags")]
-        public async Task<ProcessReponseModel<object>> GetMachineTags()
-        {
-            var output = new ProcessReponseModel<object>();
-            try
-            {
-                output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
-                output.IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                output.Message = ex.Message;
-            }
-            return output;
-        }
+        //[HttpGet]
+        //[Route("api/[controller]/GetMachineTags")]
+        //public async Task<ProcessReponseModel<object>> GetMachineTags()
+        //{
+        //    var output = new ProcessReponseModel<object>();
+        //    try
+        //    {
+        //        output.Data = JsonConvert.SerializeObject(await _machineService.GetMachineTags(), JsonsSetting);
+        //        output.IsSuccess = true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.Message = ex.Message;
+        //    }
+        //    return output;
+        //}
 
         [HttpGet]
         [Route("api/[controller]/ForceInitialTags")]
@@ -63,19 +63,19 @@ namespace CIM.API.Controllers
 
         [HttpPost]
         [Route("api/[controller]/SetListMachinesResetCounter")]
-        public async Task SetListMachinesResetCounter([FromBody] List<int>  machines, bool isCounting)
+        public async Task SetListMachinesResetCounter([FromBody] List<int> machines, bool isCounting)
         {
             await _machineService.SetListMachinesResetCounter(machines, isCounting);
         }
 
         [HttpGet]
-        [Route("api/[controller]/CheckSystemParamters")]
-        public async Task<ProcessReponseModel<object>> CheckSystemParamters()
+        [Route("api/[controller]/GetSystemInterfaceInfo")]
+        public async Task<ProcessReponseModel<object>> GetSystemInterfaceInfo()
         {
             var output = new ProcessReponseModel<object>();
             try
             {
-                output.Data = JsonConvert.SerializeObject(await _machineService.CheckSystemParamters(), JsonsSetting);
+                output.Data = JsonConvert.SerializeObject(await _machineService.GetSystemInterfaceInfo(), JsonsSetting);
                 output.IsSuccess = true;
             }
             catch (Exception ex)
@@ -150,13 +150,13 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/AdditionalMachineProduce")]
-        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId,int amount, int? hour, string remark="")
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce(string planId, int? machineId, int? routeId, int amount, int? hour, string remark = "")
         {
             var output = new ProcessReponseModel<object>();
             try
             {
                 var productionPlan = await _activeProductionPlanService.AdditionalMachineOutput(planId, machineId, routeId, amount, hour, remark);
-                if(productionPlan != null)
+                if (productionPlan != null)
                 {
                     await HandleBoardcastingActiveProcess(DataTypeGroup.Produce, productionPlan.ProductionPlanId
                                                                 , productionPlan.ActiveProcesses.Select(o => o.Key).ToArray(), productionPlan);
@@ -175,15 +175,36 @@ namespace CIM.API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("api/[controller]/AdditionalMachineProduce3M")]
+        public async Task<ProcessReponseModel<object>> AdditionalMachineProduce3M(string planId, int machineId, int amount, int? hour, string remark = "")
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                var activeMachine = await _activeProductionPlanService.AdditionalMachineOutput3M(planId, machineId, amount, hour, remark);
+                await HandleBoardcastingActiveMachine3M(machineId);
+
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+
+            return output;
+        }
+
         [HttpPost]
         [Route("api/[controller]/UpdateNetworkStatus")]
-        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData,bool isReset)
+        public async Task UpdateNetworkStatus([FromBody] List<NetworkStatusModel> listData, bool isReset)
         {
             try
             {
                 await _hwinterfaceService.UpdateNetworkStatus(listData, isReset);
             }
-            catch {
+            catch
+            {
             }
         }
 
@@ -206,12 +227,12 @@ namespace CIM.API.Controllers
 
         [HttpGet]
         [Route("api/[controller]/GetProductInfo")]
-        public async Task<ProcessReponseModel<ProductionInfoModel>> GetProductInfo(int machineId)
+        public async Task<ProcessReponseModel<ProductionInfoModel>> GetProductInfo()
         {
             var output = new ProcessReponseModel<ProductionInfoModel>();
             try
             {
-                output.Data = await _machineService.GetProductInfoCache(machineId);
+                output.Data = await _machineService.GetProductionInfoCache();
                 output.IsSuccess = true;
             }
             catch (Exception ex)

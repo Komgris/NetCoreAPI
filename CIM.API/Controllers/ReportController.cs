@@ -145,6 +145,55 @@ namespace CIM.API.Controllers {
         }
 
         [HttpPost]
+        public async Task<ProcessReponseModel<object>> ProductionPlanList([FromBody] ReportDateModel data)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetProductionPlanList(data), JsonsFormatting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> PackingReport([FromBody] string planId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetPackingReport(planId), JsonsFormatting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+        [HttpPost]
+        public async Task<ProcessReponseModel<object>> GuillotineReport([FromBody] string planId)
+        {
+            var output = new ProcessReponseModel<object>();
+            try
+            {
+                output.Data = await Task.Run(() => JsonConvert.SerializeObject(_service.GetGuillotineReport(planId), JsonsFormatting));
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
+
+        [HttpPost]
         public async Task<ProcessReponseModel<object>> WasteReport([FromBody]ReportDateModel data)
         {
             var output = new ProcessReponseModel<object>();
