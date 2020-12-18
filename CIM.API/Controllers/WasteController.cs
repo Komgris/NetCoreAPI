@@ -292,8 +292,11 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveMachine3M(model.CauseMachineId);
 
                     var productionInfo = _responseCacheService.GetProductionInfo();
-                    productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetProductionInfo(productionInfo);
+                    if (productionInfo.MachineInfoList.ContainsKey(model.CauseMachineId))
+                    {
+                        productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
+                        await _responseCacheService.SetProductionInfo(productionInfo);
+                    }
 
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
@@ -331,8 +334,11 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveMachine3M(model.CauseMachineId);
 
                     var productionInfo = _responseCacheService.GetProductionInfo();
-                    productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetProductionInfo(productionInfo);
+                    if (productionInfo.MachineInfoList.ContainsKey(model.CauseMachineId))
+                    {
+                        productionInfo.MachineInfoList[model.CauseMachineId].Defect = activeMachine.CounterDefect;
+                        await _responseCacheService.SetProductionInfo(productionInfo);
+                    }
 
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, model.ProductionPlanId
                         , model.CauseMachineId, productionPlan);
@@ -370,8 +376,11 @@ namespace CIM.API.Controllers
                     await HandleBoardcastingActiveMachine3M(dbModel.CauseMachineId);
 
                     var productionInfo = _responseCacheService.GetProductionInfo();
-                    productionInfo.MachineInfoList[dbModel.CauseMachineId].Defect = activeMachine.CounterDefect;
-                    await _responseCacheService.SetProductionInfo(productionInfo);
+                    if (productionInfo.MachineInfoList.ContainsKey(dbModel.CauseMachineId))
+                    {
+                        productionInfo.MachineInfoList[dbModel.CauseMachineId].Defect = activeMachine.CounterDefect;
+                        await _responseCacheService.SetProductionInfo(productionInfo);
+                    }
 
                     await HandleBoardcastingActiveProcess3M(DataTypeGroup.Waste, dbModel.ProductionPlanId
                         , dbModel.CauseMachineId, productionPlan);

@@ -30,6 +30,7 @@ namespace CIM.Model
         public List<RecordProductionPlanWasteMaterialModel> Materials { get; set; }
 
         public List<int> IngredientsMaterials { get; set; }
+        public List<WasteModel> WasteList { get; set; }
         public decimal AmountUnit { get; set; }
         public decimal AmountUnitOld { get; set; }
         public int ProductId { get; set; }
