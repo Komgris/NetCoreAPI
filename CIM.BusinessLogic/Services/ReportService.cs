@@ -514,7 +514,8 @@ namespace CIM.BusinessLogic.Services {
                               SumHr = Convert.ToString(rw["SumHr"]),
                               GoodPad = Convert.ToString(rw["GoodPad"]),
                               BadPad = Convert.ToString(rw["BadPad"]),
-                              Remark = Convert.ToString(rw["Remark"])
+                              Remark = Convert.ToString(rw["Remark"]),
+                              TheEmployee = Convert.ToString(rw["TheEmployee"])
                           }).ToList();
 
             var reult7 = (from rw in report.Tables[7].AsEnumerable()
@@ -592,6 +593,7 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.PackingProcess = new SubClassPackingProcess();
+            resultObject.TheEmployee = reult6[0].TheEmployee;
             resultObject.PackingProcess.PackingProcessRecord = new List<PackingProcessRecord>();
             foreach (var item in reult6)
             {
