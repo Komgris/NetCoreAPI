@@ -29,7 +29,7 @@ namespace CIM.BusinessLogic.Interfaces {
         Task<ProductionDataModel> GetManagementDashboard(DataFrame frame);
         Task<ProductionDataModel> GenerateCustomDashboard(DataTypeGroup updateType);
 
-        DataTable GetChartData(DateTime? datestamp, string chartData, string sourceData);
+        DataTable GetChartData(Dictionary<string, object> paramsList, string chartData, string sourceData);
 
     }
 }

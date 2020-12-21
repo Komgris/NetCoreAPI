@@ -249,8 +249,21 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<object> GetChartData(DateTime? datestamp, string chartData, string sourceData)
         {
-            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(datestamp, chartData, sourceData), JsonsSetting));
+            var param = new Dictionary<string, object>
+            {
+                {"@datestamp",  datestamp}
+            };
+
+            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(param, chartData, sourceData), JsonsSetting));
         }
+
+        [HttpGet]
+        public async Task<object> GetData(string parameters, string chartData = "sp_get_machine", string sourceData = "CIMDatabaseDashboard")
+        {
+            var paramList = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters);
+            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(paramList, chartData, sourceData), JsonsSetting));
+        }
+
 
         #endregion
 

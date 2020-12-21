@@ -45,7 +45,10 @@ namespace CIM.API.Controllers
         [HttpGet]
         public async Task<string> SendChartData(string channel, string procedure, string db, string chartId, DateTime? datestamp = null)
         {
-            var chartData = _dashboardService.GetChartData(datestamp, procedure, db);
+            var paramsList = new Dictionary<string, object>() {
+                {"@date",datestamp}
+            };
+            var chartData = _dashboardService.GetChartData(paramsList, procedure, db);
             var chart = await Task.Run(() => JsonConvert.SerializeObject(chartData, JsonsSetting));
 
             var output = new ChartModel {
@@ -64,6 +67,6 @@ namespace CIM.API.Controllers
     public class ChartModel
     {
         public string DataString { get; set; }
-        public string Name { get; internal set; }
+        public string Name { get; set; }
     }
 }

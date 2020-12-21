@@ -675,12 +675,8 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        public DataTable GetChartData(DateTime? datestamp, string chartData, string sourceData)
+        public DataTable GetChartData(Dictionary<string, object> paramsList, string chartData, string sourceData)
         {
-
-            var paramsList = new Dictionary<string, object>() {
-                {"@date", datestamp }
-            };
 
             return _directSqlRepository.ExecuteSPWithQuery(chartData, paramsList, sourceData);
         }
