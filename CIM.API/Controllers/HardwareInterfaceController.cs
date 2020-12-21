@@ -107,13 +107,33 @@ namespace CIM.API.Controllers
             await _activeProductionPlanService.UpdateByMachine3M(id, statusId, isAuto);
             await HandleBoardcastingActiveMachine3M(id);
 
-            //dole dashboard
-            //var boardcastData = await _dashboardService.GenerateCustomDashboard(DataTypeGroup.Machine);
-            //if (boardcastData?.Data.Count > 0)
-            //{
-            //    await HandleBoardcastingData(CachedCHKey(DashboardCachedCH.Dole_Custom_Dashboard), boardcastData);
-            //}
-            //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.McCalc);
+            //dashboard
+            var boardname = "active-process";
+            var OverallDashboard = _responseCacheService.GetDashboardData(boardname);
+            var output = new ChartModel();
+            if (OverallDashboard == null)
+            {
+                OverallDashboard = _dashboardService.GetChartData(null, "sp_get_active_process", "CIMDatabase");
+            }
+
+            for(int i=0;i< OverallDashboard.Rows.Count; i++)
+            {
+                if(Convert.ToInt32(OverallDashboard.Rows[i]["id"]) == id)
+                {
+                    OverallDashboard.Rows[i]["status"] = Constans.MachineStatusString[statusId];
+                    break;
+                }
+            }
+
+            var chart = await Task.Run(() => JsonConvert.SerializeObject(OverallDashboard, JsonsSetting));
+            output = new ChartModel
+            {
+                Name = boardname,
+                DataString = chart,
+            };
+
+            _responseCacheService.SetDashboardData(boardname, OverallDashboard);
+            await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_DASHBOARD, JsonConvert.SerializeObject(output, JsonsSetting));
 
             return "OK";
         }

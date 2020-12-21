@@ -1,6 +1,7 @@
 ﻿using CIM.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,5 +21,7 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetActiveMachine(ActiveMachine3MModel model);
         ProductionInfoModel GetProductionInfo();
         Task SetProductionInfo(ProductionInfoModel model);
+        DataTable GetDashboardData(string chartId);
+        Task SetDashboardData(string chartId, DataTable data);
     }
 }
