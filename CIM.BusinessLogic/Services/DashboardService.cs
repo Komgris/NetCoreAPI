@@ -382,9 +382,16 @@ namespace CIM.BusinessLogic.Services {
             await _machineService.SetProductInfoCache(productInfo);
 
             var activeList = new List<ActiveProductionPlan3MModel>();
+
             //setActiveProcess
-            foreach(var item in kpiList)
+            foreach (var item in kpiList)
             {
+                var paramsList = new Dictionary<string, object>() {
+                {"@planid", item.PlanId }
+                };
+                var productionEvent = _directSqlRepository.ExecuteSPWithQuery("sp_Report_ProductionEvents", paramsList);
+                var productionOutput = _directSqlRepository.ExecuteSPWithQuery("sp_Dashboard_Output", paramsList);
+
                 var active = _responseCacheService.GetActivePlan(item.PlanId);
                 if(active != null)
                 {
@@ -393,8 +400,22 @@ namespace CIM.BusinessLogic.Services {
                         Name = "KPI",
                         JsonData = JsonConvert.SerializeObject(item)
                     };
+                    var unitdataEvent = new UnitDataModel()
+                    {
+                        Name = "ProductionEvent",
+                        JsonData = JsonConvert.SerializeObject(productionEvent)
+                    };
+                    var unitdataOutput = new UnitDataModel()
+                    {
+                        Name = "ProductionOutput",
+                        JsonData = JsonConvert.SerializeObject(productionOutput)
+                    };
+
+                    //unitdata.
                     if (active.ProductionData == null) active.ProductionData = new ProductionDataModel();
                     active.ProductionData.SetData(unitdata);
+                    active.ProductionData.SetData(unitdataEvent);
+                    active.ProductionData.SetData(unitdataOutput);
                     await _responseCacheService.SetActivePlan(active);
                     activeList.Add(active);
                 }
