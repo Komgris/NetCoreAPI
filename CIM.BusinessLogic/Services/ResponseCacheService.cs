@@ -4,6 +4,7 @@ using CIM.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
 
@@ -88,6 +89,10 @@ namespace CIM.BusinessLogic.Services
         {
             return $"{RedisKey.MACHINE_INFO}:{machineId}";
         }
+        string GetKeyDashboard(string chartId)
+        {
+            return $"{RedisKey.Dashboard}:{chartId}";
+        }
 
         public async Task SetActivePlan(ActiveProductionPlan3MModel model)
         {
@@ -132,7 +137,6 @@ namespace CIM.BusinessLogic.Services
                 return GetAsTypeAsync<ActiveMachine3MModel>(key).Result;
             }
         }
-
         public async Task SetActiveMachine(ActiveMachine3MModel model)
         {
             BaseService.baseListMachine[model.Id] = model;
@@ -166,7 +170,25 @@ namespace CIM.BusinessLogic.Services
             BaseService.baseProductionInfo = model;
             var key = GetKeyProductionInfo();
             await SetAsync(key, model);
-        }       
+        }
+        public DataTable GetDashboardData(string chartId)
+        {
+            if (BaseService.baseDashboard.ContainsKey(chartId))
+            {
+                return BaseService.baseDashboard[chartId];
+            }
+            else
+            {
+                var key = GetKeyDashboard(chartId);
+                return GetAsTypeAsync<DataTable>(key).Result;
+            }
+        }
+        public async Task SetDashboardData(string chartId, DataTable data)
+        {
+            BaseService.baseDashboard[chartId] = data;
+            var key = GetKeyDashboard(chartId);
+            await SetAsync(key, data);
+        }
 
     }
 }
