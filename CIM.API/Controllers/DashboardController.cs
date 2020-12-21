@@ -245,6 +245,26 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        //curl -X GET "https://localhost:44365/api/Dashboard/GetChartData?chartData=sp_get_active_process&sourceData=CIMDatabaseDashboard" -H "accept: text/plain"
+        [HttpGet]
+        public async Task<object> GetChartData(DateTime? datestamp, string chartData, string sourceData)
+        {
+            var param = new Dictionary<string, object>
+            {
+                {"@datestamp",  datestamp}
+            };
+
+            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(param, chartData, sourceData), JsonsSetting));
+        }
+
+        [HttpGet]
+        public async Task<object> GetData(string parameters, string chartData = "sp_get_machine", string sourceData = "CIMDatabaseDashboard")
+        {
+            var paramList = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters);
+            return await Task.Run(() => JsonConvert.SerializeObject(_dashboardService.GetChartData(paramList, chartData, sourceData), JsonsSetting));
+        }
+
+
         #endregion
 
         #region Waste
@@ -333,7 +353,6 @@ namespace CIM.API.Controllers
             }
             return output;
         }
-
         [HttpGet]
         public async Task<ProcessReponseModel<object>> GetActiveMachineEvents(string planId, int routeId)
         {

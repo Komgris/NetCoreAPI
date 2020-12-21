@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace CIM.BusinessLogic.Services
 {
@@ -18,6 +19,7 @@ namespace CIM.BusinessLogic.Services
         public static Dictionary<int, ActiveMachine3MModel> baseListMachine { get; set; } = new Dictionary<int, ActiveMachine3MModel>();
         public static Dictionary<int, MachineInfoModel> baseListMachineInfo { get; set; } = new Dictionary<int, MachineInfoModel>();
         public static ProductionInfoModel baseProductionInfo { get; set; }
+        public static Dictionary<string, DataTable> baseDashboard { get; set; } = new Dictionary<string, DataTable>();
 
         public JsonSerializerSettings JsonsSetting { get; } = new JsonSerializerSettings
         {
