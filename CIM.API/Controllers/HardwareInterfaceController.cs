@@ -108,8 +108,7 @@ namespace CIM.API.Controllers
             await HandleBoardcastingActiveMachine3M(id);
 
             //dashboard
-            var boardname = "active-process";
-            var OverallDashboard = _responseCacheService.GetDashboardData(boardname);
+            var OverallDashboard = _responseCacheService.GetDashboardData(Constans.RedisKey.Dashboard_ActiveProcess);
             var output = new ChartModel();
             if (OverallDashboard == null)
             {
@@ -128,11 +127,11 @@ namespace CIM.API.Controllers
             var chart = await Task.Run(() => JsonConvert.SerializeObject(OverallDashboard, JsonsSetting));
             output = new ChartModel
             {
-                Name = boardname,
+                Name = Constans.RedisKey.Dashboard_ActiveProcess,
                 DataString = chart,
             };
 
-            _responseCacheService.SetDashboardData(boardname, OverallDashboard);
+            _responseCacheService.SetDashboardData(Constans.RedisKey.Dashboard_ActiveProcess, OverallDashboard);
             await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_DASHBOARD, JsonConvert.SerializeObject(output, JsonsSetting));
 
             return "OK";

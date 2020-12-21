@@ -39,6 +39,7 @@ namespace CIM.Model
             public const string PRODUCTION = "production";
             public const string MACHINE_INFO = "machine-info";
             public const string Dashboard = "dashboard-info";
+            public const string Dashboard_ActiveProcess = "active-process";
         }
 
         public enum DashboardCachedCH
