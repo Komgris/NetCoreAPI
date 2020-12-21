@@ -18,7 +18,7 @@ namespace CIM.Model
         public string LossDescription { get; set; }
 
         public string Guid { get; set; }
-        public Int64 ElapseTime { get; set; }
+        public string ElapseTime { get; set; }
         public int Id { get; set; }
         public string CreatedBy { get; set; }
         public bool IsAuto { get; set; }
