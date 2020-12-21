@@ -61,7 +61,19 @@ namespace CIM.API.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<string> UpdatePart(string channel, string chartId, string data)
+        {
+            
+            var output = new ChartModel
+            {
+                Name = chartId,
+                DataString = data,
+            };
 
+            await _hub.Clients.All.SendAsync(channel, JsonConvert.SerializeObject(output, JsonsSetting));
+            return "OK";
+        }
     }
 
     public class ChartModel
