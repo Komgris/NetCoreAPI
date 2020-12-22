@@ -199,7 +199,7 @@ namespace CIM.BusinessLogic.Services {
             //report.Tables[0].TableName = "ProductDescription";
             ReportProductionPlanGuillotineModel resultObject = new ReportProductionPlanGuillotineModel();
 
-            var reult1 = (from rw in report.Tables[0].AsEnumerable()
+            var ProductDesc = (from rw in report.Tables[0].AsEnumerable()
                           select new
                           {
                               PlanId = Convert.ToString(rw["PlanId"]),
@@ -209,7 +209,7 @@ namespace CIM.BusinessLogic.Services {
                               Target = Convert.ToString(rw["Target"])
                           }).ToList();
 
-            var reult2 = (from rw in report.Tables[1].AsEnumerable()
+            var RawMaterials = (from rw in report.Tables[1].AsEnumerable()
                           select new
                           {
                               StockNo = Convert.ToString(rw["StockNo"]),
@@ -217,7 +217,7 @@ namespace CIM.BusinessLogic.Services {
                               Color = Convert.ToString(rw["Color"]),
                           }).ToList();
 
-            var reult3 = (from rw in report.Tables[2].AsEnumerable()
+            var MachinePreConditionAndSetup = (from rw in report.Tables[2].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -225,7 +225,7 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"]),
                           }).ToList();
 
-            var reult4 = (from rw in report.Tables[3].AsEnumerable()
+            var CuttingPrograms = (from rw in report.Tables[3].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -233,13 +233,13 @@ namespace CIM.BusinessLogic.Services {
                               TrimWaste = Convert.ToString(rw["TrimWaste"])
                           }).ToList();
 
-            var reult5 = (from rw in report.Tables[4].AsEnumerable()
+            var ColorSorting = (from rw in report.Tables[4].AsEnumerable()
                           select new
                           {
                               Name = Convert.ToString(rw["Name"])
                           }).ToList();
 
-            var reult6 = (from rw in report.Tables[5].AsEnumerable()
+            var CuttingProcess = (from rw in report.Tables[5].AsEnumerable()
                           select new
                           {
                               Date = Convert.ToString(rw["Date"]),
@@ -259,14 +259,14 @@ namespace CIM.BusinessLogic.Services {
 
                           }).ToList();
 
-            var reult7 = (from rw in report.Tables[6].AsEnumerable()
+            var InProcessInspections = (from rw in report.Tables[6].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
                               IsCheck = Convert.ToString(rw["IsCheck"]),
                           }).ToList();
 
-            var reult8 = (from rw in report.Tables[7].AsEnumerable()
+            var OutgoingInspection = (from rw in report.Tables[7].AsEnumerable()
                           select new
                           {
                               Date = Convert.ToString(rw["Date"]),
@@ -287,14 +287,14 @@ namespace CIM.BusinessLogic.Services {
                               Wrap = Convert.ToBoolean(rw["Wrap"])
                           }).ToList();
 
-            var reult9 = (from rw in report.Tables[9].AsEnumerable()
+            var WasteAnalysis = (from rw in report.Tables[9].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
                               Amount = Convert.ToString(rw["Amount"])
                           }).ToList();
 
-            var reult10 = (from rw in report.Tables[10].AsEnumerable()
+            var PadNumber = (from rw in report.Tables[10].AsEnumerable()
                           select new
                           {
                               PadNumber = Convert.ToString(rw["PadNumber"]),
@@ -303,18 +303,17 @@ namespace CIM.BusinessLogic.Services {
             resultObject.PackWrap = new SubClassPackWrap();
             
 
-            resultObject.Shop_No = reult1[0].ShopNo;
-            //resultObject.PadNumber = int.TryParse(reult10[0].PadNumber, out int PadNumber) ? PadNumber : 0 ;
-            resultObject.PadNumber = int.Parse(reult10[0].PadNumber == "" ? "0" : reult10[0].PadNumber);
+            resultObject.Shop_No = ProductDesc[0].ShopNo;
+            resultObject.PadNumber = int.Parse(PadNumber[0].PadNumber == "" ? "0" : PadNumber[0].PadNumber);
             resultObject.ProductDescription = new SubClassProductDescription
             {
-                ProductCode = reult1[0].ProductCode,
-                Description = reult1[0].Description,
-                Target = reult1[0].Target
+                ProductCode = ProductDesc[0].ProductCode,
+                Description = ProductDesc[0].Description,
+                Target = ProductDesc[0].Target
             };
 
             resultObject.RawMaterials = new List<RawMaterial>();
-            foreach (var item in reult2)
+            foreach (var item in RawMaterials)
             {
                 resultObject.RawMaterials.Add(new RawMaterial
                 {
@@ -326,7 +325,7 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.MachinePreConditionAndSetup = new List<PreconditionsAndSetup>();
-            foreach (var item in reult3)
+            foreach (var item in MachinePreConditionAndSetup)
             {
                 resultObject.MachinePreConditionAndSetup.Add(new PreconditionsAndSetup
                 {
@@ -338,7 +337,7 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.CuttingPrograms = new List<CuttingProgram>();
-            foreach (var item in reult4)
+            foreach (var item in CuttingPrograms)
             {
                 resultObject.CuttingPrograms.Add(new CuttingProgram
                 {
@@ -352,7 +351,7 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.ColorSorting = new List<ColorSortingRecord>();
-            foreach (var item in reult5)
+            foreach (var item in ColorSorting)
             {
                 resultObject.ColorSorting.Add(new ColorSortingRecord
                 {
@@ -363,8 +362,8 @@ namespace CIM.BusinessLogic.Services {
 
             resultObject.CuttingProcess = new SubClassCuttingProcess();
             resultObject.CuttingProcess.CuttingProcessRecord = new List<CuttingProcessRecord>();
-            resultObject.CuttingProcess.TheEmployee = reult6[0].TheEmployee;
-            foreach (var item in reult6)
+            resultObject.CuttingProcess.TheEmployee = CuttingProcess[0].TheEmployee;
+            foreach (var item in CuttingProcess)
             {
                 resultObject.CuttingProcess.CuttingProcessRecord.Add(new CuttingProcessRecord
                 {
@@ -390,7 +389,7 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.InProcessInspections = new List<InProcessInspection>();
-            foreach (var item in reult7)
+            foreach (var item in InProcessInspections)
             {
                 resultObject.InProcessInspections.Add(new InProcessInspection
                 {
@@ -403,7 +402,7 @@ namespace CIM.BusinessLogic.Services {
 
             resultObject.OutgoingInspection = new SubClassOutgoingInspection();
             resultObject.OutgoingInspection.OutgoingInspectionRecord = new List<OutgoingInspection>();
-            foreach (var item in reult8)
+            foreach (var item in OutgoingInspection)
             {
                 resultObject.OutgoingInspection.OutgoingInspectionRecord.Add(new OutgoingInspection
                 {
@@ -424,7 +423,7 @@ namespace CIM.BusinessLogic.Services {
 
             resultObject.WasteAnalysis = new SubClassWasteAnalysis();
             resultObject.WasteAnalysis.WasteAnalysisRecord = new List<WasteAnalysis>();
-            foreach (var item in reult9)
+            foreach (var item in WasteAnalysis)
             {
                 resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
                 {
@@ -448,7 +447,7 @@ namespace CIM.BusinessLogic.Services {
             ReportProductionPlanPackingModel resultObject = new ReportProductionPlanPackingModel();
 
 
-            var reult1 = (from rw in report.Tables[0].AsEnumerable()
+            var ProductDesc = (from rw in report.Tables[0].AsEnumerable()
                          select new
                          {
                              PlanId = Convert.ToString(rw["PlanId"]),
@@ -459,7 +458,7 @@ namespace CIM.BusinessLogic.Services {
                              Target = Convert.ToString(rw["Target"])
                          }).ToList();
 
-            var reult2 = (from rw in report.Tables[1].AsEnumerable()
+            var RawMaterials = (from rw in report.Tables[1].AsEnumerable()
                           select new
                           {
                               StockNo = Convert.ToString(rw["StockNo"]),
@@ -474,7 +473,7 @@ namespace CIM.BusinessLogic.Services {
                                         LotNo = Convert.ToString(rw["LotNo"]),
                                     }).ToList();
 
-            var reult3 = (from rw in report.Tables[3].AsEnumerable()
+            var MachinePreConditionAndSetup = (from rw in report.Tables[3].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -482,7 +481,7 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"]),
                           }).ToList();
 
-            var reult4 = (from rw in report.Tables[4].AsEnumerable()
+            var FiveTestingRecord = (from rw in report.Tables[4].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -494,13 +493,13 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"]),
                           }).ToList();
 
-            var reult5 = (from rw in report.Tables[5].AsEnumerable()
+            var ColorSorting = (from rw in report.Tables[5].AsEnumerable()
                           select new
                           {
                               Name = Convert.ToString(rw["Name"])
                           }).ToList();
 
-            var reult6 = (from rw in report.Tables[6].AsEnumerable()
+            var PackingProcess = (from rw in report.Tables[6].AsEnumerable()
                           select new
                           {
                               Date = Convert.ToString(rw["Date"]),
@@ -518,7 +517,7 @@ namespace CIM.BusinessLogic.Services {
                               TheEmployee = Convert.ToString(rw["TheEmployee"])
                           }).ToList();
 
-            var reult7 = (from rw in report.Tables[7].AsEnumerable()
+            var WasteAnalysis = (from rw in report.Tables[7].AsEnumerable()
                           select new
                           {
                               Description = Convert.ToString(rw["Description"]),
@@ -526,16 +525,16 @@ namespace CIM.BusinessLogic.Services {
                               Remark = Convert.ToString(rw["Remark"])
                           }).ToList();
 
-            resultObject.Header = reult1[0].Header;
-            resultObject.Shop_No = reult1[0].ShopNo;
+            resultObject.Header = ProductDesc[0].Header;
+            resultObject.Shop_No = ProductDesc[0].ShopNo;
             resultObject.ProductDescription = new SubClassProductDescription
             {
-                ProductCode = reult1[0].ProductCode,
-                Description = reult1[0].Description,
-                Target = reult1[0].Target
+                ProductCode = ProductDesc[0].ProductCode,
+                Description = ProductDesc[0].Description,
+                Target = ProductDesc[0].Target
             };
             resultObject.RawMaterials = new List<RawMaterial>();
-            foreach (var item in reult2)
+            foreach (var item in RawMaterials)
             {
                 resultObject.RawMaterials.Add(new RawMaterial
                 {
@@ -557,7 +556,7 @@ namespace CIM.BusinessLogic.Services {
 
             }
             resultObject.MachinePreConditionAndSetup = new List<PreconditionsAndSetup>();
-            foreach (var item in reult3)
+            foreach (var item in MachinePreConditionAndSetup)
             {
                 resultObject.MachinePreConditionAndSetup.Add(new PreconditionsAndSetup
                 {
@@ -568,7 +567,7 @@ namespace CIM.BusinessLogic.Services {
 
             }
             resultObject.FiveTestingRecord = new List<FiveTesting>();
-            foreach (var item in reult4)
+            foreach (var item in FiveTestingRecord)
             {
                 resultObject.FiveTestingRecord.Add(new FiveTesting
                 {
@@ -583,7 +582,7 @@ namespace CIM.BusinessLogic.Services {
 
             }
             resultObject.ColorSorting = new List<ColorSortingRecord>();
-            foreach (var item in reult5)
+            foreach (var item in ColorSorting)
             {
                 resultObject.ColorSorting.Add(new ColorSortingRecord
                 {
@@ -593,9 +592,9 @@ namespace CIM.BusinessLogic.Services {
             }
 
             resultObject.PackingProcess = new SubClassPackingProcess();
-            resultObject.TheEmployee = reult6[0].TheEmployee;
+            resultObject.TheEmployee = PackingProcess[0].TheEmployee;
             resultObject.PackingProcess.PackingProcessRecord = new List<PackingProcessRecord>();
-            foreach (var item in reult6)
+            foreach (var item in PackingProcess)
             {
                 resultObject.PackingProcess.PackingProcessRecord.Add(new PackingProcessRecord
                 {
@@ -623,7 +622,7 @@ namespace CIM.BusinessLogic.Services {
 
             resultObject.WasteAnalysis = new SubClassWasteAnalysis();
             resultObject.WasteAnalysis.WasteAnalysisRecord = new List<WasteAnalysis>();
-            foreach (var item in reult7)
+            foreach (var item in WasteAnalysis)
             {
                 resultObject.WasteAnalysis.WasteAnalysisRecord.Add(new WasteAnalysis
                 {
