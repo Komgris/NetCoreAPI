@@ -189,7 +189,7 @@ namespace CIM.BusinessLogic.Services
             }
         }
 
-        public void UpdateDashboardData(string chartId, int machineId, Dictionary<string,object> data)
+        public async Task<DataTable> UpdateDashboardData(string chartId, int machineId, Dictionary<string,object> data)
         {
             var Cache = GetDashboardData(chartId);
             if (Cache == null)
@@ -208,6 +208,8 @@ namespace CIM.BusinessLogic.Services
                     break;
                 }
             }
+            await SetDashboardData(chartId, Cache);
+            return Cache;
         }
         public async Task SetDashboardData(string chartId, DataTable data)
         {
