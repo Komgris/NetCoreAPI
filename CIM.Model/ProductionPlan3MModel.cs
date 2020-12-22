@@ -9,6 +9,7 @@ namespace CIM.Model
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public string ProductCode { get; set; }
+        public string ProductDescription { get; set; }
         public int MachineId { get; set; }
         public string MachineCode { get; set; }
         public string ShopNo { get; set; }

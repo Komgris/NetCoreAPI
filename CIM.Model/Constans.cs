@@ -4,7 +4,8 @@ using System.Text;
 
 namespace CIM.Model
 {
-    public class Constans {
+    public class Constans
+    {
 
         public const string CURRENT_USER = "CurrentUser";
 
@@ -13,16 +14,19 @@ namespace CIM.Model
         public const string SIGNAL_R_CHANNEL_PRODUCTION_PLAN = "production-plan";
         public const string SIGNAL_R_CHANNEL_DASHBOARD = "dashboard";
 
-        public class SIGNAL_R_CHANNEL {
+        public class SIGNAL_R_CHANNEL
+        {
             public const string CHANNEL_MESSAGE = "transfer-message";
             public const string CHANNEL_COMMAND = "command-channel";
             public const string CHANNEL_PRODUCTION_PLAN = "production-plan";
             public const string CHANNEL_MASTER_DATA = "master-data";
             public const string CHANNEL_MASTER_DATA_OPERATION = "master-data-operation";
             public const string CHANNEL_MACHINE = "machine";
+            public const string CHANNEL_DASHBOARD = "dashboard-CachedCH-Dole_Custom_Dashboard";
         }
-        
-        public class RedisKey {
+
+        public class RedisKey
+        {
 
             public const string MACHINE = "machine-3m";
             public const string MACHINE_LIST = "machine-list";
@@ -34,9 +38,11 @@ namespace CIM.Model
             public const string TOKEN = "token";
             public const string PRODUCTION = "production";
             public const string MACHINE_INFO = "machine-info";
+            public const string Dashboard = "dashboard-info";
         }
 
-        public enum DashboardCachedCH {
+        public enum DashboardCachedCH
+        {
             Dole_Custom_Dashboard = 0
         }
 
@@ -44,7 +50,8 @@ namespace CIM.Model
 
         #region State
 
-        public enum PRODUCTION_PLAN_STATUS : int {
+        public enum PRODUCTION_PLAN_STATUS : int
+        {
             New = 1,
             Production = 2,
             Finished = 3,
@@ -58,36 +65,42 @@ namespace CIM.Model
             Pause = 11
         }
 
-        public static class MACHINE_STATUS {
+        public static class MACHINE_STATUS
+        {
             public const int Stop = 0;
             public const int Running = 1;
-            public const int Idle = 2;            
+            public const int Idle = 2;
             public const int Error = 3;
             public const int NA = 4;
         }
 
-        public enum AlertStatus : int {
+        public enum AlertStatus : int
+        {
             New = 0,
             Processing = 1,
             Edited = 2
         }
 
-        public enum ComponentStatus : int {
+        public enum ComponentStatus : int
+        {
             Ready = 1
         }
 
-        public enum NetworkState {
+        public enum NetworkState
+        {
             Good,
             Poor,
             Bad
         }
 
-        public enum ProductionPlanBuffer : int {
+        public enum ProductionPlanBuffer : int
+        {
             TARGET_BUFFER = 100,
             HOUR_BUFFER = 6
         }
 
-        public static class CompareMapping {
+        public static class CompareMapping
+        {
             public const int InvalidDateTime = 1;
             public const int InvalidTarget = 2;
             public const int PlanFinished = 3;
@@ -102,21 +115,24 @@ namespace CIM.Model
         #endregion
 
         #region Typeof
-        public enum AlertType : int {
+        public enum AlertType : int
+        {
             Component = 0,
             MACHINE = 1
         }
 
-        public enum DataFrame {
-            Default=0,
-            Daily=1,
-            Weekly=2,
-            Monthly=3,
-            Yearly=4,
-            Custom=5
+        public enum DataFrame
+        {
+            Default = 0,
+            Daily = 1,
+            Weekly = 2,
+            Monthly = 3,
+            Yearly = 4,
+            Custom = 5
         }
 
-        public enum MasterDataType {
+        public enum MasterDataType
+        {
             All
             , LossLevel3s
             , RouteMachines
@@ -150,27 +166,29 @@ namespace CIM.Model
             , Language
         }
 
-        public enum ReportType {
-            Daily =0,
-            Weekly=1,
-            Monthly=2,
-            Yearly=3,
-            DoleCalendar=4,
-            Details= 99
-        } 
+        public enum ReportType
+        {
+            Daily = 0,
+            Weekly = 1,
+            Monthly = 2,
+            Yearly = 3,
+            DoleCalendar = 4,
+            Details = 99
+        }
 
-        public enum BoardcastType {
-            All =0,
-            KPI =1,
-            Output=2,
-            Waste=3,
-            Loss=4,
-            TimeUtilisation =5,
-            ActiveKPI =6,
-            ActiveProductionSummary =7,
-            ActiveProductionOutput =8,
-            ActiveWaste =9,
-            ActiveWasteMat =10,
+        public enum BoardcastType
+        {
+            All = 0,
+            KPI = 1,
+            Output = 2,
+            Waste = 3,
+            Loss = 4,
+            TimeUtilisation = 5,
+            ActiveKPI = 6,
+            ActiveProductionSummary = 7,
+            ActiveProductionOutput = 8,
+            ActiveWaste = 9,
+            ActiveWasteMat = 10,
             ActiveWasteCase = 11,
             ActiveWasteMC = 12,
             ActiveWasteTime = 13,
@@ -185,52 +203,56 @@ namespace CIM.Model
             End = 99
         }
 
-        public enum ManagementDashboardType {
-            KPI=0,
-            ProductionSummary =1,
-            WasteByMaterial =2,
-            WasteBySymptom =3,
-            MachineLossTree =4,
-            MachineLossLvl1 =5,
-            MachineLossLvl2 =6,
-            MachineLossLvl3 =7,
-            MachineLossHighLight =8,
-            CapacityUtilization =9
+        public enum ManagementDashboardType
+        {
+            KPI = 0,
+            ProductionSummary = 1,
+            WasteByMaterial = 2,
+            WasteBySymptom = 3,
+            MachineLossTree = 4,
+            MachineLossLvl1 = 5,
+            MachineLossLvl2 = 6,
+            MachineLossLvl3 = 7,
+            MachineLossHighLight = 8,
+            CapacityUtilization = 9
         }
 
-        public enum CustomDashboardType {
-            OEE =0,
-            Production =1,
-            HSE =2,
-            Quality =3,
-            Delivery =4,
-            Spoilage =5,
-            NonePrime =6,
-            Attendance =7,
+        public enum CustomDashboardType
+        {
+            OEE = 0,
+            Production = 1,
+            HSE = 2,
+            Quality = 3,
+            Delivery = 4,
+            Spoilage = 5,
+            NonePrime = 6,
+            Attendance = 7,
 
-            MachineStatus =10,
-            PlanvsActual =11
+            MachineStatus = 10,
+            PlanvsActual = 11
         }
 
-        public enum DataTypeGroup {
+        public enum DataTypeGroup
+        {
             All = 0,
-            Loss            = 1,
-            Waste           = 2,
-            Operators       = 3,
-            Produce         = 4,
-            Process         = 5,
-            HSE             = 6,
-            Machine         = 7,
-            PlanActual      = 8,
-            McCalc          = 9,
-            ProduceCalc     = 10,
-            None            = 100
+            Loss = 1,
+            Waste = 2,
+            Operators = 3,
+            Produce = 4,
+            Process = 5,
+            HSE = 6,
+            Machine = 7,
+            PlanActual = 8,
+            McCalc = 9,
+            ProduceCalc = 10,
+            None = 100
         }
 
-        public enum TriggerType {
+        public enum TriggerType
+        {
             CustomDashboard = 1,
-            ActiveProcess= 2,
-            CalcHour=3,
+            ActiveProcess = 2,
+            CalcHour = 3,
             MachineStatus = 4,
             MachineCounter = 5
         }
@@ -241,7 +263,12 @@ namespace CIM.Model
             Manual = 1,
             None = 2
         }
+
+        public static Dictionary<int, string> MachineStatusString = new Dictionary<int, string>()
+        {
+            { 0,"Stop"},{ 1,"Run"},{ 2,"Idle"}
+        };
         #endregion
 
-        }
+    }
 }
