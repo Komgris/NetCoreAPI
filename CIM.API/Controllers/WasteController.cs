@@ -287,7 +287,10 @@ namespace CIM.API.Controllers
                 if (productionPlan != null)
                 {
                     var activeMachine = _responseCacheService.GetActiveMachine(model.CauseMachineId);
-                    activeMachine.CounterDefect += model.AmountUnit;
+                    foreach(var item in model.WasteList)
+                    {
+                        activeMachine.CounterDefect += item.AmountUnit;
+                    }
                     await _responseCacheService.SetActiveMachine(activeMachine);
                     await HandleBoardcastingActiveMachine3M(model.CauseMachineId);
 
