@@ -15,5 +15,6 @@ namespace CIM.Domain.Models
         public int? Year { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? EndAt { get; set; }
+        public int TimeSpan { get; set; }
     }
 }

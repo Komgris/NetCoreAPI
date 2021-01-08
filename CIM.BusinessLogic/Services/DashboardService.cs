@@ -59,12 +59,12 @@ namespace CIM.BusinessLogic.Services {
         private Dictionary<BoardcastType, getdataConfig> DashboardConfig
             = new Dictionary<BoardcastType, getdataConfig>()
             {
-                { BoardcastType.KPI                     , new getdataConfig("KPI","sp_dashboard_kpi")},
+                { BoardcastType.KPI                     , new getdataConfig("KPI","sp_Dashboard_ActiveProcess")},
                 { BoardcastType.Output                  , new getdataConfig("Output","sp_dashboard_output")},
                 { BoardcastType.Waste                   , new getdataConfig("Waste","sp_dashboard_waste")},
                 { BoardcastType.Loss                    , new getdataConfig("MachineLoss","sp_dashboard_machineLoss")},
                 { BoardcastType.TimeUtilisation         , new getdataConfig("Utilization","sp_dashboard_utilization")},
-                { BoardcastType.ActiveKPI               , new getdataConfig("KPI","sp_Report_Production_Dashboard")},
+                { BoardcastType.ActiveKPI               , new getdataConfig("KPI","sp_Dashboard_ActiveProcess")},
                 { BoardcastType.ActiveProductionSummary , new getdataConfig("ProductionSummary","sp_report_productionsummary")},
                 { BoardcastType.ActiveProductionOutput  , new getdataConfig("ProductionOutput","sp_dashboard_output")},
                 { BoardcastType.ActiveWasteMat          , new getdataConfig("WastebyMat","sp_report_waste_materials")},
@@ -139,6 +139,24 @@ namespace CIM.BusinessLogic.Services {
 
         #region CIM dashboard
 
+        public async Task<DataTable> GenerateCustomDashboard3M(string chartId)
+        {
+            var dataTable = _directSqlRepository.ExecuteSPWithQuery(Dashboard3MConfig[chartId], null, "CIMDatabase");
+            await _responseCacheService.SetDashboardData(chartId, dataTable);
+            return dataTable;
+        }
+        public DataTable GetChartData(Dictionary<string, object> paramsList, string chartData, string sourceData)
+        {
+            var cacheData = _responseCacheService.GetDashboardData(chartData);
+            if(cacheData == null)
+            {
+                return _directSqlRepository.ExecuteSPWithQuery(chartData, paramsList, sourceData);
+            }
+            else
+            {
+                return cacheData;
+            }
+        }
         public async Task<ProductionDataModel> GenerateCustomDashboard(DataTypeGroup updateType)
         {
             var boardcastData = new ProductionDataModel();
@@ -696,11 +714,7 @@ namespace CIM.BusinessLogic.Services {
 
         #endregion
 
-        public DataTable GetChartData(Dictionary<string, object> paramsList, string chartData, string sourceData)
-        {
 
-            return _directSqlRepository.ExecuteSPWithQuery(chartData, paramsList, sourceData);
-        }
 
 
     }

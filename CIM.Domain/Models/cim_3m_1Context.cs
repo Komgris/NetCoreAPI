@@ -46,6 +46,7 @@ namespace CIM.Domain.Models
         public virtual DbSet<RecordProductionPlanOutput> RecordProductionPlanOutput { get; set; }
         public virtual DbSet<RecordProductionPlanWaste> RecordProductionPlanWaste { get; set; }
         public virtual DbSet<RecordProductionPlanWasteMaterials> RecordProductionPlanWasteMaterials { get; set; }
+        public virtual DbSet<Standard> Standard { get; set; }
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Waste> Waste { get; set; }
@@ -55,7 +56,7 @@ namespace CIM.Domain.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=103.245.164.12\\MSSQLSERVER2017,1435;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=103.245.164.12\\\\\\\\MSSQLSERVER2017,1435;initial catalog=cim_3m_1;persist security info=True;user id=cim;password=4dev@cim;MultipleActiveResultSets=True;");
             }
         }
 
@@ -543,6 +544,8 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
@@ -662,6 +665,8 @@ namespace CIM.Domain.Models
                 entity.Property(e => e.ProductionPlanId)
                     .HasColumnName("Production_Plan_Id")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.TimeSpan).HasColumnName("TImeSpan");
 
                 entity.Property(e => e.WeekNumber).HasDefaultValueSql("([dbo].[fn_get_weeknumber](DEFAULT))");
 
@@ -1041,6 +1046,19 @@ namespace CIM.Domain.Models
                     .HasConstraintName("FK_Record_ProductionPlan_Waste_Material_Record_ProductionPlan_Waste");
             });
 
+            modelBuilder.Entity<Standard>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.Code).HasMaxLength(255);
+
+                entity.Property(e => e.Description).HasMaxLength(255);
+
+                entity.Property(e => e.F3).HasMaxLength(255);
+
+                entity.Property(e => e.Standard1).HasColumnName("standard");
+            });
+
             modelBuilder.Entity<Units>(entity =>
             {
                 entity.HasNoKey();
@@ -1089,9 +1107,6 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasDefaultValueSql("(N'NoUserName')");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Waste>(entity =>
