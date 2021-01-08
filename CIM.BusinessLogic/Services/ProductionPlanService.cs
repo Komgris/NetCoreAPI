@@ -153,6 +153,7 @@ namespace CIM.BusinessLogic.Services
             db_model.PlanStart = model.PlanStart;
             db_model.PlanFinish = model.PlanFinish;
             db_model.Sequence = model.Sequence;
+            db_model.Standard = model.Standard;
             db_model.UpdatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
@@ -281,6 +282,10 @@ namespace CIM.BusinessLogic.Services
                         if (plan.PlanStart == null || plan.PlanFinish == null)
                         {
                             plan.CompareResult = Constans.CompareMapping.InvalidDateTime;
+                        }
+                        else if(plan.Standard == null)
+                        {
+                            plan.CompareResult = Constans.CompareMapping.InvalidStandardRate;
                         }
                         else
                         {

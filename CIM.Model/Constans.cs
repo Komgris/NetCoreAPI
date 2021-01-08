@@ -111,6 +111,7 @@ namespace CIM.Model
             public const int NoMachine = 7;
             public const int Preparatory = 8;
             public const int Production = 9;
+            public const int InvalidStandardRate = 10;
         }
 
         #endregion
