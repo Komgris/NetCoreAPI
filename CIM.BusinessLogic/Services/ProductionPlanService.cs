@@ -157,7 +157,7 @@ namespace CIM.BusinessLogic.Services
             db_model.UpdatedBy = CurrentUser.UserId;
             db_model.IsActive = true;
             db_model.UpdatedAt = DateTime.Now;
-            db_model.Id = 0;
+            //db_model.Id = null;
             _productionPlanRepository.Edit(db_model);
             await _unitOfWork.CommitAsync();
         }

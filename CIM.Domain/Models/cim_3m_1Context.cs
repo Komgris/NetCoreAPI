@@ -544,7 +544,7 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                //entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()

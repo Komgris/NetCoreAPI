@@ -11,7 +11,6 @@ namespace CIM.Domain.Models
             RecordProductionPlanInformation = new HashSet<RecordProductionPlanInformation>();
         }
 
-        public int Id { get; set; }
         public string PlanId { get; set; }
         public int ProductId { get; set; }
         public int MachineId { get; set; }
