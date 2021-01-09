@@ -27,6 +27,6 @@ namespace CIM.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
-        public int? Standard { get; set; }
+        public decimal? Standard { get; set; }
     }
 }

@@ -566,6 +566,8 @@ namespace CIM.Domain.Models
                     .HasColumnName("Shop_No")
                     .HasMaxLength(128);
 
+                entity.Property(e => e.Standard).HasColumnType("decimal(10, 3)");
+
                 entity.Property(e => e.StatusId)
                     .HasColumnName("Status_Id")
                     .HasDefaultValueSql("((1))");
