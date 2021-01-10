@@ -13,6 +13,7 @@ namespace CIM.BusinessLogic.Interfaces
         List<ProductionPlanModel> Get();
         Task<PagingModel<ProductionPlanModel>> Paging(int page, int howmany);
         Task<List<ProductionPlan3MModel>> CheckDuplicate(List<ProductionPlan3MModel> import);
+        Task<List<ProductionMasterShowModel>> DeletePlans(List<ProductionMasterShowModel> data);
         Task Delete(string id);
         Task Update(ProductionPlanModel model);
         Task<ProductionPlanModel> Create(ProductionPlanModel model);
