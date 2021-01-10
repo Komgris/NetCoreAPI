@@ -12,5 +12,7 @@ namespace CIM.Model
         public string Lvl2Desc { get; set; }
         public string Lvl3Name { get; set; }
         public string Lvl3Desc { get; set; }
+        public string Code { get; set; }
+
     }
 }
