@@ -111,6 +111,23 @@ namespace CIM.BusinessLogic.Services
             return db_list;
         }
 
+        public async Task<List<ProductionMasterShowModel>> DeletePlans(List<ProductionMasterShowModel> data)
+        {
+            List<ProductionMasterShowModel> db_list = new List<ProductionMasterShowModel>();
+            var masterData = await _masterDataService.GetData();
+            var planList = await _productionPlanRepository.AllAsync();
+            foreach (var plan in data)
+            {
+                var dbModel = planList.FirstOrDefault(x => x.PlanId == plan.PlanId);
+                if (dbModel != null)
+                {
+                    await Delete(plan.PlanId);
+                }
+            }
+            await _unitOfWork.CommitAsync();
+            return db_list;
+        }
+
         public async Task<ProductionPlanModel> Create(ProductionPlanModel model)
         {
             var plan = CreatePlan(model);

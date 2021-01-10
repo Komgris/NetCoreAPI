@@ -177,6 +177,27 @@ namespace CIM.API.Controllers
             return output;
         }
 
+        [Route("api/[controller]/DeletePlans")]
+        [HttpPost]
+        public async Task<ProcessReponseModel<List<ProductionMasterShowModel>>> DeletePlans([FromBody] List<ProductionMasterShowModel> data)
+        {
+            var output = new ProcessReponseModel<List<ProductionMasterShowModel>>();
+            try
+            {
+                output.Data = await _productionPlanService.DeletePlans(data);
+                //await RefreshMasterData(Constans.MasterDataType.ProductionPlan);
+                ////dole dashboard
+                //_triggerService.TriggerQueueing(TriggerType.CustomDashboard, (int)DataTypeGroup.PlanActual);
+                output.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                output.IsSuccess = false;
+                output.Message = ex.Message;
+            }
+            return output;
+        }
+
         [Route("api/[controller]/Create")]
         [HttpPost]
         public async Task<ProcessReponseModel<ProductionPlanModel>> Create([FromBody] ProductionPlanModel data)
