@@ -274,13 +274,14 @@ namespace CIM.Model
         public static Dictionary<string, string> Dashboard3MConfig = new Dictionary<string, string>()
         {
                        {"active-process"             , "sp_get_active_process"},
-                       //{"sp_get_machine"                    , "sp_get_machine"},
+                       {"sp_get_machine"                    , "sp_get_machine"},
                        {"sp_get_output"                     , "sp_get_output"},
                        {"sp_get_production_target_output"   , "sp_get_production_target_output"},
                        {"sp_get_quality"                    , "sp_get_quality"},
                        {"TopDowntime"             , "sp_get_runtime_losses"},
                        {"ProductionEvent"             , "sp_get_machine_event"},
                        {"ProductionPerformance"             , "sp_get_machine_performance"},
+                        {"sp_get_machine_kpi"             , "sp_get_machine_kpi"},
         };
         #endregion
 
