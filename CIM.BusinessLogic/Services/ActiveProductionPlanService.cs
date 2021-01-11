@@ -803,8 +803,7 @@ namespace CIM.BusinessLogic.Services
             var activeMachine = _responseCacheService.GetActiveMachine(machineId);
             if (activeMachine != null)
             {
-                activeMachine.CounterLastHr = activeMachine.CounterOut;
-                activeMachine.CounterOut += amount;
+                activeMachine.AdditionalOut += amount;
                 activeMachine.Hour = hr;
             }
 
@@ -814,7 +813,8 @@ namespace CIM.BusinessLogic.Services
                         {"@mcid", machineId },
                         {"@hr", hr},
                         {"@Add",  amount} ,
-                        {"@remark",  remark}
+                        {"@remark",  remark},
+                        {"@totalout", activeMachine.CounterOut}
             };
 
             //db execute
