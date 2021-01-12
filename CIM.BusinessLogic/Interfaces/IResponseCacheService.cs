@@ -23,5 +23,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task SetProductionInfo(ProductionInfoModel model);
         DataTable GetDashboardData(string chartId);
         Task SetDashboardData(string chartId, DataTable data);
+        Task<DataTable> UpdateDashboardData(string chartId, int machineId, Dictionary<string, object> data);
     }
 }

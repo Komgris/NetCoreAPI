@@ -22,7 +22,7 @@ namespace CIM.Model
             public const string CHANNEL_MASTER_DATA = "master-data";
             public const string CHANNEL_MASTER_DATA_OPERATION = "master-data-operation";
             public const string CHANNEL_MACHINE = "machine";
-            public const string CHANNEL_DASHBOARD = "dashboard-CachedCH-Dole_Custom_Dashboard";
+            public const string CHANNEL_DASHBOARD = "dashboard-CachedCH-3M_Custom_Dashboard";
         }
 
         public class RedisKey
@@ -39,6 +39,7 @@ namespace CIM.Model
             public const string PRODUCTION = "production";
             public const string MACHINE_INFO = "machine-info";
             public const string Dashboard = "dashboard-info";
+            public const string Dashboard_ActiveProcess = "active-process";
         }
 
         public enum DashboardCachedCH
@@ -110,6 +111,7 @@ namespace CIM.Model
             public const int NoMachine = 7;
             public const int Preparatory = 8;
             public const int Production = 9;
+            public const int InvalidStandardRate = 10;
         }
 
         #endregion
@@ -267,6 +269,19 @@ namespace CIM.Model
         public static Dictionary<int, string> MachineStatusString = new Dictionary<int, string>()
         {
             { 0,"Stop"},{ 1,"Run"},{ 2,"Idle"}
+        };
+
+        public static Dictionary<string, string> Dashboard3MConfig = new Dictionary<string, string>()
+        {
+                       {"active-process"             , "sp_get_active_process"},
+                       {"sp_get_machine"                    , "sp_get_machine"},
+                       {"sp_get_output"                     , "sp_get_output"},
+                       {"sp_get_production_target_output"   , "sp_get_production_target_output"},
+                       {"sp_get_quality"                    , "sp_get_quality"},
+                       {"TopDowntime"             , "sp_get_runtime_losses"},
+                       {"ProductionEvent"             , "sp_get_machine_event"},
+                       {"ProductionPerformance"             , "sp_get_machine_performance"},
+                        {"sp_get_machine_kpi"             , "sp_get_machine_kpi"},
         };
         #endregion
 

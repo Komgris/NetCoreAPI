@@ -1,9 +1,11 @@
 ﻿using CIM.BusinessLogic.Interfaces;
 using CIM.BusinessLogic.Utility;
+using CIM.DAL.Interfaces;
 using CIM.Model;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using static CIM.Model.Constans;
@@ -13,11 +15,14 @@ namespace CIM.BusinessLogic.Services
     public class ResponseCacheService : IResponseCacheService
     {
         private readonly IDistributedCache _distributedCache;
+        private IDirectSqlRepository _directSqlRepository;
 
         public ResponseCacheService(
-            IDistributedCache distributedCache
+            IDistributedCache distributedCache,
+            IDirectSqlRepository directSqlRepository
             )
         {
+            _directSqlRepository = directSqlRepository;
             _distributedCache = distributedCache;
         }
 
@@ -182,6 +187,29 @@ namespace CIM.BusinessLogic.Services
                 var key = GetKeyDashboard(chartId);
                 return GetAsTypeAsync<DataTable>(key).Result;
             }
+        }
+
+        public async Task<DataTable> UpdateDashboardData(string chartId, int machineId, Dictionary<string,object> data)
+        {
+            var Cache = GetDashboardData(chartId);
+            if (Cache == null)
+            {
+                Cache = _directSqlRepository.ExecuteSPWithQuery("sp_get_active_process",null, "CIMDatabase");
+            }
+
+            for (int i = 0; i < Cache.Rows.Count; i++)
+            {
+                if (Convert.ToInt32(Cache.Rows[i]["id"]) == machineId)
+                {
+                    foreach(var item in data)
+                    {
+                        Cache.Rows[i][item.Key] = item.Value;
+                    }
+                    break;
+                }
+            }
+            await SetDashboardData(chartId, Cache);
+            return Cache;
         }
         public async Task SetDashboardData(string chartId, DataTable data)
         {

@@ -18,7 +18,9 @@ namespace CIM.Model
         public DateTime StartedAt { get; set; }
         public int? CounterLastHr { get; set; } = 0;
         public int? CounterOut { get; set; } = 0;
-        public decimal  CounterDefect { get; set; } = 0;
+        public int? AdditionalOut { get; set; } = 0;
+        public int? TotalOut { get => CounterOut + AdditionalOut; }
+        public decimal CounterDefect { get; set; } = 0;
         public float Speed { get; set; } = 0;
         public int Hour { get; set; } = DateTime.Now.Hour;
         public List<AlertModel> Alerts { get; set; } = new List<AlertModel>();
@@ -27,9 +29,10 @@ namespace CIM.Model
             ProductionPlanId = planId;
             CounterLastHr = 0;
             CounterOut = 0;
+            AdditionalOut = 0;
             Speed = 0;
             CounterDefect = 0;
             Hour = DateTime.Now.Hour;
-        } 
+        }
     }
 }

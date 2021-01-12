@@ -28,6 +28,47 @@ namespace CIM.API.Controllers
         {
         }
 
+
+        [HttpGet]
+        public async Task<string> ExecBoardCastQueue(TriggerType trigtype)
+        {
+            try
+            {
+
+                ////var Q = _dashboardService.GetBoardcastQueue(trigtype);
+                ////foreach (var q in Q)
+                ////{
+                switch (trigtype)
+                {
+                    case TriggerType.CustomDashboard:
+                       foreach(var chartId in Dashboard3MConfig.Keys)
+                        {
+                            var OverallDashboard = await _dashboardService.GenerateCustomDashboard3M(chartId);
+                            var chart = await Task.Run(() => JsonConvert.SerializeObject(OverallDashboard, JsonsSetting));
+                            var output = new ChartModel
+                            {
+                                Name = chartId,
+                                DataString = chart,
+                            };
+                            await _hub.Clients.All.SendAsync(Constans.SIGNAL_R_CHANNEL.CHANNEL_DASHBOARD, JsonConvert.SerializeObject(output, JsonsSetting));
+                        }
+                        break;
+                    case TriggerType.ActiveProcess:
+                        await BoardcastingActiveOperation3M();
+                    break;
+                    case TriggerType.CalcHour:
+                        break;
+                }
+                ////}
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
         #region Management
 
         [HttpGet]
@@ -141,7 +182,6 @@ namespace CIM.API.Controllers
         {
             try
             {
-
                 var activeList = await _dashboardService.GenerateOperationBroadcast3M();
                 //Boardcast activeprocess
                 foreach(var item in activeList)

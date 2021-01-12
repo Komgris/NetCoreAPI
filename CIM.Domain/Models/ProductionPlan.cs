@@ -28,6 +28,7 @@ namespace CIM.Domain.Models
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public decimal? Standard { get; set; }
 
         public virtual ICollection<RecordProductionPlanColorOrder> RecordProductionPlanColorOrder { get; set; }
         public virtual ICollection<RecordProductionPlanInformation> RecordProductionPlanInformation { get; set; }

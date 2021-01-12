@@ -30,6 +30,7 @@ namespace CIM.BusinessLogic.Interfaces {
         Task<ProductionDataModel> GenerateCustomDashboard(DataTypeGroup updateType);
 
         DataTable GetChartData(Dictionary<string, object> paramsList, string chartData, string sourceData);
+        Task<DataTable> GenerateCustomDashboard3M(string chartId);
 
     }
 }
