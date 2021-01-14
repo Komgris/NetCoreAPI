@@ -292,7 +292,7 @@ namespace CIM.BusinessLogic.Services
             var masterdata = await _masterDataService.GetData();
             foreach (var mc in masterdata.Machines)
             {
-                var mccache = GetCached(mc.Key).Result;
+                var mccache = GetCached3M(mc.Key).Result;
                 if (mccache == null)
                 {
                     await SetCached3M(new ActiveMachine3MModel
@@ -307,7 +307,7 @@ namespace CIM.BusinessLogic.Services
                 else
                 {
                     mccache.Image = mc.Value.Image;
-                    await SetCached(mc.Key, mccache);
+                    await SetCached3M(mccache);
                 }
             }
         }
