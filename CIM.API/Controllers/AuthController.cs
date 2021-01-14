@@ -33,6 +33,38 @@ namespace CIM.API.Controllers
         }
 
         [HttpGet]
+        [Route("AuthOperation")]
+
+        public async Task<AuthModel> AuthOperation(string username, string password)
+        {
+            try
+            {
+                var result = await _userService.AuthOperation(username, password);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        [Route("AuthAdmin")]
+
+        public async Task<AuthModel> AuthAdmin(string username, string password)
+        {
+            try
+            {
+                var result = await _userService.AuthAdmin(username, password);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpGet]
         [Route("CreateUser")]
         public async Task<ProcessReponseModel<object>> CreateUser(string username, string password, string email, string name)
         {
@@ -99,6 +131,13 @@ namespace CIM.API.Controllers
             {
                 throw ex;
             }
+        }
+
+        [HttpGet]
+        [Route("HashPassword")]
+        public string HashPassword(string password)
+        {
+            return _userService.HashPassword(password);
         }
     }
 }

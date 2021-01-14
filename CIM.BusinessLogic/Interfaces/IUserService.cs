@@ -10,6 +10,8 @@ namespace CIM.BusinessLogic.Interfaces
     {
         Task<string> Create(AdminUsersModel model);
         Task<AuthModel> Auth(string username, string password);
+        Task<AuthModel> AuthOperation(string username, string password);
+        Task<AuthModel> AuthAdmin(string username, string password);
         Task<bool> GetCurrentUserModel(string token, int appId);
         string HashPassword(UserModel model);
         Task<string> CreateToken(string userId);
@@ -20,5 +22,6 @@ namespace CIM.BusinessLogic.Interfaces
         Task<ProcessReponseModel<object>> VerifyTokenWithApp(string token, int appId);
         Task<ProcessReponseModel<object>> VerifyToken(string token);
         Task Logout(string token);
+        public string HashPassword(string password);
     }
 }

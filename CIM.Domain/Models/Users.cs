@@ -18,5 +18,7 @@ namespace CIM.Domain.Models
         public bool IsSuspend { get; set; }
         public int UserGroupId { get; set; }
         public string Name { get; set; }
+
+        public virtual UserAppTokens UserAppTokens { get; set; }
     }
 }

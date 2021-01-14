@@ -16,7 +16,7 @@ using static CIM.Model.Constans;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class ProductionPlanController : BoardcastController
+    public class ProductionPlanController : BoardcastNoSecureController
     {
         private IProductionPlanService _productionPlanService;
         private IUtilitiesService _utilitiesService;

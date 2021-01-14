@@ -50,6 +50,8 @@ namespace CIM.Domain.Models
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Waste> Waste { get; set; }
+        public virtual DbSet<UserAppTokens> UserAppTokens { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1109,6 +1111,28 @@ namespace CIM.Domain.Models
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasDefaultValueSql("(N'NoUserName')");
+            });
+
+            modelBuilder.Entity<UserAppTokens>(entity =>
+            {
+                entity.HasKey(e => e.UserId)
+                    .HasName("PK_UserAppTokens");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("User_Id")
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserAppTokens)
+                    .HasForeignKey<UserAppTokens>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserAppTokens_Users");
             });
 
             modelBuilder.Entity<Waste>(entity =>

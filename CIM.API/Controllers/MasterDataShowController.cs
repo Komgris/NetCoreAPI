@@ -13,15 +13,15 @@ using Newtonsoft.Json;
 namespace CIM.API.Controllers
 {
     [ApiController]
-    public class MasterDataShowController : BaseController
+    public class MasterDataShowController : BaseNoSecureController
     {
         private IMasterDataShowService _service;
         public MasterDataShowController(
-            IHubContext<GlobalHub> hub,
+            //IHubContext<GlobalHub> hub,
             IMasterDataShowService service
         )
         {
-            _hub = hub;
+            //_hub = hub;
             _service = service;
         }
 
