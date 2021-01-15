@@ -107,6 +107,7 @@ namespace CIM.BusinessLogic.Services
                     Email = x.Email,
                     Name = x.Name,
                     HashedPassword = x.HashedPassword,
+                    //Id = x.Id,
                 })
                 .FirstOrDefaultAsync(x => x.UserName == username);
 
@@ -166,6 +167,63 @@ namespace CIM.BusinessLogic.Services
 
             //    await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
             //}
+
+            return result;
+        }
+
+        public async Task<AuthModel> AuthOperation(string username, string password)
+        {
+            AuthModel result = new AuthModel();
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true && (x.UserGroupId == 1 || x.UserGroupId == 3))
+                .Select(x => new
+                {
+                    UserName = x.UserName,
+                    Email = x.Email,
+                    Name = x.Name,
+                    HashedPassword = x.HashedPassword,
+                    Id = x.Id,
+                    UserGroupId = x.UserGroupId
+                })
+                .FirstOrDefaultAsync(x => x.UserName == username);
+
+            if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
+            {
+                result.FullName = dbModel.Name;
+                result.UserId = dbModel.UserName;
+                result.IsSuccess = true;
+                result.Email = dbModel.Email;
+                result.Token = await CreateToken(dbModel.Id);
+                result.UserGroupId = dbModel.UserGroupId;
+
+                await _responseCacheService.SetAsyncExpire($"{Constans.RedisKey.TOKEN}-{result.Token}", result, _configuration.GetValue<int>("TokenExpire(Min)"));
+            }
+
+            return result;
+        }
+
+        public async Task<AuthModel> AuthAdmin(string username, string password)
+        {
+            AuthModel result = new AuthModel();
+            var dbModel = await _userRepository.Where(x => x.UserName.ToLower() == username.ToLower() && x.IsActive == true && (x.UserGroupId == 2 || x.UserGroupId == 3))
+                .Select(x => new
+                {
+                    UserName = x.UserName,
+                    Email = x.Email,
+                    Name = x.Name,
+                    HashedPassword = x.HashedPassword,
+                    Id = x.Id,
+                    UserGroupId = x.UserGroupId
+                })
+                .FirstOrDefaultAsync(x => x.UserName == username);
+
+            if (dbModel != null && IsPasswordValid(dbModel.HashedPassword, password))
+            {
+                result.FullName = dbModel.Name;
+                result.UserId = dbModel.UserName;
+                result.IsSuccess = true;
+                result.Email = dbModel.Email;
+
+            }
 
             return result;
         }
@@ -268,8 +326,7 @@ namespace CIM.BusinessLogic.Services
             var authModel = await _responseCacheService.GetAsTypeAsync<AuthModel>($"{Constans.RedisKey.TOKEN}-{token}");
             if (authModel != null)
             {
-                var userGroupApp = authModel.Apps.Where(x => x.Id == appId);
-                if (userGroupApp != null)
+                if (authModel.UserGroupId == appId || authModel.UserGroupId == 3)
                 {
                     CurrentUserId = authModel.UserId;
                     IsVerifyTokenPass = true;

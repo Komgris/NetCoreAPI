@@ -16,7 +16,7 @@ namespace CIM.API.Controllers {
 
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ReportController : BoardcastController {
+    public class ReportController : BoardcastNoSecureController {
         IReportService _service;
 
         public Formatting JsonFormatting { get; private set; }
