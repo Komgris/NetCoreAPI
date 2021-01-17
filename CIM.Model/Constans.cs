@@ -280,8 +280,7 @@ namespace CIM.Model
                        {"sp_get_quality"                    , "sp_get_quality"},
                        {"TopDowntime"             , "sp_get_runtime_losses"},
                        {"ProductionEvent"             , "sp_get_machine_event"},
-                       {"ProductionPerformance"             , "sp_get_machine_performance"},
-                        {"sp_get_machine_kpi"             , "sp_get_machine_kpi"},
+                       {"ProductionPerformance"             , "sp_get_machine_performance"}
         };
         #endregion
 
